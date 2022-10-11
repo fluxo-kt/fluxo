@@ -1,0 +1,74 @@
+import com.arkivanov.gradle.AndroidConfig
+import com.arkivanov.gradle.ensureUnreachableTasksDisabled
+import com.arkivanov.gradle.iosCompat
+import com.arkivanov.gradle.macosCompat
+import com.arkivanov.gradle.setupDefaults
+import com.arkivanov.gradle.setupDetekt
+import com.arkivanov.gradle.watchosCompat
+
+@Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
+plugins {
+    alias(libs.plugins.android.lib) apply false
+    alias(libs.plugins.kotlin.jvm) apply false
+    alias(libs.plugins.kotlin.android) apply false
+    alias(libs.plugins.kotlin.multiplatform) apply false
+    alias(libs.plugins.kotlin.binCompatValidator) apply false
+    alias(libs.plugins.deps.analysis)
+    alias(libs.plugins.detekt)
+    id(libs.plugins.arkivanov.setup.get().pluginId)
+}
+
+setupDefaults(
+    multiplatformConfigurator = {
+        android()
+        jvm()
+        js(BOTH) { browser() }
+        linuxX64()
+        iosCompat()
+        watchosCompat()
+        macosCompat()
+    },
+    androidConfig = AndroidConfig(
+        minSdkVersion = libs.versions.androidMinSdk.get().toInt(),
+        compileSdkVersion = libs.versions.androidCompileSdk.get().toInt(),
+        targetSdkVersion = libs.versions.androidTargetSdk.get().toInt(),
+    ),
+)
+
+setupDetekt()
+ensureUnreachableTasksDisabled()
+
+dependencyAnalysis {
+    // https://github.com/autonomousapps/dependency-analysis-android-gradle-plugin/wiki/Customizing-plugin-behavior
+    dependencies {
+        bundle("kotlin-stdlib") {
+            includeGroup("org.jetbrains.kotlin")
+        }
+    }
+    issues {
+        all {
+            onIncorrectConfiguration {
+                severity("fail")
+            }
+            onUnusedDependencies {
+                severity("fail")
+            }
+        }
+    }
+}
+
+allprojects {
+    afterEvaluate {
+        // Workaround for https://youtrack.jetbrains.com/issue/KT-52776
+        rootProject.extensions.findByType<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension>()?.apply {
+            versions.webpackCli.version = "4.10.0"
+        }
+    }
+}
+
+subprojects {
+    // Convenient task that will print full dependencies tree for any module
+    // Use `buildEnvironment` task for plugins report
+    // https://docs.gradle.org/current/userguide/viewing_debugging_dependencies.html
+    tasks.register<DependencyReportTask>("allDeps")
+}

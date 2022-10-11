@@ -1,0 +1,19 @@
+# IntelliJ
+*.iml
+.idea/
+projectFilesBackup*/
+
+# Gradle
+.gradle/
+build/
+
+# JVM/Android
+local.properties
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Other
+*.log
+_/
