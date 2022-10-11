@@ -8,7 +8,10 @@ import com.arkivanov.gradle.setupSourceSets
 plugins {
     id(libs.plugins.kotlin.multiplatform.get().pluginId)
     id(libs.plugins.android.lib.get().pluginId)
+    id(libs.plugins.kotlinx.kover.get().pluginId)
     id(libs.plugins.arkivanov.setup.get().pluginId)
+    id("fluxo-lint")
+    id("fluxo-detekt")
 }
 
 setupMultiplatform()

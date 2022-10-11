@@ -27,9 +27,6 @@ ksp = "1.7.20-1.0.6"
 # https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-coroutines-core
 coroutines = "1.6.4"
 
-# https://github.com/Kotlin/binary-compatibility-validator/releases
-kotlinBinCompatValidator = "0.11.1"
-
 # https://plugins.gradle.org/plugin/org.gradle.kotlin.embedded-kotlin
 gradle-embedded-kotlin = "3.1.0"
 
@@ -73,8 +70,15 @@ kotlin-precompiled-script = { id = "org.gradle.kotlin.kotlin-dsl.precompiled-scr
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
-kotlin-binCompatValidator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "kotlinBinCompatValidator" }
 kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+
+# Gradle plugin for Kotlin code coverage agents
+# https://github.com/Kotlin/kotlinx-kover/releases
+kotlinx-kover = { id = "org.jetbrains.kotlinx.kover", version = "0.6.1" }
+
+# Public API management tool
+# https://github.com/Kotlin/binary-compatibility-validator/releases
+kotlinx-binCompatValidator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version = "0.11.1" }
 
 android-app = { id = "com.android.application", version.ref = "android-gradle-plugin" }
 android-lib = { id = "com.android.library", version.ref = "android-gradle-plugin" }

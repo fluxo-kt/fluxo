@@ -3,17 +3,20 @@ import com.arkivanov.gradle.ensureUnreachableTasksDisabled
 import com.arkivanov.gradle.iosCompat
 import com.arkivanov.gradle.macosCompat
 import com.arkivanov.gradle.setupDefaults
-import com.arkivanov.gradle.setupDetekt
 import com.arkivanov.gradle.watchosCompat
 
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
+    id("fluxo-collect-sarif")
+    alias(libs.plugins.deps.analysis)
+    id("release-dependencies-diff-compare")
+    id("release-dependencies-diff-create") apply false
     alias(libs.plugins.android.lib) apply false
     alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.kotlin.multiplatform) apply false
-    alias(libs.plugins.kotlin.binCompatValidator) apply false
-    alias(libs.plugins.deps.analysis)
+    alias(libs.plugins.kotlinx.binCompatValidator) apply false
+    alias(libs.plugins.kotlinx.kover) apply false
     alias(libs.plugins.detekt)
     id(libs.plugins.arkivanov.setup.get().pluginId)
 }
@@ -35,7 +38,6 @@ setupDefaults(
     ),
 )
 
-setupDetekt()
 ensureUnreachableTasksDisabled()
 
 dependencyAnalysis {
@@ -71,4 +73,6 @@ subprojects {
     // Use `buildEnvironment` task for plugins report
     // https://docs.gradle.org/current/userguide/viewing_debugging_dependencies.html
     tasks.register<DependencyReportTask>("allDeps")
+
+    plugins.apply("release-dependencies-diff-create")
 }

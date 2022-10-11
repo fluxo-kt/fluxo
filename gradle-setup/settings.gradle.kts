@@ -20,3 +20,6 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "gradle-setup"
+
+include("verification-plugin")
+include("release-dependencies-diff")
