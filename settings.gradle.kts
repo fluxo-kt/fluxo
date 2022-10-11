@@ -15,12 +15,20 @@ pluginManagement {
             useModule("com.github.arkivanov:gradle-setup-plugin:60ac46054c")
         }
     }
-    plugins.id("com.arkivanov.gradle.setup")
+    plugins {
+        id("com.arkivanov.gradle.setup")
+
+        // Gradle Plugin to enable auto-completion and symbol resolution for all Kotlin/Native platforms.
+        // Does project repo addition, but can be enabled disabled once required libs downloaded and saved
+        // https://github.com/LouisCAD/CompleteKotlin/releases
+        if (providers.gradleProperty("LOAD_KMM_CODE_COMPLETION").orNull.toBoolean()) {
+            id("com.louiscad.complete-kotlin") version "1.1.0"
+        }
+    }
     includeBuild("gradle-setup")
 }
 
 dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
         mavenCentral()
