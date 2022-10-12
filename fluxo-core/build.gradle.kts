@@ -20,6 +20,8 @@ setupMultiplatform()
 setupBinaryCompatibilityValidator()
 
 kotlin {
+    explicitApi()
+
     setupSourceSets {
         val android by bundle()
         val js by bundle()
