@@ -66,6 +66,10 @@ allprojects {
         rootProject.extensions.findByType<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension>()?.apply {
             versions.webpackCli.version = "4.10.0"
         }
+
+        tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+            kotlinOptions.allWarningsAsErrors = true
+        }
     }
 }
 
