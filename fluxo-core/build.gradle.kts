@@ -33,5 +33,20 @@ kotlin {
         js dependsOn jsNative
         javaSet dependsOn java
         nativeSet dependsOn jsNative
+
+        all {
+            languageSettings.optIn("kotlin.RequiresOptIn")
+        }
+
+        commonMain {
+            dependencies {
+                implementation(libs.kotlinx.coroutines.core)
+            }
+        }
+        commonTest {
+            dependencies {
+                implementation(libs.kotlinx.coroutines.test)
+            }
+        }
     }
 }
