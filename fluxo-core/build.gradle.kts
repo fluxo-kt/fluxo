@@ -10,6 +10,7 @@ plugins {
     id(libs.plugins.android.lib.get().pluginId)
     id(libs.plugins.kotlinx.kover.get().pluginId)
     id(libs.plugins.arkivanov.setup.get().pluginId)
+    id(libs.plugins.kotlin.dokka.get().pluginId)
     id("fluxo-lint")
     id("fluxo-detekt")
 }

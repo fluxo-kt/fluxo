@@ -15,6 +15,7 @@ plugins {
     alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.kotlin.multiplatform) apply false
+    alias(libs.plugins.kotlin.dokka) apply false
     alias(libs.plugins.kotlinx.binCompatValidator) apply false
     alias(libs.plugins.kotlinx.kover) apply false
     alias(libs.plugins.detekt)
