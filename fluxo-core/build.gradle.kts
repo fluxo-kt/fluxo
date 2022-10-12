@@ -45,6 +45,10 @@ kotlin {
             implementation(libs.kotlinx.coroutines.test)
         }
 
+        java.test.dependencies {
+            implementation(libs.kotlinx.lincheck)
+        }
+
         android.main.dependencies {
             implementation(libs.androidx.annotation)
         }

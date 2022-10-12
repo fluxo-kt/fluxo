@@ -53,6 +53,10 @@ androidx-annotation = "1.5.0"
 
 kotlin-parcelize-runtime = { module = "org.jetbrains.kotlin:kotlin-parcelize-runtime", version.ref = "kotlin" }
 
+# Framework for testing concurrent data structures
+# https://github.com/Kotlin/kotlinx-lincheck/releases
+kotlinx-lincheck = { module = "org.jetbrains.kotlinx:lincheck", version = "2.15" }
+
 kotlinx-coroutines-bom = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-bom", version.ref = "coroutines" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
