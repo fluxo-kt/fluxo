@@ -38,15 +38,15 @@ kotlin {
             languageSettings.optIn("kotlin.RequiresOptIn")
         }
 
-        commonMain {
-            dependencies {
-                implementation(libs.kotlinx.coroutines.core)
-            }
+        common.main.dependencies {
+            implementation(libs.kotlinx.coroutines.core)
         }
-        commonTest {
-            dependencies {
-                implementation(libs.kotlinx.coroutines.test)
-            }
+        common.test.dependencies {
+            implementation(libs.kotlinx.coroutines.test)
+        }
+
+        android.main.dependencies {
+            implementation(libs.androidx.annotation)
         }
     }
 }
