@@ -51,6 +51,7 @@ androidx-annotation = "1.5.0"
 
 [libraries]
 
+kotlin-atomicfu = { module = "org.jetbrains.kotlin:atomicfu", version.ref = "kotlin" }
 kotlin-parcelize-runtime = { module = "org.jetbrains.kotlin:kotlin-parcelize-runtime", version.ref = "kotlin" }
 
 # Framework for testing concurrent data structures
@@ -74,6 +75,11 @@ test-robolectric = { module = "org.robolectric:robolectric", version = "4.9" }
 plugin-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 plugin-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
 plugin-android = { module = "com.android.tools.build:gradle", version.ref = "android-gradle-plugin" }
+
+# The idiomatic way to use atomic operations in Kotlin
+# https://github.com/Kotlin/kotlinx-atomicfu/releases
+plugin-kotlinx-atomicfu = { module = "org.jetbrains.kotlinx:atomicfu-gradle-plugin", version = "0.18.4" }
+kotlin-gradle-api = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin-api", version.ref = "kotlin" }
 
 
 [plugins]

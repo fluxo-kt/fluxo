@@ -14,6 +14,7 @@ plugins {
     id("fluxo-lint")
     id("fluxo-detekt")
 }
+apply<kotlinx.atomicfu.plugin.gradle.AtomicFUGradlePlugin>()
 
 setupMultiplatform()
 // TODO: setupPublication()

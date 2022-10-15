@@ -3,7 +3,16 @@ import com.arkivanov.gradle.ensureUnreachableTasksDisabled
 import com.arkivanov.gradle.iosCompat
 import com.arkivanov.gradle.macosCompat
 import com.arkivanov.gradle.setupDefaults
+import com.arkivanov.gradle.tvosCompat
 import com.arkivanov.gradle.watchosCompat
+
+buildscript {
+    dependencies {
+        classpath(libs.plugin.kotlinx.atomicfu)
+        classpath(libs.kotlin.gradle.api)
+        classpath(libs.kotlin.atomicfu)
+    }
+}
 
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
@@ -31,6 +40,7 @@ setupDefaults(
         linuxX64()
         iosCompat()
         watchosCompat()
+        tvosCompat()
         macosCompat()
     },
     androidConfig = AndroidConfig(
@@ -71,6 +81,18 @@ allprojects {
         tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
             if (isCI().get() || isRelease().get()) {
                 kotlinOptions.allWarningsAsErrors = true
+            }
+        }
+
+        // Remove log pollution until Android support in KMP improves.
+        project.extensions.findByType<org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension>()?.let { kmpExt ->
+            kmpExt.sourceSets.removeAll {
+                setOf(
+                    "androidAndroidTestRelease",
+                    "androidTestFixtures",
+                    "androidTestFixturesDebug",
+                    "androidTestFixturesRelease",
+                ).contains(it.name)
             }
         }
     }
