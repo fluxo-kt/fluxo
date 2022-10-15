@@ -7,6 +7,7 @@ import com.arkivanov.gradle.watchosCompat
 
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
+    id("fluxo-build-convenience")
     id("fluxo-collect-sarif")
     alias(libs.plugins.deps.analysis)
     id("release-dependencies-diff-compare")
@@ -68,7 +69,9 @@ allprojects {
         }
 
         tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-            kotlinOptions.allWarningsAsErrors = true
+            if (isCI().get() || isRelease().get()) {
+                kotlinOptions.allWarningsAsErrors = true
+            }
         }
     }
 }
