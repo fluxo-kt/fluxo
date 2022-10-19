@@ -1,3 +1,5 @@
+@file:Suppress("SuspiciousCollectionReassignment")
+
 import com.arkivanov.gradle.AndroidConfig
 import com.arkivanov.gradle.ensureUnreachableTasksDisabled
 import com.arkivanov.gradle.iosCompat
@@ -22,12 +24,13 @@ plugins {
     id("release-dependencies-diff-compare")
     id("release-dependencies-diff-create") apply false
     alias(libs.plugins.android.lib) apply false
-    alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.kotlin.android) apply false
-    alias(libs.plugins.kotlin.multiplatform) apply false
     alias(libs.plugins.kotlin.dokka) apply false
+    alias(libs.plugins.kotlin.jvm) apply false
+    alias(libs.plugins.kotlin.multiplatform) apply false
     alias(libs.plugins.kotlinx.binCompatValidator) apply false
     alias(libs.plugins.kotlinx.kover) apply false
+    alias(libs.plugins.deps.versions)
     alias(libs.plugins.detekt)
     id(libs.plugins.arkivanov.setup.get().pluginId)
 }
@@ -79,8 +82,31 @@ allprojects {
         }
 
         tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-            if (isCI().get() || isRelease().get()) {
-                kotlinOptions.allWarningsAsErrors = true
+            kotlinOptions {
+                val isCi by isCI()
+                val isRelease by isRelease()
+                if (isCi || isRelease) {
+                    allWarningsAsErrors = true
+                }
+
+                val javaVersion = libs.versions.javaLangTarget.get()
+                jvmTarget = javaVersion
+                javaParameters = true
+
+                val kotlinVersion = libs.versions.kotlinLangVersion.get()
+                languageVersion = kotlinVersion
+                apiVersion = kotlinVersion
+
+                freeCompilerArgs += listOf(
+                    "-Xcontext-receivers",
+                    "-Xjsr305=strict",
+                    "-Xjvm-default=all",
+                    "-Xlambdas=indy",
+                    "-Xuse-ir",
+                    "-opt-in=kotlin.RequiresOptIn",
+                    "-opt-in=kt.fluxo.core.annotation.ExperimentalFluxoApi",
+                    "-opt-in=kt.fluxo.core.annotation.InternalFluxoApi",
+                )
             }
         }
 

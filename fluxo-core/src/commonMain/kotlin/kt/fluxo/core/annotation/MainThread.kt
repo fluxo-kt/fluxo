@@ -1,8 +1,4 @@
-@file:Suppress("KDocUnresolvedReference")
-@file:OptIn(ExperimentalMultiplatform::class)
-
 package kt.fluxo.core.annotation
-
 
 /**
  * Denotes that the annotated method should only be called on the main thread.
@@ -16,15 +12,18 @@ package kt.fluxo.core.annotation
  * @see androidx.annotation.MainThread
  * @see androidx.annotation.UiThread
  */
+@MustBeDocumented
 @OptionalExpectation
+@OptIn(ExperimentalMultiplatform::class)
 @Retention(AnnotationRetention.BINARY)
+@Suppress("KDocUnresolvedReference")
 @Target(
+    AnnotationTarget.ANNOTATION_CLASS,
+    AnnotationTarget.CLASS,
+    AnnotationTarget.CONSTRUCTOR,
     AnnotationTarget.FUNCTION,
     AnnotationTarget.PROPERTY_GETTER,
     AnnotationTarget.PROPERTY_SETTER,
-    AnnotationTarget.CONSTRUCTOR,
-    AnnotationTarget.ANNOTATION_CLASS,
-    AnnotationTarget.CLASS,
     AnnotationTarget.VALUE_PARAMETER,
 )
 public expect annotation class MainThread()

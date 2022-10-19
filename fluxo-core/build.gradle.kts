@@ -33,10 +33,12 @@ kotlin {
         java dependsOn common
         js dependsOn jsNative
         javaSet dependsOn java
+        android.main.dependsOn(java.main)
         nativeSet dependsOn jsNative
 
         all {
-            languageSettings.optIn("kotlin.RequiresOptIn")
+            languageSettings.optIn("kt.fluxo.core.annotation.ExperimentalFluxoApi")
+            languageSettings.optIn("kt.fluxo.core.annotation.InternalFluxoApi")
         }
 
         common.main.dependencies {
@@ -46,12 +48,21 @@ kotlin {
             implementation(libs.kotlinx.coroutines.test)
         }
 
+        java.main.dependencies {
+            compileOnly(libs.androidx.annotation)
+            compileOnly(libs.jsr305)
+        }
         java.test.dependencies {
             implementation(libs.kotlinx.lincheck)
         }
 
         android.main.dependencies {
-            implementation(libs.androidx.annotation)
+            compileOnly(libs.androidx.annotation)
+            compileOnly(libs.jsr305)
         }
     }
+}
+
+android {
+    buildToolsVersion = libs.versions.androidBuildTools.get()
 }

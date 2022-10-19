@@ -1,2 +1,17 @@
 # https://detekt.github.io/detekt/configurations.html
 # https://github.com/detekt/detekt/blob/main/detekt-core/src/main/resources/default-detekt-config.yml
+# https://github.com/detekt/detekt/blob/main/detekt-formatting/src/main/resources/config/config.yml
+
+style:
+  MagicNumber:
+    ignoreAnnotation: true
+  MaxLineLength:
+    maxLineLength: 140
+
+formatting:
+  MaximumLineLength:
+    maxLineLength: 140
+  NoConsecutiveBlankLines:
+    active: false
+  ParameterListWrapping:
+    maxLineLength: 140

@@ -15,14 +15,14 @@ androidCompileSdk = "32"
 androidBuildTools = "33.0.0"
 
 # Java/Kotlin compatibility
-javaLangTarget = "11"
+javaLangTarget = "1.8"
 kotlinLangVersion = "1.7"
 
 # https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-gradle-plugin
 kotlin = "1.7.20"
 
 # https://github.com/google/ksp/releases
-ksp = "1.7.20-1.0.6"
+ksp = "1.7.20-1.0.7"
 
 # https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-coroutines-core
 coroutines = "1.6.4"
@@ -31,15 +31,16 @@ coroutines = "1.6.4"
 gradle-embedded-kotlin = "3.1.0"
 
 # https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google
-# 7.2.0 is latest supported in stable IDEA 2022.2.3
-android-gradle-plugin = "7.2.0"
+# 7.2.0 is latest supported by android plugin in stable IDEA 2022.2.3
+# TODO: Update to 7.3.1 when will be supported
+android-gradle-plugin = "7.2.2"
 
 # Λrrow - Functional companion to Kotlin's Standard Library
 # https://mvnrepository.com/artifact/io.arrow-kt/arrow-core
 arrow = "1.1.3"
 
 # https://github.com/detekt/detekt/releases
-detekt = "1.22.0-RC1"
+detekt = "1.22.0-RC2"
 
 # Android Jetpack
 # https://developer.android.com/jetpack/androidx/versions
@@ -64,6 +65,10 @@ kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-t
 kotlinx-coroutines-debug = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-debug", version.ref = "coroutines" }
 
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
+
+# JSR 305: Annotations for Software Defect Detection
+# https://mvnrepository.com/artifact/com.google.code.findbugs/jsr305
+jsr305 = { module = "com.google.code.findbugs:jsr305", version = "3.0.2" }
 
 arrow-bom = { module = "io.arrow-kt:arrow-stack", version.ref = "arrow" }
 arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
@@ -111,7 +116,7 @@ detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 
 # Plugin provides a task to determine which dependencies have updates
 # https://github.com/ben-manes/gradle-versions-plugin
-deps-versions = { id = "com.github.ben-manes.versions", version = "0.42.0" }
+deps-versions = { id = "com.github.ben-manes.versions", version = "0.43.0" }
 
 # Detect unused and misused dependencies
 # https://github.com/autonomousapps/dependency-analysis-android-gradle-plugin/tags
