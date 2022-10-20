@@ -1,4 +1,4 @@
-package kt.fluxo.core
+package kt.fluxo.core.intercept
 
 import kotlinx.coroutines.CompletableDeferred
 

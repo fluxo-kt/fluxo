@@ -1,15 +1,13 @@
 package kt.fluxo.core.internal
 
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.getAndUpdate
-import kotlinx.coroutines.flow.updateAndGet
 import kt.fluxo.core.InputStrategy
 import kt.fluxo.core.dsl.SideJobScope
 import kt.fluxo.core.dsl.StoreScope
 
 internal class IntentHandlerScopeImpl<in Intent, State, SideEffect : Any>(
     private val guardian: InputStrategy.Guardian?,
-    private val stateFlow: MutableStateFlow<State>,
+    private val getState: () -> State,
+    private val updateStateAndGet: ((State) -> State) -> State,
     private val sendSideEffect: suspend (SideEffect) -> Unit,
     private val sendSideJob: (SideJobRequest<Intent, State, SideEffect>) -> Unit,
 ) : StoreScope<Intent, State, SideEffect> {
@@ -17,17 +15,12 @@ internal class IntentHandlerScopeImpl<in Intent, State, SideEffect : Any>(
     override val state: State
         get() {
             guardian?.checkStateAccess()
-            return stateFlow.value
+            return getState()
         }
 
     override fun updateState(block: (State) -> State): State {
         guardian?.checkStateUpdate()
-        return stateFlow.updateAndGet(block)
-    }
-
-    override fun getAndUpdateState(block: (State) -> State): State {
-        guardian?.checkStateUpdate()
-        return stateFlow.getAndUpdate(block)
+        return updateStateAndGet(block)
     }
 
     override suspend fun postSideEffect(sideEffect: SideEffect) {

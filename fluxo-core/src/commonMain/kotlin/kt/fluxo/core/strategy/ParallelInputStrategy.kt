@@ -4,8 +4,8 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kt.fluxo.core.InputStrategy
-import kt.fluxo.core.StoreRequest
 import kt.fluxo.core.dsl.InputStrategyScope
+import kt.fluxo.core.intercept.StoreRequest
 
 // no guarantee that inputs will be processed in any given order
 internal object ParallelInputStrategy : InputStrategy<Any?, Any?>() {

@@ -9,8 +9,6 @@ public interface StoreScope<in Intent, State, in SideEffect : Any> {
 
     public fun updateState(block: (State) -> State): State
 
-    public fun getAndUpdateState(block: (State) -> State): State
-
     public suspend fun postSideEffect(sideEffect: SideEffect)
 
     public fun sideJob(key: String, block: suspend SideJobScope<Intent, State, SideEffect>.() -> Unit)

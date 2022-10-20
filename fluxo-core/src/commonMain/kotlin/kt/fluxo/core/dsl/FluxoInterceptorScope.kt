@@ -1,7 +1,7 @@
 package kt.fluxo.core.dsl
 
 import kotlinx.coroutines.CoroutineScope
-import kt.fluxo.core.StoreRequest
+import kt.fluxo.core.intercept.StoreRequest
 
 public interface FluxoInterceptorScope<in Intent, in State> : CoroutineScope {
 

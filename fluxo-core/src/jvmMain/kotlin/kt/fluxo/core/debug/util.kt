@@ -7,7 +7,10 @@ import java.lang.reflect.Modifier
 import java.util.concurrent.ConcurrentHashMap
 
 // FIXME: Only for test/debug variants?
-internal actual fun <S, SE : Any> debugIntentInfo(mvvmIntent: FluxoIntent<S, SE>): FluxoIntent<S, SE>? {
+internal actual fun <I> debugIntentWrapper(intent: I): I? {
+    @Suppress("UNCHECKED_CAST")
+    val mvvmIntent = (intent as? FluxoIntent<Any?, Any>) ?: return null
+
     @Suppress("ThrowingExceptionsWithoutMessageOrCause")
     val traceElement = Throwable().stackTrace.getOrNull(2)
     val methodName = traceElement?.methodName.let {
@@ -50,7 +53,8 @@ internal actual fun <S, SE : Any> debugIntentInfo(mvvmIntent: FluxoIntent<S, SE>
 
     val result = FluxoIntentDebug(methodName, arguments, mvvmIntent)
     print("$result")
-    return result
+    @Suppress("UNCHECKED_CAST")
+    return result as I
 }
 
 private fun AccessibleObject.setAccessibleSafe() {

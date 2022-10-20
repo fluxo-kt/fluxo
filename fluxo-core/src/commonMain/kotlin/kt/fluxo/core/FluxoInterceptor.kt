@@ -4,6 +4,7 @@ import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kt.fluxo.core.dsl.FluxoInterceptorScope
+import kt.fluxo.core.intercept.FluxoEvent
 
 public interface FluxoInterceptor<Intent, SideEffect : Any, State> {
 

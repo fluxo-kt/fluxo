@@ -5,6 +5,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kt.fluxo.core.annotation.ExperimentalFluxoApi
 import kt.fluxo.core.dsl.InputStrategyScope
+import kt.fluxo.core.intercept.StoreRequest
 import kotlin.jvm.Volatile
 
 public abstract class InputStrategy<Intent, State> {

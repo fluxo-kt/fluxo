@@ -37,6 +37,7 @@ kotlin {
         nativeSet dependsOn jsNative
 
         all {
+            languageSettings.optIn("kotlin.contracts.ExperimentalContracts")
             languageSettings.optIn("kt.fluxo.core.annotation.ExperimentalFluxoApi")
             languageSettings.optIn("kt.fluxo.core.annotation.InternalFluxoApi")
         }

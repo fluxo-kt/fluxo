@@ -1,8 +1,8 @@
 package kt.fluxo.core.internal
 
 import kotlinx.coroutines.CoroutineScope
-import kt.fluxo.core.StoreRequest
 import kt.fluxo.core.dsl.FluxoInterceptorScope
+import kt.fluxo.core.intercept.StoreRequest
 
 internal class FluxoInterceptorScopeImpl<in Intent, in State>(
     override val storeName: String,

@@ -5,8 +5,8 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kt.fluxo.core.InputStrategy
-import kt.fluxo.core.StoreRequest
 import kt.fluxo.core.dsl.InputStrategyScope
+import kt.fluxo.core.intercept.StoreRequest
 
 // UI events oriented
 internal object LifoInputStrategy : InputStrategy<Any?, Any?>() {

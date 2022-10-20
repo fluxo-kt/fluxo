@@ -1,5 +1,6 @@
-package kt.fluxo.core
+package kt.fluxo.core.intercept
 
+import kt.fluxo.core.Store
 import kt.fluxo.core.dsl.SideJobScope
 
 @Suppress("MemberVisibilityCanBePrivate")

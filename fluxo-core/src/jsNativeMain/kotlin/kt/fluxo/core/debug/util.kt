@@ -1,6 +1,4 @@
 package kt.fluxo.core.debug
 
-import kt.fluxo.core.internal.FluxoIntent
-
 /** No native implementation */
-internal actual fun <S, SE : Any> debugIntentInfo(mvvmIntent: FluxoIntent<S, SE>): FluxoIntent<S, SE>? = null
+internal actual fun <I> debugIntentWrapper(intent: I): I? = null
