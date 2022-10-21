@@ -1,12 +1,12 @@
 @file:Suppress("SuspiciousCollectionReassignment")
 
-import com.arkivanov.gradle.AndroidConfig
-import com.arkivanov.gradle.ensureUnreachableTasksDisabled
-import com.arkivanov.gradle.iosCompat
-import com.arkivanov.gradle.macosCompat
-import com.arkivanov.gradle.setupDefaults
-import com.arkivanov.gradle.tvosCompat
-import com.arkivanov.gradle.watchosCompat
+import fluxo.AndroidConfig
+import fluxo.ensureUnreachableTasksDisabled
+import fluxo.iosCompat
+import fluxo.macosCompat
+import fluxo.setupDefaults
+import fluxo.tvosCompat
+import fluxo.watchosCompat
 
 buildscript {
     dependencies {
@@ -18,9 +18,9 @@ buildscript {
 
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
+    id("fluxo-setup")
     id("fluxo-build-convenience")
     id("fluxo-collect-sarif")
-    alias(libs.plugins.deps.analysis)
     id("release-dependencies-diff-compare")
     id("release-dependencies-diff-create") apply false
     alias(libs.plugins.android.lib) apply false
@@ -30,9 +30,9 @@ plugins {
     alias(libs.plugins.kotlin.multiplatform) apply false
     alias(libs.plugins.kotlinx.binCompatValidator) apply false
     alias(libs.plugins.kotlinx.kover) apply false
+    alias(libs.plugins.deps.analysis)
     alias(libs.plugins.deps.versions)
     alias(libs.plugins.detekt)
-    id(libs.plugins.arkivanov.setup.get().pluginId)
 }
 
 setupDefaults(

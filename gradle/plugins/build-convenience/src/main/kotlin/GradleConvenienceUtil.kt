@@ -1,7 +1,6 @@
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
 
-
 private fun String?.tryAsBoolean() =
     arrayOf("true", "1", "on").any { it.equals(this, ignoreCase = true) }
 

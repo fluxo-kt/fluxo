@@ -30,6 +30,10 @@ coroutines = "1.6.4"
 # https://plugins.gradle.org/plugin/org.gradle.kotlin.embedded-kotlin
 gradle-embedded-kotlin = "3.1.0"
 
+# Public API management tool
+# https://github.com/Kotlin/binary-compatibility-validator/releases
+bin-compat-validator = "0.11.1"
+
 # https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google
 # 7.2.0 is latest supported by android plugin in stable IDEA 2022.2.3
 # TODO: Update to 7.3.1 when will be supported
@@ -81,10 +85,16 @@ plugin-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.
 plugin-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
 plugin-android = { module = "com.android.tools.build:gradle", version.ref = "android-gradle-plugin" }
 
+plugin-binCompatValidator = { module = "org.jetbrains.kotlinx:binary-compatibility-validator", version.ref = "bin-compat-validator" }
+
 # The idiomatic way to use atomic operations in Kotlin
 # https://github.com/Kotlin/kotlinx-atomicfu/releases
 plugin-kotlinx-atomicfu = { module = "org.jetbrains.kotlinx:atomicfu-gradle-plugin", version = "0.18.4" }
 kotlin-gradle-api = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin-api", version.ref = "kotlin" }
+
+# Gradle plugin for building plugins for IntelliJ-based IDEs
+# https://github.com/JetBrains/gradle-intellij-plugin/releases
+plugin-intellij = { module = "org.jetbrains.intellij.plugins:gradle-intellij-plugin", version = "1.9.0" }
 
 
 [plugins]
@@ -105,9 +115,7 @@ kotlin-dokka = { id = "org.jetbrains.dokka", version = "1.7.20" }
 # https://github.com/Kotlin/kotlinx-kover/releases
 kotlinx-kover = { id = "org.jetbrains.kotlinx.kover", version = "0.6.1" }
 
-# Public API management tool
-# https://github.com/Kotlin/binary-compatibility-validator/releases
-kotlinx-binCompatValidator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version = "0.11.1" }
+kotlinx-binCompatValidator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "bin-compat-validator" }
 
 android-app = { id = "com.android.application", version.ref = "android-gradle-plugin" }
 android-lib = { id = "com.android.library", version.ref = "android-gradle-plugin" }
@@ -121,5 +129,3 @@ deps-versions = { id = "com.github.ben-manes.versions", version = "0.43.0" }
 # Detect unused and misused dependencies
 # https://github.com/autonomousapps/dependency-analysis-android-gradle-plugin/tags
 deps-analysis = { id = "com.autonomousapps.dependency-analysis", version = "1.13.1" }
-
-arkivanov-setup = { id = "com.arkivanov.gradle.setup" }

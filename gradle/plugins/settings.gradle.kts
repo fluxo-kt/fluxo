@@ -10,6 +10,7 @@ dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
+        gradlePluginPortal()
         mavenCentral()
     }
     versionCatalogs {
@@ -23,4 +24,5 @@ rootProject.name = "plugins"
 
 include("build-convenience")
 include("release-dependencies-diff")
+include("setup")
 include("verification-plugin")
