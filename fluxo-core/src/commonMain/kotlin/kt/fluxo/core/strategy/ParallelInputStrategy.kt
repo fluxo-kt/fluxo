@@ -10,14 +10,13 @@ import kt.fluxo.core.intercept.StoreRequest
 // no guarantee that inputs will be processed in any given order
 internal object ParallelInputStrategy : InputStrategy<Any?, Any?>() {
 
-    override val rollbackOnCancellation: Boolean get() = false
+    override val parallelProcessing: Boolean get() = true
 
-    override suspend fun InputStrategyScope<Any?, Any?>.processInputs(filteredQueue: Flow<StoreRequest<Any?, Any?>>) {
+    override suspend fun InputStrategyScope<Any?, Any?>.processRequests(filteredQueue: Flow<StoreRequest<Any?, Any?>>) {
         coroutineScope {
-            val scope = this
-            filteredQueue.collect { queued ->
-                scope.launch {
-                    invoke(queued, Guardian(parallelProcessing = true))
+            filteredQueue.collect { request ->
+                launch {
+                    invoke(request)
                 }
             }
         }

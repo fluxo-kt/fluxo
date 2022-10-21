@@ -1,18 +1,17 @@
 package kt.fluxo.core.debug
 
+import kt.fluxo.core.dsl.StoreScope
 import kt.fluxo.core.internal.FluxoIntent
 import java.lang.reflect.AccessibleObject
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
 import java.util.concurrent.ConcurrentHashMap
 
-// FIXME: Only for test/debug variants?
+// TODO: Only for test/debug variants?
 internal actual fun <I> debugIntentWrapper(intent: I): I? {
-    @Suppress("UNCHECKED_CAST")
-    val mvvmIntent = (intent as? FluxoIntent<Any?, Any>) ?: return null
+    @Suppress("UNCHECKED_CAST") val mvvmIntent = (intent as? FluxoIntent<Any?, Any>) ?: return null
 
-    @Suppress("ThrowingExceptionsWithoutMessageOrCause")
-    val traceElement = Throwable().stackTrace.getOrNull(2)
+    @Suppress("ThrowingExceptionsWithoutMessageOrCause") val traceElement = Throwable().stackTrace.getOrNull(2)
     val methodName = traceElement?.methodName.let {
         when {
             !it.isNullOrEmpty() && it != "invoke" && it != "invokeSuspend" -> it
@@ -30,12 +29,17 @@ internal actual fun <I> debugIntentWrapper(intent: I): I? {
         val cache = ArrayList<Pair<String, Field>>()
 
         // Expected that fluxoIntent object will always have some fields
-        for (field in clazz.declaredFields) {
+        fields@ for (field in clazz.declaredFields) {
             val fieldName = field.name
             val modifiers = field.modifiers
-            if (modifiers and Modifier.STATIC != Modifier.STATIC && fieldName.startsWith('$')) {
+            if (modifiers and Modifier.STATIC != Modifier.STATIC) {
+                val startIndex = when {
+                    fieldName.startsWith('$') -> 1
+                    fieldName.startsWith("arg$") -> 4
+                    else -> continue@fields
+                }
                 field.setAccessibleSafe()
-                val name = fieldName.substring(1)
+                val name = fieldName.substring(startIndex)
                 cache.add(name to field)
                 args.add(name to field[mvvmIntent])
             }
@@ -53,15 +57,28 @@ internal actual fun <I> debugIntentWrapper(intent: I): I? {
 
     val result = FluxoIntentDebug(methodName, arguments, mvvmIntent)
     print("$result")
-    @Suppress("UNCHECKED_CAST")
-    return result as I
+    @Suppress("UNCHECKED_CAST") return result as I
+}
+
+private data class FluxoIntentDebug<S, SE : Any>(
+    val methodName: String?,
+    val arguments: List<Pair<String, Any?>>,
+    val fluxoIntent: FluxoIntent<S, SE>,
+) : (StoreScope<*, S, SE>) -> Unit by fluxoIntent {
+    override fun toString(): String {
+        val sb = StringBuilder()
+        sb.append(if (methodName.isNullOrEmpty()) "<unknown>" else methodName)
+        if (arguments.isNotEmpty()) {
+            arguments.joinTo(sb, separator = ", ", prefix = "(", postfix = ")") { (n, v) -> "$n=$v" }
+        }
+        return sb.toString()
+    }
 }
 
 private fun AccessibleObject.setAccessibleSafe() {
     try {
         // TODO: No AccessibleObject.canAccess method on Android, but should use it for Java 9+?
-        @Suppress("DEPRECATION")
-        if (isAccessible) {
+        @Suppress("DEPRECATION") if (isAccessible) {
             return
         }
         isAccessible = true

@@ -1,11 +1,10 @@
 package kt.fluxo.core.internal
 
-import kt.fluxo.core.InputStrategy
 import kt.fluxo.core.dsl.SideJobScope
 import kt.fluxo.core.dsl.StoreScope
 
 internal class IntentHandlerScopeImpl<in Intent, State, SideEffect : Any>(
-    private val guardian: InputStrategy.Guardian?,
+    private val guardian: InputStrategyGuardian?,
     private val getState: () -> State,
     private val updateStateAndGet: ((State) -> State) -> State,
     private val sendSideEffect: suspend (SideEffect) -> Unit,

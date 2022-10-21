@@ -15,9 +15,7 @@ internal object LifoInputStrategy : InputStrategy<Any?, Any?>() {
         return Channel(capacity = Channel.BUFFERED, BufferOverflow.DROP_LATEST)
     }
 
-    override suspend fun InputStrategyScope<Any?, Any?>.processInputs(filteredQueue: Flow<StoreRequest<Any?, Any?>>) {
-        filteredQueue.collectLatest { queued ->
-            invoke(queued, Guardian())
-        }
+    override suspend fun InputStrategyScope<Any?, Any?>.processRequests(filteredQueue: Flow<StoreRequest<Any?, Any?>>) {
+        filteredQueue.collectLatest(this)
     }
 }

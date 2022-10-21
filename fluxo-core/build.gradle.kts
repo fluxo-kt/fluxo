@@ -24,7 +24,6 @@ kotlin {
     explicitApi()
 
     setupSourceSets {
-        val android by bundle()
         val js by bundle()
         val jsNative by bundle()
         val java by bundle()
@@ -33,7 +32,6 @@ kotlin {
         java dependsOn common
         js dependsOn jsNative
         javaSet dependsOn java
-        android.main.dependsOn(java.main)
         nativeSet dependsOn jsNative
 
         all {
@@ -55,11 +53,6 @@ kotlin {
         }
         java.test.dependencies {
             implementation(libs.kotlinx.lincheck)
-        }
-
-        android.main.dependencies {
-            compileOnly(libs.androidx.annotation)
-            compileOnly(libs.jsr305)
         }
     }
 }

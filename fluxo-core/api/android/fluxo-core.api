@@ -18,6 +18,7 @@ public final class kt/fluxo/core/FluxoSettings {
 	public final fun getBootstrapper ()Lkotlin/jvm/functions/Function2;
 	public final fun getCloseOnExceptions ()Z
 	public final fun getContext ()Lkotlin/coroutines/CoroutineContext;
+	public final fun getDebugChecks ()Z
 	public final fun getEventLoopContext ()Lkotlin/coroutines/CoroutineContext;
 	public final fun getExceptionHandler ()Lkotlinx/coroutines/CoroutineExceptionHandler;
 	public final fun getFIFO ()Lkt/fluxo/core/InputStrategy;
@@ -35,6 +36,7 @@ public final class kt/fluxo/core/FluxoSettings {
 	public final fun getSideJobsContext ()Lkotlin/coroutines/CoroutineContext;
 	public final fun setCloseOnExceptions (Z)V
 	public final fun setContext (Lkotlin/coroutines/CoroutineContext;)V
+	public final fun setDebugChecks (Z)V
 	public final fun setEventLoopContext (Lkotlin/coroutines/CoroutineContext;)V
 	public final fun setExceptionHandler (Lkotlinx/coroutines/CoroutineExceptionHandler;)V
 	public final fun setInputStrategy (Lkt/fluxo/core/InputStrategy;)V
@@ -51,20 +53,9 @@ public final class kt/fluxo/core/FluxoSettings {
 public abstract class kt/fluxo/core/InputStrategy {
 	public fun <init> ()V
 	public fun createQueue ()Lkotlinx/coroutines/channels/Channel;
+	public fun getParallelProcessing ()Z
 	public fun getRollbackOnCancellation ()Z
-	public abstract fun processInputs (Lkotlin/jvm/functions/Function3;Lkotlinx/coroutines/flow/Flow;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-}
-
-public class kt/fluxo/core/InputStrategy$Guardian {
-	public fun <init> ()V
-	public fun <init> (Z)V
-	public synthetic fun <init> (ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public fun checkNoOp ()V
-	public fun checkPostSideEffect ()V
-	public fun checkSideJob ()V
-	public fun checkStateAccess ()V
-	public fun checkStateUpdate ()V
-	public fun close ()V
+	public abstract fun processRequests (Lkotlin/jvm/functions/Function2;Lkotlinx/coroutines/flow/Flow;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public abstract interface class kt/fluxo/core/IntentHandler {
@@ -258,9 +249,10 @@ public final class kt/fluxo/core/intercept/StoreRequest$RestoreState : kt/fluxo/
 }
 
 public final class kt/fluxo/core/internal/FluxoConf {
-	public fun <init> (Ljava/lang/String;ZZJILkotlin/jvm/functions/Function2;[Lkt/fluxo/core/FluxoInterceptor;Lkotlin/jvm/functions/Function2;Lkt/fluxo/core/InputStrategy;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lkotlinx/coroutines/CoroutineExceptionHandler;)V
+	public fun <init> (Ljava/lang/String;ZZZJILkotlin/jvm/functions/Function2;[Lkt/fluxo/core/FluxoInterceptor;Lkotlin/jvm/functions/Function2;Lkt/fluxo/core/InputStrategy;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lkotlinx/coroutines/CoroutineExceptionHandler;)V
 	public final fun getBootstrapper ()Lkotlin/jvm/functions/Function2;
 	public final fun getCloseOnExceptions ()Z
+	public final fun getDebugChecks ()Z
 	public final fun getEventLoopContext ()Lkotlin/coroutines/CoroutineContext;
 	public final fun getExceptionHandler ()Lkotlinx/coroutines/CoroutineExceptionHandler;
 	public final fun getInputStrategy ()Lkt/fluxo/core/InputStrategy;

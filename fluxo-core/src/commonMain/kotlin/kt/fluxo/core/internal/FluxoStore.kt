@@ -24,7 +24,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
-import kt.fluxo.core.InputStrategy
+import kt.fluxo.core.IntentFilter
 import kt.fluxo.core.IntentHandler
 import kt.fluxo.core.Store
 import kt.fluxo.core.annotation.InternalFluxoApi
@@ -38,7 +38,7 @@ import kotlin.coroutines.CoroutineContext
 
 @PublishedApi
 @InternalFluxoApi
-@Suppress("TooManyFunctions")
+@Suppress("TooManyFunctions", "TooGenericExceptionCaught")
 internal class FluxoStore<Intent, State, SideEffect : Any>(
     initialState: State,
     private val intentHandler: IntentHandler<Intent, State, SideEffect>,
@@ -86,7 +86,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
             conf.exceptionHandler?.handleException(context, e)
         }
         scope = CoroutineScope(ctx + exceptionHandler + job)
-        intentContext = ctx + conf.intentContext + exceptionHandler + SupervisorJob(job)
+        intentContext = ctx + conf.intentContext + exceptionHandler
         sideJobScope = scope + conf.sideJobsContext + exceptionHandler + SupervisorJob(job)
 
         // eager start
@@ -121,7 +121,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         notifications.tryEmit(FluxoEvent.IntentQueued(this, intent0))
         val result = dispatchChannel.trySend(StoreRequest.HandleIntent(null, intent0))
         if (result.isFailure || result.isClosed) {
-            // TODO: Is it possible at all?
+            // TODO: Is this possible at all?
             notifications.tryEmit(FluxoEvent.IntentDropped(this, intent0))
         }
         return result
@@ -133,14 +133,14 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
     private suspend fun updateState(nextValue: State): State {
         while (true) {
             val prevValue = mutableState.value
-            if (!mutableState.compareAndSet(prevValue, nextValue)) {
-                continue
+            if (prevValue == nextValue) {
+                return prevValue
             }
-            if (prevValue != nextValue) {
+            if (mutableState.compareAndSet(prevValue, nextValue)) {
                 // event is fired only if state changed
                 notifications.emit(FluxoEvent.StateChanged(this, nextValue))
+                return nextValue
             }
-            return nextValue
         }
     }
 
@@ -148,14 +148,13 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         while (true) {
             val prevValue = mutableState.value
             val nextValue = function(prevValue)
-            if (!mutableState.compareAndSet(prevValue, nextValue)) {
-                continue
+            if (mutableState.compareAndSet(prevValue, nextValue)) {
+                if (prevValue != nextValue) {
+                    // event is fired only if state changed
+                    notifications.tryEmit(FluxoEvent.StateChanged(this, nextValue))
+                }
+                return nextValue
             }
-            if (prevValue != nextValue) {
-                // event is fired only if state changed
-                notifications.tryEmit(FluxoEvent.StateChanged(this, nextValue))
-            }
-            return nextValue
         }
     }
 
@@ -166,16 +165,19 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
 
     private fun launch() {
         // observe and process intents
-        // TODO: Switch to channel?
         val filteredIntentsFlow = dispatchChannel
             .receiveAsFlow()
-            .filter(::filterRequest)
-            .flowOn(intentContext)
+            .run {
+                when (conf.intentFilter) {
+                    null -> this
+                    else -> filter(::filterRequest).flowOn(intentContext.minusKey(Job))
+                }
+            }
         val inputStrategy = conf.inputStrategy
-        val inputStrategyScope: InputStrategyScope<Intent, State> = { request, guardian ->
+        val inputStrategyScope: InputStrategyScope<Intent, State> = { request ->
             when (request) {
                 is StoreRequest.HandleIntent -> {
-                    safelyHandleIntent(request.intent, request.deferred, guardian)
+                    safelyHandleIntent(request.intent, request.deferred)
                 }
 
                 is StoreRequest.RestoreState -> {
@@ -186,7 +188,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         }
         scope.launch(intentContext) {
             with(inputStrategy) {
-                inputStrategyScope.processInputs(filteredQueue = filteredIntentsFlow)
+                inputStrategyScope.processRequests(filteredQueue = filteredIntentsFlow)
             }
         }
 
@@ -211,7 +213,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
             with(interceptor) {
                 try {
                     interceptorScope.start(notificationFlow)
-                } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
+                } catch (e: Throwable) {
                     notifications.tryEmit(FluxoEvent.UnhandledError(this@FluxoStore, e))
                 }
             }
@@ -219,6 +221,9 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         notifications.tryEmit(FluxoEvent.StoreStarted(this))
     }
 
+    /**
+     * Filters flow of [StoreRequest.HandleIntent]. Will be called only if [IntentFilter] is set in configuration.
+     */
     private fun filterRequest(request: StoreRequest<Intent, State>): Boolean {
         when (request) {
             is StoreRequest.RestoreState -> {
@@ -241,15 +246,16 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         }
     }
 
-    @Suppress("NestedBlockDepth")
-    private suspend fun safelyHandleIntent(intent: Intent, deferred: CompletableDeferred<Unit>?, guardian: InputStrategy.Guardian?) {
+    private suspend fun safelyHandleIntent(intent: Intent, deferred: CompletableDeferred<Unit>?) {
         notifications.emit(FluxoEvent.IntentAccepted(this, intent))
 
         val stateBeforeCancellation = mutableState.value
         try {
-            // Create a handler scope to handle the intent normally
             val handlerScope = IntentHandlerScopeImpl(
-                guardian = guardian,
+                guardian = when {
+                    !conf.debugChecks -> null
+                    else -> InputStrategyGuardian(parallelProcessing = conf.inputStrategy.parallelProcessing)
+                },
                 getState = mutableState::value,
                 updateStateAndGet = ::updateStateAndGet,
                 sendSideEffect = ::postSideEffect,
@@ -258,29 +264,25 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
                     notifications.tryEmit(FluxoEvent.SideJobQueued(this@FluxoStore, it.key))
                 },
             )
-            try {
-                with(handlerScope) {
-                    with(intentHandler) {
-                        handleIntent(intent)
-                    }
+            with(handlerScope) {
+                with(intentHandler) {
+                    handleIntent(intent)
                 }
-                notifications.emit(FluxoEvent.IntentHandledSuccessfully(this@FluxoStore, intent))
-            } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
-                notifications.emit(FluxoEvent.IntentHandlerError(this@FluxoStore, intent, e))
             }
             handlerScope.close()
-            deferred?.complete(Unit)
+            notifications.emit(FluxoEvent.IntentHandledSuccessfully(this@FluxoStore, intent))
         } catch (_: CancellationException) {
-            // when the coroutine is cancelled for any reason, we must assume the intent did not
-            // complete and may have left the State in a bad, erm..., state. We should reset it and
-            // try to forget that we ever tried to process it in the first place
-            notifications.emit(FluxoEvent.IntentCancelled(this, intent))
+            // reset state as intent did not complete successfully
             if (conf.inputStrategy.rollbackOnCancellation) {
                 updateState(stateBeforeCancellation)
             }
-            deferred?.complete(Unit)
-        } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
+            notifications.emit(FluxoEvent.IntentCancelled(this, intent))
+        } catch (e: Throwable) {
             notifications.emit(FluxoEvent.IntentHandlerError(this, intent, e))
+            if (conf.closeOnExceptions) {
+                throw e
+            }
+        } finally {
             deferred?.complete(Unit)
         }
     }
@@ -326,7 +328,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
                     notifications.emit(FluxoEvent.SideJobCompleted(this@FluxoStore, key, restartState))
                 } catch (_: CancellationException) {
                     notifications.emit(FluxoEvent.SideJobCancelled(this@FluxoStore, key, restartState))
-                } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
+                } catch (e: Throwable) {
                     notifications.emit(FluxoEvent.SideJobError(this@FluxoStore, key, restartState, e))
                 }
             }

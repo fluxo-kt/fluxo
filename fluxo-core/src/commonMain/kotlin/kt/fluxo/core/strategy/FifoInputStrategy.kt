@@ -8,9 +8,7 @@ import kt.fluxo.core.intercept.StoreRequest
 // background processing oriented strategy
 internal object FifoInputStrategy : InputStrategy<Any?, Any?>() {
 
-    override suspend fun InputStrategyScope<Any?, Any?>.processInputs(filteredQueue: Flow<StoreRequest<Any?, Any?>>) {
-        filteredQueue.collect { queued ->
-            invoke(queued, Guardian())
-        }
+    override suspend fun InputStrategyScope<Any?, Any?>.processRequests(filteredQueue: Flow<StoreRequest<Any?, Any?>>) {
+        filteredQueue.collect(this)
     }
 }

@@ -7,6 +7,7 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kt.fluxo.core.annotation.NotThreadSafe
+import kt.fluxo.core.debug.DEBUG
 import kt.fluxo.core.strategy.FifoInputStrategy
 import kt.fluxo.core.strategy.LifoInputStrategy
 import kt.fluxo.core.strategy.ParallelInputStrategy
@@ -29,6 +30,11 @@ public class FluxoSettings<Intent, State, SideEffect : Any> {
      */
     public var closeOnExceptions: Boolean = true
 
+    /**
+     * Enables all the debug checks in application
+     */
+    public var debugChecks: Boolean = DEBUG
+
     // FIXME: TODO
     public var repeatOnSubscribedStopTimeout: Long = 100L
 
@@ -40,6 +46,7 @@ public class FluxoSettings<Intent, State, SideEffect : Any> {
 
     // region Processing control
 
+    // FIXME: TODO
     public val bootstrapper: Bootstrapper<Intent, State, SideEffect>? = null
 
     /**

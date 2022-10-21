@@ -105,8 +105,6 @@ allprojects {
                     "-Xlambdas=indy",
                     "-Xuse-ir",
                     "-opt-in=kotlin.RequiresOptIn",
-                    "-opt-in=kt.fluxo.core.annotation.ExperimentalFluxoApi",
-                    "-opt-in=kt.fluxo.core.annotation.InternalFluxoApi",
                 )
             }
         }
