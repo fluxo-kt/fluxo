@@ -50,6 +50,7 @@ setupDefaults(
         minSdkVersion = libs.versions.androidMinSdk.get().toInt(),
         compileSdkVersion = libs.versions.androidCompileSdk.get().toInt(),
         targetSdkVersion = libs.versions.androidTargetSdk.get().toInt(),
+        buildToolsVersion = libs.versions.androidBuildTools.get(),
     ),
 )
 

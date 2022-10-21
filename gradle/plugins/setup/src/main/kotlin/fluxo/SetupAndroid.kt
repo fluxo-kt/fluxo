@@ -41,6 +41,10 @@ private fun Project.setupAndroid(config: AndroidConfig) {
 
 internal fun Project.setupAndroidCommon(config: AndroidConfig) {
     extensions.configure<BaseExtension> {
+        config.buildToolsVersion?.let {
+            buildToolsVersion = it
+        }
+
         compileSdkVersion(config.compileSdkVersion)
 
         defaultConfig {

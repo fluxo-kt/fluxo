@@ -63,7 +63,3 @@ kotlin {
         }
     }
 }
-
-android {
-    buildToolsVersion = libs.versions.androidBuildTools.get()
-}
