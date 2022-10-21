@@ -14,12 +14,12 @@ dependencyResolutionManagement {
     }
     versionCatalogs {
         create("libs") {
-            from(files("../gradle/libs.versions.toml"))
+            from(files("../libs.versions.toml"))
         }
     }
 }
 
-rootProject.name = "gradle-setup"
+rootProject.name = "plugins"
 
 include("build-convenience")
 include("release-dependencies-diff")

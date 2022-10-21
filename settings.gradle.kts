@@ -25,7 +25,7 @@ pluginManagement {
             id("com.louiscad.complete-kotlin") version "1.1.0"
         }
     }
-    includeBuild("gradle-setup")
+    includeBuild("gradle/plugins")
 }
 
 dependencyResolutionManagement {

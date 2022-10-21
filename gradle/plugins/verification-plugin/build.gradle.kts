@@ -16,7 +16,7 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile::class.java).c
 
 detekt {
     buildUponDefaultConfig = true
-    config.from(file("../../detekt.yml"))
+    config.from(file("../../../detekt.yml"))
 }
 
 gradlePlugin {

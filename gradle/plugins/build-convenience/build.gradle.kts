@@ -15,18 +15,14 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile::class.java).c
 
 detekt {
     buildUponDefaultConfig = true
-    config.from(file("../../detekt.yml"))
+    config.from(file("../../../detekt.yml"))
 }
 
 gradlePlugin {
     plugins {
-        create("release-dependencies-diff-create") {
-            id = "release-dependencies-diff-create"
-            implementationClass = "ReleaseDependenciesCreatePlugin"
-        }
-        create("release-dependencies-diff-compare") {
-            id = "release-dependencies-diff-compare"
-            implementationClass = "ReleaseDependenciesDiffPlugin"
+        create("fluxo-build-convenience") {
+            id = "fluxo-build-convenience"
+            implementationClass = "FluxoBuildConveniencePlugin"
         }
     }
 }
