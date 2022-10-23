@@ -98,14 +98,22 @@ allprojects {
                 languageVersion = kotlinVersion
                 apiVersion = kotlinVersion
 
+                // https://github.com/JetBrains/kotlin/blob/master/compiler/testData/cli/jvm/extraHelp.out
                 freeCompilerArgs += listOf(
                     "-Xcontext-receivers",
                     "-Xjsr305=strict",
                     "-Xjvm-default=all",
                     "-Xlambdas=indy",
-                    "-Xuse-ir",
+                    "-Xsam-conversions=indy",
+                    "-Xtype-enhancement-improvements-strict-mode",
                     "-opt-in=kotlin.RequiresOptIn",
                 )
+                if (isCi || isRelease) {
+                    freeCompilerArgs += listOf(
+                        "-Xvalidate-bytecode",
+                        "-Xvalidate-ir",
+                    )
+                }
             }
         }
 

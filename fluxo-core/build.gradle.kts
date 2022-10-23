@@ -44,6 +44,8 @@ kotlin {
             implementation(libs.kotlinx.coroutines.core)
         }
         common.test.dependencies {
+            implementation(kotlin("reflect"))
+            implementation(kotlin("test"))
             implementation(libs.kotlinx.coroutines.test)
         }
 
