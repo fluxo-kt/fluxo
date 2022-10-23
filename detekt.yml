@@ -15,3 +15,5 @@ formatting:
     active: false
   ParameterListWrapping:
     maxLineLength: 140
+  Wrapping:
+    active: false

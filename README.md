@@ -15,7 +15,7 @@
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions
+**Fluxo** uses [SemVer](http://semver.org/) for versioning. For the versions
 available, see the [tags on this repository](/tags).
 
 

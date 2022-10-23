@@ -87,7 +87,7 @@ public abstract interface class kt/fluxo/core/dsl/BootstrapperScope : kt/fluxo/c
 
 public abstract interface class kt/fluxo/core/dsl/FluxoInterceptorScope : kotlinx/coroutines/CoroutineScope {
 	public abstract fun getStoreName ()Ljava/lang/String;
-	public abstract fun sendToStore (Lkt/fluxo/core/intercept/StoreRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun postRequest (Lkt/fluxo/core/intercept/StoreRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public abstract interface class kt/fluxo/core/dsl/SideJobScope : kotlinx/coroutines/CoroutineScope {
@@ -106,11 +106,14 @@ public final class kt/fluxo/core/dsl/SideJobScope$RestartState : java/lang/Enum 
 
 public abstract interface class kt/fluxo/core/dsl/StoreScope {
 	public fun async (Ljava/lang/String;Lkotlin/jvm/functions/Function2;)V
+	public static synthetic fun async$default (Lkt/fluxo/core/dsl/StoreScope;Ljava/lang/String;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)V
 	public abstract fun getState ()Ljava/lang/Object;
 	public fun launch (Ljava/lang/String;Lkotlin/jvm/functions/Function2;)V
+	public static synthetic fun launch$default (Lkt/fluxo/core/dsl/StoreScope;Ljava/lang/String;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)V
 	public abstract fun noOp ()V
 	public abstract fun postSideEffect (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun sideJob (Ljava/lang/String;Lkotlin/jvm/functions/Function2;)V
+	public abstract fun sideJob (Ljava/lang/String;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun sideJob$default (Lkt/fluxo/core/dsl/StoreScope;Ljava/lang/String;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public abstract fun updateState (Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
 }
 

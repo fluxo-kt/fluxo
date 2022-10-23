@@ -46,7 +46,6 @@ public class FluxoSettings<Intent, State, SideEffect : Any> {
 
     // region Processing control
 
-    // FIXME: TODO
     public val bootstrapper: Bootstrapper<Intent, State, SideEffect>? = null
 
     /**

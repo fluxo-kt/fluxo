@@ -110,9 +110,9 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
     override suspend fun sendAsync(intent: Intent): Deferred<Unit> {
         start()
         notifications.emit(FluxoEvent.IntentQueued(this, intent))
-        val completionDeferred = CompletableDeferred<Unit>()
-        dispatchChannel.send(StoreRequest.HandleIntent(completionDeferred, intent))
-        return completionDeferred
+        val deferred = CompletableDeferred<Unit>()
+        dispatchChannel.send(StoreRequest.HandleIntent(deferred, intent))
+        return deferred
     }
 
     override fun send(intent: Intent): ChannelResult<Unit> {
@@ -163,6 +163,11 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         notifications.emit(FluxoEvent.SideEffectQueued(this@FluxoStore, sideEffect))
     }
 
+    private suspend fun postSideJob(jobRequest: SideJobRequest<Intent, State, SideEffect>) {
+        sideJobsChannel.send(jobRequest)
+        notifications.emit(FluxoEvent.SideJobQueued(this@FluxoStore, jobRequest.key))
+    }
+
     private fun launch() {
         // observe and process intents
         val filteredIntentsFlow = dispatchChannel
@@ -203,7 +208,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         val interceptorScope = FluxoInterceptorScopeImpl(
             storeName = name,
             storeScope = scope + conf.interceptorContext + SupervisorJob(scope.coroutineContext.job),
-            sendRequestToStore = dispatchChannel::send
+            sendRequest = dispatchChannel::send
         )
         val notificationFlow: Flow<FluxoEvent<Intent, State, SideEffect>> = notifications.transformWhile {
             emit(it)
@@ -219,6 +224,21 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
             }
         }
         notifications.tryEmit(FluxoEvent.StoreStarted(this))
+
+        // bootstrap
+        conf.bootstrapper?.let { bootstrapper ->
+            val bootstrapperScope = BootstrapperScopeImpl(
+                guardian = if (conf.debugChecks) InputStrategyGuardian(parallelProcessing = false) else null,
+                getState = mutableState::value,
+                updateStateAndGet = ::updateStateAndGet,
+                sendIntent = ::sendAsync,
+                sendSideEffect = ::postSideEffect,
+                sendSideJob = ::postSideJob,
+            )
+            scope.launch(intentContext) {
+                bootstrapperScope.bootstrapper()
+            }
+        }
     }
 
     /**
@@ -251,7 +271,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
 
         val stateBeforeCancellation = mutableState.value
         try {
-            val handlerScope = IntentHandlerScopeImpl(
+            val handlerScope = StoreScopeImpl(
                 guardian = when {
                     !conf.debugChecks -> null
                     else -> InputStrategyGuardian(parallelProcessing = conf.inputStrategy.parallelProcessing)
@@ -259,10 +279,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
                 getState = mutableState::value,
                 updateStateAndGet = ::updateStateAndGet,
                 sendSideEffect = ::postSideEffect,
-                sendSideJob = {
-                    sideJobsChannel.trySend(it)
-                    notifications.tryEmit(FluxoEvent.SideJobQueued(this@FluxoStore, it.key))
-                },
+                sendSideJob = ::postSideJob,
             )
             with(handlerScope) {
                 with(intentHandler) {
@@ -318,9 +335,9 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
             job = sideJobScope.launch {
                 notifications.emit(FluxoEvent.SideJobStarted(this@FluxoStore, key, restartState))
                 try {
-                    SideJobScopeImpl<Intent, State, SideEffect>(
-                        sendIntentToStore = { dispatchChannel.send(StoreRequest.HandleIntent(null, it)) },
-                        sendSideEffectToStore = ::postSideEffect,
+                    SideJobScopeImpl(
+                        sendIntent = ::sendAsync,
+                        sendSideEffect = ::postSideEffect,
                         currentStateWhenStarted = mutableState.value,
                         restartState = restartState,
                         coroutineScope = this,
