@@ -6,7 +6,6 @@ import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.api.tasks.TaskAction
 
-
 abstract class SarifMergeTask : AbstractExecTask<SarifMergeTask>(SarifMergeTask::class.java) {
 
     @InputFiles
@@ -38,5 +37,4 @@ abstract class SarifMergeTask : AbstractExecTask<SarifMergeTask>(SarifMergeTask:
 
         super.exec()
     }
-
 }

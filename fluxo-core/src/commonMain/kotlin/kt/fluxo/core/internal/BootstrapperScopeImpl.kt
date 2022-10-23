@@ -3,7 +3,6 @@ package kt.fluxo.core.internal
 import kotlinx.coroutines.Deferred
 import kt.fluxo.core.dsl.BootstrapperScope
 
-
 internal class BootstrapperScopeImpl<in Intent, State, SideEffect : Any>(
     guardian: InputStrategyGuardian?,
     getState: () -> State,

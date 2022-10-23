@@ -3,7 +3,6 @@ package kt.fluxo
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-
 class BasicTest {
     @Test
     fun basicTest() {

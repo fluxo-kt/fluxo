@@ -4,7 +4,6 @@ import io.gitlab.arturbosch.detekt.report.ReportMergeTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
-
 class LintPlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
