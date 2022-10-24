@@ -21,7 +21,7 @@ internal class FluxoConf<Intent, State, SideEffect : Any>(
     val repeatOnSubscribedStopTimeout: Long,
     val sideEffectBufferSize: Int,
     val bootstrapper: Bootstrapper<Intent, State, SideEffect>?,
-    val interceptors: Array<FluxoInterceptor<Intent, SideEffect, State>>,
+    val interceptors: Array<out FluxoInterceptor<Intent, State, SideEffect>>,
     val intentFilter: IntentFilter<Intent, State>?,
     val inputStrategy: InputStrategy<Intent, State>,
     val eventLoopContext: CoroutineContext,

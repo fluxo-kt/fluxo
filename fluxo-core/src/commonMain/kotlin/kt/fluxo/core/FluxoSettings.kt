@@ -8,6 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kt.fluxo.core.annotation.NotThreadSafe
 import kt.fluxo.core.debug.DEBUG
+import kt.fluxo.core.intercept.FluxoEvent
 import kt.fluxo.core.strategy.FifoInputStrategy
 import kt.fluxo.core.strategy.LifoInputStrategy
 import kt.fluxo.core.strategy.ParallelInputStrategy
@@ -52,10 +53,16 @@ public class FluxoSettings<Intent, State, SideEffect : Any> {
      * Additional [interceptors][FluxoInterceptor] for the [Store] events.
      * Attach loggers, time-travelling, analytics, everything you want.
      */
-    public val interceptors: MutableList<FluxoInterceptor<Intent, SideEffect, State>> = mutableListOf()
+    public val interceptors: MutableList<FluxoInterceptor<Intent, State, SideEffect>> = mutableListOf()
+
+    public fun interceptor(onNotify: (event: FluxoEvent<Intent, State, SideEffect>) -> Unit) {
+        interceptors.add(object : FluxoInterceptor<Intent, State, SideEffect> {
+            override suspend fun onNotify(event: FluxoEvent<Intent, State, SideEffect>) = onNotify(event)
+        })
+    }
 
     /**
-     * In case you need to filter out some [Intent]s.
+     * If you need to filter out some [Intent]s.
      */
     public var intentFilter: IntentFilter<Intent, State>? = null
 
@@ -94,15 +101,15 @@ public class FluxoSettings<Intent, State, SideEffect : Any> {
     // endregion
 
 
-    // region Accessers for in-box input strategies
+    // region Accessors for in-box input strategies
 
-    // background processing oriented strategy
+    /** Background processing oriented strategy. */
     public val FIFO: InputStrategy<Intent, State> get() = FifoInputStrategy as InputStrategy<Intent, State>
 
-    // UI events oriented
+    /** UI events oriented strategy. */
     public val LIFO: InputStrategy<Intent, State> get() = LifoInputStrategy as InputStrategy<Intent, State>
 
-    // no guarantee that inputs will be processed in any given order
+    /** No guarantee that inputs will be processed in any given order. */
     public val PARALLEL: InputStrategy<Intent, State> get() = ParallelInputStrategy as InputStrategy<Intent, State>
 
     // endregion
