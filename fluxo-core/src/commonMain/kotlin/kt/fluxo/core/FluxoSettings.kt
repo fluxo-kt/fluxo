@@ -55,10 +55,8 @@ public class FluxoSettings<Intent, State, SideEffect : Any> {
      */
     public val interceptors: MutableList<FluxoInterceptor<Intent, State, SideEffect>> = mutableListOf()
 
-    public fun interceptor(onNotify: (event: FluxoEvent<Intent, State, SideEffect>) -> Unit) {
-        interceptors.add(object : FluxoInterceptor<Intent, State, SideEffect> {
-            override suspend fun onNotify(event: FluxoEvent<Intent, State, SideEffect>) = onNotify(event)
-        })
+    public inline fun interceptor(crossinline onNotify: (event: FluxoEvent<Intent, State, SideEffect>) -> Unit) {
+        interceptors.add(FluxoInterceptor(onNotify))
     }
 
     /**

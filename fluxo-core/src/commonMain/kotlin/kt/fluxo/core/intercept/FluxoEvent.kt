@@ -1,5 +1,6 @@
 package kt.fluxo.core.intercept
 
+import kt.fluxo.core.Bootstrapper
 import kt.fluxo.core.Store
 import kt.fluxo.core.dsl.SideJobScope
 
@@ -17,12 +18,44 @@ public sealed class FluxoEvent<Intent, State, SideEffect : Any>(
         }
     }
 
-    public class StoreCleared<Intent, State, SideEffect : Any>(
+    public class StoreClosed<Intent, State, SideEffect : Any>(
         store: Store<Intent, State, SideEffect>,
         public val cause: Throwable?,
     ) : FluxoEvent<Intent, State, SideEffect>(store) {
         override fun toString(): String {
-            return "Store cleared: $store"
+            return "Store closed: $store"
+        }
+    }
+
+    // endregion
+
+    // region Bootstrap
+
+    public class BootstrapperStart<Intent, State, SideEffect : Any>(
+        store: Store<Intent, State, SideEffect>,
+        public val bootstrapper: Bootstrapper<Intent, State, SideEffect>,
+    ) : FluxoEvent<Intent, State, SideEffect>(store) {
+        override fun toString(): String {
+            return "Starting bootstrapper: $bootstrapper"
+        }
+    }
+
+    public class BootstrapperFinished<Intent, State, SideEffect : Any>(
+        store: Store<Intent, State, SideEffect>,
+        public val bootstrapper: Bootstrapper<Intent, State, SideEffect>,
+    ) : FluxoEvent<Intent, State, SideEffect>(store) {
+        override fun toString(): String {
+            return "Completed bootstrapper: $bootstrapper"
+        }
+    }
+
+    public class BootstrapperError<Intent, State, SideEffect : Any>(
+        store: Store<Intent, State, SideEffect>,
+        public val bootstrapper: Bootstrapper<Intent, State, SideEffect>,
+        public val throwable: Throwable,
+    ) : FluxoEvent<Intent, State, SideEffect>(store) {
+        override fun toString(): String {
+            return "Error in bootstrapper: $bootstrapper (${throwable.message})"
         }
     }
 
@@ -35,7 +68,7 @@ public sealed class FluxoEvent<Intent, State, SideEffect : Any>(
         public val intent: Intent,
     ) : FluxoEvent<Intent, State, SideEffect>(store) {
         override fun toString(): String {
-            return "Intent Queued: $intent"
+            return "Intent queued: $intent"
         }
     }
 

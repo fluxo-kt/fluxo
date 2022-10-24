@@ -7,6 +7,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.test.runTest
 import kt.fluxo.core.StoreHost
 import kt.fluxo.core.intent
+import kt.fluxo.core.intercept.FluxoEvent
 import kt.fluxo.core.store
 import kt.fluxo.test.test
 import kotlin.random.Random
@@ -71,10 +72,14 @@ internal class StateTest {
 
     private data class TestState(val id: Int = Random.nextInt())
 
-    private inner class Middleware(initialState: TestState, scope: CoroutineScope = this.scope) : StoreHost<TestState, String> {
-        override val store = scope.store<TestState, String>(initialState) {
+    private inner class Middleware(
+        initialState: TestState,
+        scope: CoroutineScope = this.scope,
+        onEvent: ((event: FluxoEvent<*, TestState, String>) -> Unit)? = null,
+    ) : StoreHost<TestState, String> {
+        override val store = scope.store(initialState) {
             debugChecks = true
-            interceptor(::println)
+            onEvent?.let { interceptor(it) }
         }
 
         fun something(action: Int) = intent {

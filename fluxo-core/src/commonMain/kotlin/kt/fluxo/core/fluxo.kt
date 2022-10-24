@@ -1,3 +1,5 @@
+@file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
+
 package kt.fluxo.core
 
 import kotlinx.coroutines.CoroutineScope
@@ -10,6 +12,7 @@ import kt.fluxo.core.internal.ReducerIntentHandler
 import kt.fluxo.core.internal.build
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
+import kotlin.internal.InlineOnly
 
 // CoroutineScope extensions for Store
 
@@ -119,8 +122,9 @@ public inline fun <Intent, State, SideEffect : Any> store(
  * Build and execute an intent on [Store].
  */
 @FluxoDsl
-public fun <State, SideEffect : Any> StoreHost<State, SideEffect>.intent(
-    intent: StoreScope<Nothing, State, SideEffect>.() -> Unit,
+@InlineOnly
+public inline fun <State, SideEffect : Any> StoreHost<State, SideEffect>.intent(
+    noinline intent: StoreScope<Nothing, State, SideEffect>.() -> Unit,
 ) {
     store.send(intent)
 }

@@ -22,10 +22,10 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.transformWhile
 import kotlinx.coroutines.isActive
-import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import kotlinx.coroutines.withContext
+import kt.fluxo.core.Bootstrapper
 import kt.fluxo.core.IntentFilter
 import kt.fluxo.core.IntentHandler
 import kt.fluxo.core.Store
@@ -56,6 +56,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
     private val scope: CoroutineScope
     private val intentContext: CoroutineContext
     private val sideJobScope: CoroutineScope
+    private val interceptorScope: CoroutineScope
     private val dispatchChannel: Channel<StoreRequest<Intent, State>> = conf.inputStrategy.createQueue()
 
     private val sideJobsChannel = Channel<SideJobRequest<Intent, State, SideEffect>>(Channel.BUFFERED, BufferOverflow.SUSPEND)
@@ -107,6 +108,11 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         sideJobScope = scope + conf.sideJobsContext + exceptionHandler + SupervisorJob(job) + when {
             !conf.debugChecks -> EmptyCoroutineContext
             else -> CoroutineName("$F[$name:sideJobScope]")
+        }
+        // Shouldn't close immediately with scope
+        interceptorScope = scope + conf.interceptorContext + SupervisorJob() + when {
+            !conf.debugChecks -> EmptyCoroutineContext
+            else -> CoroutineName("$F[$name:interceptorScope]")
         }
 
         // eager start
@@ -236,15 +242,12 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         // launch interceptors handling
         val interceptorScope = FluxoInterceptorScopeImpl(
             storeName = name,
-            storeScope = scope + conf.interceptorContext + SupervisorJob(scope.coroutineContext.job) + when {
-                !conf.debugChecks -> EmptyCoroutineContext
-                else -> CoroutineName("$F[$name:interceptorScope]")
-            },
-            sendRequest = dispatchChannel::send
+            storeScope = interceptorScope,
+            sendRequest = dispatchChannel::send,
         )
         val notificationFlow: Flow<FluxoEvent<Intent, State, SideEffect>> = notifications.transformWhile {
             emit(it)
-            it !is FluxoEvent.StoreCleared
+            it !is FluxoEvent.StoreClosed
         }
         for (interceptor in conf.interceptors) {
             with(interceptor) {
@@ -259,18 +262,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
 
         // bootstrap
         conf.bootstrapper?.let { bootstrapper ->
-            val bootstrapperScope = BootstrapperScopeImpl(
-                bootstrapper = bootstrapper,
-                guardian = if (conf.debugChecks) InputStrategyGuardian(parallelProcessing = false) else null,
-                getState = mutableState::value,
-                updateStateAndGet = ::updateStateAndGet,
-                sendIntent = ::sendAsync,
-                sendSideEffect = ::postSideEffect,
-                sendSideJob = ::postSideJob,
-            )
-            scope.launch(intentContext) {
-                bootstrapperScope.bootstrapper()
-            }
+            safelyRunBootstrapper(bootstrapper)
         }
     }
 
@@ -393,18 +385,43 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         )
     }
 
+    private fun safelyRunBootstrapper(bootstrapper: Bootstrapper<Intent, State, SideEffect>) {
+        notifications.tryEmit(FluxoEvent.BootstrapperStart(this, bootstrapper))
+        val bootstrapperScope = BootstrapperScopeImpl(
+            bootstrapper = bootstrapper,
+            guardian = if (conf.debugChecks) InputStrategyGuardian(parallelProcessing = false) else null,
+            getState = mutableState::value,
+            updateStateAndGet = ::updateStateAndGet,
+            sendIntent = ::sendAsync,
+            sendSideEffect = ::postSideEffect,
+            sendSideJob = ::postSideJob,
+        )
+        scope.launch(intentContext) {
+            try {
+                bootstrapperScope.bootstrapper()
+                bootstrapperScope.close()
+                notifications.emit(FluxoEvent.BootstrapperFinished(this@FluxoStore, bootstrapper))
+            } catch (e: Throwable) {
+                notifications.tryEmit(FluxoEvent.BootstrapperError(this@FluxoStore, bootstrapper, e))
+                if (conf.closeOnExceptions) {
+                    throw e
+                }
+            }
+        }
+    }
+
     /**
      * Called on [scope] completion for any reason.
      */
     private fun onShutdown(cause: Throwable?) {
+        notifications.tryEmit(FluxoEvent.StoreClosed(this, cause))
+
         val ce = cause.toCancellationException()
         for (value in sideJobsMap.values) {
             value.job?.cancel(ce)
             value.job = null
         }
         sideJobsMap.clear()
-
-        notifications.tryEmit(FluxoEvent.StoreCleared(this, cause))
 
         dispatchChannel.close(ce)
         sideEffectChannel.close(ce)
