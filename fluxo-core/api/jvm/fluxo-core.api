@@ -142,12 +142,19 @@ public abstract interface class kt/fluxo/core/FluxoInterceptor {
 }
 
 public final class kt/fluxo/core/FluxoKt {
+	public static final fun intent (Lkt/fluxo/core/StoreHost;Lkotlin/jvm/functions/Function1;)V
 	public static final fun store (Ljava/lang/Object;Lkotlin/jvm/functions/Function1;)Lkt/fluxo/core/Store;
 	public static final fun store (Ljava/lang/Object;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;)Lkt/fluxo/core/Store;
 	public static final fun store (Ljava/lang/Object;Lkt/fluxo/core/IntentHandler;Lkotlin/jvm/functions/Function1;)Lkt/fluxo/core/Store;
+	public static final fun store (Lkotlinx/coroutines/CoroutineScope;Ljava/lang/Object;Lkotlin/jvm/functions/Function1;)Lkt/fluxo/core/Store;
+	public static final fun store (Lkotlinx/coroutines/CoroutineScope;Ljava/lang/Object;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;)Lkt/fluxo/core/Store;
+	public static final fun store (Lkotlinx/coroutines/CoroutineScope;Ljava/lang/Object;Lkt/fluxo/core/IntentHandler;Lkotlin/jvm/functions/Function1;)Lkt/fluxo/core/Store;
 	public static synthetic fun store$default (Ljava/lang/Object;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkt/fluxo/core/Store;
 	public static synthetic fun store$default (Ljava/lang/Object;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkt/fluxo/core/Store;
 	public static synthetic fun store$default (Ljava/lang/Object;Lkt/fluxo/core/IntentHandler;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkt/fluxo/core/Store;
+	public static synthetic fun store$default (Lkotlinx/coroutines/CoroutineScope;Ljava/lang/Object;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkt/fluxo/core/Store;
+	public static synthetic fun store$default (Lkotlinx/coroutines/CoroutineScope;Ljava/lang/Object;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkt/fluxo/core/Store;
+	public static synthetic fun store$default (Lkotlinx/coroutines/CoroutineScope;Ljava/lang/Object;Lkt/fluxo/core/IntentHandler;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkt/fluxo/core/Store;
 }
 
 public final class kt/fluxo/core/FluxoSettings {
@@ -211,6 +218,10 @@ public abstract interface class kt/fluxo/core/IntentHandler {
 	public abstract fun handleIntent (Lkt/fluxo/core/dsl/StoreScope;Ljava/lang/Object;)V
 }
 
+public abstract interface class kt/fluxo/core/MviStoreHost {
+	public abstract fun getStore ()Lkt/fluxo/core/Store;
+}
+
 public final class kt/fluxo/core/Settings {
 	public fun <init> ()V
 	public fun <init> (ILkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lkotlinx/coroutines/CoroutineExceptionHandler;J)V
@@ -235,11 +246,15 @@ public final class kt/fluxo/core/Settings {
 public abstract interface class kt/fluxo/core/Store {
 	public abstract fun getName ()Ljava/lang/String;
 	public abstract fun getSideEffectFlow ()Lkotlinx/coroutines/flow/Flow;
-	public abstract fun getState ()Lkotlinx/coroutines/flow/StateFlow;
+	public abstract fun getStateFlow ()Lkotlinx/coroutines/flow/StateFlow;
 	public abstract fun send-JP2dKIU (Ljava/lang/Object;)Ljava/lang/Object;
 	public abstract fun sendAsync (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun start ()V
 	public abstract fun stop ()V
+}
+
+public abstract interface class kt/fluxo/core/StoreHost {
+	public abstract fun getStore ()Lkt/fluxo/core/Store;
 }
 
 public abstract interface class kt/fluxo/core/StoreIntentAware {
@@ -324,6 +339,7 @@ public abstract interface class kt/fluxo/core/dsl/StoreScope {
 	public static synthetic fun launch$default (Lkt/fluxo/core/dsl/StoreScope;Ljava/lang/String;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)V
 	public abstract fun noOp ()V
 	public abstract fun postSideEffect (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun reduce (Lkotlin/jvm/functions/Function1;)V
 	public abstract fun sideJob (Ljava/lang/String;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun sideJob$default (Lkt/fluxo/core/dsl/StoreScope;Ljava/lang/String;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public abstract fun updateState (Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
@@ -496,7 +512,7 @@ public final class kt/fluxo/core/internal/FluxoStore : kt/fluxo/core/Store {
 	public fun <init> (Ljava/lang/Object;Lkt/fluxo/core/IntentHandler;Lkt/fluxo/core/internal/FluxoConf;)V
 	public fun getName ()Ljava/lang/String;
 	public fun getSideEffectFlow ()Lkotlinx/coroutines/flow/Flow;
-	public fun getState ()Lkotlinx/coroutines/flow/StateFlow;
+	public fun getStateFlow ()Lkotlinx/coroutines/flow/StateFlow;
 	public fun send-JP2dKIU (Ljava/lang/Object;)Ljava/lang/Object;
 	public fun sendAsync (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun start ()V

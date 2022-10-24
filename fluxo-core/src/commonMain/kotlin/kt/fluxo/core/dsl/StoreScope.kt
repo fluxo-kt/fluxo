@@ -1,6 +1,9 @@
+@file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
+
 package kt.fluxo.core.dsl
 
 import kt.fluxo.core.annotation.FluxoDsl
+import kotlin.internal.InlineOnly
 
 @FluxoDsl
 public interface StoreScope<in Intent, State, in SideEffect : Any> {
@@ -21,8 +24,9 @@ public interface StoreScope<in Intent, State, in SideEffect : Any> {
     public fun noOp()
 
 
-    // region Convinience helpers
+    // region Convenience helpers
 
+    @InlineOnly
     @Deprecated(
         message = "Please use the sideJob function to launch long running jobs",
         replaceWith = ReplaceWith("sideJob(key, block)"),
@@ -31,6 +35,7 @@ public interface StoreScope<in Intent, State, in SideEffect : Any> {
     public fun launch(key: String = DEFAULT_SIDE_JOB, block: suspend SideJobScope<Intent, State, SideEffect>.() -> Unit): Unit =
         throw NotImplementedError()
 
+    @InlineOnly
     @Deprecated(
         message = "Please use the sideJob function to launch long running jobs",
         replaceWith = ReplaceWith("sideJob(key, block)"),
@@ -38,6 +43,22 @@ public interface StoreScope<in Intent, State, in SideEffect : Any> {
     )
     public fun async(key: String = DEFAULT_SIDE_JOB, block: suspend SideJobScope<Intent, State, SideEffect>.() -> Unit): Unit =
         throw NotImplementedError()
+
+    // endregion
+
+
+    // region Migration helpers
+
+    /**
+     * Helper for migration from Orbit
+     */
+    @InlineOnly
+    @Deprecated(
+        message = "Please use the updateState instead",
+        level = DeprecationLevel.ERROR,
+        replaceWith = ReplaceWith("updateState { state ->\n    reducer()    \n}", "kt.fluxo.core.dsl.StoreScope.StateContext"),
+    )
+    public fun reduce(reducer: Any.() -> State): Unit = throw NotImplementedError()
 
     // endregion
 }

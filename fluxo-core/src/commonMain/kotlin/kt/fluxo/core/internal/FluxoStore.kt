@@ -57,7 +57,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
     private val sideJobsMap = ConcurrentHashMap<String, RunningSideJob<Intent, State, SideEffect>>()
 
     private val mutableState = MutableStateFlow(initialState)
-    override val state: StateFlow<State>
+    override val stateFlow: StateFlow<State>
         get() {
             start()
             return mutableState

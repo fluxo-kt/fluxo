@@ -12,7 +12,7 @@ public interface Store<in Intent, out State, out SideEffect : Any> {
 
     public val name: String
 
-    public val state: StateFlow<State>
+    public val stateFlow: StateFlow<State>
 
     public val sideEffectFlow: Flow<SideEffect>
 
