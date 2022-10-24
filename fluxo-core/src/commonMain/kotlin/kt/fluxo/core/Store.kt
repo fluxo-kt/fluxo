@@ -27,6 +27,6 @@ public interface Store<in Intent, out State, out SideEffect : Any> {
     @JsName("start")
     public fun start()
 
-    @JsName("stop")
-    public fun stop()
+    @JsName("close")
+    public fun close()
 }

@@ -306,6 +306,7 @@ public final class kt/fluxo/core/internal/FluxoStore : kt/fluxo/core/Store {
 	public fun sendAsync (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun start ()V
 	public fun stop ()V
+	public fun toString ()Ljava/lang/String;
 }
 
 public final class kt/fluxo/core/internal/ReducerIntentHandler : kt/fluxo/core/IntentHandler {

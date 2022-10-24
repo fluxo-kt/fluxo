@@ -35,7 +35,7 @@ internal class FluxoConf<Intent, State, SideEffect : Any>(
 @InternalFluxoApi
 internal fun <Intent, State, SideEffect : Any> FluxoSettings<Intent, State, SideEffect>.build(): FluxoConf<Intent, State, SideEffect> {
     return FluxoConf(
-        name = name ?: "Store#${storeNumber.getAndIncrement()}>",
+        name = name ?: "store#${storeNumber.getAndIncrement()}",
         lazy = lazy,
         closeOnExceptions = closeOnExceptions,
         debugChecks = debugChecks,

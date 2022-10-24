@@ -4,6 +4,7 @@ import kt.fluxo.core.dsl.SideJobScope
 import kt.fluxo.core.dsl.StoreScope
 
 internal open class StoreScopeImpl<in Intent, State, SideEffect : Any>(
+    internal val job: Any?,
     private val guardian: InputStrategyGuardian?,
     private val getState: () -> State,
     private val updateStateAndGet: ((State) -> State) -> State,
@@ -29,7 +30,7 @@ internal open class StoreScopeImpl<in Intent, State, SideEffect : Any>(
 
     final override suspend fun sideJob(key: String, block: suspend SideJobScope<Intent, State, SideEffect>.() -> Unit) {
         guardian?.checkSideJob()
-        sendSideJob(SideJobRequest(key, block))
+        sendSideJob(SideJobRequest(key, job, block))
     }
 
     final override fun noOp() {
