@@ -14,7 +14,7 @@ internal class ReducerIntentHandler<Intent, State, out SideEffect : Any>(
     private val reducer: Reducer<Intent, State>,
 ) : IntentHandler<Intent, State, SideEffect> {
 
-    override fun StoreScope<Intent, State, SideEffect>.handleIntent(intent: Intent) {
+    override suspend fun StoreScope<Intent, State, SideEffect>.handleIntent(intent: Intent) {
         updateState { state ->
             reducer(state, intent)
         }

@@ -1,5 +1,6 @@
 package kt.fluxo.core.internal
 
+import kt.fluxo.core.FluxoIntent
 import kt.fluxo.core.IntentHandler
 import kt.fluxo.core.annotation.InternalFluxoApi
 import kt.fluxo.core.dsl.StoreScope
@@ -11,7 +12,7 @@ import kt.fluxo.core.dsl.StoreScope
 @InternalFluxoApi
 internal object FluxoIntentHandler : IntentHandler<FluxoIntent<Any?, Any>, Any?, Any> {
 
-    override fun StoreScope<FluxoIntent<Any?, Any>, Any?, Any>.handleIntent(intent: FluxoIntent<Any?, Any>) {
+    override suspend fun StoreScope<FluxoIntent<Any?, Any>, Any?, Any>.handleIntent(intent: FluxoIntent<Any?, Any>) {
         intent()
     }
 }

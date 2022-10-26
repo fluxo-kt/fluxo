@@ -7,7 +7,7 @@ import kt.fluxo.core.InputStrategy
 import kt.fluxo.core.dsl.InputStrategyScope
 import kt.fluxo.core.intercept.StoreRequest
 
-// no guarantee that inputs will be processed in any given order
+/** Parallel processing of all intents. No guarantee that inputs will be processed in any given order. */
 internal object ParallelInputStrategy : InputStrategy<Any?, Any?>() {
 
     override val parallelProcessing: Boolean get() = true

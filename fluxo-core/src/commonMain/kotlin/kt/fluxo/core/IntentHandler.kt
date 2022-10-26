@@ -8,5 +8,6 @@ import kt.fluxo.core.dsl.StoreScope
  */
 public fun interface IntentHandler<Intent, State, out SideEffect : Any> {
 
-    public fun StoreScope<Intent, State, SideEffect>.handleIntent(intent: Intent)
+    @Suppress("FUN_INTERFACE_WITH_SUSPEND_FUNCTION")
+    public suspend fun StoreScope<Intent, State, SideEffect>.handleIntent(intent: Intent)
 }

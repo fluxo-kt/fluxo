@@ -9,7 +9,7 @@ import kt.fluxo.core.intercept.StoreRequest
 public abstract class InputStrategy<Intent, State> {
 
     public open fun createQueue(): Channel<StoreRequest<Intent, State>> {
-        return Channel(Channel.BUFFERED, BufferOverflow.SUSPEND)
+        return Channel(capacity = Channel.UNLIMITED, onBufferOverflow = BufferOverflow.SUSPEND)
     }
 
     public open val parallelProcessing: Boolean get() = false

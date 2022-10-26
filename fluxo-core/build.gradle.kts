@@ -47,6 +47,7 @@ kotlin {
             implementation(kotlin("reflect"))
             implementation(kotlin("test"))
             implementation(libs.kotlinx.coroutines.test)
+            implementation(libs.kotlinx.datetime)
         }
 
         java.main.dependencies {

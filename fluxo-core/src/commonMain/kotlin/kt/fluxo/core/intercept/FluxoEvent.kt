@@ -23,7 +23,7 @@ public sealed class FluxoEvent<Intent, State, SideEffect : Any>(
         public val cause: Throwable?,
     ) : FluxoEvent<Intent, State, SideEffect>(store) {
         override fun toString(): String {
-            return "Store closed: $store"
+            return "Store closed: $store, cause=$cause"
         }
     }
 

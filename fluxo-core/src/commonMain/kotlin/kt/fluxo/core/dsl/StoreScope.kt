@@ -56,7 +56,7 @@ public interface StoreScope<in Intent, State, in SideEffect : Any> {
     @Deprecated(
         message = "Please use the updateState instead",
         level = DeprecationLevel.ERROR,
-        replaceWith = ReplaceWith("updateState { state ->\n    reducer()    \n}", "kt.fluxo.core.dsl.StoreScope.StateContext"),
+        replaceWith = ReplaceWith("updateState { state ->\n    reducer()    \n}"),
     )
     public fun reduce(reducer: Any.() -> State): Unit = throw NotImplementedError()
 

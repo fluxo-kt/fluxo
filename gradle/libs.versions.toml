@@ -63,6 +63,9 @@ kotlin-parcelize-runtime = { module = "org.jetbrains.kotlin:kotlin-parcelize-run
 # https://github.com/Kotlin/kotlinx-lincheck/releases
 kotlinx-lincheck = { module = "org.jetbrains.kotlinx:lincheck", version = "2.15" }
 
+# https://github.com/Kotlin/kotlinx-datetime/tags
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.4.0" }
+
 kotlinx-coroutines-bom = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-bom", version.ref = "coroutines" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
@@ -89,7 +92,7 @@ plugin-binCompatValidator = { module = "org.jetbrains.kotlinx:binary-compatibili
 
 # The idiomatic way to use atomic operations in Kotlin
 # https://github.com/Kotlin/kotlinx-atomicfu/releases
-plugin-kotlinx-atomicfu = { module = "org.jetbrains.kotlinx:atomicfu-gradle-plugin", version = "0.18.4" }
+plugin-kotlinx-atomicfu = { module = "org.jetbrains.kotlinx:atomicfu-gradle-plugin", version = "0.18.5" }
 kotlin-gradle-api = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin-api", version.ref = "kotlin" }
 
 # Gradle plugin for building plugins for IntelliJ-based IDEs

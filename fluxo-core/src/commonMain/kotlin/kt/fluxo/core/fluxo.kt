@@ -4,8 +4,6 @@ package kt.fluxo.core
 
 import kotlinx.coroutines.CoroutineScope
 import kt.fluxo.core.annotation.FluxoDsl
-import kt.fluxo.core.dsl.StoreScope
-import kt.fluxo.core.internal.FluxoIntent
 import kt.fluxo.core.internal.FluxoIntentHandler
 import kt.fluxo.core.internal.FluxoStore
 import kt.fluxo.core.internal.ReducerIntentHandler
@@ -19,14 +17,14 @@ import kotlin.internal.InlineOnly
 /**
  * Returns MVVM+ [Store] connected to [CoroutineScope] lifecycle.
  */
-public inline fun <State, SideEffect : Any> CoroutineScope.store(
+public inline fun <State, SideEffect : Any> CoroutineScope.container(
     initialState: State,
     settings: FluxoSettings<*, State, SideEffect>.() -> Unit = {},
-): Store<StoreScope<Nothing, State, SideEffect>.() -> Unit, State, SideEffect> {
+): Container<State, SideEffect> {
     contract {
         callsInPlace(settings, InvocationKind.EXACTLY_ONCE)
     }
-    return kt.fluxo.core.store(initialState, settings = {
+    return kt.fluxo.core.container(initialState, settings = {
         eventLoopContext = coroutineContext
         settings()
     })
@@ -34,6 +32,8 @@ public inline fun <State, SideEffect : Any> CoroutineScope.store(
 
 /**
  * Returns basic [Reducer]-based [Store] connected to [CoroutineScope] lifecycle.
+ *
+ * Use [container] for MVVM+ [Store].
  */
 public inline fun <Intent, State, SideEffect : Any> CoroutineScope.store(
     initialState: State,
@@ -47,7 +47,9 @@ public inline fun <Intent, State, SideEffect : Any> CoroutineScope.store(
 }
 
 /**
- * Returns MVI [Store] with MVVM+ [IntentHandler] DSL
+ * Returns MVI [Store] with MVVM+ [IntentHandler] DSL.
+ *
+ * Use [container] for MVVM+ [Store].
  */
 public inline fun <Intent, State, SideEffect : Any> CoroutineScope.store(
     initialState: State,
@@ -67,12 +69,12 @@ public inline fun <Intent, State, SideEffect : Any> CoroutineScope.store(
 // Basic Store variants
 
 /**
- * Returns MVVM+ [Store]
+ * Returns MVVM+ [Store].
  */
-public inline fun <State, SideEffect : Any> store(
+public inline fun <State, SideEffect : Any> container(
     initialState: State,
     settings: FluxoSettings<*, State, SideEffect>.() -> Unit = {},
-): Store<StoreScope<Nothing, State, SideEffect>.() -> Unit, State, SideEffect> {
+): Container<State, SideEffect> {
     contract {
         callsInPlace(settings, InvocationKind.EXACTLY_ONCE)
     }
@@ -84,7 +86,9 @@ public inline fun <State, SideEffect : Any> store(
 }
 
 /**
- * Returns basic [Reducer]-based [Store]
+ * Returns basic [Reducer]-based [Store].
+ *
+ * Use [container] for MVVM+ [Store].
  */
 public inline fun <Intent, State, SideEffect : Any> store(
     initialState: State,
@@ -98,7 +102,9 @@ public inline fun <Intent, State, SideEffect : Any> store(
 }
 
 /**
- * Returns MVI [Store] with MVVM+ [IntentHandler] DSL
+ * Returns MVI [Store] with MVVM+ [IntentHandler] DSL.
+ *
+ * Use [container] for MVVM+ [Store].
  */
 public inline fun <Intent, State, SideEffect : Any> store(
     initialState: State,
@@ -119,12 +125,10 @@ public inline fun <Intent, State, SideEffect : Any> store(
 // Store DSL
 
 /**
- * Build and execute an intent on [Store].
+ * Build and execute a functional [intent][FluxoIntent] on [Store].
  */
 @FluxoDsl
 @InlineOnly
-public inline fun <State, SideEffect : Any> StoreHost<State, SideEffect>.intent(
-    noinline intent: StoreScope<Nothing, State, SideEffect>.() -> Unit,
-) {
-    store.send(intent)
+public inline fun <State, SideEffect : Any> ContainerHost<State, SideEffect>.intent(noinline intent: FluxoIntent<State, SideEffect>) {
+    container.send(intent)
 }

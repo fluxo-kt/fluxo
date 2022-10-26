@@ -147,7 +147,6 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         notifications.tryEmit(FluxoEvent.IntentQueued(this, intent0))
         val result = dispatchChannel.trySend(StoreRequest.HandleIntent(null, intent0))
         if (result.isFailure || result.isClosed) {
-            // TODO: Is this possible at all?
             notifications.tryEmit(FluxoEvent.IntentDropped(this, intent0))
         }
         return result

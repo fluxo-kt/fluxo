@@ -5,7 +5,10 @@ import kt.fluxo.core.InputStrategy
 import kt.fluxo.core.dsl.InputStrategyScope
 import kt.fluxo.core.intercept.StoreRequest
 
-// background processing oriented strategy
+/**
+ * Ordered processing strategy. Predictable and intuitive. Best for background.
+ * Consider [LifoInputStrategy] for the UI or more responsiveness instead.
+ */
 internal object FifoInputStrategy : InputStrategy<Any?, Any?>() {
 
     override suspend fun InputStrategyScope<Any?, Any?>.processRequests(filteredQueue: Flow<StoreRequest<Any?, Any?>>) {

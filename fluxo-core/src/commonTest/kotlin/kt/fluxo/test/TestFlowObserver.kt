@@ -10,6 +10,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 
 
@@ -40,15 +41,21 @@ class TestFlowObserver<T>(flow: Flow<T>) {
      *
      * @param timeout How long to wait for in milliseconds
      * @param condition The awaited condition
+     * @param throwTimeout Throw if timed out (by default)
      */
-    suspend fun awaitFor(timeout: Long = 5000L, condition: TestFlowObserver<T>.() -> Boolean) {
-        try {
-            withTimeout(timeout) {
-                while (!condition()) {
-                    delay(AWAIT_TIMEOUT_MS)
+    suspend fun awaitFor(timeout: Long = 5000L, throwTimeout: Boolean = true, condition: TestFlowObserver<T>.() -> Boolean) {
+        // https://github.com/Kotlin/kotlinx.coroutines/blob/master/kotlinx-coroutines-test/README.md#using-withtimeout-inside-runtest
+        withContext(Dispatchers.Default) {
+            try {
+                withTimeout(timeout) {
+                    @Suppress("UNUSED_EXPRESSION")
+                    while (!condition()) {
+                        delay(AWAIT_TIMEOUT_MS)
+                    }
                 }
+            } catch (e: TimeoutCancellationException) {
+                if (throwTimeout) throw e
             }
-        } catch (_: TimeoutCancellationException) {
         }
     }
 
@@ -57,9 +64,10 @@ class TestFlowObserver<T>(flow: Flow<T>) {
      *
      * @param count The awaited element count.
      * @param timeout How long to wait for in milliseconds
+     * @param throwTimeout Throw if timed out (by default)
      */
-    suspend fun awaitCount(count: Int, timeout: Long = 5000L) {
-        awaitFor(timeout) { values.size == count }
+    suspend fun awaitCount(count: Int, timeout: Long = 5000L, throwTimeout: Boolean = true) {
+        awaitFor(timeout, throwTimeout) { values.size >= count }
     }
 
     /**
