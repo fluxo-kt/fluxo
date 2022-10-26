@@ -57,7 +57,7 @@ internal class SideEffectTest {
         container.someFlow(action2)
         container.someFlow(action3)
 
-        val timeout = 500L
+        val timeout = 200L
         testSideEffectObserver1.awaitCount(3, timeout, throwTimeout = false)
         testSideEffectObserver2.awaitCount(3, timeout, throwTimeout = false)
         testSideEffectObserver3.awaitCount(3, timeout, throwTimeout = false)

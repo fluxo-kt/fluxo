@@ -15,7 +15,7 @@ public interface StoreScope<in Intent, State, in SideEffect : Any> {
 
     public val state: State
 
-    public fun updateState(block: (State) -> State): State
+    public suspend fun updateState(block: (State) -> State): State
 
     public suspend fun postSideEffect(sideEffect: SideEffect)
 

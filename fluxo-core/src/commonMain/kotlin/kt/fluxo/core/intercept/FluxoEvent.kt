@@ -91,15 +91,6 @@ public sealed class FluxoEvent<Intent, State, SideEffect : Any>(
         }
     }
 
-    public class IntentDropped<Intent, State, SideEffect : Any>(
-        store: Store<Intent, State, SideEffect>,
-        public val intent: Intent,
-    ) : FluxoEvent<Intent, State, SideEffect>(store) {
-        override fun toString(): String {
-            return "Dropping intent: $intent"
-        }
-    }
-
     public class IntentHandledSuccessfully<Intent, State, SideEffect : Any>(
         store: Store<Intent, State, SideEffect>,
         public val intent: Intent,
@@ -147,6 +138,15 @@ public sealed class FluxoEvent<Intent, State, SideEffect : Any>(
     ) : FluxoEvent<Intent, State, SideEffect>(store) {
         override fun toString(): String {
             return "Emitting SideEffect: $sideEffect"
+        }
+    }
+
+    public class SideEffectDropped<Intent, State, SideEffect : Any>(
+        store: Store<Intent, State, SideEffect>,
+        public val sideEffect: SideEffect,
+    ) : FluxoEvent<Intent, State, SideEffect>(store) {
+        override fun toString(): String {
+            return "Dropping SideEffect: $sideEffect"
         }
     }
 

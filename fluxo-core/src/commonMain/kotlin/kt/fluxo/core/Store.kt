@@ -18,7 +18,7 @@ public interface Store<in Intent, out State, out SideEffect : Any> {
 
 
     @JsName("send")
-    public fun send(intent: Intent): ChannelResult<Unit>
+    public fun send(intent: Intent)
 
     @JsName("sendAndAwait")
     public suspend fun sendAsync(intent: Intent): Deferred<Unit>

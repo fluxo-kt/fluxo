@@ -8,7 +8,7 @@ internal class BootstrapperScopeImpl<in Intent, State, SideEffect : Any>(
     bootstrapper: Any?,
     guardian: InputStrategyGuardian?,
     getState: () -> State,
-    updateStateAndGet: ((State) -> State) -> State,
+    updateStateAndGet: suspend ((State) -> State) -> State,
     private val sendIntent: suspend (Intent) -> Deferred<Unit>,
     sendSideEffect: suspend (SideEffect) -> Unit,
     sendSideJob: suspend (SideJobRequest<Intent, State, SideEffect>) -> Unit,

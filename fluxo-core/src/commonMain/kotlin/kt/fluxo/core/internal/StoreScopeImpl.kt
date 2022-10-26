@@ -7,7 +7,7 @@ internal open class StoreScopeImpl<in Intent, State, SideEffect : Any>(
     internal val job: Any?,
     private val guardian: InputStrategyGuardian?,
     private val getState: () -> State,
-    private val updateStateAndGet: ((State) -> State) -> State,
+    private val updateStateAndGet: suspend ((State) -> State) -> State,
     private val sendSideEffect: suspend (SideEffect) -> Unit,
     private val sendSideJob: suspend (SideJobRequest<Intent, State, SideEffect>) -> Unit,
 ) : StoreScope<Intent, State, SideEffect> {
@@ -18,7 +18,7 @@ internal open class StoreScopeImpl<in Intent, State, SideEffect : Any>(
             return getState()
         }
 
-    final override fun updateState(block: (State) -> State): State {
+    final override suspend fun updateState(block: (State) -> State): State {
         guardian?.checkStateUpdate()
         return updateStateAndGet(block)
     }
