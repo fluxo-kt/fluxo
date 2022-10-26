@@ -37,7 +37,7 @@ internal class SideEffectTest {
             container.someFlow(it)
         }
 
-        testSideEffectObserver1.awaitCount(1000)
+        testSideEffectObserver1.awaitCount(1000, 10_000)
 
         assertContentEquals(0..999, testSideEffectObserver1.values)
     }
