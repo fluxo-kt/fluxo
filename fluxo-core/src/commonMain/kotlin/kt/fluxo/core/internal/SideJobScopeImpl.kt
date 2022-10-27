@@ -11,7 +11,7 @@ internal class SideJobScopeImpl<in Intent, out State, in SideEffect : Any>(
     private val sendSideEffect: suspend (SideEffect) -> Unit,
     override val currentStateWhenStarted: State,
     override val restartState: SideJobScope.RestartState,
-    private val coroutineScope: CoroutineScope,
+    coroutineScope: CoroutineScope,
 ) : SideJobScope<Intent, State, SideEffect>, CoroutineScope by coroutineScope {
 
     override suspend fun postIntent(intent: Intent) = sendIntent(intent)

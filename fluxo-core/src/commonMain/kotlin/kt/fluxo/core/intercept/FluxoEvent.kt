@@ -1,236 +1,121 @@
+@file:Suppress("MemberVisibilityCanBePrivate", "NO_EXPLICIT_VISIBILITY_IN_API_MODE")
+
 package kt.fluxo.core.intercept
 
-import kt.fluxo.core.Bootstrapper
 import kt.fluxo.core.Store
-import kt.fluxo.core.dsl.SideJobScope
+import kt.fluxo.core.dsl.SideJobScope.RestartState
+import kt.fluxo.core.dsl.SideJobScope.RestartState.Restarted
+import kt.fluxo.core.Bootstrapper as B
 
-@Suppress("MemberVisibilityCanBePrivate")
 public sealed class FluxoEvent<Intent, State, SideEffect : Any>(
     public val store: Store<Intent, State, SideEffect>,
 ) {
     // region Store
 
-    public class StoreStarted<Intent, State, SideEffect : Any>(
-        store: Store<Intent, State, SideEffect>,
-    ) : FluxoEvent<Intent, State, SideEffect>(store) {
-        override fun toString(): String {
-            return "Store started: $store"
-        }
+    class StoreStarted<I, S, SE : Any>(store: Store<I, S, SE>) : FluxoEvent<I, S, SE>(store) {
+        override fun toString(): String = "Store started: $store"
     }
 
-    public class StoreClosed<Intent, State, SideEffect : Any>(
-        store: Store<Intent, State, SideEffect>,
-        public val cause: Throwable?,
-    ) : FluxoEvent<Intent, State, SideEffect>(store) {
-        override fun toString(): String {
-            return "Store closed: $store, cause=$cause"
-        }
+    class StoreClosed<I, S, SE : Any>(store: Store<I, S, SE>, val cause: Throwable?) : FluxoEvent<I, S, SE>(store) {
+        override fun toString(): String = "Store closed: $store, cause=$cause"
+    }
+
+    class StateChanged<I, S, SE : Any>(store: Store<I, S, SE>, val state: S) : FluxoEvent<I, S, SE>(store) {
+        override fun toString(): String = "State changed: $store, $state"
+    }
+
+    class UnhandledError<I, S, SE : Any>(store: Store<I, S, SE>, val e: Throwable) : FluxoEvent<I, S, SE>(store) {
+        override fun toString(): String = "Uncaught error: $store (${e.message ?: e})"
     }
 
     // endregion
 
     // region Bootstrap
 
-    public class BootstrapperStart<Intent, State, SideEffect : Any>(
-        store: Store<Intent, State, SideEffect>,
-        public val bootstrapper: Bootstrapper<Intent, State, SideEffect>,
-    ) : FluxoEvent<Intent, State, SideEffect>(store) {
-        override fun toString(): String {
-            return "Starting bootstrapper: $store, $bootstrapper"
-        }
+    class BootstrapperStarted<I, S, SE : Any>(store: Store<I, S, SE>, val bootstrapper: B<I, S, SE>) : FluxoEvent<I, S, SE>(store) {
+        override fun toString(): String = "Bootstrapper started: $store, $bootstrapper"
     }
 
-    public class BootstrapperFinished<Intent, State, SideEffect : Any>(
-        store: Store<Intent, State, SideEffect>,
-        public val bootstrapper: Bootstrapper<Intent, State, SideEffect>,
-    ) : FluxoEvent<Intent, State, SideEffect>(store) {
-        override fun toString(): String {
-            return "Completed bootstrapper: $store, $bootstrapper"
-        }
+    class BootstrapperCompleted<I, S, SE : Any>(store: Store<I, S, SE>, val bootstrapper: B<I, S, SE>) : FluxoEvent<I, S, SE>(store) {
+        override fun toString(): String = "Bootstrapper completed: $store, $bootstrapper"
     }
 
-    public class BootstrapperError<Intent, State, SideEffect : Any>(
-        store: Store<Intent, State, SideEffect>,
-        public val bootstrapper: Bootstrapper<Intent, State, SideEffect>,
-        public val throwable: Throwable,
-    ) : FluxoEvent<Intent, State, SideEffect>(store) {
-        override fun toString(): String {
-            return "Error in bootstrapper: $store, $bootstrapper (${throwable.message ?: throwable})"
-        }
+    class BootstrapperCancelled<I, S, SE : Any>(store: Store<I, S, SE>, val bootstrapper: B<I, S, SE>) : FluxoEvent<I, S, SE>(store) {
+        override fun toString(): String = "Bootstrapper cancelled: $store, $bootstrapper"
+    }
+
+    class BootstrapperError<I, S, SE : Any>(store: Store<I, S, SE>, val bootstrapper: B<I, S, SE>, val e: Throwable) :
+        FluxoEvent<I, S, SE>(store) {
+        override fun toString(): String = "Bootstrapper error: $store, $bootstrapper (${e.message ?: e})"
     }
 
     // endregion
 
     // region Intent
 
-    public class IntentQueued<Intent, State, SideEffect : Any>(
-        store: Store<Intent, State, SideEffect>,
-        public val intent: Intent,
-    ) : FluxoEvent<Intent, State, SideEffect>(store) {
-        override fun toString(): String {
-            return "Intent queued: $store, $intent"
-        }
+    class IntentQueued<I, S, SE : Any>(store: Store<I, S, SE>, val intent: I) : FluxoEvent<I, S, SE>(store) {
+        override fun toString(): String = "Intent queued: $store, $intent"
     }
 
-    public class IntentAccepted<Intent, State, SideEffect : Any>(
-        store: Store<Intent, State, SideEffect>,
-        public val intent: Intent,
-    ) : FluxoEvent<Intent, State, SideEffect>(store) {
-        override fun toString(): String {
-            return "Accepting intent: $store, $intent"
-        }
+    class IntentAccepted<I, S, SE : Any>(store: Store<I, S, SE>, val intent: I) : FluxoEvent<I, S, SE>(store) {
+        override fun toString(): String = "Intent accepted: $store, $intent"
     }
 
-    public class IntentRejected<Intent, State, SideEffect : Any>(
-        store: Store<Intent, State, SideEffect>,
-        public val stateWhenRejected: State,
-        public val intent: Intent,
-    ) : FluxoEvent<Intent, State, SideEffect>(store) {
-        override fun toString(): String {
-            return "Rejecting intent: $store, $intent"
-        }
+    class IntentRejected<I, S, SE : Any>(store: Store<I, S, SE>, val stateWhenRejected: S, val intent: I) : FluxoEvent<I, S, SE>(store) {
+        override fun toString(): String = "Intent rejected: $store, $intent"
     }
 
-    public class IntentHandledSuccessfully<Intent, State, SideEffect : Any>(
-        store: Store<Intent, State, SideEffect>,
-        public val intent: Intent,
-    ) : FluxoEvent<Intent, State, SideEffect>(store) {
-        override fun toString(): String {
-            return "Intent handled successfully: $store, $intent"
-        }
+    class IntentHandled<I, S, SE : Any>(store: Store<I, S, SE>, val intent: I) : FluxoEvent<I, S, SE>(store) {
+        override fun toString(): String = "Intent handled: $store, $intent"
     }
 
-    public class IntentCancelled<Intent, State, SideEffect : Any>(
-        store: Store<Intent, State, SideEffect>,
-        public val intent: Intent,
-    ) : FluxoEvent<Intent, State, SideEffect>(store) {
-        override fun toString(): String {
-            return "Intent cancelled: $store, $intent"
-        }
+    class IntentCancelled<I, S, SE : Any>(store: Store<I, S, SE>, val intent: I) : FluxoEvent<I, S, SE>(store) {
+        override fun toString(): String = "Intent cancelled: $store, $intent"
     }
 
-    public class IntentHandlerError<Intent, State, SideEffect : Any>(
-        store: Store<Intent, State, SideEffect>,
-        public val intent: Intent,
-        public val throwable: Throwable,
-    ) : FluxoEvent<Intent, State, SideEffect>(store) {
-        override fun toString(): String {
-            return "Error handling intent: $store, $intent (${throwable.message ?: throwable})"
-        }
+    class IntentError<I, S, SE : Any>(store: Store<I, S, SE>, val intent: I, val e: Throwable) : FluxoEvent<I, S, SE>(store) {
+        override fun toString(): String = "Intent error: $store, $intent (${e.message ?: e})"
     }
 
     // endregion
 
     // region SideEffect
 
-    public class SideEffectQueued<Intent, State, SideEffect : Any>(
-        store: Store<Intent, State, SideEffect>,
-        public val sideEffect: SideEffect,
-    ) : FluxoEvent<Intent, State, SideEffect>(store) {
-        override fun toString(): String {
-            return "SideEffect Queued: $store, $sideEffect"
-        }
+    class SideEffectEmitted<I, S, SE : Any>(store: Store<I, S, SE>, val sideEffect: SE) : FluxoEvent<I, S, SE>(store) {
+        override fun toString(): String = "SideEffect emitted: $store, $sideEffect"
     }
 
-    public class SideEffectEmitted<Intent, State, SideEffect : Any>(
-        store: Store<Intent, State, SideEffect>,
-        public val sideEffect: SideEffect,
-    ) : FluxoEvent<Intent, State, SideEffect>(store) {
-        override fun toString(): String {
-            return "Emitting SideEffect: $store, $sideEffect"
-        }
-    }
-
-    public class SideEffectDropped<Intent, State, SideEffect : Any>(
-        store: Store<Intent, State, SideEffect>,
-        public val sideEffect: SideEffect,
-    ) : FluxoEvent<Intent, State, SideEffect>(store) {
-        override fun toString(): String {
-            return "Dropping SideEffect: $store, $sideEffect"
-        }
-    }
-
-    // endregion
-
-    // region States
-
-    public class StateChanged<Intent, State, SideEffect : Any>(
-        store: Store<Intent, State, SideEffect>,
-        public val state: State,
-    ) : FluxoEvent<Intent, State, SideEffect>(store) {
-        override fun toString(): String {
-            return "State changed: $store, $state"
-        }
+    class SideEffectDropped<I, S, SE : Any>(store: Store<I, S, SE>, val sideEffect: SE) : FluxoEvent<I, S, SE>(store) {
+        override fun toString(): String = "SideEffect dropped: $store, $sideEffect"
     }
 
     // endregion
 
     // region Side Jobs
 
-    public class SideJobQueued<Intent, State, SideEffect : Any>(
-        store: Store<Intent, State, SideEffect>,
-        public val key: String,
-    ) : FluxoEvent<Intent, State, SideEffect>(store) {
-        override fun toString(): String {
-            return "sideJob queued: $store, $key"
-        }
+    class SideJobQueued<I, S, SE : Any>(store: Store<I, S, SE>, val key: String) : FluxoEvent<I, S, SE>(store) {
+        override fun toString(): String = "sideJob queued: $store, $key"
     }
 
-    public class SideJobStarted<Intent, State, SideEffect : Any>(
-        store: Store<Intent, State, SideEffect>,
-        public val key: String,
-        public val restartState: SideJobScope.RestartState,
-    ) : FluxoEvent<Intent, State, SideEffect>(store) {
-        override fun toString(): String {
-            return when (restartState) {
-                SideJobScope.RestartState.Initial -> "sideJob started: $store, $key"
-                SideJobScope.RestartState.Restarted -> "sideJob restarted: $store, $key"
-            }
-        }
+    class SideJobStarted<I, S, SE : Any>(store: Store<I, S, SE>, val key: String, val restartState: RestartState) :
+        FluxoEvent<I, S, SE>(store) {
+        override fun toString(): String = "sideJob ${if (restartState === Restarted) "restarted" else "started"}: $store, $key"
     }
 
-    public class SideJobCompleted<Intent, State, SideEffect : Any>(
-        store: Store<Intent, State, SideEffect>,
-        public val key: String,
-        public val restartState: SideJobScope.RestartState,
-    ) : FluxoEvent<Intent, State, SideEffect>(store) {
-        override fun toString(): String {
-            return "sideJob finished: $key"
-        }
+    class SideJobCompleted<I, S, SE : Any>(store: Store<I, S, SE>, val key: String, val restartState: RestartState) :
+        FluxoEvent<I, S, SE>(store) {
+        override fun toString(): String = "sideJob${if (restartState === Restarted) " (restarted)" else ""} completed: $store, $key"
     }
 
-    public class SideJobCancelled<Intent, State, SideEffect : Any>(
-        store: Store<Intent, State, SideEffect>,
-        public val key: String,
-        public val restartState: SideJobScope.RestartState,
-    ) : FluxoEvent<Intent, State, SideEffect>(store) {
-        override fun toString(): String {
-            return "sideJob cancelled: $key"
-        }
+    class SideJobCancelled<I, S, SE : Any>(store: Store<I, S, SE>, val key: String, val restartState: RestartState) :
+        FluxoEvent<I, S, SE>(store) {
+        override fun toString(): String = "sideJob${if (restartState === Restarted) " (restarted)" else ""} cancelled: $store, $key"
     }
 
-    public class SideJobError<Intent, State, SideEffect : Any>(
-        store: Store<Intent, State, SideEffect>,
-        public val key: String,
-        public val restartState: SideJobScope.RestartState,
-        public val throwable: Throwable,
-    ) : FluxoEvent<Intent, State, SideEffect>(store) {
-        override fun toString(): String {
-            return "Error in sideJob: $store, $key (${throwable.message ?: throwable})"
-        }
-    }
-
-    // endregion
-
-    // region Other
-
-    public class UnhandledError<Intent, State, SideEffect : Any>(
-        store: Store<Intent, State, SideEffect>,
-        public val throwable: Throwable,
-    ) : FluxoEvent<Intent, State, SideEffect>(store) {
-        override fun toString(): String {
-            return "Uncaught error: $store (${throwable.message ?: throwable})"
-        }
+    class SideJobError<I, S, SE : Any>(store: Store<I, S, SE>, val key: String, val restartState: RestartState, val e: Throwable) :
+        FluxoEvent<I, S, SE>(store) {
+        override fun toString(): String =
+            " sideJob${if (restartState === Restarted) " (restarted)" else ""} error: $store, $key (${e.message ?: e})"
     }
 
     // endregion

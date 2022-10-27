@@ -23,7 +23,7 @@ internal class FluxoConf<Intent, State, SideEffect : Any>(
     val bootstrapper: Bootstrapper<in Intent, State, SideEffect>?,
     val interceptors: Array<out FluxoInterceptor<Intent, State, SideEffect>>,
     val intentFilter: IntentFilter<in Intent, State>?,
-    val inputStrategy: InputStrategy<Intent, State>,
+    val inputStrategy: InputStrategy,
     val eventLoopContext: CoroutineContext,
     val intentContext: CoroutineContext,
     val sideJobsContext: CoroutineContext,

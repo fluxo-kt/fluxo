@@ -14,6 +14,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -21,9 +22,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.transformWhile
 import kotlinx.coroutines.isActive
@@ -31,7 +30,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import kotlinx.coroutines.withContext
 import kt.fluxo.core.Bootstrapper
-import kt.fluxo.core.IntentFilter
 import kt.fluxo.core.IntentHandler
 import kt.fluxo.core.Store
 import kt.fluxo.core.annotation.InternalFluxoApi
@@ -55,6 +53,8 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
 
     private companion object {
         private const val F = "Fluxo"
+
+        private const val DELAY_TO_CLOSE_INTERCEPTOR_SCOPE_MILLIS = 5_000L
     }
 
     override val name: String get() = conf.name
@@ -65,7 +65,6 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
     private val interceptorScope: CoroutineScope
     private val requestsChannel: Channel<StoreRequest<Intent, State>> = conf.inputStrategy.createQueue()
 
-    private val sideJobsChannel = Channel<SideJobRequest<Intent, State, SideEffect>>(Channel.BUFFERED, BufferOverflow.SUSPEND)
     private val sideJobsMap = ConcurrentHashMap<String, RunningSideJob<Intent, State, SideEffect>>()
 
     private val mutableState = MutableStateFlow(initialState)
@@ -112,10 +111,12 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
             !conf.debugChecks -> EmptyCoroutineContext
             else -> CoroutineName("$F[$name:sideJobScope]")
         }
-        // Shouldn't close immediately with scope
-        interceptorScope = scope + conf.interceptorContext + SupervisorJob() + when {
-            !conf.debugChecks -> EmptyCoroutineContext
-            else -> CoroutineName("$F[$name:interceptorScope]")
+        // Shouldn't close immediately with scope, when interceptors set
+        interceptorScope = if (conf.interceptors.isEmpty()) scope else {
+            scope + conf.interceptorContext + SupervisorJob() + when {
+                !conf.debugChecks -> EmptyCoroutineContext
+                else -> CoroutineName("$F[$name:interceptorScope]")
+            }
         }
 
         sideEffectChannel = Channel(conf.sideEffectBufferSize, BufferOverflow.SUSPEND) {
@@ -189,19 +190,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
 
     // region Internals
 
-    private suspend fun updateState(nextValue: State): State {
-        while (true) {
-            val prevValue = mutableState.value
-            if (prevValue == nextValue) {
-                return prevValue
-            }
-            if (mutableState.compareAndSet(prevValue, nextValue)) {
-                // event fired only if state changed
-                events.emit(FluxoEvent.StateChanged(this, nextValue))
-                return nextValue
-            }
-        }
-    }
+    private suspend fun updateState(nextValue: State): State = updateStateAndGet { nextValue }
 
     private suspend fun updateStateAndGet(function: (State) -> State): State {
         while (true) {
@@ -219,25 +208,15 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
 
     private suspend fun postSideEffect(sideEffect: SideEffect) {
         sideEffectChannel.send(sideEffect)
-        events.emit(FluxoEvent.SideEffectQueued(this@FluxoStore, sideEffect))
-    }
-
-    private suspend fun postSideJob(jobRequest: SideJobRequest<Intent, State, SideEffect>) {
-        sideJobsChannel.send(jobRequest)
-        events.emit(FluxoEvent.SideJobQueued(this@FluxoStore, jobRequest.key))
+        events.emit(FluxoEvent.SideEffectEmitted(this@FluxoStore, sideEffect))
     }
 
     /** Will be called only once for each [FluxoStore] */
     private fun launch() = scope.launch {
         // observe and process intents
-        val filteredIntentsFlow = requestsChannel.receiveAsFlow().run {
-            when (conf.intentFilter) {
-                null -> this
-                else -> filter(::filterRequest).flowOn(intentContext.minusKey(Job))
-            }
-        }
+        val requestsFlow = requestsChannel.receiveAsFlow()
         val inputStrategy = conf.inputStrategy
-        val inputStrategyScope: InputStrategyScope<Intent, State> = { request ->
+        val inputStrategyScope: InputStrategyScope<StoreRequest<Intent, State>> = { request ->
             when (request) {
                 is StoreRequest.HandleIntent -> {
                     if (conf.debugChecks) {
@@ -257,23 +236,16 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         }
         scope.launch(intentContext) {
             with(inputStrategy) {
-                inputStrategyScope.processRequests(filteredQueue = filteredIntentsFlow)
-            }
-        }
-
-        // start sideJobs
-        sideJobScope.launch {
-            for (sideJobRequest in sideJobsChannel) {
-                safelyStartSideJob(sideJobRequest)
+                inputStrategyScope.processRequests(requestsFlow)
             }
         }
 
         // launch interceptors handling (stop on StoreClosed)
         if (conf.interceptors.isNotEmpty()) {
-            val interceptorScope = FluxoInterceptorScopeImpl(
+            val interceptorScope = InterceptorScopeImpl(
                 storeName = name,
-                scope = interceptorScope,
                 sendRequest = requestsChannel::send,
+                coroutineScope = interceptorScope,
             )
             val eventsFlow: Flow<FluxoEvent<Intent, State, SideEffect>> = events.transformWhile {
                 emit(it)
@@ -298,36 +270,18 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         }
     }
 
-    /**
-     * Filters flow of [StoreRequest.HandleIntent]. Will be called only if [IntentFilter] available.
-     */
-    private suspend fun filterRequest(request: StoreRequest<Intent, State>): Boolean {
-        when (request) {
-            is StoreRequest.RestoreState -> {
-                // when restoring state, always accept the item
-                return true
-            }
-
-            is StoreRequest.HandleIntent -> {
-                // when handling an Intent, check with the IntentFilter to see if it should be accepted.
-                val currentState = mutableState.value
-                val shouldAcceptIntent = conf.intentFilter?.invoke(currentState, request.intent) ?: true
-
-                if (!shouldAcceptIntent) {
-                    events.emit(FluxoEvent.IntentRejected(this, currentState, request.intent))
-                    request.deferred?.complete(Unit)
-                }
-
-                return shouldAcceptIntent
-            }
-        }
-    }
-
     private suspend fun safelyHandleIntent(intent: Intent, deferred: CompletableDeferred<Unit>?) {
-        events.emit(FluxoEvent.IntentAccepted(this, intent))
-
         val stateBeforeCancellation = mutableState.value
         try {
+            // Apply an intent filter before processing, if defined
+            conf.intentFilter?.also { accept ->
+                if (!accept(stateBeforeCancellation, intent)) {
+                    events.emit(FluxoEvent.IntentRejected(this, stateBeforeCancellation, intent))
+                    return
+                }
+            }
+
+            events.emit(FluxoEvent.IntentAccepted(this, intent))
             val handlerScope = StoreScopeImpl(
                 job = intent,
                 guardian = when {
@@ -345,7 +299,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
                 }
             }
             handlerScope.close()
-            events.emit(FluxoEvent.IntentHandledSuccessfully(this@FluxoStore, intent))
+            events.emit(FluxoEvent.IntentHandled(this@FluxoStore, intent))
         } catch (_: CancellationException) {
             // reset state as intent did not complete successfully
             if (conf.inputStrategy.rollbackOnCancellation) {
@@ -353,7 +307,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
             }
             events.emit(FluxoEvent.IntentCancelled(this, intent))
         } catch (e: Throwable) {
-            events.emit(FluxoEvent.IntentHandlerError(this, intent, e))
+            events.emit(FluxoEvent.IntentError(this, intent, e))
             if (!conf.closeOnExceptions) {
                 conf.exceptionHandler?.handleException(currentCoroutineContext(), e)
             } else {
@@ -364,7 +318,9 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         }
     }
 
-    private suspend fun safelyStartSideJob(request: SideJobRequest<Intent, State, SideEffect>) {
+    private suspend fun postSideJob(request: SideJobRequest<Intent, State, SideEffect>) {
+        events.emit(FluxoEvent.SideJobQueued(this@FluxoStore, request.key))
+
         val key = request.key
         val block = request.block
 
@@ -397,15 +353,20 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
                     else -> CoroutineName("$F[$name SideJob $key <= Intent ${request.parent}]")
                 }
             ) {
-                events.emit(FluxoEvent.SideJobStarted(this@FluxoStore, key, restartState))
                 try {
-                    SideJobScopeImpl(
+                    val sideJobScope = SideJobScopeImpl(
                         sendIntent = ::sendAsync,
                         sendSideEffect = ::postSideEffect,
                         currentStateWhenStarted = mutableState.value,
                         restartState = restartState,
                         coroutineScope = this,
-                    ).block()
+                    )
+                    events.emit(FluxoEvent.SideJobStarted(this@FluxoStore, key, restartState))
+
+                    // Await all children completion with coroutineScope
+                    coroutineScope {
+                        sideJobScope.block()
+                    }
                     events.emit(FluxoEvent.SideJobCompleted(this@FluxoStore, key, restartState))
                 } catch (_: CancellationException) {
                     events.emit(FluxoEvent.SideJobCancelled(this@FluxoStore, key, restartState))
@@ -422,20 +383,26 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
     }
 
     private suspend fun safelyRunBootstrapper(bootstrapper: Bootstrapper<Intent, State, SideEffect>) = withContext(intentContext) {
-        events.emit(FluxoEvent.BootstrapperStart(this@FluxoStore, bootstrapper))
-        val bootstrapperScope = BootstrapperScopeImpl(
-            bootstrapper = bootstrapper,
-            guardian = if (conf.debugChecks) InputStrategyGuardian(parallelProcessing = false) else null,
-            getState = mutableState::value,
-            updateStateAndGet = ::updateStateAndGet,
-            sendIntent = ::sendAsync,
-            sendSideEffect = ::postSideEffect,
-            sendSideJob = ::postSideJob,
-        )
+        events.emit(FluxoEvent.BootstrapperStarted(this@FluxoStore, bootstrapper))
         try {
-            bootstrapperScope.bootstrapper()
+            val bootstrapperScope = BootstrapperScopeImpl(
+                bootstrapper = bootstrapper,
+                guardian = if (conf.debugChecks) InputStrategyGuardian(parallelProcessing = false) else null,
+                getState = mutableState::value,
+                updateStateAndGet = ::updateStateAndGet,
+                sendIntent = ::sendAsync,
+                sendSideEffect = ::postSideEffect,
+                sendSideJob = ::postSideJob,
+            )
+
+            // Await all children completion with coroutineScope
+            coroutineScope {
+                bootstrapperScope.bootstrapper()
+            }
             bootstrapperScope.close()
-            events.emit(FluxoEvent.BootstrapperFinished(this@FluxoStore, bootstrapper))
+            events.emit(FluxoEvent.BootstrapperCompleted(this@FluxoStore, bootstrapper))
+        } catch (_: CancellationException) {
+            events.emit(FluxoEvent.BootstrapperCancelled(this@FluxoStore, bootstrapper))
         } catch (e: Throwable) {
             events.emit(FluxoEvent.BootstrapperError(this@FluxoStore, bootstrapper, e))
             if (!conf.closeOnExceptions) {
@@ -459,13 +426,15 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         }
         sideJobsMap.clear()
 
-        requestsChannel.close(ce)
         sideEffectChannel.close(ce)
-        sideJobsChannel.close(ce)
 
-        interceptorScope.launch {
-            @Suppress("MagicNumber") delay(5_000)
-            interceptorScope.cancel(cancellationCause)
+        val interceptorScope = interceptorScope
+        if (interceptorScope !== scope && interceptorScope.isActive) {
+            val cancellationCause = cancellationCause
+            interceptorScope.launch {
+                delay(DELAY_TO_CLOSE_INTERCEPTOR_SCOPE_MILLIS)
+                interceptorScope.cancel(cancellationCause)
+            }
         }
     }
 

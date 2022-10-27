@@ -81,7 +81,7 @@ public class FluxoSettings<Intent, State, SideEffect : Any> {
      * [Fifo], [Lifo], and [Parallel] strategies available out of the box.
      * Or you can create your own if you need.
      */
-    public var inputStrategy: InputStrategy<Intent, State> = Fifo
+    public var inputStrategy: InputStrategy = Fifo
 
     // endregion
 
@@ -123,17 +123,17 @@ public class FluxoSettings<Intent, State, SideEffect : Any> {
      * Ordered processing strategy. Predictable and intuitive. Best for background.
      * Consider [Fifo] for the UI or more responsiveness instead.
      */
-    public inline val Fifo: InputStrategy<Intent, State> get() = InputStrategy.Fifo()
+    public inline val Fifo: InputStrategy get() = InputStrategy.Fifo
 
     /**
      * UI events oriented strategy. Cancels previous unfinished intents when receives new one.
      *
      * Provides more responsiveness, but can lose some intents!
      */
-    public inline val Lifo: InputStrategy<Intent, State> get() = InputStrategy.Lifo()
+    public inline val Lifo: InputStrategy get() = InputStrategy.Lifo
 
     /** Parallel processing of all intents. No guarantee that inputs will be processed in any given order. */
-    public inline val Parallel: InputStrategy<Intent, State> get() = InputStrategy.Parallel()
+    public inline val Parallel: InputStrategy get() = InputStrategy.Parallel
 
     // endregion
 }
