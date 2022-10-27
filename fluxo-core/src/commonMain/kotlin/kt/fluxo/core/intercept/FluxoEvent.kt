@@ -36,7 +36,7 @@ public sealed class FluxoEvent<Intent, State, SideEffect : Any>(
         public val bootstrapper: Bootstrapper<Intent, State, SideEffect>,
     ) : FluxoEvent<Intent, State, SideEffect>(store) {
         override fun toString(): String {
-            return "Starting bootstrapper: $bootstrapper"
+            return "Starting bootstrapper: $store, $bootstrapper"
         }
     }
 
@@ -45,7 +45,7 @@ public sealed class FluxoEvent<Intent, State, SideEffect : Any>(
         public val bootstrapper: Bootstrapper<Intent, State, SideEffect>,
     ) : FluxoEvent<Intent, State, SideEffect>(store) {
         override fun toString(): String {
-            return "Completed bootstrapper: $bootstrapper"
+            return "Completed bootstrapper: $store, $bootstrapper"
         }
     }
 
@@ -55,7 +55,7 @@ public sealed class FluxoEvent<Intent, State, SideEffect : Any>(
         public val throwable: Throwable,
     ) : FluxoEvent<Intent, State, SideEffect>(store) {
         override fun toString(): String {
-            return "Error in bootstrapper: $bootstrapper (${throwable.message})"
+            return "Error in bootstrapper: $store, $bootstrapper (${throwable.message ?: throwable})"
         }
     }
 
@@ -68,7 +68,7 @@ public sealed class FluxoEvent<Intent, State, SideEffect : Any>(
         public val intent: Intent,
     ) : FluxoEvent<Intent, State, SideEffect>(store) {
         override fun toString(): String {
-            return "Intent queued: $intent"
+            return "Intent queued: $store, $intent"
         }
     }
 
@@ -77,7 +77,7 @@ public sealed class FluxoEvent<Intent, State, SideEffect : Any>(
         public val intent: Intent,
     ) : FluxoEvent<Intent, State, SideEffect>(store) {
         override fun toString(): String {
-            return "Accepting intent: $intent"
+            return "Accepting intent: $store, $intent"
         }
     }
 
@@ -87,7 +87,7 @@ public sealed class FluxoEvent<Intent, State, SideEffect : Any>(
         public val intent: Intent,
     ) : FluxoEvent<Intent, State, SideEffect>(store) {
         override fun toString(): String {
-            return "Rejecting intent: $intent"
+            return "Rejecting intent: $store, $intent"
         }
     }
 
@@ -96,7 +96,7 @@ public sealed class FluxoEvent<Intent, State, SideEffect : Any>(
         public val intent: Intent,
     ) : FluxoEvent<Intent, State, SideEffect>(store) {
         override fun toString(): String {
-            return "Intent handled successfully: $intent"
+            return "Intent handled successfully: $store, $intent"
         }
     }
 
@@ -105,7 +105,7 @@ public sealed class FluxoEvent<Intent, State, SideEffect : Any>(
         public val intent: Intent,
     ) : FluxoEvent<Intent, State, SideEffect>(store) {
         override fun toString(): String {
-            return "Intent cancelled: $intent"
+            return "Intent cancelled: $store, $intent"
         }
     }
 
@@ -115,7 +115,7 @@ public sealed class FluxoEvent<Intent, State, SideEffect : Any>(
         public val throwable: Throwable,
     ) : FluxoEvent<Intent, State, SideEffect>(store) {
         override fun toString(): String {
-            return "Error handling intent: $intent (${throwable.message})"
+            return "Error handling intent: $store, $intent (${throwable.message ?: throwable})"
         }
     }
 
@@ -128,7 +128,7 @@ public sealed class FluxoEvent<Intent, State, SideEffect : Any>(
         public val sideEffect: SideEffect,
     ) : FluxoEvent<Intent, State, SideEffect>(store) {
         override fun toString(): String {
-            return "SideEffect Queued: $sideEffect"
+            return "SideEffect Queued: $store, $sideEffect"
         }
     }
 
@@ -137,7 +137,7 @@ public sealed class FluxoEvent<Intent, State, SideEffect : Any>(
         public val sideEffect: SideEffect,
     ) : FluxoEvent<Intent, State, SideEffect>(store) {
         override fun toString(): String {
-            return "Emitting SideEffect: $sideEffect"
+            return "Emitting SideEffect: $store, $sideEffect"
         }
     }
 
@@ -146,7 +146,7 @@ public sealed class FluxoEvent<Intent, State, SideEffect : Any>(
         public val sideEffect: SideEffect,
     ) : FluxoEvent<Intent, State, SideEffect>(store) {
         override fun toString(): String {
-            return "Dropping SideEffect: $sideEffect"
+            return "Dropping SideEffect: $store, $sideEffect"
         }
     }
 
@@ -159,7 +159,7 @@ public sealed class FluxoEvent<Intent, State, SideEffect : Any>(
         public val state: State,
     ) : FluxoEvent<Intent, State, SideEffect>(store) {
         override fun toString(): String {
-            return "State changed: $state"
+            return "State changed: $store, $state"
         }
     }
 
@@ -172,7 +172,7 @@ public sealed class FluxoEvent<Intent, State, SideEffect : Any>(
         public val key: String,
     ) : FluxoEvent<Intent, State, SideEffect>(store) {
         override fun toString(): String {
-            return "sideJob queued: $key"
+            return "sideJob queued: $store, $key"
         }
     }
 
@@ -183,8 +183,8 @@ public sealed class FluxoEvent<Intent, State, SideEffect : Any>(
     ) : FluxoEvent<Intent, State, SideEffect>(store) {
         override fun toString(): String {
             return when (restartState) {
-                SideJobScope.RestartState.Initial -> "sideJob started: $key"
-                SideJobScope.RestartState.Restarted -> "sideJob restarted: $key"
+                SideJobScope.RestartState.Initial -> "sideJob started: $store, $key"
+                SideJobScope.RestartState.Restarted -> "sideJob restarted: $store, $key"
             }
         }
     }
@@ -216,7 +216,7 @@ public sealed class FluxoEvent<Intent, State, SideEffect : Any>(
         public val throwable: Throwable,
     ) : FluxoEvent<Intent, State, SideEffect>(store) {
         override fun toString(): String {
-            return "Error in sideJob: $key (${throwable.message})"
+            return "Error in sideJob: $store, $key (${throwable.message ?: throwable})"
         }
     }
 
@@ -229,7 +229,7 @@ public sealed class FluxoEvent<Intent, State, SideEffect : Any>(
         public val throwable: Throwable,
     ) : FluxoEvent<Intent, State, SideEffect>(store) {
         override fun toString(): String {
-            return "Uncaught error (${throwable.message})"
+            return "Uncaught error: $store (${throwable.message ?: throwable})"
         }
     }
 

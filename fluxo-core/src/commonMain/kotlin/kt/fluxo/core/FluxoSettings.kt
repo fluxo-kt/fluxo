@@ -33,8 +33,14 @@ public class FluxoSettings<Intent, State, SideEffect : Any> {
      * Enables all the debug checks in the [Store].
      *
      * Disable explicitly if you need to bypass the [InputStrategyGuardian] checks, and sure in it.
+     *
+     * [closeOnExceptions] is also enabled if [debugChecks] enabled explicitly.
      */
     public var debugChecks: Boolean = DEBUG
+        set(value) {
+            field = value
+            if (value) closeOnExceptions = true
+        }
 
     // FIXME: TODO
     public var repeatOnSubscribedStopTimeout: Long = 100L
@@ -97,11 +103,16 @@ public class FluxoSettings<Intent, State, SideEffect : Any> {
 
     /**
      * [CoroutineExceptionHandler] to receive exception happened in processing.
-     * Disable [closeOnExceptions] if you want [Store] to keep working in such situations.
+     *
+     * **NOTE:** Disables [closeOnExceptions] when set to non-null value!
      *
      * @see closeOnExceptions
      */
     public var exceptionHandler: CoroutineExceptionHandler? = null
+        set(value) {
+            field = value
+            closeOnExceptions = value == null
+        }
 
     // endregion
 

@@ -37,7 +37,7 @@ internal fun <Intent, State, SideEffect : Any> FluxoSettings<Intent, State, Side
     return FluxoConf(
         name = name ?: "store#${storeNumber.getAndIncrement()}",
         lazy = lazy,
-        closeOnExceptions = closeOnExceptions || debugChecks,
+        closeOnExceptions = closeOnExceptions,
         debugChecks = debugChecks,
         repeatOnSubscribedStopTimeout = repeatOnSubscribedStopTimeout,
         sideEffectBufferSize = sideEffectBufferSize,

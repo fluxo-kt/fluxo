@@ -6,10 +6,9 @@ import kt.fluxo.core.intercept.StoreRequest
 
 internal class FluxoInterceptorScopeImpl<in Intent, in State>(
     override val storeName: String,
-    private val storeScope: CoroutineScope,
+    private val scope: CoroutineScope,
     private val sendRequest: suspend (StoreRequest<Intent, State>) -> Unit
-) : FluxoInterceptorScope<Intent, State>,
-    CoroutineScope by storeScope {
+) : FluxoInterceptorScope<Intent, State>, CoroutineScope by scope {
 
     override suspend fun postRequest(request: StoreRequest<Intent, State>) = sendRequest(request)
 }

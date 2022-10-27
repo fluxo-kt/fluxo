@@ -8,16 +8,21 @@ import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.transformWhile
@@ -30,6 +35,8 @@ import kt.fluxo.core.IntentFilter
 import kt.fluxo.core.IntentHandler
 import kt.fluxo.core.Store
 import kt.fluxo.core.annotation.InternalFluxoApi
+import kt.fluxo.core.debug.DEBUG
+import kt.fluxo.core.debug.debugIntentWrapper
 import kt.fluxo.core.dsl.InputStrategyScope
 import kt.fluxo.core.dsl.SideJobScope.RestartState
 import kt.fluxo.core.intercept.FluxoEvent
@@ -62,22 +69,20 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
     private val sideJobsMap = ConcurrentHashMap<String, RunningSideJob<Intent, State, SideEffect>>()
 
     private val mutableState = MutableStateFlow(initialState)
-    override val stateFlow: StateFlow<State>
-        get() {
-            start()
-            return mutableState
-        }
+    override val stateFlow: StateFlow<State> get() = mutableState
 
     private val sideEffectChannel: Channel<SideEffect>
     override val sideEffectFlow: Flow<SideEffect>
-        get() {
-            start()
-            return field
-        }
 
     private val events = MutableSharedFlow<FluxoEvent<Intent, State, SideEffect>>(extraBufferCapacity = 256)
 
+    override val isActive: Boolean
+        get() = scope.isActive
+
     private val initialised = atomic(false)
+
+    @OptIn(InternalCoroutinesApi::class)
+    private val cancellationCause get() = scope.coroutineContext[Job]?.getCancellationException()
 
     init {
         val ctx = conf.eventLoopContext + when {
@@ -118,17 +123,40 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
                 events.emit(FluxoEvent.SideEffectDropped(this@FluxoStore, it))
             }
         }
-        sideEffectFlow = sideEffectChannel.receiveAsFlow()
+        sideEffectFlow = sideEffectChannel.receiveAsFlow().let {
+            // Wrap Flow for lazy initialization
+            if (!conf.lazy) it else flow {
+                start()
+                emitAll(it)
+            }
+        }
 
-        // eager start
+
         if (!conf.lazy) {
+            // eager start
             start()
+        } else {
+            // lazy start on state subscription
+            scope.launch {
+                var previous = 0
+                mutableState.subscriptionCount.collect { v ->
+                    if (v != previous) {
+                        if (previous <= 0 && v > 0) {
+                            start()
+                            cancel()
+                        }
+                        previous = v
+                    }
+                }
+            }
         }
     }
 
 
     override fun start() {
-        check(scope.isActive) { "Store is closed, it cannot be restarted" }
+        if (!isActive) {
+            throw StoreClosedException("Store is closed, it cannot be restarted", cancellationCause?.let { it.cause ?: it })
+        }
         if (initialised.compareAndSet(expect = false, update = true)) {
             launch()
         }
@@ -140,17 +168,18 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
 
     override suspend fun sendAsync(intent: Intent): Deferred<Unit> {
         start()
-        events.emit(FluxoEvent.IntentQueued(this, intent))
+        val i = if (DEBUG || conf.debugChecks) debugIntentWrapper(intent) else intent
+        events.emit(FluxoEvent.IntentQueued(this, i))
         val deferred = CompletableDeferred<Unit>()
-        requestsChannel.send(StoreRequest.HandleIntent(deferred, intent))
+        requestsChannel.send(StoreRequest.HandleIntent(deferred, i))
         return deferred
     }
 
     override fun send(intent: Intent) {
         start()
+        val i = if (DEBUG || conf.debugChecks) debugIntentWrapper(intent) else intent
         scope.launch(Dispatchers.Unconfined) {
-            @Suppress("DeferredResultUnused")
-            sendAsync(intent)
+            @Suppress("DeferredResultUnused") sendAsync(i)
         }
     }
 
@@ -240,21 +269,24 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         }
 
         // launch interceptors handling (stop on StoreClosed)
-        val interceptorScope = FluxoInterceptorScopeImpl(
-            storeName = name,
-            storeScope = interceptorScope,
-            sendRequest = requestsChannel::send,
-        )
-        val eventsFlow: Flow<FluxoEvent<Intent, State, SideEffect>> = events.transformWhile {
-            emit(it)
-            it !is FluxoEvent.StoreClosed
-        }
-        for (interceptor in conf.interceptors) {
-            with(interceptor) {
-                try {
-                    interceptorScope.start(eventsFlow)
-                } catch (e: Throwable) {
-                    events.emit(FluxoEvent.UnhandledError(this@FluxoStore, e))
+        if (conf.interceptors.isNotEmpty()) {
+            val interceptorScope = FluxoInterceptorScopeImpl(
+                storeName = name,
+                scope = interceptorScope,
+                sendRequest = requestsChannel::send,
+            )
+            val eventsFlow: Flow<FluxoEvent<Intent, State, SideEffect>> = events.transformWhile {
+                emit(it)
+                it !is FluxoEvent.StoreClosed
+            }
+            for (interceptor in conf.interceptors) {
+                with(interceptor) {
+                    try {
+                        interceptorScope.start(eventsFlow)
+                    } catch (e: Throwable) {
+                        events.emit(FluxoEvent.UnhandledError(this@FluxoStore, e))
+                        conf.exceptionHandler?.handleException(currentCoroutineContext(), e)
+                    }
                 }
             }
         }
@@ -322,7 +354,9 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
             events.emit(FluxoEvent.IntentCancelled(this, intent))
         } catch (e: Throwable) {
             events.emit(FluxoEvent.IntentHandlerError(this, intent, e))
-            if (conf.closeOnExceptions) {
+            if (!conf.closeOnExceptions) {
+                conf.exceptionHandler?.handleException(currentCoroutineContext(), e)
+            } else {
                 throw e
             }
         } finally {
@@ -377,6 +411,11 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
                     events.emit(FluxoEvent.SideJobCancelled(this@FluxoStore, key, restartState))
                 } catch (e: Throwable) {
                     events.emit(FluxoEvent.SideJobError(this@FluxoStore, key, restartState, e))
+                    if (!conf.closeOnExceptions) {
+                        conf.exceptionHandler?.handleException(currentCoroutineContext(), e)
+                    } else {
+                        throw e
+                    }
                 }
             }
         )
@@ -399,7 +438,9 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
             events.emit(FluxoEvent.BootstrapperFinished(this@FluxoStore, bootstrapper))
         } catch (e: Throwable) {
             events.emit(FluxoEvent.BootstrapperError(this@FluxoStore, bootstrapper, e))
-            if (conf.closeOnExceptions) {
+            if (!conf.closeOnExceptions) {
+                conf.exceptionHandler?.handleException(currentCoroutineContext(), e)
+            } else {
                 throw e
             }
         }
@@ -421,6 +462,11 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         requestsChannel.close(ce)
         sideEffectChannel.close(ce)
         sideJobsChannel.close(ce)
+
+        interceptorScope.launch {
+            @Suppress("MagicNumber") delay(5_000)
+            interceptorScope.cancel(cancellationCause)
+        }
     }
 
     // endregion

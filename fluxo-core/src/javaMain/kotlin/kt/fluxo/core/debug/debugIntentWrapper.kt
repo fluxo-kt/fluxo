@@ -7,9 +7,10 @@ import java.lang.reflect.Modifier
 import java.util.concurrent.ConcurrentHashMap
 
 // TODO: Only for test/debug variants?
-internal actual fun <I> debugIntentWrapper(intent: I): I? {
-    @Suppress("UNCHECKED_CAST")
-    val fluxoIntent = (intent as? FluxoIntent<Any?, Any>) ?: return null
+@Suppress("UNCHECKED_CAST")
+internal actual fun <I> debugIntentWrapper(intent: I): I {
+    if (intent is FluxoIntentDebug<*, *>) return intent
+    val fluxoIntent = (intent as? FluxoIntent<Any?, Any>) ?: return intent
 
     @Suppress("ThrowingExceptionsWithoutMessageOrCause")
     val traceElement = Throwable().stackTrace.getOrNull(2)
@@ -26,7 +27,6 @@ internal actual fun <I> debugIntentWrapper(intent: I): I? {
         ?.map { (name, field) -> name to field[fluxoIntent] }
         ?: reflectArgs(clazz, fluxoIntent)
 
-    @Suppress("UNCHECKED_CAST")
     return FluxoIntentDebug(methodName, arguments, fluxoIntent) as I
 }
 
