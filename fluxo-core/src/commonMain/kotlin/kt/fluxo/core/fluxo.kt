@@ -19,7 +19,7 @@ import kotlin.internal.InlineOnly
  */
 public inline fun <State, SideEffect : Any> CoroutineScope.container(
     initialState: State,
-    settings: FluxoSettings<*, State, SideEffect>.() -> Unit = {},
+    settings: FluxoSettings<FluxoIntent<State, SideEffect>, State, SideEffect>.() -> Unit = {},
 ): Container<State, SideEffect> {
     contract {
         callsInPlace(settings, InvocationKind.EXACTLY_ONCE)
@@ -73,7 +73,7 @@ public inline fun <Intent, State, SideEffect : Any> CoroutineScope.store(
  */
 public inline fun <State, SideEffect : Any> container(
     initialState: State,
-    settings: FluxoSettings<*, State, SideEffect>.() -> Unit = {},
+    settings: FluxoSettings<FluxoIntent<State, SideEffect>, State, SideEffect>.() -> Unit = {},
 ): Container<State, SideEffect> {
     contract {
         callsInPlace(settings, InvocationKind.EXACTLY_ONCE)

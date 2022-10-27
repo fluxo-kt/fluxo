@@ -35,20 +35,21 @@ public final class kt/fluxo/core/FluxoSettings {
 	public final fun getDebugChecks ()Z
 	public final fun getEventLoopContext ()Lkotlin/coroutines/CoroutineContext;
 	public final fun getExceptionHandler ()Lkotlinx/coroutines/CoroutineExceptionHandler;
-	public final fun getFIFO ()Lkt/fluxo/core/InputStrategy;
+	public final fun getFifo ()Lkt/fluxo/core/InputStrategy;
 	public final fun getInputStrategy ()Lkt/fluxo/core/InputStrategy;
 	public final fun getIntentContext ()Lkotlin/coroutines/CoroutineContext;
 	public final fun getIntentFilter ()Lkotlin/jvm/functions/Function2;
 	public final fun getInterceptorContext ()Lkotlin/coroutines/CoroutineContext;
 	public final fun getInterceptors ()Ljava/util/List;
-	public final fun getLIFO ()Lkt/fluxo/core/InputStrategy;
 	public final fun getLazy ()Z
+	public final fun getLifo ()Lkt/fluxo/core/InputStrategy;
 	public final fun getName ()Ljava/lang/String;
-	public final fun getPARALLEL ()Lkt/fluxo/core/InputStrategy;
+	public final fun getParallel ()Lkt/fluxo/core/InputStrategy;
 	public final fun getRepeatOnSubscribedStopTimeout ()J
 	public final fun getSideEffectBufferSize ()I
 	public final fun getSideJobsContext ()Lkotlin/coroutines/CoroutineContext;
 	public final fun interceptor (Lkotlin/jvm/functions/Function1;)V
+	public final fun setBootstrapper (Lkotlin/jvm/functions/Function2;)V
 	public final fun setCloseOnExceptions (Z)V
 	public final fun setContext (Lkotlin/coroutines/CoroutineContext;)V
 	public final fun setDebugChecks (Z)V
@@ -66,11 +67,18 @@ public final class kt/fluxo/core/FluxoSettings {
 }
 
 public abstract class kt/fluxo/core/InputStrategy {
+	public static final field Companion Lkt/fluxo/core/InputStrategy$Companion;
 	public fun <init> ()V
 	public fun createQueue ()Lkotlinx/coroutines/channels/Channel;
 	public fun getParallelProcessing ()Z
 	public fun getRollbackOnCancellation ()Z
 	public abstract fun processRequests (Lkotlin/jvm/functions/Function2;Lkotlinx/coroutines/flow/Flow;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class kt/fluxo/core/InputStrategy$Companion {
+	public final fun Fifo ()Lkt/fluxo/core/InputStrategy;
+	public final fun Lifo ()Lkt/fluxo/core/InputStrategy;
+	public final fun Parallel ()Lkt/fluxo/core/InputStrategy;
 }
 
 public abstract interface class kt/fluxo/core/IntentHandler {

@@ -1,4 +1,4 @@
-@file:Suppress("UNCHECKED_CAST", "PropertyName", "VariableNaming", "MagicNumber", "MemberVisibilityCanBePrivate")
+@file:Suppress("PropertyName", "VariableNaming", "MagicNumber", "MemberVisibilityCanBePrivate")
 
 package kt.fluxo.core
 
@@ -9,9 +9,7 @@ import kotlinx.coroutines.channels.Channel
 import kt.fluxo.core.annotation.NotThreadSafe
 import kt.fluxo.core.debug.DEBUG
 import kt.fluxo.core.intercept.FluxoEvent
-import kt.fluxo.core.strategy.FifoInputStrategy
-import kt.fluxo.core.strategy.LifoInputStrategy
-import kt.fluxo.core.strategy.ParallelInputStrategy
+import kt.fluxo.core.internal.InputStrategyGuardian
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
@@ -32,7 +30,9 @@ public class FluxoSettings<Intent, State, SideEffect : Any> {
     public var closeOnExceptions: Boolean = true
 
     /**
-     * Enables all the debug checks in application
+     * Enables all the debug checks in the [Store].
+     *
+     * Disable explicitly if you need to bypass the [InputStrategyGuardian] checks, and sure in it.
      */
     public var debugChecks: Boolean = DEBUG
 
@@ -47,7 +47,7 @@ public class FluxoSettings<Intent, State, SideEffect : Any> {
 
     // region Processing control
 
-    public val bootstrapper: Bootstrapper<Intent, State, SideEffect>? = null
+    public var bootstrapper: Bootstrapper<in Intent, State, SideEffect>? = null
 
     /**
      * Additional [interceptors][FluxoInterceptor] for the [Store] events.
@@ -61,14 +61,17 @@ public class FluxoSettings<Intent, State, SideEffect : Any> {
 
     /**
      * If you need to filter out some [Intent]s.
+     *
+     * (`true` to accept intent, `false` otherwise)
      */
-    public var intentFilter: IntentFilter<Intent, State>? = null
+    public var intentFilter: IntentFilter<in Intent, State>? = null
 
     /**
      * Take full control of the intent processing pipeline.
-     * [FIFO], [LIFO], and [PARALLEL] strategies available. You can use your own if needed.
+     * [Fifo], [Lifo], and [Parallel] strategies available out of the box.
+     * Or you can create your own if you need.
      */
-    public var inputStrategy: InputStrategy<Intent, State> = FIFO
+    public var inputStrategy: InputStrategy<Intent, State> = Fifo
 
     // endregion
 
@@ -103,19 +106,19 @@ public class FluxoSettings<Intent, State, SideEffect : Any> {
 
     /**
      * Ordered processing strategy. Predictable and intuitive. Best for background.
-     * Consider [LIFO] for the UI or more responsiveness instead.
+     * Consider [Fifo] for the UI or more responsiveness instead.
      */
-    public val FIFO: InputStrategy<Intent, State> get() = FifoInputStrategy as InputStrategy<Intent, State>
+    public inline val Fifo: InputStrategy<Intent, State> get() = InputStrategy.Fifo()
 
     /**
      * UI events oriented strategy. Cancels previous unfinished intents when receives new one.
      *
      * Provides more responsiveness, but can lose some intents!
      */
-    public val LIFO: InputStrategy<Intent, State> get() = LifoInputStrategy as InputStrategy<Intent, State>
+    public inline val Lifo: InputStrategy<Intent, State> get() = InputStrategy.Lifo()
 
     /** Parallel processing of all intents. No guarantee that inputs will be processed in any given order. */
-    public val PARALLEL: InputStrategy<Intent, State> get() = ParallelInputStrategy as InputStrategy<Intent, State>
+    public inline val Parallel: InputStrategy<Intent, State> get() = InputStrategy.Parallel()
 
     // endregion
 }
