@@ -23,11 +23,14 @@ public interface FluxoInterceptor<Intent, State, SideEffect : Any> {
     public suspend fun onNotify(event: FluxoEvent<Intent, State, SideEffect>) {}
 }
 
+/**
+ * Convenience factory for creating [FluxoInterceptor] from a [function][onEvent].
+ */
 @Suppress("FunctionName")
 public inline fun <Intent, State, SideEffect : Any> FluxoInterceptor(
-    crossinline onNotify: (event: FluxoEvent<Intent, State, SideEffect>) -> Unit,
+    crossinline onEvent: (event: FluxoEvent<Intent, State, SideEffect>) -> Unit,
 ): FluxoInterceptor<Intent, State, SideEffect> {
     return object : FluxoInterceptor<Intent, State, SideEffect> {
-        override suspend fun onNotify(event: FluxoEvent<Intent, State, SideEffect>) = onNotify(event)
+        override suspend fun onNotify(event: FluxoEvent<Intent, State, SideEffect>) = onEvent(event)
     }
 }

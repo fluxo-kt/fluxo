@@ -12,7 +12,11 @@ import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 import kotlin.internal.InlineOnly
 
-// CoroutineScope extensions for Store
+
+// Convenience DSL for Fluxo usage
+
+
+// region CoroutineScope extensions for Store
 
 /**
  * Returns MVVM+ [Store] connected to [CoroutineScope] lifecycle.
@@ -65,8 +69,10 @@ public inline fun <Intent, State, SideEffect : Any> CoroutineScope.store(
     })
 }
 
+// endregion
 
-// Basic Store variants
+
+// region Basic Store variants
 
 /**
  * Returns MVVM+ [Store].
@@ -121,8 +127,10 @@ public inline fun <Intent, State, SideEffect : Any> store(
     )
 }
 
+// endregion
 
-// Store DSL
+
+// region Store DSL
 
 /**
  * Build and execute a functional [intent][FluxoIntent] on [Store].
@@ -132,3 +140,5 @@ public inline fun <Intent, State, SideEffect : Any> store(
 public inline fun <State, SideEffect : Any> ContainerHost<State, SideEffect>.intent(noinline intent: FluxoIntent<State, SideEffect>) {
     container.send(intent)
 }
+
+// endregion

@@ -12,6 +12,7 @@ import kt.fluxo.core.intercept.FluxoEvent
 import kt.fluxo.core.internal.InputStrategyGuardian
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
+import kotlin.jvm.JvmName
 
 @NotThreadSafe
 public class FluxoSettings<Intent, State, SideEffect : Any> {
@@ -55,7 +56,7 @@ public class FluxoSettings<Intent, State, SideEffect : Any> {
 
     public var bootstrapper: Bootstrapper<in Intent, State, SideEffect>? = null
 
-    public inline fun onCreate(noinline bootstrapper: Bootstrapper<in Intent, State, SideEffect>) {
+    public fun onCreate(bootstrapper: Bootstrapper<in Intent, State, SideEffect>) {
         this.bootstrapper = bootstrapper
     }
 
@@ -65,8 +66,8 @@ public class FluxoSettings<Intent, State, SideEffect : Any> {
      */
     public val interceptors: MutableList<FluxoInterceptor<Intent, State, SideEffect>> = mutableListOf()
 
-    public inline fun interceptor(crossinline onNotify: (event: FluxoEvent<Intent, State, SideEffect>) -> Unit) {
-        interceptors.add(FluxoInterceptor(onNotify))
+    public inline fun interceptor(crossinline onEvent: (event: FluxoEvent<Intent, State, SideEffect>) -> Unit) {
+        interceptors.add(FluxoInterceptor(onEvent))
     }
 
     /**
@@ -123,6 +124,7 @@ public class FluxoSettings<Intent, State, SideEffect : Any> {
      * Ordered processing strategy. Predictable and intuitive. Best for background.
      * Consider [Fifo] for the UI or more responsiveness instead.
      */
+    @get:JvmName("Fifo")
     public inline val Fifo: InputStrategy get() = InputStrategy.Fifo
 
     /**
@@ -130,9 +132,11 @@ public class FluxoSettings<Intent, State, SideEffect : Any> {
      *
      * Provides more responsiveness, but can lose some intents!
      */
+    @get:JvmName("Lifo")
     public inline val Lifo: InputStrategy get() = InputStrategy.Lifo
 
     /** Parallel processing of all intents. No guarantee that inputs will be processed in any given order. */
+    @get:JvmName("Parallel")
     public inline val Parallel: InputStrategy get() = InputStrategy.Parallel
 
     // endregion

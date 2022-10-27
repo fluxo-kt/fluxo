@@ -32,7 +32,7 @@ gradle-embedded-kotlin = "3.1.0"
 
 # Public API management tool
 # https://github.com/Kotlin/binary-compatibility-validator/releases
-bin-compat-validator = "0.11.1"
+bin-compat-validator = "0.12.1"
 
 # https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google
 # 7.2.0 is latest supported by android plugin in stable IDEA 2022.2.3

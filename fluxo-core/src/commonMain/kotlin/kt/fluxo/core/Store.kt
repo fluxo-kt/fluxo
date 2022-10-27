@@ -8,6 +8,11 @@ import kt.fluxo.core.internal.Closeable
 import kt.fluxo.core.internal.StoreClosedException
 import kotlin.js.JsName
 
+/**
+ * Convenience typealias for an MVVM+ Fluxo [Store] setup.
+ */
+public typealias Container<State, SideEffect> = Store<FluxoIntent<State, SideEffect>, State, SideEffect>
+
 @ThreadSafe
 public interface Store<in Intent, out State, out SideEffect : Any> : Closeable {
 

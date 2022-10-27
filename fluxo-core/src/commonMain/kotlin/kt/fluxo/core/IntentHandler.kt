@@ -5,6 +5,8 @@ import kt.fluxo.core.dsl.StoreScope
 /**
  * MVVM+ mix of `Executor` and [Reducer] from MVI for handling intents sent to the [Store].
  * You can use anything from [StoreScope] while handling.
+ *
+ * @see Reducer
  */
 public fun interface IntentHandler<Intent, State, out SideEffect : Any> {
 

@@ -5,7 +5,7 @@ public abstract interface class kt/fluxo/core/ContainerHost {
 public abstract interface class kt/fluxo/core/FluxoInterceptor {
 	public fun onNotify (Lkt/fluxo/core/intercept/FluxoEvent;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun onNotify$suspendImpl (Lkt/fluxo/core/FluxoInterceptor;Lkt/fluxo/core/intercept/FluxoEvent;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public fun start (Lkt/fluxo/core/dsl/FluxoInterceptorScope;Lkotlinx/coroutines/flow/Flow;)V
+	public fun start (Lkt/fluxo/core/dsl/InterceptorScope;Lkotlinx/coroutines/flow/Flow;)V
 }
 
 public final class kt/fluxo/core/FluxoInterceptorKt {
@@ -29,26 +29,27 @@ public final class kt/fluxo/core/FluxoKt {
 
 public final class kt/fluxo/core/FluxoSettings {
 	public fun <init> ()V
+	public final fun Fifo ()Lkt/fluxo/core/InputStrategy;
+	public final fun Lifo ()Lkt/fluxo/core/InputStrategy;
+	public final fun Parallel ()Lkt/fluxo/core/InputStrategy;
 	public final fun getBootstrapper ()Lkotlin/jvm/functions/Function2;
 	public final fun getCloseOnExceptions ()Z
 	public final fun getContext ()Lkotlin/coroutines/CoroutineContext;
 	public final fun getDebugChecks ()Z
 	public final fun getEventLoopContext ()Lkotlin/coroutines/CoroutineContext;
 	public final fun getExceptionHandler ()Lkotlinx/coroutines/CoroutineExceptionHandler;
-	public final fun getFifo ()Lkt/fluxo/core/InputStrategy;
 	public final fun getInputStrategy ()Lkt/fluxo/core/InputStrategy;
 	public final fun getIntentContext ()Lkotlin/coroutines/CoroutineContext;
 	public final fun getIntentFilter ()Lkotlin/jvm/functions/Function2;
 	public final fun getInterceptorContext ()Lkotlin/coroutines/CoroutineContext;
 	public final fun getInterceptors ()Ljava/util/List;
 	public final fun getLazy ()Z
-	public final fun getLifo ()Lkt/fluxo/core/InputStrategy;
 	public final fun getName ()Ljava/lang/String;
-	public final fun getParallel ()Lkt/fluxo/core/InputStrategy;
 	public final fun getRepeatOnSubscribedStopTimeout ()J
 	public final fun getSideEffectBufferSize ()I
 	public final fun getSideJobsContext ()Lkotlin/coroutines/CoroutineContext;
 	public final fun interceptor (Lkotlin/jvm/functions/Function1;)V
+	public final fun onCreate (Lkotlin/jvm/functions/Function2;)V
 	public final fun setBootstrapper (Lkotlin/jvm/functions/Function2;)V
 	public final fun setCloseOnExceptions (Z)V
 	public final fun setContext (Lkotlin/coroutines/CoroutineContext;)V
@@ -67,7 +68,7 @@ public final class kt/fluxo/core/FluxoSettings {
 }
 
 public abstract class kt/fluxo/core/InputStrategy {
-	public static final field Companion Lkt/fluxo/core/InputStrategy$Companion;
+	public static final field InBox Lkt/fluxo/core/InputStrategy$InBox;
 	public fun <init> ()V
 	public fun createQueue ()Lkotlinx/coroutines/channels/Channel;
 	public fun getParallelProcessing ()Z
@@ -75,7 +76,7 @@ public abstract class kt/fluxo/core/InputStrategy {
 	public abstract fun processRequests (Lkotlin/jvm/functions/Function2;Lkotlinx/coroutines/flow/Flow;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public final class kt/fluxo/core/InputStrategy$Companion {
+public final class kt/fluxo/core/InputStrategy$InBox {
 	public final fun Fifo ()Lkt/fluxo/core/InputStrategy;
 	public final fun Lifo ()Lkt/fluxo/core/InputStrategy;
 	public final fun Parallel ()Lkt/fluxo/core/InputStrategy;
@@ -85,11 +86,12 @@ public abstract interface class kt/fluxo/core/IntentHandler {
 	public abstract fun handleIntent (Lkt/fluxo/core/dsl/StoreScope;Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public abstract interface class kt/fluxo/core/Store {
+public abstract interface class kt/fluxo/core/Store : java/io/Closeable {
 	public abstract fun close ()V
 	public abstract fun getName ()Ljava/lang/String;
 	public abstract fun getSideEffectFlow ()Lkotlinx/coroutines/flow/Flow;
 	public abstract fun getStateFlow ()Lkotlinx/coroutines/flow/StateFlow;
+	public abstract fun isActive ()Z
 	public abstract fun send (Ljava/lang/Object;)V
 	public abstract fun sendAsync (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun start ()V
@@ -112,7 +114,7 @@ public abstract interface class kt/fluxo/core/dsl/BootstrapperScope : kt/fluxo/c
 	public abstract fun postIntent (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public abstract interface class kt/fluxo/core/dsl/FluxoInterceptorScope : kotlinx/coroutines/CoroutineScope {
+public abstract interface class kt/fluxo/core/dsl/InterceptorScope : kotlinx/coroutines/CoroutineScope {
 	public abstract fun getStoreName ()Ljava/lang/String;
 	public abstract fun postRequest (Lkt/fluxo/core/intercept/StoreRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
@@ -154,20 +156,26 @@ public abstract class kt/fluxo/core/intercept/FluxoEvent {
 	public final fun getStore ()Lkt/fluxo/core/Store;
 }
 
-public final class kt/fluxo/core/intercept/FluxoEvent$BootstrapperError : kt/fluxo/core/intercept/FluxoEvent {
-	public fun <init> (Lkt/fluxo/core/Store;Lkotlin/jvm/functions/Function2;Ljava/lang/Throwable;)V
-	public final fun getBootstrapper ()Lkotlin/jvm/functions/Function2;
-	public final fun getThrowable ()Ljava/lang/Throwable;
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class kt/fluxo/core/intercept/FluxoEvent$BootstrapperFinished : kt/fluxo/core/intercept/FluxoEvent {
+public final class kt/fluxo/core/intercept/FluxoEvent$BootstrapperCancelled : kt/fluxo/core/intercept/FluxoEvent {
 	public fun <init> (Lkt/fluxo/core/Store;Lkotlin/jvm/functions/Function2;)V
 	public final fun getBootstrapper ()Lkotlin/jvm/functions/Function2;
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class kt/fluxo/core/intercept/FluxoEvent$BootstrapperStart : kt/fluxo/core/intercept/FluxoEvent {
+public final class kt/fluxo/core/intercept/FluxoEvent$BootstrapperCompleted : kt/fluxo/core/intercept/FluxoEvent {
+	public fun <init> (Lkt/fluxo/core/Store;Lkotlin/jvm/functions/Function2;)V
+	public final fun getBootstrapper ()Lkotlin/jvm/functions/Function2;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class kt/fluxo/core/intercept/FluxoEvent$BootstrapperError : kt/fluxo/core/intercept/FluxoEvent {
+	public fun <init> (Lkt/fluxo/core/Store;Lkotlin/jvm/functions/Function2;Ljava/lang/Throwable;)V
+	public final fun getBootstrapper ()Lkotlin/jvm/functions/Function2;
+	public final fun getE ()Ljava/lang/Throwable;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class kt/fluxo/core/intercept/FluxoEvent$BootstrapperStarted : kt/fluxo/core/intercept/FluxoEvent {
 	public fun <init> (Lkt/fluxo/core/Store;Lkotlin/jvm/functions/Function2;)V
 	public final fun getBootstrapper ()Lkotlin/jvm/functions/Function2;
 	public fun toString ()Ljava/lang/String;
@@ -185,16 +193,16 @@ public final class kt/fluxo/core/intercept/FluxoEvent$IntentCancelled : kt/fluxo
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class kt/fluxo/core/intercept/FluxoEvent$IntentHandledSuccessfully : kt/fluxo/core/intercept/FluxoEvent {
-	public fun <init> (Lkt/fluxo/core/Store;Ljava/lang/Object;)V
+public final class kt/fluxo/core/intercept/FluxoEvent$IntentError : kt/fluxo/core/intercept/FluxoEvent {
+	public fun <init> (Lkt/fluxo/core/Store;Ljava/lang/Object;Ljava/lang/Throwable;)V
+	public final fun getE ()Ljava/lang/Throwable;
 	public final fun getIntent ()Ljava/lang/Object;
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class kt/fluxo/core/intercept/FluxoEvent$IntentHandlerError : kt/fluxo/core/intercept/FluxoEvent {
-	public fun <init> (Lkt/fluxo/core/Store;Ljava/lang/Object;Ljava/lang/Throwable;)V
+public final class kt/fluxo/core/intercept/FluxoEvent$IntentHandled : kt/fluxo/core/intercept/FluxoEvent {
+	public fun <init> (Lkt/fluxo/core/Store;Ljava/lang/Object;)V
 	public final fun getIntent ()Ljava/lang/Object;
-	public final fun getThrowable ()Ljava/lang/Throwable;
 	public fun toString ()Ljava/lang/String;
 }
 
@@ -223,12 +231,6 @@ public final class kt/fluxo/core/intercept/FluxoEvent$SideEffectEmitted : kt/flu
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class kt/fluxo/core/intercept/FluxoEvent$SideEffectQueued : kt/fluxo/core/intercept/FluxoEvent {
-	public fun <init> (Lkt/fluxo/core/Store;Ljava/lang/Object;)V
-	public final fun getSideEffect ()Ljava/lang/Object;
-	public fun toString ()Ljava/lang/String;
-}
-
 public final class kt/fluxo/core/intercept/FluxoEvent$SideJobCancelled : kt/fluxo/core/intercept/FluxoEvent {
 	public fun <init> (Lkt/fluxo/core/Store;Ljava/lang/String;Lkt/fluxo/core/dsl/SideJobScope$RestartState;)V
 	public final fun getKey ()Ljava/lang/String;
@@ -245,9 +247,9 @@ public final class kt/fluxo/core/intercept/FluxoEvent$SideJobCompleted : kt/flux
 
 public final class kt/fluxo/core/intercept/FluxoEvent$SideJobError : kt/fluxo/core/intercept/FluxoEvent {
 	public fun <init> (Lkt/fluxo/core/Store;Ljava/lang/String;Lkt/fluxo/core/dsl/SideJobScope$RestartState;Ljava/lang/Throwable;)V
+	public final fun getE ()Ljava/lang/Throwable;
 	public final fun getKey ()Ljava/lang/String;
 	public final fun getRestartState ()Lkt/fluxo/core/dsl/SideJobScope$RestartState;
-	public final fun getThrowable ()Ljava/lang/Throwable;
 	public fun toString ()Ljava/lang/String;
 }
 
@@ -283,7 +285,7 @@ public final class kt/fluxo/core/intercept/FluxoEvent$StoreStarted : kt/fluxo/co
 
 public final class kt/fluxo/core/intercept/FluxoEvent$UnhandledError : kt/fluxo/core/intercept/FluxoEvent {
 	public fun <init> (Lkt/fluxo/core/Store;Ljava/lang/Throwable;)V
-	public final fun getThrowable ()Ljava/lang/Throwable;
+	public final fun getE ()Ljava/lang/Throwable;
 	public fun toString ()Ljava/lang/String;
 }
 
@@ -337,6 +339,7 @@ public final class kt/fluxo/core/internal/FluxoStore : kt/fluxo/core/Store {
 	public fun getName ()Ljava/lang/String;
 	public fun getSideEffectFlow ()Lkotlinx/coroutines/flow/Flow;
 	public fun getStateFlow ()Lkotlinx/coroutines/flow/StateFlow;
+	public fun isActive ()Z
 	public fun send (Ljava/lang/Object;)V
 	public fun sendAsync (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun start ()V
@@ -346,5 +349,8 @@ public final class kt/fluxo/core/internal/FluxoStore : kt/fluxo/core/Store {
 public final class kt/fluxo/core/internal/ReducerIntentHandler : kt/fluxo/core/IntentHandler {
 	public fun <init> (Lkotlin/jvm/functions/Function2;)V
 	public fun handleIntent (Lkt/fluxo/core/dsl/StoreScope;Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class kt/fluxo/core/internal/StoreClosedException : java/lang/IllegalStateException {
 }
 
