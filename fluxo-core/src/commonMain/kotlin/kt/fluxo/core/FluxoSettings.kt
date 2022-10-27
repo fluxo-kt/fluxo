@@ -49,6 +49,10 @@ public class FluxoSettings<Intent, State, SideEffect : Any> {
 
     public var bootstrapper: Bootstrapper<in Intent, State, SideEffect>? = null
 
+    public inline fun onCreate(noinline bootstrapper: Bootstrapper<in Intent, State, SideEffect>) {
+        this.bootstrapper = bootstrapper
+    }
+
     /**
      * Additional [interceptors][FluxoInterceptor] for the [Store] events.
      * Attach loggers, time-travelling, analytics, everything you want.
