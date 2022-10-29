@@ -28,7 +28,8 @@ internal class SideEffectTest {
     }
 
     @Test
-    fun side_effects_are_emitted_in_order() = runTest {
+    fun side_effects_are_emitted_ordered_by_default() = runTest {
+        // Uses Fifo strategy by default, saving order of intents
         val container = scope.container<Unit, Int>(Unit)
 
         val testSideEffectObserver1 = container.sideEffectFlow.test()
