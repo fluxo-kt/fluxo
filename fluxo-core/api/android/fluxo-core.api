@@ -70,7 +70,8 @@ public final class kt/fluxo/core/FluxoSettings {
 public abstract class kt/fluxo/core/InputStrategy {
 	public static final field InBox Lkt/fluxo/core/InputStrategy$InBox;
 	public fun <init> ()V
-	public fun createQueue ()Lkotlinx/coroutines/channels/Channel;
+	public fun createQueue (Lkotlin/jvm/functions/Function1;)Lkotlinx/coroutines/channels/Channel;
+	public static synthetic fun createQueue$default (Lkt/fluxo/core/InputStrategy;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkotlinx/coroutines/channels/Channel;
 	public fun getParallelProcessing ()Z
 	public fun getRollbackOnCancellation ()Z
 	public abstract fun processRequests (Lkotlin/jvm/functions/Function2;Lkotlinx/coroutines/flow/Flow;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -219,14 +220,22 @@ public final class kt/fluxo/core/intercept/FluxoEvent$IntentRejected : kt/fluxo/
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class kt/fluxo/core/intercept/FluxoEvent$SideEffectDropped : kt/fluxo/core/intercept/FluxoEvent {
-	public fun <init> (Lkt/fluxo/core/Store;Ljava/lang/Object;)V
-	public final fun getSideEffect ()Ljava/lang/Object;
+public final class kt/fluxo/core/intercept/FluxoEvent$IntentUndelivered : kt/fluxo/core/intercept/FluxoEvent {
+	public fun <init> (Lkt/fluxo/core/Store;Ljava/lang/Object;Z)V
+	public final fun getIntent ()Ljava/lang/Object;
+	public final fun getResent ()Z
 	public fun toString ()Ljava/lang/String;
 }
 
 public final class kt/fluxo/core/intercept/FluxoEvent$SideEffectEmitted : kt/fluxo/core/intercept/FluxoEvent {
 	public fun <init> (Lkt/fluxo/core/Store;Ljava/lang/Object;)V
+	public final fun getSideEffect ()Ljava/lang/Object;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class kt/fluxo/core/intercept/FluxoEvent$SideEffectUndelivered : kt/fluxo/core/intercept/FluxoEvent {
+	public fun <init> (Lkt/fluxo/core/Store;Ljava/lang/Object;Z)V
+	public final fun getResent ()Z
 	public final fun getSideEffect ()Ljava/lang/Object;
 	public fun toString ()Ljava/lang/String;
 }

@@ -11,8 +11,16 @@ import kotlin.jvm.JvmName
 
 public abstract class InputStrategy {
 
-    public open fun <Request> createQueue(): Channel<Request> {
-        return Channel(capacity = Channel.UNLIMITED, onBufferOverflow = BufferOverflow.SUSPEND)
+    /**
+     *
+     * @param onUndeliveredElement See "Undelivered elements" section in [Channel] documentation for details.
+     */
+    public open fun <Request> createQueue(onUndeliveredElement: ((Request) -> Unit)? = null): Channel<Request> {
+        return Channel(
+            capacity = Channel.UNLIMITED,
+            onBufferOverflow = BufferOverflow.SUSPEND,
+            onUndeliveredElement = onUndeliveredElement,
+        )
     }
 
     public open val parallelProcessing: Boolean get() = false

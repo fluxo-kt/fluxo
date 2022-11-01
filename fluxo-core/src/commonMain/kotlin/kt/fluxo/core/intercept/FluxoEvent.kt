@@ -2,6 +2,7 @@
 
 package kt.fluxo.core.intercept
 
+import kotlinx.coroutines.channels.Channel
 import kt.fluxo.core.Store
 import kt.fluxo.core.dsl.SideJobScope.RestartState
 import kt.fluxo.core.dsl.SideJobScope.RestartState.Restarted
@@ -77,6 +78,20 @@ public sealed class FluxoEvent<Intent, State, SideEffect : Any>(
         override fun toString(): String = "Intent error: $store, $intent (${e.message ?: e})"
     }
 
+    /**
+     * When object transferred via [Channel] from one coroutine to another
+     * it can be lost if either send or receive operation cancelled in transit.
+     * This event signals about such case for an [intent].
+     *
+     * See "Undelivered elements" section in [Channel] documentation for details.
+     * Also see [GitHub issue](https://github.com/Kotlin/kotlinx.coroutines/issues/1936).
+     *
+     * @param resent `true` if [intent] successfully resent to the [Channel] and can be delivered later
+     */
+    class IntentUndelivered<I, S, SE : Any>(store: Store<I, S, SE>, val intent: I, val resent: Boolean) : FluxoEvent<I, S, SE>(store) {
+        override fun toString(): String = "Intent undelivered: $store, $intent"
+    }
+
     // endregion
 
     // region SideEffect
@@ -85,8 +100,22 @@ public sealed class FluxoEvent<Intent, State, SideEffect : Any>(
         override fun toString(): String = "SideEffect emitted: $store, $sideEffect"
     }
 
-    class SideEffectDropped<I, S, SE : Any>(store: Store<I, S, SE>, val sideEffect: SE) : FluxoEvent<I, S, SE>(store) {
-        override fun toString(): String = "SideEffect dropped: $store, $sideEffect"
+    /**
+     * When object transferred via [Channel] from one coroutine to another
+     * it can be lost if either send or receive operation cancelled in transit.
+     * This event signals about such case for a [sideEffect].
+     *
+     * See "Undelivered elements" section in [Channel] documentation for details.
+     * Also see [GitHub issue](https://github.com/Kotlin/kotlinx.coroutines/issues/1936).
+     *
+     * @param resent `true` if [sideEffect] successfully resent to the [Channel] and can be delivered later
+     */
+    class SideEffectUndelivered<I, S, SE : Any>(
+        store: Store<I, S, SE>,
+        val sideEffect: SE,
+        val resent: Boolean,
+    ) : FluxoEvent<I, S, SE>(store) {
+        override fun toString(): String = "SideEffect undelivered: $store, $sideEffect"
     }
 
     // endregion

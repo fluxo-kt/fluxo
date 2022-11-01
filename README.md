@@ -21,6 +21,10 @@
 * Full errors handling and behavior control.
 * Bootstrap for eager or lazy initialization.
 * Side jobs for long-running tasks.
+* Leak-free transfer ([1](https://github.com/Kotlin/kotlinx.coroutines/issues/1936), delivery guarantees.
+* Strictly not recommended, but `Closeable` resources supported as State and SideEffects
+  * Previous state will be properly closed on change
+  * Side effects closed when not delivered
 * Well tested.
 * Reactive streams compatibility
   through [coroutine wrappers](https://github.com/Kotlin/kotlinx.coroutines/tree/master/reactive):
