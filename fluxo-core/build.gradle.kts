@@ -36,6 +36,7 @@ kotlin {
 
         all {
             languageSettings.optIn("kotlin.contracts.ExperimentalContracts")
+            languageSettings.optIn("kotlin.experimental.ExperimentalTypeInference")
             languageSettings.optIn("kt.fluxo.core.annotation.ExperimentalFluxoApi")
             languageSettings.optIn("kt.fluxo.core.annotation.InternalFluxoApi")
         }
