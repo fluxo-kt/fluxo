@@ -34,6 +34,7 @@ import kt.fluxo.core.Bootstrapper
 import kt.fluxo.core.IntentHandler
 import kt.fluxo.core.Store
 import kt.fluxo.core.annotation.InternalFluxoApi
+import kt.fluxo.core.data.GuaranteedEffect
 import kt.fluxo.core.debug.DEBUG
 import kt.fluxo.core.debug.debugIntentWrapper
 import kt.fluxo.core.dsl.InputStrategyScope
@@ -202,9 +203,9 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
     override suspend fun sendAsync(intent: Intent): Deferred<Unit> {
         start()
         val i = if (DEBUG || conf.debugChecks) debugIntentWrapper(intent) else intent
-        events.emit(FluxoEvent.IntentQueued(this, i))
         val deferred = CompletableDeferred<Unit>()
         requestsChannel.send(StoreRequest.HandleIntent(deferred, i))
+        events.emit(FluxoEvent.IntentQueued(this, i))
         return deferred
     }
 
@@ -240,8 +241,17 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
     }
 
     private suspend fun postSideEffect(sideEffect: SideEffect) {
+        if (sideEffect is GuaranteedEffect<*>) {
+            sideEffect.setResendFunction(::postSideEffectSync)
+        }
         sideEffectChannel.send(sideEffect)
         events.emit(FluxoEvent.SideEffectEmitted(this@FluxoStore, sideEffect))
+    }
+
+    private fun postSideEffectSync(sideEffect: SideEffect) {
+        scope.launch(Dispatchers.Unconfined, start = CoroutineStart.UNDISPATCHED) {
+            postSideEffect(sideEffect)
+        }
     }
 
     private fun handleException(e: Throwable, context: CoroutineContext) {

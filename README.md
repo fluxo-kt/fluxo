@@ -21,7 +21,8 @@
 * Full errors handling and behavior control.
 * Bootstrap for eager or lazy initialization.
 * Side jobs for long-running tasks.
-* Leak-free transfer ([1](https://github.com/Kotlin/kotlinx.coroutines/issues/1936), delivery guarantees.
+* Leak-free transfer, delivery guarantees [[1](https://github.com/Kotlin/kotlinx.coroutines/issues/1936). [2](https://gmk57.medium.com/unfortunately-events-may-be-dropped-if-channel-receiveasflow-cfe78ae29004)].
+* Side effects consumption guarantees with `GuaranteedEffect` (effect handled and exactly once) [[1](https://github.com/Kotlin/kotlinx.coroutines/issues/2886), [2](https://medium.com/androiddevelopers/livedata-with-snackbar-navigation-and-other-events-the-singleliveevent-case-ac2622673150)].
 * Strictly not recommended, but `Closeable` resources supported as State and SideEffects
   * Previous state will be properly closed on change
   * Side effects closed when not delivered
@@ -38,9 +39,6 @@
 - [ ] Subscription Lifecycle
 - [ ] Side effects strategies (see `ActionShareBehavior` in FlowMVI)
 - [ ] Side effects cache when view not attached
-- [ ] Side effects consumption
-  control ([1](https://proandroiddev.com/how-to-handle-viewmodel-one-time-events-in-jetpack-compose-a01af0678b76#0009)
-  , [2](https://medium.com/androiddevelopers/viewmodel-one-off-event-antipatterns-16a1da869b95))
 - [ ] Complete code coverage with tests
   - [ ] SideJobs tests
   - [ ] Input strategy tests
