@@ -12,21 +12,6 @@ public final class kt/fluxo/core/FluxoInterceptorKt {
 	public static final fun FluxoInterceptor (Lkotlin/jvm/functions/Function1;)Lkt/fluxo/core/FluxoInterceptor;
 }
 
-public final class kt/fluxo/core/FluxoKt {
-	public static final fun container (Ljava/lang/Object;Lkotlin/jvm/functions/Function1;)Lkt/fluxo/core/Store;
-	public static final fun container (Lkotlinx/coroutines/CoroutineScope;Ljava/lang/Object;Lkotlin/jvm/functions/Function1;)Lkt/fluxo/core/Store;
-	public static synthetic fun container$default (Ljava/lang/Object;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkt/fluxo/core/Store;
-	public static synthetic fun container$default (Lkotlinx/coroutines/CoroutineScope;Ljava/lang/Object;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkt/fluxo/core/Store;
-	public static final fun store (Ljava/lang/Object;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;)Lkt/fluxo/core/Store;
-	public static final fun store (Ljava/lang/Object;Lkt/fluxo/core/IntentHandler;Lkotlin/jvm/functions/Function1;)Lkt/fluxo/core/Store;
-	public static final fun store (Lkotlinx/coroutines/CoroutineScope;Ljava/lang/Object;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;)Lkt/fluxo/core/Store;
-	public static final fun store (Lkotlinx/coroutines/CoroutineScope;Ljava/lang/Object;Lkt/fluxo/core/IntentHandler;Lkotlin/jvm/functions/Function1;)Lkt/fluxo/core/Store;
-	public static synthetic fun store$default (Ljava/lang/Object;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkt/fluxo/core/Store;
-	public static synthetic fun store$default (Ljava/lang/Object;Lkt/fluxo/core/IntentHandler;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkt/fluxo/core/Store;
-	public static synthetic fun store$default (Lkotlinx/coroutines/CoroutineScope;Ljava/lang/Object;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkt/fluxo/core/Store;
-	public static synthetic fun store$default (Lkotlinx/coroutines/CoroutineScope;Ljava/lang/Object;Lkt/fluxo/core/IntentHandler;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkt/fluxo/core/Store;
-}
-
 public final class kt/fluxo/core/FluxoSettings {
 	public fun <init> ()V
 	public final fun Fifo ()Lkt/fluxo/core/InputStrategy;
@@ -115,6 +100,15 @@ public abstract interface annotation class kt/fluxo/core/annotation/FluxoDsl : j
 }
 
 public abstract interface annotation class kt/fluxo/core/annotation/InternalFluxoApi : java/lang/annotation/Annotation {
+}
+
+public class kt/fluxo/core/data/GuaranteedEffect : java/io/Closeable {
+	public fun <init> (Ljava/lang/Object;)V
+	public fun close ()V
+	public final fun getContent ()Ljava/lang/Object;
+	public final fun getRawContent ()Ljava/lang/Object;
+	public final fun handleOrResend (Lkotlin/jvm/functions/Function1;)Z
+	public final fun resend ()V
 }
 
 public abstract interface class kt/fluxo/core/dsl/BootstrapperScope : kt/fluxo/core/dsl/StoreScope {

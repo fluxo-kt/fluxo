@@ -133,7 +133,7 @@ allprojects {
 }
 
 subprojects {
-    // Convenient task that will print full dependencies tree for any module
+    // Convenience task that will print full dependencies tree for any module
     // Use `buildEnvironment` task for plugins report
     // https://docs.gradle.org/current/userguide/viewing_debugging_dependencies.html
     tasks.register<DependencyReportTask>("allDeps")

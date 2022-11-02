@@ -1,6 +1,6 @@
 package kt.fluxo.core
 
-import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kt.fluxo.core.annotation.ThreadSafe
@@ -36,8 +36,8 @@ public interface Store<in Intent, out State, out SideEffect : Any> : Closeable {
      *
      * @throws StoreClosedException
      */
-    @JsName("sendAndAwait")
-    public suspend fun sendAsync(intent: Intent): Deferred<Unit>
+    @JsName("sendAsync")
+    public suspend fun sendAsync(intent: Intent): Job
 
 
     /**

@@ -45,6 +45,7 @@
   - [ ] Reducer tests
   - [ ] MVI Store tests
   - [ ] Bootstrapper tests
+- [ ] \(Optional) Java-friendly API
 - [ ] Compose integration tests, examples and docs
 - [ ] ViewModel integration tests, examples and docs
 - [ ] SavedState (android state preservation) integration tests, examples and docs

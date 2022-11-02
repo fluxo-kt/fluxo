@@ -75,8 +75,8 @@ internal class StateTest {
     private inner class Middleware(
         initialState: TestState,
         scope: CoroutineScope = this.scope,
-        onEvent: ((event: FluxoEvent<*, TestState, String>) -> Unit)? = null,
-    ) : ContainerHost<TestState, String> {
+        onEvent: ((event: FluxoEvent<*, TestState, *>) -> Unit)? = null,
+    ) : ContainerHost<TestState, Nothing> {
         override val container = scope.container(initialState) {
             debugChecks = true
             onEvent?.let { interceptor(it) }

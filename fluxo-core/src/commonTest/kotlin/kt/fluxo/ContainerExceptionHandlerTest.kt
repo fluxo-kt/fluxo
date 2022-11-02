@@ -59,11 +59,11 @@ internal class ContainerExceptionHandlerTest {
     }
 
     @Test
-    fun with_exception_handler_exceptions_are_caught() {
+    fun with_exception_handler_exceptions_are_caught() = runTest {
         val initState = 10
         val exceptions = mutableListOf<Throwable>()
         val handler = CoroutineExceptionHandler { _, throwable -> exceptions += throwable }
-        val container = scope.container<Int, Nothing>(initState) {
+        val container = scope.container(initState) {
             exceptionHandler = handler
             intentContext = Dispatchers.Unconfined
         }
@@ -74,11 +74,11 @@ internal class ContainerExceptionHandlerTest {
                 throw IllegalStateException()
             }
         }
-        container.send {
+        container.sendAsync {
             updateState {
                 newState
             }
-        }
+        }.join()
 
         assertEquals(newState, container.stateFlow.value)
         assertEquals(true, scope.isActive)
