@@ -106,6 +106,9 @@ internal class ContainerExceptionHandlerTest {
             intentContext = Dispatchers.Unconfined
         }
 
+        // required on JS to pass this test
+        container.start()?.join()
+
         val exceptions = mutableListOf<Throwable>()
         container.send {
             try {

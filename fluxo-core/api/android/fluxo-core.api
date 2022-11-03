@@ -9,7 +9,7 @@ public abstract interface class kt/fluxo/core/FluxoInterceptor {
 }
 
 public final class kt/fluxo/core/FluxoInterceptorKt {
-	public static final fun FluxoInterceptor (Lkotlin/jvm/functions/Function1;)Lkt/fluxo/core/FluxoInterceptor;
+	public static final fun create (Lkotlin/jvm/functions/Function1;)Lkt/fluxo/core/FluxoInterceptor;
 }
 
 public final class kt/fluxo/core/FluxoKt {
@@ -37,10 +37,8 @@ public final class kt/fluxo/core/FluxoSettings {
 	public final fun getSideEffectBufferSize ()I
 	public final fun getSideEffectsStrategy ()Lkt/fluxo/core/SideEffectsStrategy;
 	public final fun getSideJobsContext ()Lkotlin/coroutines/CoroutineContext;
-	public final fun interceptor (Lkotlin/jvm/functions/Function1;)V
 	public final fun isCloseOnExceptions ()Z
 	public final fun isLazy ()Z
-	public final fun onCreate (Lkotlin/jvm/functions/Function2;)V
 	public final fun setBootstrapper (Lkotlin/jvm/functions/Function2;)V
 	public final fun setCloseOnExceptions (Z)V
 	public final fun setContext (Lkotlin/coroutines/CoroutineContext;)V
@@ -110,7 +108,7 @@ public abstract interface class kt/fluxo/core/Store : java/io/Closeable {
 	public abstract fun isActive ()Z
 	public abstract fun send (Ljava/lang/Object;)V
 	public abstract fun sendAsync (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun start ()V
+	public abstract fun start ()Lkotlinx/coroutines/Job;
 }
 
 public abstract interface class kt/fluxo/core/StoreHost {
@@ -362,7 +360,7 @@ public final class kt/fluxo/core/internal/FluxoStore : kt/fluxo/core/Store {
 	public fun isActive ()Z
 	public fun send (Ljava/lang/Object;)V
 	public fun sendAsync (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public fun start ()V
+	public fun start ()Lkotlinx/coroutines/Job;
 	public fun toString ()Ljava/lang/String;
 }
 

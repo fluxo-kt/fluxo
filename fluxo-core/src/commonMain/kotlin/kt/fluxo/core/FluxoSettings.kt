@@ -1,4 +1,4 @@
-@file:Suppress("PropertyName", "VariableNaming", "MagicNumber", "MemberVisibilityCanBePrivate")
+@file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE", "PropertyName", "VariableNaming")
 
 package kt.fluxo.core
 
@@ -12,6 +12,7 @@ import kt.fluxo.core.intercept.FluxoEvent
 import kt.fluxo.core.internal.InputStrategyGuardian
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
+import kotlin.internal.InlineOnly
 import kotlin.jvm.JvmName
 
 @NotThreadSafe
@@ -55,18 +56,37 @@ public class FluxoSettings<Intent, State, SideEffect : Any> {
 
     public var bootstrapper: Bootstrapper<in Intent, State, SideEffect>? = null
 
-    public fun onCreate(bootstrapper: Bootstrapper<in Intent, State, SideEffect>) {
+    /** [bootstrapper] convenience method */
+    @InlineOnly
+    public inline fun onStart(noinline bootstrapper: Bootstrapper<in Intent, State, SideEffect>) {
         this.bootstrapper = bootstrapper
     }
 
+    /** [bootstrapper] convenience method */
+    @InlineOnly
+    public inline fun onCreate(noinline bootstrapper: Bootstrapper<in Intent, State, SideEffect>) {
+        this.bootstrapper = bootstrapper
+    }
+
+
     /**
-     * Additional [interceptors][FluxoInterceptor] for the [Store] events.
+     * [Interceptors][FluxoInterceptor] for the [Store] events.
      * Attach loggers, time-travelling, analytics, everything you want.
+     *
+     * @see FluxoInterceptor
      */
     public val interceptors: MutableList<FluxoInterceptor<Intent, State, SideEffect>> = mutableListOf()
 
+    /** [interceptors] convenience method */
+    @InlineOnly
     public inline fun interceptor(crossinline onEvent: (event: FluxoEvent<Intent, State, SideEffect>) -> Unit) {
         interceptors.add(FluxoInterceptor(onEvent))
+    }
+
+    /** [interceptors] convenience method */
+    @InlineOnly
+    public inline fun onEvent(crossinline onEvent: (event: FluxoEvent<Intent, State, SideEffect>) -> Unit) {
+        interceptor(onEvent)
     }
 
     /**
@@ -156,7 +176,7 @@ public class FluxoSettings<Intent, State, SideEffect : Any> {
      * @see repeatOnSubscription
      */
     @Deprecated("Use stopTimeout parameter for repeatOnSubscription method instead")
-    public var repeatOnSubscribedStopTimeout: Long = 100L
+    public var repeatOnSubscribedStopTimeout: Long = 0L
 
     // endregion
 }

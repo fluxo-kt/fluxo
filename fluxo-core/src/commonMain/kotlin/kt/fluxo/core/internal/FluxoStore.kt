@@ -218,13 +218,14 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
     }
 
 
-    override fun start() {
+    override fun start(): Job? {
         if (!isActive) {
             throw StoreClosedException("Store is closed, it cannot be restarted", cancellationCause?.let { it.cause ?: it })
         }
         if (initialised.compareAndSet(expect = false, update = true)) {
-            launch()
+            return launch()
         }
+        return null
     }
 
     override fun close() {
@@ -341,7 +342,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
                 }
             }
         }
-        scope.launch(intentContext) {
+        scope.launch(intentContext, start = CoroutineStart.UNDISPATCHED) {
             with(inputStrategy) {
                 inputStrategyScope.processRequests(requestsFlow)
             }
@@ -403,7 +404,10 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
             )
             with(handlerScope) {
                 with(intentHandler) {
-                    handleIntent(intent)
+                    // Await all children completion with coroutineScope
+                    coroutineScope {
+                        handleIntent(intent)
+                    }
                 }
             }
             handlerScope.close()

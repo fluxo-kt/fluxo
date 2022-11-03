@@ -68,11 +68,12 @@ public interface Store<in Intent, out State, out SideEffect : Any> : Closeable {
 
 
     /**
+     * Starts [Store] processing if not started already.
      *
      * @throws StoreClosedException
      */
     @JsName("start")
-    public fun start()
+    public fun start(): Job?
 
     public override fun close()
 }
