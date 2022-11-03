@@ -39,12 +39,37 @@ setupDefaults(
     multiplatformConfigurator = {
         android()
         jvm()
-        js(BOTH) { browser() }
+        js(IR) { // BOTH not supported by 'turbine'.
+            nodejs()
+        }
         linuxX64()
+        mingwX64()
         iosCompat()
         watchosCompat()
         tvosCompat()
         macosCompat()
+
+        sourceSets.matching { it.name.endsWith("Test") }.all {
+            languageSettings {
+                optIn("kotlinx.coroutines.ExperimentalCoroutinesApi")
+            }
+        }
+
+        targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithTests<*>>().all {
+            binaries {
+                // Configure a separate test where code runs in background
+                test("background", listOf(DEBUG)) {
+                    // https://kotlinlang.org/docs/compiler-reference.html#generate-worker-test-runner-trw
+                    freeCompilerArgs += "-trw"
+                }
+            }
+            testRuns {
+                @Suppress("UNUSED_VARIABLE")
+                val background by creating {
+                    setExecutionSourceFrom(binaries.getTest("background", DEBUG))
+                }
+            }
+        }
     },
     androidConfig = AndroidConfig(
         minSdkVersion = libs.versions.androidMinSdk.get().toInt(),

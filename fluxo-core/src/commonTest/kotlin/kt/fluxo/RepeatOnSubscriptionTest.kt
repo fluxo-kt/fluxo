@@ -2,7 +2,6 @@ package kt.fluxo
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.take
@@ -19,7 +18,6 @@ import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
-@ExperimentalCoroutinesApi
 internal class RepeatOnSubscriptionTest {
     private val initialState = State()
     private val scope = CoroutineScope(Job())

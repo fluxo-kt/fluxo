@@ -2,7 +2,6 @@ package kt.fluxo.dsl
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.currentCoroutineContext
@@ -24,7 +23,6 @@ import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 
-@ExperimentalCoroutinesApi
 internal class DslThreadingTest {
 
     private val scope = CoroutineScope(Job())

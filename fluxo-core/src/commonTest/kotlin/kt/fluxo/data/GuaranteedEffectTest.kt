@@ -1,7 +1,6 @@
 package kt.fluxo.data
 
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.collect
@@ -15,7 +14,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 
-@ExperimentalCoroutinesApi
 class GuaranteedEffectTest {
 
     private val scope = CoroutineScope(Job())

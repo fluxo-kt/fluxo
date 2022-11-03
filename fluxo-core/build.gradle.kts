@@ -38,10 +38,12 @@ kotlin {
         nativeSet dependsOn native
 
         all {
-            languageSettings.optIn("kotlin.contracts.ExperimentalContracts")
-            languageSettings.optIn("kotlin.experimental.ExperimentalTypeInference")
-            languageSettings.optIn("kt.fluxo.core.annotation.ExperimentalFluxoApi")
-            languageSettings.optIn("kt.fluxo.core.annotation.InternalFluxoApi")
+            languageSettings {
+                optIn("kotlin.contracts.ExperimentalContracts")
+                optIn("kotlin.experimental.ExperimentalTypeInference")
+                optIn("kt.fluxo.core.annotation.ExperimentalFluxoApi")
+                optIn("kt.fluxo.core.annotation.InternalFluxoApi")
+            }
         }
 
         common.main.dependencies {
@@ -52,14 +54,12 @@ kotlin {
             implementation(kotlin("test"))
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.kotlinx.datetime)
+            implementation(libs.test.turbine)
         }
 
         java.main.dependencies {
             compileOnly(libs.androidx.annotation)
             compileOnly(libs.jsr305)
-        }
-        java.test.dependencies {
-            implementation(libs.kotlinx.lincheck)
         }
     }
 }

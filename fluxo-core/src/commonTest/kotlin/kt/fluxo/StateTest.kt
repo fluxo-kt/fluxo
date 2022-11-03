@@ -1,7 +1,6 @@
 package kt.fluxo
 
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.test.runTest
@@ -16,7 +15,6 @@ import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
-@ExperimentalCoroutinesApi
 internal class StateTest {
 
     private val scope = CoroutineScope(Job())
@@ -36,6 +34,7 @@ internal class StateTest {
         assertContentEquals(listOf(initialState), testStateObserver.values)
     }
 
+    // FIXME: Failed on mingwX64 target with full module testing
     @Test
     fun latest_state_emitted_on_connection() = runTest {
         val initialState = TestState()
