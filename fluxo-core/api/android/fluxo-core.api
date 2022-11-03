@@ -23,7 +23,6 @@ public final class kt/fluxo/core/FluxoSettings {
 	public final fun Lifo ()Lkt/fluxo/core/InputStrategy;
 	public final fun Parallel ()Lkt/fluxo/core/InputStrategy;
 	public final fun getBootstrapper ()Lkotlin/jvm/functions/Function2;
-	public final fun getCloseOnExceptions ()Z
 	public final fun getContext ()Lkotlin/coroutines/CoroutineContext;
 	public final fun getDebugChecks ()Z
 	public final fun getEventLoopContext ()Lkotlin/coroutines/CoroutineContext;
@@ -33,13 +32,14 @@ public final class kt/fluxo/core/FluxoSettings {
 	public final fun getIntentFilter ()Lkotlin/jvm/functions/Function2;
 	public final fun getInterceptorContext ()Lkotlin/coroutines/CoroutineContext;
 	public final fun getInterceptors ()Ljava/util/List;
-	public final fun getLazy ()Z
 	public final fun getName ()Ljava/lang/String;
 	public final fun getRepeatOnSubscribedStopTimeout ()J
 	public final fun getSideEffectBufferSize ()I
 	public final fun getSideEffectsStrategy ()Lkt/fluxo/core/SideEffectsStrategy;
 	public final fun getSideJobsContext ()Lkotlin/coroutines/CoroutineContext;
 	public final fun interceptor (Lkotlin/jvm/functions/Function1;)V
+	public final fun isCloseOnExceptions ()Z
+	public final fun isLazy ()Z
 	public final fun onCreate (Lkotlin/jvm/functions/Function2;)V
 	public final fun setBootstrapper (Lkotlin/jvm/functions/Function2;)V
 	public final fun setCloseOnExceptions (Z)V

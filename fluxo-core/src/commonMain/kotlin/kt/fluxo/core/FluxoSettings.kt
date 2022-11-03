@@ -21,6 +21,7 @@ public class FluxoSettings<Intent, State, SideEffect : Any> {
     /**
      * If true the [Store] will be started only on first subscriber.
      */
+    @get:JvmName("isLazy")
     public var lazy: Boolean = true
 
     /**
@@ -28,6 +29,7 @@ public class FluxoSettings<Intent, State, SideEffect : Any> {
      *
      * @see exceptionHandler
      */
+    @get:JvmName("isCloseOnExceptions")
     public var closeOnExceptions: Boolean = true
 
     /**
