@@ -26,13 +26,16 @@ kotlin {
     setupSourceSets {
         val js by bundle()
         val jsNative by bundle()
+        val native by bundle()
         val java by bundle()
 
         jsNative dependsOn common
+        native dependsOn common
         java dependsOn common
         js dependsOn jsNative
         javaSet dependsOn java
         nativeSet dependsOn jsNative
+        nativeSet dependsOn native
 
         all {
             languageSettings.optIn("kotlin.contracts.ExperimentalContracts")
