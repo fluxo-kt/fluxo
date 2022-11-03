@@ -1,5 +1,8 @@
+@file:Suppress("LongParameterList")
+
 package kt.fluxo.core.internal
 
+import kotlinx.coroutines.flow.StateFlow
 import kt.fluxo.core.dsl.SideJobScope
 import kt.fluxo.core.dsl.StoreScope
 
@@ -10,6 +13,7 @@ internal open class StoreScopeImpl<in Intent, State, SideEffect : Any>(
     private val updateStateAndGet: suspend ((State) -> State) -> State,
     private val sendSideEffect: suspend (SideEffect) -> Unit,
     private val sendSideJob: suspend (SideJobRequest<Intent, State, SideEffect>) -> Unit,
+    override val subscriptionCount: StateFlow<Int>
 ) : StoreScope<Intent, State, SideEffect> {
 
     final override val state: State

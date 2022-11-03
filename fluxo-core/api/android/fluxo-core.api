@@ -12,6 +12,11 @@ public final class kt/fluxo/core/FluxoInterceptorKt {
 	public static final fun FluxoInterceptor (Lkotlin/jvm/functions/Function1;)Lkt/fluxo/core/FluxoInterceptor;
 }
 
+public final class kt/fluxo/core/FluxoKt {
+	public static final fun repeatOnSubscription (Lkt/fluxo/core/dsl/StoreScope;Ljava/lang/String;JLkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun repeatOnSubscription$default (Lkt/fluxo/core/dsl/StoreScope;Ljava/lang/String;JLkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+}
+
 public final class kt/fluxo/core/FluxoSettings {
 	public fun <init> ()V
 	public final fun Fifo ()Lkt/fluxo/core/InputStrategy;
@@ -100,6 +105,7 @@ public abstract interface class kt/fluxo/core/Store : java/io/Closeable {
 	public abstract fun close ()V
 	public abstract fun getName ()Ljava/lang/String;
 	public abstract fun getSideEffectFlow ()Lkotlinx/coroutines/flow/Flow;
+	public fun getState ()Ljava/lang/Object;
 	public abstract fun getStateFlow ()Lkotlinx/coroutines/flow/StateFlow;
 	public abstract fun isActive ()Z
 	public abstract fun send (Ljava/lang/Object;)V
@@ -147,6 +153,7 @@ public abstract interface class kt/fluxo/core/dsl/SideJobScope : kotlinx/corouti
 	public abstract fun getRestartState ()Lkt/fluxo/core/dsl/SideJobScope$RestartState;
 	public abstract fun postIntent (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun postSideEffect (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun updateState (Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public final class kt/fluxo/core/dsl/SideJobScope$RestartState : java/lang/Enum {
@@ -160,11 +167,13 @@ public abstract interface class kt/fluxo/core/dsl/StoreScope {
 	public fun async (Ljava/lang/String;Lkotlin/jvm/functions/Function2;)V
 	public static synthetic fun async$default (Lkt/fluxo/core/dsl/StoreScope;Ljava/lang/String;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)V
 	public abstract fun getState ()Ljava/lang/Object;
+	public abstract fun getSubscriptionCount ()Lkotlinx/coroutines/flow/StateFlow;
 	public fun launch (Ljava/lang/String;Lkotlin/jvm/functions/Function2;)V
 	public static synthetic fun launch$default (Lkt/fluxo/core/dsl/StoreScope;Ljava/lang/String;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)V
 	public abstract fun noOp ()V
 	public abstract fun postSideEffect (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public fun reduce (Lkotlin/jvm/functions/Function1;)V
+	public fun reduce (Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun reduce$suspendImpl (Lkt/fluxo/core/dsl/StoreScope;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun sideJob (Ljava/lang/String;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun sideJob$default (Lkt/fluxo/core/dsl/StoreScope;Ljava/lang/String;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public abstract fun updateState (Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;

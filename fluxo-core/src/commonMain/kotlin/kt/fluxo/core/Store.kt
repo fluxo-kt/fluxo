@@ -16,9 +16,26 @@ public typealias Container<State, SideEffect> = Store<FluxoIntent<State, SideEff
 @ThreadSafe
 public interface Store<in Intent, out State, out SideEffect : Any> : Closeable {
 
+    /**
+     * [Store] name. Auto-generated or specified via [FluxoSettings.name].
+     *
+     * @see state
+     */
     public val name: String
 
+    /**
+     * Reactive access to the [State].
+     *
+     * @see state
+     */
     public val stateFlow: StateFlow<State>
+
+    /**
+     * Current [State]. Shortcut for a `stateFlow.value`.
+     *
+     * @see stateFlow
+     */
+    public val state: State get() = stateFlow.value
 
     /**
      * A _hot_ [Flow] that shares emitted [SideEffect]s among its collectors.

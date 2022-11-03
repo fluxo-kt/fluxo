@@ -22,6 +22,7 @@
     [2](https://medium.com/androiddevelopers/livedata-with-snackbar-navigation-and-other-events-the-singleliveevent-case-ac2622673150)]
     .
 * **Lifecycle-aware** with full control based on coroutine scopes.
+* Subscriptions lifecycle with convenience API (`repeatOnSubscription`).
 * Pluggable **input strategies**:
   * First In, First Out (Fifo). Default, best for background processing.
   * Last In, First Out (Lifo). Can optimize UI events processing.
@@ -47,7 +48,6 @@
 
 ### Roadmap
 
-- [ ] Subscription Lifecycle
 - [ ] Complete code coverage with tests
   - [ ] SideJobs tests
   - [ ] Input strategy tests

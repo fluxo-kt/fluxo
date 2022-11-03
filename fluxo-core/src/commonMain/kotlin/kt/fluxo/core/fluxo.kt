@@ -3,7 +3,15 @@
 package kt.fluxo.core
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kt.fluxo.core.annotation.FluxoDsl
+import kt.fluxo.core.dsl.SideJobScope
+import kt.fluxo.core.dsl.StoreScope
 import kt.fluxo.core.internal.FluxoIntentHandler
 import kt.fluxo.core.internal.FluxoStore
 import kt.fluxo.core.internal.ReducerIntentHandler
@@ -233,6 +241,36 @@ public inline fun <Intent, State, SideEffect : Any> store(
 @InlineOnly
 public inline fun <State, SideEffect : Any> ContainerHost<State, SideEffect>.intent(noinline intent: FluxoIntent<State, SideEffect>) {
     container.send(intent)
+}
+
+/**
+ *
+ * @see StoreScope.sideJob
+ */
+@FluxoDsl
+@OptIn(ExperimentalCoroutinesApi::class)
+public suspend fun <I, S, SE : Any> StoreScope<I, S, SE>.repeatOnSubscription(
+    key: String = StoreScope.DEFAULT_SIDE_JOB,
+    stopTimeout: Long = 100L,
+    block: suspend SideJobScope<I, S, SE>.() -> Unit
+) {
+    sideJob(key) {
+        val upstream = this@repeatOnSubscription.subscriptionCount
+        if (stopTimeout > 0L) {
+            upstream.mapLatest {
+                if (it > 0) true else {
+                    delay(stopTimeout)
+                    false
+                }
+            }
+        } else {
+            upstream.map { it > 0 }
+        }.distinctUntilChanged().collectLatest { subscribed ->
+            if (subscribed) {
+                block()
+            }
+        }
+    }
 }
 
 // endregion

@@ -1,18 +1,21 @@
 package kt.fluxo.core.dsl
 
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Job
 import kt.fluxo.core.annotation.FluxoDsl
+import kt.fluxo.core.annotation.InternalFluxoApi
 
 @FluxoDsl
-public interface SideJobScope<in Intent, out State, in SideEffect : Any> : CoroutineScope {
+@InternalFluxoApi
+public interface SideJobScope<in Intent, State, in SideEffect : Any> : CoroutineScope {
 
     public val currentStateWhenStarted: State
 
     public val restartState: RestartState
 
-    @Suppress("DeferredIsResult")
-    public suspend fun postIntent(intent: Intent): Deferred<Unit>
+    public suspend fun updateState(block: (State) -> State): State
+
+    public suspend fun postIntent(intent: Intent): Job
 
     public suspend fun postSideEffect(sideEffect: SideEffect)
 

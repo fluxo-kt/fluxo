@@ -2,10 +2,14 @@
 
 package kt.fluxo.core.dsl
 
+import kotlinx.coroutines.flow.StateFlow
+import kt.fluxo.core.Store
 import kt.fluxo.core.annotation.FluxoDsl
+import kt.fluxo.core.annotation.InternalFluxoApi
 import kotlin.internal.InlineOnly
 
 @FluxoDsl
+@InternalFluxoApi
 public interface StoreScope<in Intent, State, in SideEffect : Any> {
 
     private companion object {
@@ -14,6 +18,14 @@ public interface StoreScope<in Intent, State, in SideEffect : Any> {
 
 
     public val state: State
+
+    /**
+     * The number of subscribers (active collectors) for the current [Store].
+     * Never negative and starts with zero. Can be used to react to changes in the number of subscriptions to this shared flow.
+     *
+     * @see kotlinx.coroutines.flow.MutableSharedFlow.subscriptionCount
+     */
+    public val subscriptionCount: StateFlow<Int>
 
     public suspend fun updateState(block: (State) -> State): State
 
@@ -50,15 +62,18 @@ public interface StoreScope<in Intent, State, in SideEffect : Any> {
     // region Migration helpers
 
     /**
-     * Helper for migration from Orbit
+     * Helper for migration from Orbit.
+     * Consider to use [updateState] instead.
      */
     @InlineOnly
     @Deprecated(
         message = "Please use the updateState instead",
-        level = DeprecationLevel.ERROR,
+        level = DeprecationLevel.WARNING,
         replaceWith = ReplaceWith("updateState { state ->\n    reducer()    \n}"),
     )
-    public fun reduce(reducer: Any.() -> State): Unit = throw NotImplementedError()
+    public suspend fun reduce(reducer: (State) -> State) {
+        updateState(reducer)
+    }
 
     // endregion
 }

@@ -43,9 +43,6 @@ public class FluxoSettings<Intent, State, SideEffect : Any> {
             if (value) closeOnExceptions = true
         }
 
-    // FIXME: TODO
-    public var repeatOnSubscribedStopTimeout: Long = 100L
-
     /**
      * Either a positive [SideEffect]s channel capacity or one of the constants defined in [Channel.Factory].
      */
@@ -145,6 +142,19 @@ public class FluxoSettings<Intent, State, SideEffect : Any> {
     /** Parallel processing of all intents. No guarantee that inputs will be processed in any given order. */
     @get:JvmName("Parallel")
     public inline val Parallel: InputStrategy get() = InputStrategy.Parallel
+
+    // endregion
+
+
+    // region Migration helpers
+
+    /**
+     * Not applicable from here. Use stopTimeout parameter for the [repeatOnSubscription] method instead.
+     *
+     * @see repeatOnSubscription
+     */
+    @Deprecated("Use stopTimeout parameter for repeatOnSubscription method instead")
+    public var repeatOnSubscribedStopTimeout: Long = 100L
 
     // endregion
 }

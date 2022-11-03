@@ -81,6 +81,8 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
 
     private val events = MutableSharedFlow<FluxoEvent<Intent, State, SideEffect>>(extraBufferCapacity = 256)
 
+    private val subscriptionCount: StateFlow<Int>
+
     override val isActive: Boolean
         get() = scope.isActive
 
@@ -193,6 +195,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         if (sideEffectsSubscriptionCount != null) {
             subscriptionCount = subscriptionCount.plusIn(interceptorScope, sideEffectsSubscriptionCount)
         }
+        this.subscriptionCount = subscriptionCount
 
         // Start the Store
         if (!conf.lazy) {
@@ -385,12 +388,13 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
                 job = intent,
                 guardian = when {
                     !conf.debugChecks -> null
-                    else -> InputStrategyGuardian(parallelProcessing = conf.inputStrategy.parallelProcessing)
+                    else -> InputStrategyGuardian(parallelProcessing = conf.inputStrategy.parallelProcessing, intent = intent)
                 },
                 getState = mutableState::value,
                 updateStateAndGet = ::updateStateAndGet,
                 sendSideEffect = ::postSideEffect,
                 sendSideJob = ::postSideJob,
+                subscriptionCount = subscriptionCount,
             )
             with(handlerScope) {
                 with(intentHandler) {
@@ -450,6 +454,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
             ) {
                 try {
                     val sideJobScope = SideJobScopeImpl(
+                        updateStateAndGet = ::updateStateAndGet,
                         sendIntent = ::sendAsync,
                         sendSideEffect = ::postSideEffect,
                         currentStateWhenStarted = mutableState.value,
@@ -484,6 +489,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
                 sendIntent = ::sendAsync,
                 sendSideEffect = ::postSideEffect,
                 sendSideJob = ::postSideJob,
+                subscriptionCount = subscriptionCount,
             )
 
             // Await all children completion with coroutineScope

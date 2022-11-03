@@ -30,7 +30,7 @@ internal class StateTest {
     fun initial_state_emitted_on_connection() {
         val initialState = TestState()
         val middleware = Middleware(initialState)
-        assertEquals(initialState, middleware.container.stateFlow.value)
+        assertEquals(initialState, middleware.container.state)
 
         val testStateObserver = middleware.container.stateFlow.test()
         assertContentEquals(listOf(initialState), testStateObserver.values)
@@ -65,7 +65,7 @@ internal class StateTest {
 
         testStateObserver.awaitCount(2)
 
-        assertEquals(testStateObserver.values.last(), middleware.container.stateFlow.value)
+        assertEquals(testStateObserver.values.last(), middleware.container.state)
 
         middleware.container.close()
     }

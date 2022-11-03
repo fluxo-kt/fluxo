@@ -11,6 +11,7 @@ import kotlin.jvm.Volatile
 @InternalFluxoApi
 internal open class InputStrategyGuardian(
     private val parallelProcessing: Boolean = false,
+    private val intent: Any? = null,
 ) {
     @Volatile
     private var stateAccessed: Boolean = false
@@ -71,23 +72,23 @@ internal open class InputStrategyGuardian(
 
     private fun performStateAccessCheck() {
         check(!stateAccessed) {
-            "ParallelInputStrategy requires that inputs only access or update the state at most once as a " +
-                "safeguard against race conditions."
+            "Parallel input strategy requires that inputs only access or update the state at most once as a " +
+                "safeguard against race conditions (intent=$intent)."
         }
     }
 
     private fun checkNotClosed() {
-        check(!closed) { "This InputHandlerScope has already been closed" }
+        check(!closed) { "This StoreScope has already been closed. Are yoy trying to use intent DSL from the sideJob? (intent=$intent)" }
     }
 
     private fun checkNoSideJobs() {
-        check(!sideJobPosted) { "SideJobs must be the last statements of the InputHandler" }
+        check(!sideJobPosted) { "SideJobs must be the last statements of the IntentHandler (intent=$intent)" }
     }
 
     private fun checkUsedProperly() {
         check(usedProperly) {
             "Intent was not handled properly. To ensure you're following the MVI model properly, make sure any " +
-                "sideJobs are executed in a `sideJob { }` block."
+                "sideJobs are executed in a `sideJob { }` block. (intent=$intent)"
         }
     }
 }

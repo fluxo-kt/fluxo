@@ -1,9 +1,11 @@
+@file:Suppress("LongParameterList")
+
 package kt.fluxo.core.internal
 
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.flow.StateFlow
 import kt.fluxo.core.dsl.BootstrapperScope
 
-@Suppress("LongParameterList")
 internal class BootstrapperScopeImpl<in Intent, State, SideEffect : Any>(
     bootstrapper: Any?,
     guardian: InputStrategyGuardian?,
@@ -12,6 +14,7 @@ internal class BootstrapperScopeImpl<in Intent, State, SideEffect : Any>(
     private val sendIntent: suspend (Intent) -> Deferred<Unit>,
     sendSideEffect: suspend (SideEffect) -> Unit,
     sendSideJob: suspend (SideJobRequest<Intent, State, SideEffect>) -> Unit,
+    subscriptionCount: StateFlow<Int>
 ) : StoreScopeImpl<Intent, State, SideEffect>(
     job = bootstrapper,
     guardian = guardian,
@@ -19,6 +22,7 @@ internal class BootstrapperScopeImpl<in Intent, State, SideEffect : Any>(
     updateStateAndGet = updateStateAndGet,
     sendSideEffect = sendSideEffect,
     sendSideJob = sendSideJob,
+    subscriptionCount = subscriptionCount,
 ), BootstrapperScope<Intent, State, SideEffect> {
 
     override suspend fun postIntent(intent: Intent) = sendIntent(intent)
