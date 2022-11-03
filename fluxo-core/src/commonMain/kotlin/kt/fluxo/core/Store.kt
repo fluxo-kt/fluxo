@@ -20,6 +20,16 @@ public interface Store<in Intent, out State, out SideEffect : Any> : Closeable {
 
     public val stateFlow: StateFlow<State>
 
+    /**
+     * A _hot_ [Flow] that shares emitted [SideEffect]s among its collectors.
+     *
+     * Behavior of this flow can be configured with [FluxoSettings.sideEffectsStrategy].
+     *
+     * @see FluxoSettings.sideEffectsStrategy
+     * @see SideEffectsStrategy
+     *
+     * @throws IllegalStateException if [SideEffect]s where disabled for this [Store].
+     */
     public val sideEffectFlow: Flow<SideEffect>
 
     public val isActive: Boolean

@@ -2,49 +2,59 @@
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE.md)
 
-**Fluxo** is a simple yet super powerful MVI / MVVM+ library for Kotlin Multiplatform.
+**Fluxo** is a simple yet super powerful MVVM+ / MVI library for Kotlin Multiplatform.
 
 * Kotlin **coroutine-based** state handling.
 * **Multiplatform**, supports all KMM targets (**Android**, **iOS**, **JVM**, **JS**, **Native**..).
-* Simple, type-safe, no-boilerplate.
+* Simple usage, type-safe, no-boilerplate.
 * Different usage styles:
   * Strict **Redux/MVI**
-  * Flexible **MVVM+** ([contextual reduction](https://dev.to/feresr/a-case-against-the-mvi-architecture-pattern-1add))
-  * Redux-style discrete Inputs with MVVM+ style DSL
-* **Side effects** support (sometimes called news or events)
-* Intentionally unopinionated, extensible API: you can follow guides or use it as you want.
+  * Simple and flexible **MVVM+**
+    ([contextual reduction](https://dev.to/feresr/a-case-against-the-mvi-architecture-pattern-1add)
+    , [orbit-way](https://github.com/orbit-mvi/orbit-mvi#what-is-orbit))
+  * Redux-style discrete Inputs with MVVM+ style reduction DSL
+* **Side effects** support (sometimes called news or events).
+  * Four strategies allows to fully control how side effects sharing can be handled in the Store
+    (RECEIVE, CONSUME, SHARE, DISABLE).
+  * Side effects are cached while subscriber (e.g., view) is not attached.
+  * Side effects consumption guarantees with `GuaranteedEffect` (effect handled and exactly
+    once) [[1](https://github.com/Kotlin/kotlinx.coroutines/issues/2886),
+    [2](https://medium.com/androiddevelopers/livedata-with-snackbar-navigation-and-other-events-the-singleliveevent-case-ac2622673150)]
+    .
 * **Lifecycle-aware** with full control based on coroutine scopes.
 * Pluggable **input strategies**:
-  * First In, First Out (Fifo), default, best for background processing.
-  * Last In, First Out (Lifo), best for UI events processing.
+  * First In, First Out (Fifo). Default, best for background processing.
+  * Last In, First Out (Lifo). Can optimize UI events processing.
   * Parallel, no order guarantees.
-* Full errors handling and behavior control.
-* Bootstrap for eager or lazy initialization.
-* Side jobs for long-running tasks.
-* Leak-free transfer, delivery guarantees [[1](https://github.com/Kotlin/kotlinx.coroutines/issues/1936). [2](https://gmk57.medium.com/unfortunately-events-may-be-dropped-if-channel-receiveasflow-cfe78ae29004)].
-* Side effects consumption guarantees with `GuaranteedEffect` (effect handled and exactly once) [[1](https://github.com/Kotlin/kotlinx.coroutines/issues/2886), [2](https://medium.com/androiddevelopers/livedata-with-snackbar-navigation-and-other-events-the-singleliveevent-case-ac2622673150)].
-* Strictly not recommended, but `Closeable` resources supported as State and SideEffects
-  * Previous state will be properly closed on change
-  * Side effects closed when not delivered
+  * Create your own!
+* Bootstrap (initialization tasks), eager or lazy initialization.
+* Side jobs for long-running tasks (MVVM+ DSL).
+* Errors handling and on exception behavior control.
+* Leak-free transfer, delivery
+  guarantees [[1](https://github.com/Kotlin/kotlinx.coroutines/issues/1936), [2](https://gmk57.medium.com/unfortunately-events-may-be-dropped-if-channel-receiveasflow-cfe78ae29004)]
+  .
+* Strictly not recommended, but JVM `Closeable` resources partially supported as a state and side effects.
+  * Previous state will be properly closed on change.
+  * Side effects closed when not delivered.
+* Intentionally unopinionated, extensible API: you can follow guides or use it as you want.
 * Well tested.
 * Reactive streams compatibility
   through [coroutine wrappers](https://github.com/Kotlin/kotlinx.coroutines/tree/master/reactive):
   * RxJava 2.x, RxJava 3.x
-  * Reactive Streams, Flow (JDK 9)
+  * Flow (JDK 9), Reactive Streams
   * Project Reactor
-  * [LiveData](https://developer.android.com/topic/libraries/architecture/coroutines#livedata)
+* [LiveData](https://developer.android.com/topic/libraries/architecture/coroutines#livedata) compatibility with AndroidX.
 
 ### Roadmap
 
 - [ ] Subscription Lifecycle
-- [ ] Side effects strategies (see `ActionShareBehavior` in FlowMVI)
-- [ ] Side effects cache when view not attached
 - [ ] Complete code coverage with tests
   - [ ] SideJobs tests
   - [ ] Input strategy tests
   - [ ] Reducer tests
   - [ ] MVI Store tests
   - [ ] Bootstrapper tests
+  - [ ] Side effects strategies/cache/guarantees tests
 - [ ] \(Optional) Java-friendly API
 - [ ] Compose integration tests, examples and docs
 - [ ] ViewModel integration tests, examples and docs

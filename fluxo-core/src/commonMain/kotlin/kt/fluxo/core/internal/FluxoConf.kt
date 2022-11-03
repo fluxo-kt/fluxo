@@ -7,28 +7,31 @@ import kt.fluxo.core.FluxoInterceptor
 import kt.fluxo.core.FluxoSettings
 import kt.fluxo.core.InputStrategy
 import kt.fluxo.core.IntentFilter
+import kt.fluxo.core.SideEffectsStrategy
 import kt.fluxo.core.annotation.InternalFluxoApi
 import kotlin.coroutines.CoroutineContext
 
 @PublishedApi
 @InternalFluxoApi
 @Suppress("LongParameterList")
-internal class FluxoConf<Intent, State, SideEffect : Any>(
-    val name: String,
-    val lazy: Boolean,
-    val closeOnExceptions: Boolean,
-    val debugChecks: Boolean,
-    val repeatOnSubscribedStopTimeout: Long,
-    val sideEffectBufferSize: Int,
-    val bootstrapper: Bootstrapper<in Intent, State, SideEffect>?,
-    val interceptors: Array<out FluxoInterceptor<Intent, State, SideEffect>>,
-    val intentFilter: IntentFilter<in Intent, State>?,
-    val inputStrategy: InputStrategy,
-    val eventLoopContext: CoroutineContext,
-    val intentContext: CoroutineContext,
-    val sideJobsContext: CoroutineContext,
-    val interceptorContext: CoroutineContext,
-    val exceptionHandler: CoroutineExceptionHandler?,
+internal class FluxoConf<Intent, State, SideEffect : Any>
+internal constructor(
+    internal val name: String,
+    internal val lazy: Boolean,
+    internal val closeOnExceptions: Boolean,
+    internal val debugChecks: Boolean,
+    internal val repeatOnSubscribedStopTimeout: Long,
+    internal val sideEffectBufferSize: Int,
+    internal val bootstrapper: Bootstrapper<in Intent, State, SideEffect>?,
+    internal val interceptors: Array<out FluxoInterceptor<Intent, State, SideEffect>>,
+    internal val intentFilter: IntentFilter<in Intent, State>?,
+    internal val inputStrategy: InputStrategy,
+    internal val sideEffectsStrategy: SideEffectsStrategy,
+    internal val eventLoopContext: CoroutineContext,
+    internal val intentContext: CoroutineContext,
+    internal val sideJobsContext: CoroutineContext,
+    internal val interceptorContext: CoroutineContext,
+    internal val exceptionHandler: CoroutineExceptionHandler?,
 )
 
 @PublishedApi
@@ -45,6 +48,7 @@ internal fun <Intent, State, SideEffect : Any> FluxoSettings<Intent, State, Side
         interceptors = interceptors.toTypedArray(),
         intentFilter = intentFilter,
         inputStrategy = inputStrategy,
+        sideEffectsStrategy = sideEffectsStrategy,
         eventLoopContext = eventLoopContext + context,
         intentContext = intentContext,
         sideJobsContext = sideJobsContext,

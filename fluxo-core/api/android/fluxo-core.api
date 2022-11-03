@@ -32,6 +32,7 @@ public final class kt/fluxo/core/FluxoSettings {
 	public final fun getName ()Ljava/lang/String;
 	public final fun getRepeatOnSubscribedStopTimeout ()J
 	public final fun getSideEffectBufferSize ()I
+	public final fun getSideEffectsStrategy ()Lkt/fluxo/core/SideEffectsStrategy;
 	public final fun getSideJobsContext ()Lkotlin/coroutines/CoroutineContext;
 	public final fun interceptor (Lkotlin/jvm/functions/Function1;)V
 	public final fun onCreate (Lkotlin/jvm/functions/Function2;)V
@@ -49,6 +50,7 @@ public final class kt/fluxo/core/FluxoSettings {
 	public final fun setName (Ljava/lang/String;)V
 	public final fun setRepeatOnSubscribedStopTimeout (J)V
 	public final fun setSideEffectBufferSize (I)V
+	public final fun setSideEffectsStrategy (Lkt/fluxo/core/SideEffectsStrategy;)V
 	public final fun setSideJobsContext (Lkotlin/coroutines/CoroutineContext;)V
 }
 
@@ -70,6 +72,28 @@ public final class kt/fluxo/core/InputStrategy$InBox {
 
 public abstract interface class kt/fluxo/core/IntentHandler {
 	public abstract fun handleIntent (Lkt/fluxo/core/dsl/StoreScope;Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public abstract interface class kt/fluxo/core/SideEffectsStrategy {
+}
+
+public final class kt/fluxo/core/SideEffectsStrategy$CONSUME : kt/fluxo/core/SideEffectsStrategy {
+	public static final field INSTANCE Lkt/fluxo/core/SideEffectsStrategy$CONSUME;
+}
+
+public final class kt/fluxo/core/SideEffectsStrategy$DISABLE : kt/fluxo/core/SideEffectsStrategy {
+	public static final field INSTANCE Lkt/fluxo/core/SideEffectsStrategy$DISABLE;
+}
+
+public final class kt/fluxo/core/SideEffectsStrategy$RECEIVE : kt/fluxo/core/SideEffectsStrategy {
+	public static final field INSTANCE Lkt/fluxo/core/SideEffectsStrategy$RECEIVE;
+}
+
+public final class kt/fluxo/core/SideEffectsStrategy$SHARE : kt/fluxo/core/SideEffectsStrategy {
+	public fun <init> ()V
+	public fun <init> (I)V
+	public synthetic fun <init> (IILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getReplay ()I
 }
 
 public abstract interface class kt/fluxo/core/Store : java/io/Closeable {
@@ -308,22 +332,6 @@ public final class kt/fluxo/core/intercept/StoreRequest$RestoreState : kt/fluxo/
 }
 
 public final class kt/fluxo/core/internal/FluxoConf {
-	public fun <init> (Ljava/lang/String;ZZZJILkotlin/jvm/functions/Function2;[Lkt/fluxo/core/FluxoInterceptor;Lkotlin/jvm/functions/Function2;Lkt/fluxo/core/InputStrategy;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Lkotlinx/coroutines/CoroutineExceptionHandler;)V
-	public final fun getBootstrapper ()Lkotlin/jvm/functions/Function2;
-	public final fun getCloseOnExceptions ()Z
-	public final fun getDebugChecks ()Z
-	public final fun getEventLoopContext ()Lkotlin/coroutines/CoroutineContext;
-	public final fun getExceptionHandler ()Lkotlinx/coroutines/CoroutineExceptionHandler;
-	public final fun getInputStrategy ()Lkt/fluxo/core/InputStrategy;
-	public final fun getIntentContext ()Lkotlin/coroutines/CoroutineContext;
-	public final fun getIntentFilter ()Lkotlin/jvm/functions/Function2;
-	public final fun getInterceptorContext ()Lkotlin/coroutines/CoroutineContext;
-	public final fun getInterceptors ()[Lkt/fluxo/core/FluxoInterceptor;
-	public final fun getLazy ()Z
-	public final fun getName ()Ljava/lang/String;
-	public final fun getRepeatOnSubscribedStopTimeout ()J
-	public final fun getSideEffectBufferSize ()I
-	public final fun getSideJobsContext ()Lkotlin/coroutines/CoroutineContext;
 }
 
 public final class kt/fluxo/core/internal/FluxoConfKt {

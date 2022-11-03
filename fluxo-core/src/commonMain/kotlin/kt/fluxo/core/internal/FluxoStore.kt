@@ -9,6 +9,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
@@ -22,8 +23,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.transformWhile
 import kotlinx.coroutines.isActive
@@ -32,6 +33,7 @@ import kotlinx.coroutines.plus
 import kotlinx.coroutines.withContext
 import kt.fluxo.core.Bootstrapper
 import kt.fluxo.core.IntentHandler
+import kt.fluxo.core.SideEffectsStrategy
 import kt.fluxo.core.Store
 import kt.fluxo.core.annotation.InternalFluxoApi
 import kt.fluxo.core.data.GuaranteedEffect
@@ -72,8 +74,10 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
     private val mutableState = MutableStateFlow(initialState)
     override val stateFlow: StateFlow<State> get() = mutableState
 
-    private val sideEffectChannel: Channel<SideEffect>
+    private val sideEffectChannel: Channel<SideEffect>?
+    private val sideEffectFlowField: Flow<SideEffect>?
     override val sideEffectFlow: Flow<SideEffect>
+        get() = sideEffectFlowField ?: error("Side effects are disabled for the current store: $name")
 
     private val events = MutableSharedFlow<FluxoEvent<Intent, State, SideEffect>>(extraBufferCapacity = 256)
 
@@ -145,43 +149,62 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
                 }
             }
         }
-        sideEffectChannel = Channel(conf.sideEffectBufferSize, BufferOverflow.SUSPEND) {
-            scope.launch(Dispatchers.Unconfined, CoroutineStart.UNDISPATCHED) {
-                @Suppress("UNINITIALIZED_VARIABLE")
-                val resent = if (sideEffectChannel.trySend(it).isSuccess) true else {
-                    it.closeSafely()
-                    false
-                }
-                if (isActive) {
-                    events.emit(FluxoEvent.SideEffectUndelivered(this@FluxoStore, it, resent = resent))
-                }
-            }
-        }
-        sideEffectFlow = sideEffectChannel.receiveAsFlow().let {
-            // Wrap Flow for lazy initialization
-            if (!conf.lazy) it else flow {
-                start()
-                emitAll(it)
-            }
-        }
 
-
-        if (!conf.lazy) {
-            // eager start
-            start()
+        // Prepare side effects handling, considering all available strategies
+        var subscriptionCount = mutableState.subscriptionCount
+        val sideEffectsSubscriptionCount: StateFlow<Int>?
+        val sideEffectStrategy = conf.sideEffectsStrategy
+        if (sideEffectStrategy === SideEffectsStrategy.DISABLE) {
+            // Disable side effects
+            sideEffectChannel = null
+            sideEffectFlowField = null
+            sideEffectsSubscriptionCount = null
+        } else if (sideEffectStrategy is SideEffectsStrategy.SHARE) {
+            // MutableSharedFlow-based SideEffect
+            sideEffectChannel = null
+            val flow = MutableSharedFlow<SideEffect>(
+                replay = sideEffectStrategy.replay,
+                extraBufferCapacity = conf.sideEffectBufferSize,
+                onBufferOverflow = BufferOverflow.SUSPEND,
+            )
+            sideEffectsSubscriptionCount = flow.subscriptionCount
+            sideEffectFlowField = flow
         } else {
-            // lazy start on state subscription
-            scope.launch {
-                var previous = 0
-                mutableState.subscriptionCount.collect { v ->
-                    if (v != previous) {
-                        if (previous <= 0 && v > 0) {
-                            start()
-                            cancel()
-                        }
-                        previous = v
+            val channel = Channel<SideEffect>(conf.sideEffectBufferSize, BufferOverflow.SUSPEND) {
+                scope.launch(Dispatchers.Unconfined, CoroutineStart.UNDISPATCHED) {
+                    @Suppress("UNINITIALIZED_VARIABLE")
+                    val resent = if (sideEffectChannel!!.trySend(it).isSuccess) true else {
+                        it.closeSafely()
+                        false
+                    }
+                    if (isActive) {
+                        events.emit(FluxoEvent.SideEffectUndelivered(this@FluxoStore, it, resent = resent))
                     }
                 }
+            }
+            sideEffectChannel = channel
+            sideEffectsSubscriptionCount = MutableStateFlow(0)
+            val flow = if (sideEffectStrategy === SideEffectsStrategy.CONSUME) channel.consumeAsFlow() else {
+                check(!conf.debugChecks || sideEffectStrategy === SideEffectsStrategy.RECEIVE)
+                channel.receiveAsFlow()
+            }
+            sideEffectFlowField = SubscriptionCountFlow(sideEffectsSubscriptionCount, flow)
+        }
+        if (sideEffectsSubscriptionCount != null) {
+            subscriptionCount = subscriptionCount.plusIn(interceptorScope, sideEffectsSubscriptionCount)
+        }
+
+        // Start the Store
+        if (!conf.lazy) {
+            // Eager start
+            start()
+        } else {
+            // Lazy start on state subscription
+            val subscriptions = subscriptionCount
+            scope.launch {
+                // start on the first subscriber.
+                subscriptions.first { it > 0 }
+                start()
             }
         }
     }
@@ -241,11 +264,22 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
     }
 
     private suspend fun postSideEffect(sideEffect: SideEffect) {
-        if (sideEffect is GuaranteedEffect<*>) {
-            sideEffect.setResendFunction(::postSideEffectSync)
+        if (!scope.isActive) {
+            sideEffect.closeSafely()
+            events.emit(FluxoEvent.SideEffectUndelivered(this@FluxoStore, sideEffect, resent = false))
+        } else try {
+            if (sideEffect is GuaranteedEffect<*>) {
+                sideEffect.setResendFunction(::postSideEffectSync)
+            }
+            sideEffectChannel?.send(sideEffect)
+                ?: (sideEffectFlowField as MutableSharedFlow).emit(sideEffect)
+            events.emit(FluxoEvent.SideEffectEmitted(this@FluxoStore, sideEffect))
+        } catch (e: Throwable) {
+            sideEffect.closeSafely()
+            events.emit(FluxoEvent.SideEffectUndelivered(this@FluxoStore, sideEffect, resent = false))
+            handleException(e, currentCoroutineContext())
+            events.emit(FluxoEvent.UnhandledError(this@FluxoStore, e))
         }
-        sideEffectChannel.send(sideEffect)
-        events.emit(FluxoEvent.SideEffectEmitted(this@FluxoStore, sideEffect))
     }
 
     private fun postSideEffectSync(sideEffect: SideEffect) {
@@ -479,21 +513,33 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         }
         sideJobsMap.clear()
 
-        sideEffectChannel.close(ce)
-
-        // Interceptor scope shouldn't be closed immediately with scope, when interceptors set.
-        // It allows to process final events in interceptors.
-        val interceptorScope = interceptorScope
-        if (interceptorScope !== scope && interceptorScope.isActive) {
-            val cancellationCause = cancellationCause
-            interceptorScope.launch {
-                delay(DELAY_TO_CLOSE_INTERCEPTOR_SCOPE_MILLIS)
-                interceptorScope.cancel(cancellationCause)
+        // Close and clear state & side effects machinery.
+        @OptIn(ExperimentalCoroutinesApi::class)
+        interceptorScope.launch(Dispatchers.Unconfined + Job(), CoroutineStart.UNDISPATCHED) {
+            mutableState.value.closeSafely()
+            (sideEffectFlowField as? MutableSharedFlow)?.apply {
+                val replayCache = replayCache
+                resetReplayCache()
+                replayCache.forEach { it.closeSafely() }
+            }
+            sideEffectChannel?.apply {
+                while (!isEmpty) {
+                    receiveCatching().getOrNull()?.closeSafely()
+                }
+                close(ce)
             }
         }
 
-        interceptorScope.launch(Dispatchers.Unconfined, CoroutineStart.UNDISPATCHED) {
-            mutableState.value.closeSafely()
+        // Interceptor scope shouldn't be closed immediately with scope, when interceptors set.
+        // It allows to process final events in interceptors.
+        // Cancel it with a delay.
+        val interceptorScope = interceptorScope
+        if (interceptorScope !== scope && interceptorScope.isActive) {
+            val cancellationCause = cancellationCause
+            interceptorScope.launch(start = CoroutineStart.UNDISPATCHED) {
+                delay(DELAY_TO_CLOSE_INTERCEPTOR_SCOPE_MILLIS)
+                interceptorScope.cancel(cancellationCause)
+            }
         }
     }
 

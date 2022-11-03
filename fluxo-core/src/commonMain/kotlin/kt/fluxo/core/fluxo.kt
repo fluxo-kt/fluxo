@@ -31,7 +31,7 @@ public inline fun <State> CoroutineScope.container(
     contract {
         callsInPlace(settings, InvocationKind.EXACTLY_ONCE)
     }
-    return kt.fluxo.core.container<State, Nothing>(initialState, settings = {
+    return kt.fluxo.core.container(initialState, settings = {
         eventLoopContext = coroutineContext
         settings()
     })
@@ -131,7 +131,10 @@ public inline fun <State> container(
     contract {
         callsInPlace(settings, InvocationKind.EXACTLY_ONCE)
     }
-    return container<State, Nothing>(initialState, settings = settings)
+    return container<State, Nothing>(initialState) {
+        sideEffectsStrategy = SideEffectsStrategy.DISABLE
+        settings()
+    }
 }
 
 /**
@@ -188,7 +191,10 @@ public inline fun <Intent, State> store(
     return FluxoStore(
         initialState = initialState,
         intentHandler = handler,
-        conf = FluxoSettings<Intent, State, Nothing>().apply(settings).build(),
+        conf = FluxoSettings<Intent, State, Nothing>().apply {
+            sideEffectsStrategy = SideEffectsStrategy.DISABLE
+            settings()
+        }.build(),
     )
 }
 

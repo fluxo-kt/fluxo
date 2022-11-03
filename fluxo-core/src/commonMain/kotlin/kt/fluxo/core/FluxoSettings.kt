@@ -84,6 +84,13 @@ public class FluxoSettings<Intent, State, SideEffect : Any> {
      */
     public var inputStrategy: InputStrategy = Fifo
 
+    /**
+     * A strategy to be applied when sharing side effects.
+     *
+     * @see SideEffectsStrategy
+     */
+    public var sideEffectsStrategy: SideEffectsStrategy = SideEffectsStrategy.RECEIVE
+
     // endregion
 
 
