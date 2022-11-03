@@ -111,9 +111,14 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
             !conf.debugChecks -> EmptyCoroutineContext
             else -> CoroutineName("$F[$name:intentScope]")
         }
-        sideJobScope = scope + conf.sideJobsContext + exceptionHandler + SupervisorJob(job) + when {
-            !conf.debugChecks -> EmptyCoroutineContext
-            else -> CoroutineName("$F[$name:sideJobScope]")
+        sideJobScope = if (intentHandler is ReducerIntentHandler && conf.bootstrapper == null) {
+            // Minor optimization as side jobs not available when bootstrapper not set and ReducerIntentHandler used.
+            scope
+        } else {
+            scope + conf.sideJobsContext + exceptionHandler + SupervisorJob(job) + when {
+                !conf.debugChecks -> EmptyCoroutineContext
+                else -> CoroutineName("$F[$name:sideJobScope]")
+            }
         }
         // Shouldn't close immediately with scope, when interceptors set
         interceptorScope = if (conf.interceptors.isEmpty()) scope else {
@@ -418,6 +423,8 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
     }
 
     private suspend fun postSideJob(request: SideJobRequest<Intent, State, SideEffect>) {
+        check(scope !== sideJobScope) { "Side jobs are disabled for the current store: $name" }
+
         events.emit(FluxoEvent.SideJobQueued(this@FluxoStore, request.key))
 
         val key = request.key
@@ -512,9 +519,9 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
     private fun onShutdown(cause: Throwable?) {
         events.tryEmit(FluxoEvent.StoreClosed(this, cause))
 
-        val ce = cause.toCancellationException()
+        val cancellationCause = cause.toCancellationException() ?: cancellationCause
         for (value in sideJobsMap.values) {
-            value.job?.cancel(ce)
+            value.job?.cancel(cancellationCause)
             value.job = null
         }
         sideJobsMap.clear()
@@ -532,7 +539,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
                 while (!isEmpty) {
                     receiveCatching().getOrNull()?.closeSafely()
                 }
-                close(ce)
+                close(cancellationCause)
             }
         }
 
@@ -541,7 +548,6 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         // Cancel it with a delay.
         val interceptorScope = interceptorScope
         if (interceptorScope !== scope && interceptorScope.isActive) {
-            val cancellationCause = cancellationCause
             interceptorScope.launch(start = CoroutineStart.UNDISPATCHED) {
                 delay(DELAY_TO_CLOSE_INTERCEPTOR_SCOPE_MILLIS)
                 interceptorScope.cancel(cancellationCause)
