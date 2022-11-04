@@ -364,7 +364,7 @@ public final class kt/fluxo/core/internal/FluxoIntentHandler : kt/fluxo/core/Int
 }
 
 public final class kt/fluxo/core/internal/FluxoStore : kt/fluxo/core/Store {
-	public fun <init> (Ljava/lang/Object;Lkt/fluxo/core/IntentHandler;Lkt/fluxo/core/internal/FluxoConf;)V
+	public fun <init> (Ljava/lang/Object;Lkt/fluxo/core/IntentHandler;Lkt/fluxo/core/FluxoSettings;)V
 	public fun close ()V
 	public fun getName ()Ljava/lang/String;
 	public fun getSideEffectFlow ()Lkotlinx/coroutines/flow/Flow;

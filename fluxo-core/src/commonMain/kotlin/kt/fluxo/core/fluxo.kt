@@ -15,7 +15,6 @@ import kt.fluxo.core.dsl.StoreScope
 import kt.fluxo.core.internal.FluxoIntentHandler
 import kt.fluxo.core.internal.FluxoStore
 import kt.fluxo.core.internal.ReducerIntentHandler
-import kt.fluxo.core.internal.build
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 import kotlin.internal.InlineOnly
@@ -202,7 +201,7 @@ public inline fun <Intent, State> store(
         conf = FluxoSettings<Intent, State, Nothing>().apply {
             sideEffectsStrategy = SideEffectsStrategy.DISABLE
             settings()
-        }.build(),
+        },
     )
 }
 
@@ -225,7 +224,7 @@ public inline fun <Intent, State, SideEffect : Any> store(
     return FluxoStore(
         initialState = initialState,
         intentHandler = handler,
-        conf = FluxoSettings<Intent, State, SideEffect>().apply(settings).build(),
+        conf = FluxoSettings<Intent, State, SideEffect>().apply(settings),
     )
 }
 

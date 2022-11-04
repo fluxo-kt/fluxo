@@ -1,3 +1,5 @@
+@file:Suppress("TooManyFunctions", "TooGenericExceptionCaught")
+
 package kt.fluxo.core.internal
 
 import kotlinx.atomicfu.atomic
@@ -32,6 +34,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import kotlinx.coroutines.withContext
 import kt.fluxo.core.Bootstrapper
+import kt.fluxo.core.FluxoSettings
 import kt.fluxo.core.IntentHandler
 import kt.fluxo.core.SideEffectsStrategy
 import kt.fluxo.core.Store
@@ -48,20 +51,22 @@ import kotlin.coroutines.EmptyCoroutineContext
 
 @PublishedApi
 @InternalFluxoApi
-@Suppress("TooManyFunctions", "TooGenericExceptionCaught")
 internal class FluxoStore<Intent, State, SideEffect : Any>(
     initialState: State,
     private val intentHandler: IntentHandler<Intent, State, SideEffect>,
-    private val conf: FluxoConf<Intent, State, SideEffect>,
+    conf: FluxoSettings<Intent, State, SideEffect>,
 ) : Store<Intent, State, SideEffect> {
 
     private companion object {
         private const val F = "Fluxo"
 
         private const val DELAY_TO_CLOSE_INTERCEPTOR_SCOPE_MILLIS = 5_000L
+
+        private val storeNumber = atomic(0)
     }
 
-    override val name: String get() = conf.name
+    // TODO: Generate name from Store host with reflection in debug mode?
+    override val name: String = conf.name ?: "store#${storeNumber.getAndIncrement()}"
 
     private val scope: CoroutineScope
     private val intentContext: CoroutineContext
@@ -88,17 +93,24 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
 
     private val initialised = atomic(false)
 
+    private val debugChecks = conf.debugChecks
+    private val closeOnExceptions = conf.closeOnExceptions
+    private val inputStrategy = conf.inputStrategy
+    private val interceptors = conf.interceptors.toList()
+    private val bootstrapper = conf.bootstrapper
+    private val intentFilter = conf.intentFilter
+
     @OptIn(InternalCoroutinesApi::class)
     private val cancellationCause get() = scope.coroutineContext[Job]?.getCancellationException()
 
     init {
-        val ctx = conf.eventLoopContext + when {
-            !conf.debugChecks -> EmptyCoroutineContext
+        val ctx = conf.eventLoopContext + conf.context + when {
+            !debugChecks -> EmptyCoroutineContext
             else -> CoroutineName(toString())
         }
 
         val parent = ctx[Job]
-        val job = if (conf.closeOnExceptions) Job(parent) else SupervisorJob(parent)
+        val job = if (closeOnExceptions) Job(parent) else SupervisorJob(parent)
         job.invokeOnCompletion(::onShutdown)
 
         val parentExceptionHandler = conf.exceptionHandler ?: ctx[CoroutineExceptionHandler]
@@ -108,22 +120,22 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         }
         scope = CoroutineScope(ctx + exceptionHandler + job)
         intentContext = scope.coroutineContext + conf.intentContext + when {
-            !conf.debugChecks -> EmptyCoroutineContext
+            !debugChecks -> EmptyCoroutineContext
             else -> CoroutineName("$F[$name:intentScope]")
         }
-        sideJobScope = if (intentHandler is ReducerIntentHandler && conf.bootstrapper == null) {
+        sideJobScope = if (intentHandler is ReducerIntentHandler && bootstrapper == null) {
             // Minor optimization as side jobs not available when bootstrapper not set and ReducerIntentHandler used.
             scope
         } else {
             scope + conf.sideJobsContext + exceptionHandler + SupervisorJob(job) + when {
-                !conf.debugChecks -> EmptyCoroutineContext
+                !debugChecks -> EmptyCoroutineContext
                 else -> CoroutineName("$F[$name:sideJobScope]")
             }
         }
         // Shouldn't close immediately with scope, when interceptors set
-        interceptorScope = if (conf.interceptors.isEmpty()) scope else {
+        interceptorScope = if (interceptors.isEmpty()) scope else {
             scope + conf.interceptorContext + SupervisorJob() + when {
-                !conf.debugChecks -> EmptyCoroutineContext
+                !debugChecks -> EmptyCoroutineContext
                 else -> CoroutineName("$F[$name:interceptorScope]")
             }
         }
@@ -134,7 +146,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         // — receive operation retrieved the element from the channel but cancelled when trying to return it the caller.
         // — channel cancelled, in which case onUndeliveredElement called on every remaining element in the channel's buffer.
         // See "Undelivered elements" section in Channel documentation for details.
-        requestsChannel = conf.inputStrategy.createQueue {
+        requestsChannel = inputStrategy.createQueue {
             scope.launch(Dispatchers.Unconfined, CoroutineStart.UNDISPATCHED) {
                 when (it) {
                     is StoreRequest.HandleIntent -> {
@@ -192,7 +204,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
             sideEffectChannel = channel
             sideEffectsSubscriptionCount = MutableStateFlow(0)
             val flow = if (sideEffectStrategy === SideEffectsStrategy.CONSUME) channel.consumeAsFlow() else {
-                check(!conf.debugChecks || sideEffectStrategy === SideEffectsStrategy.RECEIVE)
+                check(!debugChecks || sideEffectStrategy === SideEffectsStrategy.RECEIVE)
                 channel.receiveAsFlow()
             }
             sideEffectFlowField = SubscriptionCountFlow(sideEffectsSubscriptionCount, flow)
@@ -234,7 +246,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
 
     override suspend fun sendAsync(intent: Intent): Deferred<Unit> {
         start()
-        val i = if (DEBUG || conf.debugChecks) debugIntentWrapper(intent) else intent
+        val i = if (DEBUG || debugChecks) debugIntentWrapper(intent) else intent
         val deferred = CompletableDeferred<Unit>()
         requestsChannel.send(StoreRequest.HandleIntent(deferred, i))
         events.emit(FluxoEvent.IntentQueued(this, i))
@@ -243,7 +255,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
 
     override fun send(intent: Intent) {
         start()
-        val i = if (DEBUG || conf.debugChecks) debugIntentWrapper(intent) else intent
+        val i = if (DEBUG || debugChecks) debugIntentWrapper(intent) else intent
         scope.launch(Dispatchers.Unconfined, start = CoroutineStart.UNDISPATCHED) {
             @Suppress("DeferredResultUnused") sendAsync(i)
         }
@@ -298,7 +310,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
     }
 
     private fun handleException(e: Throwable, context: CoroutineContext) {
-        if (!conf.closeOnExceptions) {
+        if (!closeOnExceptions) {
             val handler = scope.coroutineContext[CoroutineExceptionHandler]
             if (handler != null) {
                 handler.handleException(context, e)
@@ -323,11 +335,11 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
     private fun launch() = scope.launch {
         // observe and process intents
         val requestsFlow = requestsChannel.receiveAsFlow()
-        val inputStrategy = conf.inputStrategy
+        val inputStrategy = inputStrategy
         val inputStrategyScope: InputStrategyScope<StoreRequest<Intent, State>> = { request ->
             when (request) {
                 is StoreRequest.HandleIntent -> {
-                    if (conf.debugChecks) {
+                    if (debugChecks) {
                         withContext(CoroutineName("$F[$name <= Intent ${request.intent}]")) {
                             safelyHandleIntent(request.intent, request.deferred)
                         }
@@ -349,7 +361,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         }
 
         // launch interceptors handling (stop on StoreClosed)
-        if (conf.interceptors.isNotEmpty()) {
+        if (interceptors.isNotEmpty()) {
             val interceptorScope = InterceptorScopeImpl(
                 storeName = name,
                 sendRequest = requestsChannel::send,
@@ -359,8 +371,8 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
                 emit(it)
                 it !is FluxoEvent.StoreClosed
             }
-            for (interceptor in conf.interceptors) {
-                with(interceptor) {
+            for (i in interceptors.indices) {
+                with(interceptors[i]) {
                     try {
                         interceptorScope.start(eventsFlow)
                     } catch (e: Throwable) {
@@ -373,7 +385,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         events.emit(FluxoEvent.StoreStarted(this@FluxoStore))
 
         // bootstrap
-        conf.bootstrapper?.let { bootstrapper ->
+        bootstrapper?.let { bootstrapper ->
             safelyRunBootstrapper(bootstrapper)
         }
     }
@@ -382,7 +394,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         val stateBeforeCancellation = mutableState.value
         try {
             // Apply an intent filter before processing, if defined
-            conf.intentFilter?.also { accept ->
+            intentFilter?.also { accept ->
                 if (!accept(stateBeforeCancellation, intent)) {
                     events.emit(FluxoEvent.IntentRejected(this, stateBeforeCancellation, intent))
                     return
@@ -414,7 +426,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
             events.emit(FluxoEvent.IntentHandled(this@FluxoStore, intent))
         } catch (_: CancellationException) {
             // reset state as intent did not complete successfully
-            if (conf.inputStrategy.rollbackOnCancellation) {
+            if (inputStrategy.rollbackOnCancellation) {
                 updateState(stateBeforeCancellation)
             }
             events.emit(FluxoEvent.IntentCancelled(this, intent))
@@ -459,7 +471,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
             request = request,
             job = sideJobScope.launch(
                 context = when {
-                    !conf.debugChecks -> EmptyCoroutineContext
+                    !debugChecks -> EmptyCoroutineContext
                     else -> CoroutineName("$F[$name SideJob $key <= Intent ${request.parent}]")
                 }
             ) {

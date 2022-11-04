@@ -338,13 +338,6 @@ public final class kt/fluxo/core/intercept/StoreRequest$RestoreState : kt/fluxo/
 	public final fun getState ()Ljava/lang/Object;
 }
 
-public final class kt/fluxo/core/internal/FluxoConf {
-}
-
-public final class kt/fluxo/core/internal/FluxoConfKt {
-	public static final fun build (Lkt/fluxo/core/FluxoSettings;)Lkt/fluxo/core/internal/FluxoConf;
-}
-
 public final class kt/fluxo/core/internal/FluxoIntentHandler : kt/fluxo/core/IntentHandler {
 	public static final field INSTANCE Lkt/fluxo/core/internal/FluxoIntentHandler;
 	public synthetic fun handleIntent (Lkt/fluxo/core/dsl/StoreScope;Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -352,7 +345,7 @@ public final class kt/fluxo/core/internal/FluxoIntentHandler : kt/fluxo/core/Int
 }
 
 public final class kt/fluxo/core/internal/FluxoStore : kt/fluxo/core/Store {
-	public fun <init> (Ljava/lang/Object;Lkt/fluxo/core/IntentHandler;Lkt/fluxo/core/internal/FluxoConf;)V
+	public fun <init> (Ljava/lang/Object;Lkt/fluxo/core/IntentHandler;Lkt/fluxo/core/FluxoSettings;)V
 	public fun close ()V
 	public fun getName ()Ljava/lang/String;
 	public fun getSideEffectFlow ()Lkotlinx/coroutines/flow/Flow;
