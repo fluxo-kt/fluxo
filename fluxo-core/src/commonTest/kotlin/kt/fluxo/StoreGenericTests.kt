@@ -20,6 +20,7 @@ internal class StoreGenericTests {
             initialState = initialState,
             reducer = reducer,
         ) {
+            debugChecks = false
             this.bootstrapper = bootstrapper
         }
     }

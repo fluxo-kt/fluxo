@@ -4,3 +4,9 @@ import kt.fluxo.core.annotation.InternalFluxoApi
 
 @InternalFluxoApi
 internal expect val DEBUG: Boolean
+
+@InternalFluxoApi
+internal expect fun <I> debugIntentWrapper(intent: I): I
+
+@InternalFluxoApi
+internal expect fun Any.debugClassName(): String?

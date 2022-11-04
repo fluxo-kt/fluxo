@@ -5,7 +5,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kt.fluxo.core.annotation.ThreadSafe
 import kt.fluxo.core.internal.Closeable
-import kt.fluxo.core.internal.StoreClosedException
 import kotlin.js.JsName
 
 /**

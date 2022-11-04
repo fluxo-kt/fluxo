@@ -1,3 +1,5 @@
+@file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
+
 package kt.fluxo.core.debug
 
 import kt.fluxo.core.FluxoIntent
@@ -5,6 +7,7 @@ import java.lang.reflect.AccessibleObject
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.internal.InlineOnly
 
 // TODO: Only for test/debug variants?
 @Suppress("UNCHECKED_CAST")
@@ -99,3 +102,7 @@ private data class FluxoIntentDebug<S, SE : Any>(
 
 private val intentArgumentsCache = ConcurrentHashMap<Class<*>, Array<Pair<String, Field>>>()
 private val EMPTY_ARGUMENTS_CACHE = emptyArray<Pair<String, Field>>()
+
+
+@InlineOnly
+internal actual inline fun Any.debugClassName(): String? = javaClass.name

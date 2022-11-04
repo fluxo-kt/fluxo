@@ -38,6 +38,7 @@ import kt.fluxo.core.FluxoSettings
 import kt.fluxo.core.IntentHandler
 import kt.fluxo.core.SideEffectsStrategy
 import kt.fluxo.core.Store
+import kt.fluxo.core.StoreClosedException
 import kt.fluxo.core.annotation.InternalFluxoApi
 import kt.fluxo.core.data.GuaranteedEffect
 import kt.fluxo.core.debug.DEBUG
@@ -124,9 +125,9 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
                     scope.coroutineContext.cancel(ce)
                     context.cancel(ce)
                 } catch (e2: Throwable) {
-                    e.addSuppressed(e2)
+                    e2.addSuppressed(e)
+                    throw e2
                 }
-                throw e
             }
         }
         scope = CoroutineScope(ctx + exceptionHandler + job)
@@ -232,7 +233,12 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         } else {
             // Lazy start on state subscription
             val subscriptions = subscriptionCount
-            scope.launch {
+            scope.launch(
+                when {
+                    !debugChecks -> EmptyCoroutineContext
+                    else -> CoroutineName("$F[$name:lazyStart]")
+                }
+            ) {
                 // start on the first subscriber.
                 subscriptions.first { it > 0 }
                 start()
@@ -344,7 +350,12 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
     }
 
     /** Will be called only once for each [FluxoStore] */
-    private fun launch() = scope.launch {
+    private fun launch() = scope.launch(
+        when {
+            !debugChecks -> EmptyCoroutineContext
+            else -> CoroutineName("$F[$name:launch]")
+        }
+    ) {
         // observe and process intents
         val requestsFlow = requestsChannel.receiveAsFlow()
         val inputStrategy = inputStrategy
@@ -361,8 +372,11 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
                 }
 
                 is StoreRequest.RestoreState -> {
-                    updateState(request.state)
-                    request.deferred?.complete(Unit)
+                    try {
+                        updateState(request.state)
+                    } finally {
+                        request.deferred?.complete(Unit)
+                    }
                 }
             }
         }
@@ -440,18 +454,19 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
                 }
             }
             handlerScope.close()
+            deferred?.complete(Unit)
             events.emit(FluxoEvent.IntentHandled(this@FluxoStore, intent))
-        } catch (_: CancellationException) {
+        } catch (ce: CancellationException) {
+            deferred?.completeExceptionally(ce)
             // reset state as intent did not complete successfully
             if (inputStrategy.rollbackOnCancellation) {
                 updateState(stateBeforeCancellation)
             }
             events.emit(FluxoEvent.IntentCancelled(this, intent))
         } catch (e: Throwable) {
+            deferred?.completeExceptionally(e)
             events.emit(FluxoEvent.IntentError(this, intent, e))
             handleException(e, currentCoroutineContext())
-        } finally {
-            deferred?.complete(Unit)
         }
     }
 

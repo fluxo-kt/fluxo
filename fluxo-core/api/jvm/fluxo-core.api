@@ -67,12 +67,6 @@ public abstract class kt/fluxo/core/InputStrategy {
 	public abstract fun processRequests (Lkotlin/jvm/functions/Function2;Lkotlinx/coroutines/flow/Flow;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public final class kt/fluxo/core/InputStrategy$Companion {
-	public final fun Fifo ()Lkt/fluxo/core/InputStrategy;
-	public final fun Lifo ()Lkt/fluxo/core/InputStrategy;
-	public final fun Parallel ()Lkt/fluxo/core/InputStrategy;
-}
-
 public final class kt/fluxo/core/InputStrategy$InBox {
 	public final fun Fifo ()Lkt/fluxo/core/InputStrategy;
 	public final fun Lifo ()Lkt/fluxo/core/InputStrategy;
@@ -117,8 +111,17 @@ public abstract interface class kt/fluxo/core/Store : java/io/Closeable {
 	public abstract fun start ()Lkotlinx/coroutines/Job;
 }
 
+public final class kt/fluxo/core/StoreClosedException : java/lang/IllegalStateException, kt/fluxo/core/StoreException {
+}
+
+public abstract interface class kt/fluxo/core/StoreException {
+}
+
 public abstract interface class kt/fluxo/core/StoreHost {
 	public abstract fun getStore ()Lkt/fluxo/core/Store;
+}
+
+public class kt/fluxo/core/StoreRuntimeException : java/lang/RuntimeException, kt/fluxo/core/StoreException {
 }
 
 public abstract interface annotation class kt/fluxo/core/annotation/ExperimentalFluxoApi : java/lang/annotation/Annotation {
@@ -258,12 +261,6 @@ public final class kt/fluxo/core/intercept/FluxoEvent$IntentUndelivered : kt/flu
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class kt/fluxo/core/intercept/FluxoEvent$SideEffectDropped : kt/fluxo/core/intercept/FluxoEvent {
-	public fun <init> (Lkt/fluxo/core/Store;Ljava/lang/Object;)V
-	public final fun getSideEffect ()Ljava/lang/Object;
-	public fun toString ()Ljava/lang/String;
-}
-
 public final class kt/fluxo/core/intercept/FluxoEvent$SideEffectEmitted : kt/fluxo/core/intercept/FluxoEvent {
 	public fun <init> (Lkt/fluxo/core/Store;Ljava/lang/Object;)V
 	public final fun getSideEffect ()Ljava/lang/Object;
@@ -350,13 +347,6 @@ public final class kt/fluxo/core/intercept/StoreRequest$RestoreState : kt/fluxo/
 	public final fun getState ()Ljava/lang/Object;
 }
 
-public final class kt/fluxo/core/internal/FluxoConf {
-}
-
-public final class kt/fluxo/core/internal/FluxoConfKt {
-	public static final fun build (Lkt/fluxo/core/FluxoSettings;)Lkt/fluxo/core/internal/FluxoConf;
-}
-
 public final class kt/fluxo/core/internal/FluxoIntentHandler : kt/fluxo/core/IntentHandler {
 	public static final field INSTANCE Lkt/fluxo/core/internal/FluxoIntentHandler;
 	public synthetic fun handleIntent (Lkt/fluxo/core/dsl/StoreScope;Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -379,8 +369,5 @@ public final class kt/fluxo/core/internal/FluxoStore : kt/fluxo/core/Store {
 public final class kt/fluxo/core/internal/ReducerIntentHandler : kt/fluxo/core/IntentHandler {
 	public fun <init> (Lkotlin/jvm/functions/Function2;)V
 	public fun handleIntent (Lkt/fluxo/core/dsl/StoreScope;Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-}
-
-public final class kt/fluxo/core/internal/StoreClosedException : java/lang/IllegalStateException {
 }
 

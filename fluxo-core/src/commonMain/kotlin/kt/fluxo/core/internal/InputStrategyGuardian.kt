@@ -2,7 +2,10 @@ package kt.fluxo.core.internal
 
 import kotlinx.atomicfu.atomic
 import kt.fluxo.core.Store
+import kt.fluxo.core.StoreRuntimeException
 import kt.fluxo.core.annotation.InternalFluxoApi
+import kt.fluxo.core.debug.debugClassName
+import kotlin.contracts.contract
 
 /**
  * A Guardian protects the integrity of the [Store] state against potential problems,
@@ -98,7 +101,7 @@ internal open class InputStrategyGuardian(
     private val info: String
         get() {
             val name = try {
-                handler::class.qualifiedName
+                handler.debugClassName()
             } catch (_: Throwable) {
                 ""
             }
@@ -107,4 +110,13 @@ internal open class InputStrategyGuardian(
                 else -> if (name.isNullOrEmpty()) " (intent=$intent)" else " (intent=$intent; $name)"
             }
         }
+
+    private inline fun check(value: Boolean, lazyMessage: () -> String) {
+        contract {
+            returns() implies value
+        }
+        if (!value) {
+            throw StoreRuntimeException(lazyMessage(), cause = null)
+        }
+    }
 }
