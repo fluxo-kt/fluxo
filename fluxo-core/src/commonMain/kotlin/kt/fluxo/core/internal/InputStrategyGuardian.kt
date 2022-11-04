@@ -1,8 +1,8 @@
 package kt.fluxo.core.internal
 
+import kotlinx.atomicfu.atomic
 import kt.fluxo.core.Store
 import kt.fluxo.core.annotation.InternalFluxoApi
-import kotlin.jvm.Volatile
 
 /**
  * A Guardian protects the integrity of the [Store] state against potential problems,
@@ -10,20 +10,15 @@ import kotlin.jvm.Volatile
  */
 @InternalFluxoApi
 internal open class InputStrategyGuardian(
-    private val parallelProcessing: Boolean = false,
-    private val intent: Any? = null,
+    private val parallelProcessing: Boolean,
+    private val isBootstrap: Boolean,
+    private val intent: Any?,
+    private val handler: Any,
 ) {
-    @Volatile
-    private var stateAccessed: Boolean = false
-
-    @Volatile
-    private var sideJobPosted: Boolean = false
-
-    @Volatile
-    private var usedProperly: Boolean = false
-
-    @Volatile
-    private var closed: Boolean = false
+    private val stateAccessed = atomic(false)
+    private val sideJobPosted = atomic(false)
+    private val usedProperly = atomic(false)
+    private val closed = atomic(false)
 
     open fun checkStateAccess() {
         if (parallelProcessing) {
@@ -31,8 +26,8 @@ internal open class InputStrategyGuardian(
         }
         checkNotClosed()
         checkNoSideJobs()
-        stateAccessed = true
-        usedProperly = true
+        stateAccessed.value = true
+        usedProperly.value = true
     }
 
     open fun checkStateUpdate() {
@@ -41,54 +36,75 @@ internal open class InputStrategyGuardian(
         }
         checkNotClosed()
         checkNoSideJobs()
-        stateAccessed = true
-        usedProperly = true
+        stateAccessed.value = true
+        usedProperly.value = true
     }
 
     open fun checkPostSideEffect() {
         checkNotClosed()
         checkNoSideJobs()
-        usedProperly = true
+        usedProperly.value = true
     }
 
     open fun checkNoOp() {
         checkNotClosed()
         checkNoSideJobs()
-        usedProperly = true
+        usedProperly.value = true
     }
 
     open fun checkSideJob() {
         checkNotClosed()
-        sideJobPosted = true
-        usedProperly = true
+        sideJobPosted.value = true
+        usedProperly.value = true
     }
 
     open fun close() {
         checkNotClosed()
         checkUsedProperly()
-        closed = true
+        closed.value = true
     }
 
 
     private fun performStateAccessCheck() {
-        check(!stateAccessed) {
+        check(!stateAccessed.value) {
             "Parallel input strategy requires that inputs only access or update the state at most once as a " +
-                "safeguard against race conditions (intent=$intent)."
+                "safeguard against race conditions.$info"
         }
     }
 
     private fun checkNotClosed() {
-        check(!closed) { "This StoreScope has already been closed. Are yoy trying to use intent DSL from the sideJob? (intent=$intent)" }
+        check(!closed.value) {
+            val scope = if (isBootstrap) "BootstrapperScope" else "StoreScope"
+            "This $scope has already been closed. Are yoy trying to use it from the sideJob?$info"
+        }
     }
 
     private fun checkNoSideJobs() {
-        check(!sideJobPosted) { "SideJobs must be the last statements of the IntentHandler (intent=$intent)" }
+        check(!sideJobPosted.value) {
+            val handler = if (isBootstrap) "Bootstrapper" else "IntentHandler"
+            "`sideJob { }` blocks must be the last statements of the $handler$info"
+        }
     }
 
     private fun checkUsedProperly() {
-        check(usedProperly) {
-            "Intent was not handled properly. To ensure you're following the MVI model properly, make sure any " +
-                "sideJobs are executed in a `sideJob { }` block. (intent=$intent)"
+        check(usedProperly.value) {
+            val handler = if (isBootstrap) "Bootstrapper" else "IntentHandler"
+            "$handler behavior was not safe. To ensure you're following the proper model, check that any " +
+                "side job executed in a `sideJob { }` block. Call `noOp()` method method to explicitly mark " +
+                "$handler that doesn't do anything with Store.$info"
         }
     }
+
+    private val info: String
+        get() {
+            val name = try {
+                handler::class.qualifiedName
+            } catch (_: Throwable) {
+                ""
+            }
+            return when {
+                isBootstrap -> if (name.isNullOrEmpty()) "" else " ($name)"
+                else -> if (name.isNullOrEmpty()) " (intent=$intent)" else " (intent=$intent; $name)"
+            }
+        }
 }
