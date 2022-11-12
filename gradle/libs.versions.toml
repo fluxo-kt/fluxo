@@ -19,10 +19,10 @@ javaLangTarget = "1.8"
 kotlinLangVersion = "1.7"
 
 # https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-gradle-plugin
-kotlin = "1.7.20"
+kotlin = "1.7.21"
 
 # https://github.com/google/ksp/releases
-ksp = "1.7.20-1.0.7"
+ksp = "1.7.21-1.0.8"
 
 # https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-coroutines-core
 coroutines = "1.6.4"
@@ -44,7 +44,7 @@ android-gradle-plugin = "7.2.2"
 arrow = "1.1.3"
 
 # https://github.com/detekt/detekt/releases
-detekt = "1.22.0-RC2"
+detekt = "1.22.0-RC3"
 
 # Android Jetpack
 # https://developer.android.com/jetpack/androidx/versions
@@ -84,7 +84,7 @@ test-junit = { module = "junit:junit" }
 # https://mvnrepository.com/artifact/org.robolectric/robolectric
 test-robolectric = { module = "org.robolectric:robolectric", version = "4.9" }
 # https://github.com/cashapp/turbine/releases
-test-turbine = { module = "app.cash.turbine:turbine", version = "0.12.0" }
+test-turbine = { module = "app.cash.turbine:turbine", version = "0.12.1" }
 
 plugin-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 plugin-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
@@ -129,7 +129,7 @@ detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 
 # Plugin provides a task to determine which dependencies have updates
 # https://github.com/ben-manes/gradle-versions-plugin
-deps-versions = { id = "com.github.ben-manes.versions", version = "0.43.0" }
+deps-versions = { id = "com.github.ben-manes.versions", version = "0.44.0" }
 
 # Detect unused and misused dependencies
 # https://github.com/autonomousapps/dependency-analysis-android-gradle-plugin/tags
