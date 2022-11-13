@@ -2,6 +2,7 @@
 
 package kt.fluxo.core.dsl
 
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import kt.fluxo.core.Store
 import kt.fluxo.core.annotation.FluxoDsl
@@ -10,10 +11,11 @@ import kotlin.internal.InlineOnly
 
 @FluxoDsl
 @InternalFluxoApi
-public interface StoreScope<in Intent, State, in SideEffect : Any> {
+public interface StoreScope<in Intent, State, in SideEffect : Any> : CoroutineScope {
 
     private companion object {
         private const val DEFAULT_SIDE_JOB = "default"
+        private const val DEFAULT_REPEAT_ON_SUBSCRIPTION_JOB = "repeatOnSubscription"
     }
 
 
@@ -23,6 +25,7 @@ public interface StoreScope<in Intent, State, in SideEffect : Any> {
      * The number of subscribers (active collectors) for the current [Store].
      * Never negative and starts with zero. Can be used to react to changes in the number of subscriptions to this shared flow.
      *
+     * @see kt.fluxo.core.repeatOnSubscription
      * @see kotlinx.coroutines.flow.MutableSharedFlow.subscriptionCount
      */
     public val subscriptionCount: StateFlow<Int>

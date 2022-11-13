@@ -53,7 +53,6 @@
   - [ ] Input strategy tests
   - [ ] Reducer tests
   - [ ] MVI Store tests
-  - [ ] Bootstrapper tests
   - [ ] Side effects strategies/cache/guarantees tests
 - [ ] \(Optional) Java-friendly API
 - [ ] Compose integration tests, examples and docs

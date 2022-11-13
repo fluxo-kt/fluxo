@@ -49,6 +49,8 @@ internal open class InputStrategyGuardian(
         usedProperly.value = true
     }
 
+    open fun checkPostIntent() = checkPostSideEffect()
+
     open fun checkNoOp() {
         checkNotClosed()
         checkNoSideJobs()

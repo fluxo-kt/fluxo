@@ -6,6 +6,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
+import kt.fluxo.core.annotation.FluxoDsl
 import kt.fluxo.core.annotation.NotThreadSafe
 import kt.fluxo.core.debug.DEBUG
 import kt.fluxo.core.intercept.FluxoEvent
@@ -15,6 +16,7 @@ import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.internal.InlineOnly
 import kotlin.jvm.JvmName
 
+@FluxoDsl
 @NotThreadSafe
 public class FluxoSettings<Intent, State, SideEffect : Any> {
     public var name: String? = null
@@ -64,8 +66,9 @@ public class FluxoSettings<Intent, State, SideEffect : Any> {
 
     /** [bootstrapper] convenience method */
     @InlineOnly
+    @Deprecated("Use onStart instead", ReplaceWith("onStart(bootstrapper)"))
     public inline fun onCreate(noinline bootstrapper: Bootstrapper<in Intent, State, SideEffect>) {
-        this.bootstrapper = bootstrapper
+        onStart(bootstrapper)
     }
 
 

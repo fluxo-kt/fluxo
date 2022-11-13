@@ -170,7 +170,7 @@ public final class kt/fluxo/core/dsl/SideJobScope$RestartState : java/lang/Enum 
 	public static fun values ()[Lkt/fluxo/core/dsl/SideJobScope$RestartState;
 }
 
-public abstract interface class kt/fluxo/core/dsl/StoreScope {
+public abstract interface class kt/fluxo/core/dsl/StoreScope : kotlinx/coroutines/CoroutineScope {
 	public fun async (Ljava/lang/String;Lkotlin/jvm/functions/Function2;)V
 	public static synthetic fun async$default (Lkt/fluxo/core/dsl/StoreScope;Ljava/lang/String;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)V
 	public abstract fun getState ()Ljava/lang/Object;

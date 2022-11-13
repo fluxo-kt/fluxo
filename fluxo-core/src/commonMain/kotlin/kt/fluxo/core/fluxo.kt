@@ -249,7 +249,7 @@ public inline fun <State, SideEffect : Any> ContainerHost<State, SideEffect>.int
 @FluxoDsl
 @OptIn(ExperimentalCoroutinesApi::class)
 public suspend fun <I, S, SE : Any> StoreScope<I, S, SE>.repeatOnSubscription(
-    key: String = StoreScope.DEFAULT_SIDE_JOB,
+    key: String = StoreScope.DEFAULT_REPEAT_ON_SUBSCRIPTION_JOB,
     stopTimeout: Long = 100L,
     block: suspend SideJobScope<I, S, SE>.() -> Unit
 ) {

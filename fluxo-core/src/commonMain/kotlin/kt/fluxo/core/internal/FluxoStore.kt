@@ -391,7 +391,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
             val interceptorScope = InterceptorScopeImpl(
                 storeName = name,
                 sendRequest = requestsChannel::send,
-                coroutineScope = interceptorScope,
+                coroutineContext = interceptorScope.coroutineContext,
             )
             val eventsFlow: Flow<FluxoEvent<Intent, State, SideEffect>> = events.transformWhile {
                 emit(it)
@@ -428,32 +428,31 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
             }
 
             events.emit(FluxoEvent.IntentAccepted(this, intent))
-            val handlerScope = StoreScopeImpl(
-                job = intent,
-                guardian = when {
-                    !debugChecks -> null
-                    else -> InputStrategyGuardian(
-                        parallelProcessing = inputStrategy.parallelProcessing,
-                        isBootstrap = false,
-                        intent = intent,
-                        handler = intentHandler,
+            with(intentHandler) {
+                // Await all children completion with coroutineScope
+                coroutineScope {
+                    val storeScope = StoreScopeImpl(
+                        job = intent,
+                        guardian = when {
+                            !debugChecks -> null
+                            else -> InputStrategyGuardian(
+                                parallelProcessing = inputStrategy.parallelProcessing,
+                                isBootstrap = false,
+                                intent = intent,
+                                handler = intentHandler,
+                            )
+                        },
+                        getState = mutableState::value,
+                        updateStateAndGet = ::updateStateAndGet,
+                        sendSideEffect = ::postSideEffect,
+                        sendSideJob = ::postSideJob,
+                        subscriptionCount = subscriptionCount,
+                        coroutineContext = coroutineContext
                     )
-                },
-                getState = mutableState::value,
-                updateStateAndGet = ::updateStateAndGet,
-                sendSideEffect = ::postSideEffect,
-                sendSideJob = ::postSideJob,
-                subscriptionCount = subscriptionCount,
-            )
-            with(handlerScope) {
-                with(intentHandler) {
-                    // Await all children completion with coroutineScope
-                    coroutineScope {
-                        handleIntent(intent)
-                    }
+                    storeScope.handleIntent(intent)
+                    storeScope.close()
                 }
             }
-            handlerScope.close()
             deferred?.complete(Unit)
             events.emit(FluxoEvent.IntentHandled(this@FluxoStore, intent))
         } catch (ce: CancellationException) {
@@ -536,27 +535,27 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
     private suspend fun safelyRunBootstrapper(bootstrapper: Bootstrapper<Intent, State, SideEffect>) = withContext(intentContext) {
         events.emit(FluxoEvent.BootstrapperStarted(this@FluxoStore, bootstrapper))
         try {
-            val bootstrapperScope = BootstrapperScopeImpl(
-                bootstrapper = bootstrapper,
-                guardian = if (!debugChecks) null else InputStrategyGuardian(
-                    parallelProcessing = false,
-                    isBootstrap = true,
-                    intent = null,
-                    handler = bootstrapper,
-                ),
-                getState = mutableState::value,
-                updateStateAndGet = ::updateStateAndGet,
-                sendIntent = ::sendAsync,
-                sendSideEffect = ::postSideEffect,
-                sendSideJob = ::postSideJob,
-                subscriptionCount = subscriptionCount,
-            )
-
             // Await all children completion with coroutineScope
             coroutineScope {
+                val bootstrapperScope = BootstrapperScopeImpl(
+                    bootstrapper = bootstrapper,
+                    guardian = if (!debugChecks) null else InputStrategyGuardian(
+                        parallelProcessing = false,
+                        isBootstrap = true,
+                        intent = null,
+                        handler = bootstrapper,
+                    ),
+                    getState = mutableState::value,
+                    updateStateAndGet = ::updateStateAndGet,
+                    sendIntent = ::sendAsync,
+                    sendSideEffect = ::postSideEffect,
+                    sendSideJob = ::postSideJob,
+                    subscriptionCount = subscriptionCount,
+                    coroutineContext = coroutineContext,
+                )
                 bootstrapperScope.bootstrapper()
+                bootstrapperScope.close()
             }
-            bootstrapperScope.close()
             events.emit(FluxoEvent.BootstrapperCompleted(this@FluxoStore, bootstrapper))
         } catch (_: CancellationException) {
             events.emit(FluxoEvent.BootstrapperCancelled(this@FluxoStore, bootstrapper))
