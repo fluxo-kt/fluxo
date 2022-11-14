@@ -36,6 +36,7 @@ private fun Project.envOrPropFlag(name: String): Provider<Boolean> {
 
 fun Project.isCI(): Provider<Boolean> = envOrPropFlag("CI")
 fun Project.isRelease(): Provider<Boolean> = envOrPropFlag("RELEASE")
+fun Project.useK2(): Provider<Boolean> = envOrPropFlag("USE_KOTLIN_K2")
 
 
 operator fun Provider<Boolean>.getValue(thisRef: Any?, property: Any?): Boolean = orNull == true

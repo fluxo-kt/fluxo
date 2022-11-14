@@ -107,10 +107,11 @@ allprojects {
             versions.webpackCli.version = "4.10.0"
         }
 
+        val isCi by isCI()
+        val isRelease by isRelease()
+        val useK2 by useK2()
         tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
             kotlinOptions {
-                val isCi by isCI()
-                val isRelease by isRelease()
                 if (isCi || isRelease) {
                     allWarningsAsErrors = true
                 }
@@ -137,9 +138,13 @@ allprojects {
                     "-Xvalidate-bytecode",
                     "-Xvalidate-ir",
                 ) else listOf(
+                    // more data on lambdas for debugging
                     "-Xlambdas=class",
                     "-Xsam-conversions=class",
                 )
+                if (useK2) {
+                    freeCompilerArgs += "-Xuse-k2"
+                }
             }
         }
 
