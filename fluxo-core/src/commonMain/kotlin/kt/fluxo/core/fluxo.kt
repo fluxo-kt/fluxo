@@ -18,6 +18,7 @@ import kt.fluxo.core.internal.ReducerIntentHandler
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 import kotlin.internal.InlineOnly
+import kotlin.internal.LowPriorityInOverloadResolution
 import kotlin.js.JsName
 import kotlin.jvm.JvmName
 
@@ -48,6 +49,7 @@ public inline fun <State> CoroutineScope.container(
  * Returns MVVM+ [Store] with [SideEffect] support, connected to [CoroutineScope] lifecycle.
  */
 @InlineOnly
+@LowPriorityInOverloadResolution
 @JsName("scopedContainerWithSideEffects")
 @JvmName("containerWithSideEffects")
 public inline fun <State, SideEffect : Any> CoroutineScope.container(
@@ -148,6 +150,7 @@ public inline fun <State> container(
  * Returns MVVM+ [Store] with [SideEffect] support.
  */
 @InlineOnly
+@LowPriorityInOverloadResolution
 @JsName("containerWithSideEffects")
 @JvmName("containerWithSideEffects")
 public inline fun <State, SideEffect : Any> container(
@@ -238,9 +241,16 @@ public inline fun <Intent, State, SideEffect : Any> store(
  */
 @FluxoDsl
 @InlineOnly
-public inline fun <State, SideEffect : Any> ContainerHost<State, SideEffect>.intent(noinline intent: FluxoIntent<State, SideEffect>) {
+public inline fun <S, SE : Any> ContainerHost<S, SE>.intent(noinline intent: FluxoIntent<S, SE>): Unit =
     container.send(intent)
-}
+
+/**
+ * Build and execute a functional [intent][FluxoIntent] on [Store].
+ */
+@FluxoDsl
+@InlineOnly
+public inline fun <S, SE : Any> Container<S, SE>.intent(noinline intent: FluxoIntent<S, SE>): Unit =
+    send(intent)
 
 /**
  *
