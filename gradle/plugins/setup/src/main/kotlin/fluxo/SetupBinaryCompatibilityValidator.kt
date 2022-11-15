@@ -22,7 +22,9 @@ private fun Project.setupBinaryCompatibilityValidatorMultiplatform() {
             val target = getTargetForTaskName(taskName = name)
             if (target != null) {
                 enabled = isMultiplatformApiTargetAllowed(target)
-                println("API check $this enabled=$enabled")
+                if (!enabled) {
+                    println("API check $this disabled!")
+                }
             }
         }
     }

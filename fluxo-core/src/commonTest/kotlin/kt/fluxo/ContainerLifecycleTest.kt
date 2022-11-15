@@ -41,6 +41,7 @@ internal class ContainerLifecycleTest {
     private inner class Middleware(initialState: TestState) : ContainerHost<TestState, String> {
 
         override val container = scope.container<TestState, String>(initialState) {
+            @Suppress("DEPRECATION")
             onCreate {
                 onCreate(state)
             }

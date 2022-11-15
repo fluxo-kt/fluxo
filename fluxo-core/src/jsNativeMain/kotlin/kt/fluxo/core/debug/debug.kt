@@ -10,6 +10,3 @@ internal actual val DEBUG: Boolean = false
 /** No native implementation */
 @InlineOnly
 internal actual inline fun <I> debugIntentWrapper(intent: I): I = intent
-
-@InlineOnly
-internal actual inline fun Any.debugClassName(): String? = this::class.qualifiedName

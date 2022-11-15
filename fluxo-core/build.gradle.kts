@@ -28,6 +28,9 @@ kotlin {
         val jsNative by bundle()
         val native by bundle()
         val java by bundle()
+        val darwin by bundle()
+        val linux by bundle()
+        val mingw by bundle()
 
         jsNative dependsOn common
         native dependsOn common
@@ -36,6 +39,9 @@ kotlin {
         javaSet dependsOn java
         nativeSet dependsOn jsNative
         nativeSet dependsOn native
+        darwinSet dependsOn darwin
+        linuxSet dependsOn linux
+        mingwSet dependsOn mingw
 
         all {
             languageSettings {

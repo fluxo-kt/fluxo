@@ -25,10 +25,8 @@ internal fun KotlinProjectExtension.disableCompilationsOfNeeded() {
 }
 
 private fun KotlinTarget.disableCompilationsOfNeeded() {
-    val isAllowed = isCompilationAllowed()
-    println("$project, $this, compilation allowed: $isAllowed")
-
-    if (!isAllowed) {
+    if (!isCompilationAllowed()) {
+        println("$project, $this, compilation disabled")
         disableCompilations()
     }
 }

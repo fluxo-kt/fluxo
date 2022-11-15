@@ -68,6 +68,7 @@ interface MultiplatformSourceSets : NamedDomainObjectContainer<KotlinSourceSet> 
     val javaSet: Set<SourceSetBundle>
     val nativeSet: Set<SourceSetBundle>
     val linuxSet: Set<SourceSetBundle>
+    val mingwSet: Set<SourceSetBundle>
     val darwinSet: Set<SourceSetBundle>
     val iosSet: Set<SourceSetBundle>
     val watchosSet: Set<SourceSetBundle>
@@ -92,6 +93,7 @@ private class DefaultMultiplatformSourceSets(
 
     override val nativeSet: Set<SourceSetBundle> = nativeSourceSets()
     override val linuxSet: Set<SourceSetBundle> = nativeSourceSets(Family.LINUX)
+    override val mingwSet: Set<SourceSetBundle> = nativeSourceSets(Family.MINGW)
     override val darwinSet: Set<SourceSetBundle> = nativeSourceSets(Family.IOS, Family.OSX, Family.WATCHOS, Family.TVOS)
     override val iosSet: Set<SourceSetBundle> = nativeSourceSets(Family.IOS)
     override val watchosSet: Set<SourceSetBundle> = nativeSourceSets(Family.WATCHOS)

@@ -1,5 +1,6 @@
 package kt.fluxo
 
+import app.cash.turbine.testIn
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -10,16 +11,20 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.isActive
-import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
+import kt.fluxo.core.StoreClosedException
 import kt.fluxo.core.container
-import kt.fluxo.test.test
+import kt.fluxo.test.KMM_PLATFORM
+import kt.fluxo.test.Platform
+import kt.fluxo.test.mayFailWith
+import kt.fluxo.test.unitTest
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.test.AfterTest
 import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
+import kotlin.test.assertFailsWith
+import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
 internal class ContainerExceptionHandlerTest {
@@ -32,10 +37,9 @@ internal class ContainerExceptionHandlerTest {
     }
 
     @Test
-    fun by_default_exception_breaks_the_scope() = runTest {
+    fun by_default_exception_breaks_the_scope() = unitTest {
         val initState = 10
-        val container = scope.container<Int, Nothing>(initState)
-        val testObserver = container.stateFlow.test()
+        val container = scope.container(initState)
         val newState = 20
 
         var completionException: Throwable? = null
@@ -46,18 +50,30 @@ internal class ContainerExceptionHandlerTest {
         container.send {
             throw IllegalStateException()
         }
-        container.send {
-            updateState { newState }
+
+        mayFailWith<StoreClosedException> {
+            container.send {
+                updateState { newState }
+            }
         }
 
-        testObserver.awaitCount(2, 1000L, throwTimeout = false)
-        assertEquals(listOf(initState), testObserver.values)
+        assertFailsWith<CancellationException> {
+            container.stateFlow.testIn(scope).run {
+                assertEquals(initState, awaitItem())
+                awaitComplete()
+            }
+        }
+
         assertEquals(false, scope.isActive, "Scope is active but shouldn't.")
-        assertNotNull(completionException, "completionException was not caught.")
+        if (KMM_PLATFORM != Platform.MINGW) {
+            assertIs<IllegalStateException>(completionException, "completionException was not caught.")
+        } else {
+            assertIs<IllegalStateException?>(completionException, "completionException was not caught.")
+        }
     }
 
     @Test
-    fun with_exception_handler_exceptions_are_caught() = runTest {
+    fun with_exception_handler_exceptions_are_caught() = unitTest {
         val initState = 10
         val exceptions = mutableListOf<Throwable>()
         val handler = CoroutineExceptionHandler { _, throwable -> exceptions += throwable }
@@ -92,7 +108,7 @@ internal class ContainerExceptionHandlerTest {
     fun without_exception_handler_cancellation_exception_propagated_normally() =
         checkCancellationPropagation(withExceptionHandler = false)
 
-    private fun checkCancellationPropagation(withExceptionHandler: Boolean) = runTest {
+    private fun checkCancellationPropagation(withExceptionHandler: Boolean) = unitTest {
         val scopeJob = SupervisorJob()
         val containerScope = CoroutineScope(scopeJob)
         val handler = when {
