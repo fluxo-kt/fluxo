@@ -9,9 +9,8 @@
 [versions]
 # 21 is default for new projects per May 2021, required for Compose
 androidMinSdk = "15"
-# 33 is not recommended for AGP 7.2.0, wait till 7.3+
-androidTargetSdk = "32"
-androidCompileSdk = "32"
+androidTargetSdk = "33"
+androidCompileSdk = "33"
 androidBuildTools = "33.0.0"
 
 # Java/Kotlin compatibility
@@ -35,9 +34,7 @@ gradle-embedded-kotlin = "3.1.0"
 bin-compat-validator = "0.12.1"
 
 # https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google
-# 7.2.0 is latest supported by android plugin in stable IDEA 2022.2.3
-# TODO: Update to 7.3.1 when will be supported
-android-gradle-plugin = "7.2.2"
+android-gradle-plugin = "7.3.1"
 
 # Λrrow - Functional companion to Kotlin's Standard Library
 # https://mvnrepository.com/artifact/io.arrow-kt/arrow-core
