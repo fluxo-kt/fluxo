@@ -1,6 +1,6 @@
 # Fluxo MVI / MVVM+ Multiplatform
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE.md)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
 **Fluxo** is a simple yet super powerful MVVM+ / MVI library for Kotlin Multiplatform.
 
@@ -14,19 +14,18 @@
     , [orbit-way](https://github.com/orbit-mvi/orbit-mvi#what-is-orbit))
   * Redux-style discrete Inputs with MVVM+ style reduction DSL
 * **Side effects** support (sometimes called news or events).
-  * Four strategies allows to fully control how side effects sharing can be handled in the Store
-    (RECEIVE, CONSUME, SHARE, DISABLE).
-  * Side effects are cached while subscriber (e.g., view) is not attached.
+  * Four strategies allow you to fully control how side effects sharing can be handled in the Store
+    (_RECEIVE_, _CONSUME_, _SHARE_, _DISABLE_).
+  * Side effects are cached while the subscriber (e.g., view) is not attached.
   * Side effects consumption guarantees with `GuaranteedEffect` (effect handled and exactly
     once) [[1](https://github.com/Kotlin/kotlinx.coroutines/issues/2886),
-    [2](https://medium.com/androiddevelopers/livedata-with-snackbar-navigation-and-other-events-the-singleliveevent-case-ac2622673150)]
-    .
+    [2](https://medium.com/androiddevelopers/livedata-with-snackbar-navigation-and-other-events-the-singleliveevent-case-ac2622673150)].
 * **Lifecycle-aware** with full control based on coroutine scopes.
-* Subscriptions lifecycle with convenience API (`repeatOnSubscription`).
+* Subscription lifecycle with convenience API (`repeatOnSubscription`).
 * Pluggable **input strategies**:
-  * First In, First Out (Fifo). Default, best for background processing.
-  * Last In, First Out (Lifo). Can optimize UI events processing.
-  * Parallel, no order guarantees.
+  * _First In, First Out_ (Fifo). Default, best for background processing.
+  * _Last In, First Out_ (Lifo). Can optimize UI events processing.
+  * _Parallel_, no order guarantees.
   * Create your own!
 * Bootstrap (initialization tasks), eager or lazy initialization.
 * Side jobs for long-running tasks (MVVM+ DSL).
@@ -35,7 +34,7 @@
   guarantees [[1](https://github.com/Kotlin/kotlinx.coroutines/issues/1936), [2](https://gmk57.medium.com/unfortunately-events-may-be-dropped-if-channel-receiveasflow-cfe78ae29004)]
   .
 * Strictly not recommended, but JVM `Closeable` resources partially supported as a state and side effects.
-  * Previous state will be properly closed on change.
+  * The previous state will be properly closed on change.
   * Side effects closed when not delivered.
 * Intentionally unopinionated, extensible API: you can follow guides or use it as you want.
 * Well tested.
@@ -44,7 +43,8 @@
   * RxJava 2.x, RxJava 3.x
   * Flow (JDK 9), Reactive Streams
   * Project Reactor
-* [LiveData](https://developer.android.com/topic/libraries/architecture/coroutines#livedata) compatibility with AndroidX.
+* [LiveData](https://developer.android.com/topic/libraries/architecture/coroutines#livedata) compatibility with
+  AndroidX.
 
 ### Roadmap
 
@@ -105,8 +105,8 @@ available, see the [tags on this repository](/tags).
 
 ## License
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE.md)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
-This project is licensed under the Apache License, Version 2.0 - see the
-[license](LICENSE.md) file for details
+This project is licensed under the Apache License, Version 2.0 — see the
+[license](LICENSE) file for details.
 
