@@ -130,4 +130,4 @@ deps-versions = { id = "com.github.ben-manes.versions", version = "0.44.0" }
 
 # Detect unused and misused dependencies
 # https://github.com/autonomousapps/dependency-analysis-android-gradle-plugin/tags
-deps-analysis = { id = "com.autonomousapps.dependency-analysis", version = "1.13.1" }
+deps-analysis = { id = "com.autonomousapps.dependency-analysis", version = "1.14.1" }
