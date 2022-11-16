@@ -19,7 +19,8 @@ import kotlinx.coroutines.withTimeout
  *
  * @param flow The flow to observe.
  */
-@Suppress("MemberVisibilityCanBePrivate")
+@Deprecated("Use Turbine tests instead")
+@Suppress("DEPRECATION")
 class TestFlowObserver<T>(flow: Flow<T>) {
     private val _values = atomic(emptyList<T>())
     private val scope = CoroutineScope(Dispatchers.Unconfined)
@@ -92,4 +93,6 @@ class TestFlowObserver<T>(flow: Flow<T>) {
 /**
  * Allows you to put a [Flow] into test mode.
  */
+@Deprecated("Use Turbine tests instead")
+@Suppress("DeprecatedCallableAddReplaceWith", "DEPRECATION")
 fun <T> Flow<T>.test(): TestFlowObserver<T> = TestFlowObserver(this)

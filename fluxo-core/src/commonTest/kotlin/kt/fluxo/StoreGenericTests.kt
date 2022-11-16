@@ -15,7 +15,7 @@ internal class StoreGenericTests {
         initialState: String,
         bootstrapper: Bootstrapper<String, String, Nothing>?,
         reducer: Reducer<String, String>,
-    ) -> Store<String, String, String> = { initialState, bootstrapper, reducer ->
+    ) -> Store<String, String, Nothing> = { initialState, bootstrapper, reducer ->
         store(
             initialState = initialState,
             reducer = reducer,
@@ -46,7 +46,5 @@ internal class StoreGenericTests {
         initialState: String = "initial_state",
         bootstrapper: Bootstrapper<String, String, Nothing>? = null,
         reducer: Reducer<String, String> = { this }
-    ): Store<String, String, String> {
-        return storeFactory(initialState, bootstrapper, reducer)
-    }
+    ) = storeFactory(initialState, bootstrapper, reducer)
 }

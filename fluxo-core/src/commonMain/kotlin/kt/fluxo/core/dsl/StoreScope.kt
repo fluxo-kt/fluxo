@@ -13,9 +13,10 @@ import kotlin.internal.InlineOnly
 @InternalFluxoApi
 public interface StoreScope<in Intent, State, in SideEffect : Any> : CoroutineScope {
 
-    private companion object {
-        private const val DEFAULT_SIDE_JOB = "default"
-        private const val DEFAULT_REPEAT_ON_SUBSCRIPTION_JOB = "repeatOnSubscription"
+    @InternalFluxoApi
+    public companion object {
+        internal const val DEFAULT_SIDE_JOB = "default"
+        internal const val DEFAULT_REPEAT_ON_SUBSCRIPTION_JOB = "repeatOnSubscription"
     }
 
 

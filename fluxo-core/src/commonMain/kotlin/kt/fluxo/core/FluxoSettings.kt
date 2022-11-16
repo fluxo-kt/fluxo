@@ -4,6 +4,7 @@ package kt.fluxo.core
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kt.fluxo.core.annotation.FluxoDsl
@@ -119,9 +120,9 @@ public class FluxoSettings<Intent, State, SideEffect : Any> {
     // region Coroutines control
 
     /**
-     * Additional 'parent' [CoroutineContext] for running store. It will be added to [eventLoopContext].
+     * Additional 'parent' [CoroutineScope] for running store. It will be added to [eventLoopContext].
      */
-    public var context: CoroutineContext = EmptyCoroutineContext
+    public var scope: CoroutineScope? = null
 
     /**
      *  [CoroutineDispatcher] or any [CoroutineContext] to run the [Store] event loop.

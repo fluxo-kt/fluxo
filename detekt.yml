@@ -3,6 +3,8 @@
 # https://github.com/detekt/detekt/blob/main/detekt-formatting/src/main/resources/config/config.yml
 
 style:
+  LoopWithTooManyJumpStatements:
+    maxJumpCount: 2
   MagicNumber:
     ignoreAnnotation: true
   MaxLineLength:

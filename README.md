@@ -31,8 +31,7 @@
 * Side jobs for long-running tasks (MVVM+ DSL).
 * Errors handling and on exception behavior control.
 * Leak-free transfer, delivery
-  guarantees [[1](https://github.com/Kotlin/kotlinx.coroutines/issues/1936), [2](https://gmk57.medium.com/unfortunately-events-may-be-dropped-if-channel-receiveasflow-cfe78ae29004)]
-  .
+  guarantees [[1](https://github.com/Kotlin/kotlinx.coroutines/issues/1936), [2](https://gmk57.medium.com/unfortunately-events-may-be-dropped-if-channel-receiveasflow-cfe78ae29004)].
 * Strictly not recommended, but JVM `Closeable` resources partially supported as a state and side effects.
   * The previous state will be properly closed on change.
   * Side effects closed when not delivered.
@@ -49,7 +48,6 @@
 ### Roadmap
 
 - [ ] Complete code coverage with tests
-  - [ ] SideJobs tests
   - [ ] Input strategy tests
   - [ ] Reducer tests
   - [ ] MVI Store tests
@@ -82,6 +80,7 @@
   - [ ] Get unreachable states, build an Edge List, build states Adjacency Map.
   - [ ] App containers aggregation for graph tools
 - [ ] Analytics/Crashlytics integration
+- [ ] Orbit, MVI Kotlin, etc. migration examples and tests for migration helpers.
 - [ ] Documentation and examples
 - [ ] \(Optional) Undo/Redo
 - [ ] \(Optional) Stores synchronization
@@ -101,7 +100,7 @@
 ## Versioning
 
 **Fluxo** uses [SemVer](http://semver.org/) for versioning. For the versions
-available, see the [tags on this repository](/tags).
+available, see the [tags on this repository](../../tags).
 
 ## License
 

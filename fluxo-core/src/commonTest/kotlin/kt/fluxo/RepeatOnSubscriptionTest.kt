@@ -11,6 +11,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import kt.fluxo.core.ContainerHost
 import kt.fluxo.core.container
+import kt.fluxo.core.dsl.SideJobScope
 import kt.fluxo.core.intent
 import kt.fluxo.core.repeatOnSubscription
 import kotlin.test.AfterTest
@@ -50,6 +51,7 @@ internal class RepeatOnSubscriptionTest {
 
         fun callOnSubscription(externalCall: suspend () -> Int) = intent {
             repeatOnSubscription {
+                assertEquals(SideJobScope.RestartState.Initial, restartState)
                 val result = externalCall()
                 updateState { State(result) }
             }

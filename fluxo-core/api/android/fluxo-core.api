@@ -23,7 +23,6 @@ public final class kt/fluxo/core/FluxoSettings {
 	public final fun Lifo ()Lkt/fluxo/core/InputStrategy;
 	public final fun Parallel ()Lkt/fluxo/core/InputStrategy;
 	public final fun getBootstrapper ()Lkotlin/jvm/functions/Function2;
-	public final fun getContext ()Lkotlin/coroutines/CoroutineContext;
 	public final fun getDebugChecks ()Z
 	public final fun getEventLoopContext ()Lkotlin/coroutines/CoroutineContext;
 	public final fun getExceptionHandler ()Lkotlinx/coroutines/CoroutineExceptionHandler;
@@ -34,6 +33,7 @@ public final class kt/fluxo/core/FluxoSettings {
 	public final fun getInterceptors ()Ljava/util/List;
 	public final fun getName ()Ljava/lang/String;
 	public final fun getRepeatOnSubscribedStopTimeout ()J
+	public final fun getScope ()Lkotlinx/coroutines/CoroutineScope;
 	public final fun getSideEffectBufferSize ()I
 	public final fun getSideEffectsStrategy ()Lkt/fluxo/core/SideEffectsStrategy;
 	public final fun getSideJobsContext ()Lkotlin/coroutines/CoroutineContext;
@@ -41,7 +41,6 @@ public final class kt/fluxo/core/FluxoSettings {
 	public final fun isLazy ()Z
 	public final fun setBootstrapper (Lkotlin/jvm/functions/Function2;)V
 	public final fun setCloseOnExceptions (Z)V
-	public final fun setContext (Lkotlin/coroutines/CoroutineContext;)V
 	public final fun setDebugChecks (Z)V
 	public final fun setEventLoopContext (Lkotlin/coroutines/CoroutineContext;)V
 	public final fun setExceptionHandler (Lkotlinx/coroutines/CoroutineExceptionHandler;)V
@@ -52,6 +51,7 @@ public final class kt/fluxo/core/FluxoSettings {
 	public final fun setLazy (Z)V
 	public final fun setName (Ljava/lang/String;)V
 	public final fun setRepeatOnSubscribedStopTimeout (J)V
+	public final fun setScope (Lkotlinx/coroutines/CoroutineScope;)V
 	public final fun setSideEffectBufferSize (I)V
 	public final fun setSideEffectsStrategy (Lkt/fluxo/core/SideEffectsStrategy;)V
 	public final fun setSideJobsContext (Lkotlin/coroutines/CoroutineContext;)V
@@ -101,6 +101,7 @@ public final class kt/fluxo/core/SideEffectsStrategy$SHARE : kt/fluxo/core/SideE
 
 public abstract interface class kt/fluxo/core/Store : java/io/Closeable {
 	public abstract fun close ()V
+	public abstract fun getEventsFlow ()Lkotlinx/coroutines/flow/Flow;
 	public abstract fun getName ()Ljava/lang/String;
 	public abstract fun getSideEffectFlow ()Lkotlinx/coroutines/flow/Flow;
 	public fun getState ()Ljava/lang/Object;
@@ -171,6 +172,7 @@ public final class kt/fluxo/core/dsl/SideJobScope$RestartState : java/lang/Enum 
 }
 
 public abstract interface class kt/fluxo/core/dsl/StoreScope : kotlinx/coroutines/CoroutineScope {
+	public static final field Companion Lkt/fluxo/core/dsl/StoreScope$Companion;
 	public fun async (Ljava/lang/String;Lkotlin/jvm/functions/Function2;)V
 	public static synthetic fun async$default (Lkt/fluxo/core/dsl/StoreScope;Ljava/lang/String;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)V
 	public abstract fun getState ()Ljava/lang/Object;
@@ -184,6 +186,9 @@ public abstract interface class kt/fluxo/core/dsl/StoreScope : kotlinx/coroutine
 	public abstract fun sideJob (Ljava/lang/String;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun sideJob$default (Lkt/fluxo/core/dsl/StoreScope;Ljava/lang/String;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public abstract fun updateState (Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class kt/fluxo/core/dsl/StoreScope$Companion {
 }
 
 public abstract class kt/fluxo/core/intercept/FluxoEvent {
@@ -356,6 +361,7 @@ public final class kt/fluxo/core/internal/FluxoIntentHandler : kt/fluxo/core/Int
 public final class kt/fluxo/core/internal/FluxoStore : kt/fluxo/core/Store {
 	public fun <init> (Ljava/lang/Object;Lkt/fluxo/core/IntentHandler;Lkt/fluxo/core/FluxoSettings;)V
 	public fun close ()V
+	public fun getEventsFlow ()Lkotlinx/coroutines/flow/Flow;
 	public fun getName ()Ljava/lang/String;
 	public fun getSideEffectFlow ()Lkotlinx/coroutines/flow/Flow;
 	public fun getStateFlow ()Lkotlinx/coroutines/flow/StateFlow;

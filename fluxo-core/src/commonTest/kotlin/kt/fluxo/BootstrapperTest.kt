@@ -1,7 +1,6 @@
 package kt.fluxo
 
 import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -29,7 +28,7 @@ import kotlin.test.assertTrue
 @OptIn(InternalCoroutinesApi::class)
 internal class BootstrapperTest {
 
-    private val scope = CoroutineScope(Job() + CoroutineExceptionHandler { _, _ -> /*just be silent*/ })
+    private val scope = CoroutineScope(Job())
 
     @AfterTest
     fun afterTest() {
@@ -106,14 +105,16 @@ internal class BootstrapperTest {
 
     @Test
     fun bootstrapper_update_state() = runTest(dispatchTimeoutMs = 2000) {
-        val store = scope.container("init") {
+        val initialState = "init"
+        val store = scope.container(initialState) {
             debugChecks = true
             bootstrapper = {
+                assertEquals(initialState, state)
                 updateState { "$it.update" }
             }
         }
         assertNotNull(store.start(), "Expected Job for explicit lazy start").join()
-        assertEquals("init.update", store.state)
+        assertEquals("$initialState.update", store.state)
     }
 
     @Test
@@ -129,11 +130,12 @@ internal class BootstrapperTest {
 
     @Test
     fun bootstrapper_side_job() = runTest(dispatchTimeoutMs = 2000) {
-        val store = scope.container<String, String>("init") {
+        val initialState = "init"
+        val store = scope.container<String, String>(initialState) {
             debugChecks = true
             bootstrapper = {
                 sideJob {
-                    assertEquals("init", currentStateWhenStarted)
+                    assertEquals(initialState, currentStateWhenStarted)
                     assertEquals(RestartState.Initial, restartState)
                     postIntent {
                         updateState { "$it.sideJob" }
@@ -141,7 +143,7 @@ internal class BootstrapperTest {
                 }
             }
         }
-        assertEquals("init.sideJob", store.stateFlow.first { it != "init" })
+        assertEquals("$initialState.sideJob", store.stateFlow.first { it != initialState })
     }
 
     @Test
@@ -163,15 +165,17 @@ internal class BootstrapperTest {
 
     @Test
     fun bootstrapper_repeat_on_subscription() = runTest(dispatchTimeoutMs = 2000) {
-        val store = scope.container<String, String>("init") {
+        val initialState = "init"
+        val store = scope.container<String, String>(initialState) {
             onStart {
                 var i = 0
                 repeatOnSubscription(stopTimeout = 0) {
+                    assertEquals(RestartState.Initial, restartState)
                     updateState { "update${i++}" }
                 }
             }
         }
-        assertContentEquals(listOf("init", "update0"), store.stateFlow.take(2).toList())
+        assertContentEquals(listOf(initialState, "update0"), store.stateFlow.take(2).toList())
         assertContentEquals(listOf("update0", "update1"), store.stateFlow.take(2).toList())
     }
 }
