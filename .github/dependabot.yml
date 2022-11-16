@@ -7,10 +7,24 @@ version: 2
 updates:
   - package-ecosystem: "gradle"
     directory: "/"
+    commit-message:
+      prefix: "[Dependabot]"
     schedule:
       interval: "weekly"
     reviewers:
       - "amal"
     labels:
       - "gradle"
+      - "dependencies"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    commit-message:
+      prefix: "[Dependabot]"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "amal"
+    labels:
+      - "gh-action"
       - "dependencies"
