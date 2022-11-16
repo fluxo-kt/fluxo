@@ -1,6 +1,8 @@
+import ReleaseDependenciesCreateFilesTask.Companion.DEPS_DIR
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
@@ -9,20 +11,25 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 
 abstract class ReleaseDependenciesDiffFilesTask : DefaultTask() {
+    internal companion object {
+        internal const val BASELINE_DIR = "baseline-dependencies"
+    }
 
     @get:Input
+    @get:Optional
     @set:Option(
         option = "baselineDependenciesDirectoryName",
         description = "Name of the baseline dependencies directory"
     )
-    var baselineDependenciesDirectoryName: String? = null
+    var baselineDependenciesDirectoryName: String? = BASELINE_DIR
 
     @get:Input
+    @get:Optional
     @set:Option(
         option = "dependenciesDirectoryName",
         description = "Name of the dependencies directory"
     )
-    var dependenciesDirectoryName: String? = null
+    var dependenciesDirectoryName: String? = DEPS_DIR
 
     @get:OutputFile
     abstract val outputFile: RegularFileProperty

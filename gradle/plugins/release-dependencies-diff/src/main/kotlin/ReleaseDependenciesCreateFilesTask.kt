@@ -1,17 +1,22 @@
 import org.gradle.api.Project
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.diagnostics.DependencyReportTask
 import org.gradle.api.tasks.options.Option
 import java.io.File
 
 abstract class ReleaseDependenciesCreateFilesTask : DependencyReportTask() {
+    internal companion object {
+        internal const val DEPS_DIR = "dependencies"
+    }
 
     @get:Input
+    @get:Optional
     @set:Option(
         option = "directoryName",
         description = "The name of the directory where the dependency files are stored"
     )
-    var directoryName: String? = null
+    var directoryName: String? = DEPS_DIR
 
     override fun generate(project: Project) {
         val isJavaLibrary = project.plugins.hasPlugin("java")
