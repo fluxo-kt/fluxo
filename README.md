@@ -1,5 +1,6 @@
 # Fluxo MVI / MVVM+ Multiplatform
 
+[![Build](../../actions/workflows/build.yml/badge.svg)](../../actions/workflows/build.yml)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
 **Fluxo** is a simple yet super powerful MVVM+ / MVI library for Kotlin Multiplatform.

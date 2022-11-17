@@ -9,62 +9,65 @@ on:
       - '**.md'
 
 jobs:
-  linux-build:
-    name: Build on Linux
-    runs-on: ubuntu-latest
-    steps:
-      - name: Update dependencies
-        run: sudo apt-get update
-      - name: Install dependencies
-        run: sudo apt-get install nodejs chromium-browser
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Install Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'zulu'
-          java-version: 11
-      - name: Set up cache
-        uses: actions/cache@v3
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-      - name: Set up gradle wrapper cache
-        uses: actions/cache@v3
-        with:
-          path: ~/.gradle/wrapper/dists
-          key: ${{ runner.os }}-gradlewrapper
-      - name: Check
-        run: ./gradlew check
-      - name: Build
-        run: ./gradlew build -Dsplit_targets -PCI=true
+  testAndBuild:
+    strategy:
+      matrix:
+        java: [ 11, 17 ]
+        os: [ 'ubuntu-latest', 'macos-latest', 'windows-latest' ]
 
-  macos-build:
-    name: Build on macOS
-    runs-on: macos-latest
+    name: 'Test on ${{ matrix.os }} JDK ${{ matrix.java }}'
+    runs-on: ${{ matrix.os }}
+
     steps:
+      - name: Update Ubuntu dependencies
+        if: matrix.os == 'ubuntu-latest'
+        run: sudo apt-get update
+
+      - name: Install Ubuntu dependencies
+        if: matrix.os == 'ubuntu-latest'
+        run: sudo apt-get install nodejs chromium-browser
+
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Install Java
+
+      - name: Validate Gradle Wrapper
+        if: matrix.os == 'ubuntu-latest'
+        uses: gradle/wrapper-validation-action@v1
+
+      - name: 'Set up JDK ${{ matrix.java }}'
         uses: actions/setup-java@v3
         with:
-          distribution: 'zulu'
-          java-version: 11
-      - name: Set up cache
-        uses: actions/cache@v3
+          distribution: 'temurin'
+          java-version: '${{ matrix.java }}'
+
+      - run: java -version
+
+      - name: Setup Gradle then test and build
+        uses: gradle/gradle-build-action@v2
+        env:
+          CI: true
         with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-      - name: Set up gradle wrapper cache
-        uses: actions/cache@v3
+          # arguments: projectHealth buildHealth
+          arguments: build check apiCheck mergeLintSarif mergeDetektSarif -Dsplit_targets --no-daemon --stacktrace --continue
+          gradle-home-cache-cleanup: true
+
+      - uses: github/codeql-action/upload-sarif@v2
+        if: success() || failure()
         with:
-          path: ~/.gradle/wrapper/dists
-          key: ${{ runner.os }}-gradlewrapper
-      - name: Check
-        run: ./gradlew check
-      - name: Build
-        run: ./gradlew build -Dsplit_targets -PCI=true
+          sarif_file: build/lint-merged.sarif
+          category: lint
+
+      - uses: github/codeql-action/upload-sarif@v2
+        if: success() || failure()
+        with:
+          sarif_file: build/detekt-merged.sarif
+          category: detekt
+
+      - name: Upload failure artifacts
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: reports
+          path: |
+            **/build/reports/
+            !**/build/reports/dependency-analysis/
