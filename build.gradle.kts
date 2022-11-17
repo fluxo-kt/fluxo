@@ -111,8 +111,9 @@ allprojects {
         val isRelease by isRelease()
         val useK2 by useK2()
         tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+            val isTestTask = "Test" in name
             kotlinOptions {
-                if (isCi || isRelease) {
+                if (!isTestTask && (isCi || isRelease)) {
                     allWarningsAsErrors = true
                 }
 
