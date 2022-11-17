@@ -87,6 +87,9 @@ plugin-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.
 plugin-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
 plugin-android = { module = "com.android.tools.build:gradle", version.ref = "android-gradle-plugin" }
 
+# https://github.com/twitter/compose-rules/releases
+detekt-compose = "com.twitter.compose.rules:detekt:0.0.24"
+
 plugin-binCompatValidator = { module = "org.jetbrains.kotlinx:binary-compatibility-validator", version.ref = "bin-compat-validator" }
 
 # The idiomatic way to use atomic operations in Kotlin
@@ -131,3 +134,7 @@ deps-versions = { id = "com.github.ben-manes.versions", version = "0.44.0" }
 # Detect unused and misused dependencies
 # https://github.com/autonomousapps/dependency-analysis-android-gradle-plugin/tags
 deps-analysis = { id = "com.autonomousapps.dependency-analysis", version = "1.14.1" }
+
+# 'taskTree' task that prints task dependency tree
+# https://github.com/dorongold/gradle-task-tree
+task-tree = { id = "com.dorongold.task-tree", version = "2.1.0" }
