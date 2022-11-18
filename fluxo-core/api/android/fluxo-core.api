@@ -22,6 +22,8 @@ public final class kt/fluxo/core/FluxoSettings {
 	public final fun Fifo ()Lkt/fluxo/core/InputStrategy;
 	public final fun Lifo ()Lkt/fluxo/core/InputStrategy;
 	public final fun Parallel ()Lkt/fluxo/core/InputStrategy;
+	public final fun bootstrapperJob (Ljava/lang/String;Lkotlin/jvm/functions/Function2;)V
+	public static synthetic fun bootstrapperJob$default (Lkt/fluxo/core/FluxoSettings;Ljava/lang/String;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)V
 	public final fun getBootstrapper ()Lkotlin/jvm/functions/Function2;
 	public final fun getDebugChecks ()Z
 	public final fun getEventLoopContext ()Lkotlin/coroutines/CoroutineContext;

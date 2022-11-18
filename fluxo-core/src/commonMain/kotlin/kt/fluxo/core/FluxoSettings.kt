@@ -10,6 +10,8 @@ import kotlinx.coroutines.channels.Channel
 import kt.fluxo.core.annotation.FluxoDsl
 import kt.fluxo.core.annotation.NotThreadSafe
 import kt.fluxo.core.debug.DEBUG
+import kt.fluxo.core.dsl.SideJobScope
+import kt.fluxo.core.dsl.StoreScope.Companion.BOOTSTRAPPER_SIDE_JOB
 import kt.fluxo.core.intercept.FluxoEvent
 import kt.fluxo.core.internal.InputStrategyGuardian
 import kotlin.coroutines.CoroutineContext
@@ -70,6 +72,11 @@ public class FluxoSettings<Intent, State, SideEffect : Any> {
     @Deprecated("Use onStart instead", ReplaceWith("onStart(bootstrapper)"))
     public inline fun onCreate(noinline bootstrapper: Bootstrapper<in Intent, State, SideEffect>) {
         onStart(bootstrapper)
+    }
+
+    /** [bootstrapper] convenience method when you need only a [sideJob][kt.fluxo.core.dsl.StoreScope.sideJob] */
+    public fun bootstrapperJob(key: String = BOOTSTRAPPER_SIDE_JOB, block: suspend SideJobScope<Intent, State, SideEffect>.() -> Unit) {
+        this.bootstrapper = { sideJob(key, block) }
     }
 
 

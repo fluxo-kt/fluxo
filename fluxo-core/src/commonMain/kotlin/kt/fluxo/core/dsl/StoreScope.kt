@@ -16,6 +16,7 @@ public interface StoreScope<in Intent, State, in SideEffect : Any> : CoroutineSc
     @InternalFluxoApi
     public companion object {
         internal const val DEFAULT_SIDE_JOB = "default"
+        internal const val BOOTSTRAPPER_SIDE_JOB = "bootstrapper"
         internal const val DEFAULT_REPEAT_ON_SUBSCRIPTION_JOB = "repeatOnSubscription"
     }
 
