@@ -37,7 +37,7 @@ internal class BootstrapperTest {
 
     @Test
     @IgnoreJs
-    fun bootstrapper_without_noOp_can_close_store_run_blocking() = runBlocking {
+    fun b_without_noOp_can_close_store_run_blocking() = runBlocking {
         var isInitialized = false
         val store = scope.container("init") {
             lazy = true
@@ -54,7 +54,7 @@ internal class BootstrapperTest {
     }
 
     @Test
-    fun bootstrapper_is_working_properly() = runUnitTest {
+    fun b_is_working_properly() = runUnitTest {
         var isInitialized = false
         val store = container("init") {
             debugChecks = true
@@ -71,7 +71,7 @@ internal class BootstrapperTest {
     }
 
     @Test
-    fun bootstrapper_with_eager_store() = runUnitTest {
+    fun b_with_eager_store() = runUnitTest {
         var isInitialized = false
         val mutex = Mutex(locked = true)
         val store = scope.container("init") {
@@ -88,7 +88,7 @@ internal class BootstrapperTest {
     }
 
     @Test
-    fun bootstrapper_intent() = runUnitTest {
+    fun b_intent() = runUnitTest {
         var hadIntent = false
         val store = scope.container("init") {
             debugChecks = true
@@ -104,7 +104,7 @@ internal class BootstrapperTest {
     }
 
     @Test
-    fun bootstrapper_update_state() = runUnitTest {
+    fun b_update_state() = runUnitTest {
         val initialState = "init"
         val store = scope.container(initialState) {
             debugChecks = true
@@ -118,7 +118,7 @@ internal class BootstrapperTest {
     }
 
     @Test
-    fun bootstrapper_side_effect() = runUnitTest {
+    fun b_side_effect() = runUnitTest {
         val store = scope.container<String, String>("init") {
             debugChecks = true
             bootstrapper = {
@@ -129,17 +129,15 @@ internal class BootstrapperTest {
     }
 
     @Test
-    fun bootstrapper_side_job() = runUnitTest {
+    fun b_side_job() = runUnitTest {
         val initialState = "init"
-        val store = scope.container<String, String>(initialState) {
+        val store = backgroundScope.container<String, String>(initialState) {
             debugChecks = true
-            bootstrapper = {
-                sideJob {
-                    assertEquals(initialState, currentStateWhenStarted)
-                    assertEquals(RestartState.Initial, restartState)
-                    postIntent {
-                        updateState { "$it.sideJob" }
-                    }
+            bootstrapperJob {
+                assertEquals(initialState, currentStateWhenStarted)
+                assertEquals(RestartState.Initial, restartState)
+                postIntent {
+                    updateState { "$it.sideJob" }
                 }
             }
         }
@@ -147,7 +145,7 @@ internal class BootstrapperTest {
     }
 
     @Test
-    fun bootstrapper_cancellation() = runUnitTest {
+    fun b_cancellation() = runUnitTest {
         val def = CompletableDeferred<FluxoEvent<*, *, *>>()
         scope.container("init") {
             debugChecks = false
@@ -164,7 +162,7 @@ internal class BootstrapperTest {
     }
 
     @Test
-    fun bootstrapper_repeat_on_subscription() = runUnitTest {
+    fun b_repeat_on_subscription() = runUnitTest {
         val initialState = "init"
         val store = scope.container<String, String>(initialState) {
             onStart {
