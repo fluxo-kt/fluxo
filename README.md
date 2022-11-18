@@ -97,6 +97,7 @@
 
 - [Ballast](https://github.com/copper-leaf/ballast)
 - [Orbit MVI](https://github.com/orbit-mvi/orbit-mvi)
+- [MVIKotlin](https://github.com/arkivanov/MVIKotlin)
 
 ## Versioning
 
