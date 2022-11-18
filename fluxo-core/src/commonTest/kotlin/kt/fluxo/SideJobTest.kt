@@ -10,7 +10,7 @@ import kt.fluxo.core.dsl.accept
 import kt.fluxo.core.intent
 import kt.fluxo.core.intercept.FluxoEvent
 import kt.fluxo.core.store
-import kt.fluxo.test.unitTest
+import kt.fluxo.test.runUnitTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -20,7 +20,7 @@ import kotlin.test.assertTrue
 internal class SideJobTest {
 
     @Test
-    fun sj_on_mvi_intent() = unitTest {
+    fun sj_on_mvi_intent() = runUnitTest {
         val store = backgroundScope.store("a", handler = { state ->
             when (state) {
                 "a" -> sideJob {
@@ -50,7 +50,7 @@ internal class SideJobTest {
     }
 
     @Test
-    fun sj_on_mvvm_intent() = unitTest {
+    fun sj_on_mvvm_intent() = runUnitTest {
         val store = backgroundScope.container("a")
 
         fun secondIntent() = store.intent {
@@ -77,7 +77,7 @@ internal class SideJobTest {
     }
 
     @Test
-    fun sj_side_effect() = unitTest {
+    fun sj_side_effect() = runUnitTest {
         for (scope in arrayOf(backgroundScope, this)) {
             val store = scope.container<String, String>("init")
             store.intent {
@@ -98,9 +98,9 @@ internal class SideJobTest {
     }
 
     @Test
-    fun sj_error() = unitTest {
+    fun sj_error() = runUnitTest {
         var caught: Throwable? = null
-        val store = kt.fluxo.core.container<String, String>("init") {
+        val store = backgroundScope.container<String, String>("init") {
             exceptionHandler { _, e ->
                 caught = e
             }
@@ -128,7 +128,7 @@ internal class SideJobTest {
     }
 
     @Test
-    fun sj_restart_state() = unitTest {
+    fun sj_restart_state() = runUnitTest {
         val store = container<String, String>("init")
         store.intent {
             sideJob {

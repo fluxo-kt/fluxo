@@ -17,7 +17,7 @@ import kt.fluxo.core.container
 import kt.fluxo.test.KMM_PLATFORM
 import kt.fluxo.test.Platform
 import kt.fluxo.test.mayFailWith
-import kt.fluxo.test.unitTest
+import kt.fluxo.test.runUnitTest
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.test.AfterTest
 import kotlin.test.Ignore
@@ -37,7 +37,7 @@ internal class ContainerExceptionHandlerTest {
     }
 
     @Test
-    fun by_default_exception_breaks_the_scope() = unitTest {
+    fun by_default_exception_breaks_the_scope() = runUnitTest {
         val initState = 10
         val container = scope.container(initState)
         val newState = 20
@@ -73,7 +73,7 @@ internal class ContainerExceptionHandlerTest {
     }
 
     @Test
-    fun with_exception_handler_exceptions_are_caught() = unitTest {
+    fun with_exception_handler_exceptions_are_caught() = runUnitTest {
         val initState = 10
         val exceptions = mutableListOf<Throwable>()
         val handler = CoroutineExceptionHandler { _, throwable -> exceptions += throwable }
@@ -108,7 +108,7 @@ internal class ContainerExceptionHandlerTest {
     fun without_exception_handler_cancellation_exception_propagated_normally() =
         checkCancellationPropagation(withExceptionHandler = false)
 
-    private fun checkCancellationPropagation(withExceptionHandler: Boolean) = unitTest {
+    private fun checkCancellationPropagation(withExceptionHandler: Boolean) = runUnitTest {
         val scopeJob = SupervisorJob()
         val containerScope = CoroutineScope(scopeJob)
         val handler = when {

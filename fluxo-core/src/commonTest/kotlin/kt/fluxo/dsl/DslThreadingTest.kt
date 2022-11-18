@@ -47,7 +47,6 @@ internal class DslThreadingTest {
 
         middleware.reducer(action)
 
-        println(testFlowObserver.values)
         testFlowObserver.awaitCount(2)
         assertContentEquals(listOf(TestState(42), TestState(action)), testFlowObserver.values)
     }

@@ -9,13 +9,13 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.test.runTest
 import kt.fluxo.core.container
 import kt.fluxo.core.dsl.SideJobScope.RestartState
 import kt.fluxo.core.intercept.FluxoEvent
 import kt.fluxo.core.repeatOnSubscription
 import kt.fluxo.test.IgnoreJs
 import kt.fluxo.test.runBlocking
+import kt.fluxo.test.runUnitTest
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
@@ -54,7 +54,7 @@ internal class BootstrapperTest {
     }
 
     @Test
-    fun bootstrapper_is_working_properly() = runTest(dispatchTimeoutMs = 2000) {
+    fun bootstrapper_is_working_properly() = runUnitTest {
         var isInitialized = false
         val store = container("init") {
             debugChecks = true
@@ -71,7 +71,7 @@ internal class BootstrapperTest {
     }
 
     @Test
-    fun bootstrapper_with_eager_store() = runTest(dispatchTimeoutMs = 2000) {
+    fun bootstrapper_with_eager_store() = runUnitTest {
         var isInitialized = false
         val mutex = Mutex(locked = true)
         val store = scope.container("init") {
@@ -88,7 +88,7 @@ internal class BootstrapperTest {
     }
 
     @Test
-    fun bootstrapper_intent() = runTest(dispatchTimeoutMs = 2000) {
+    fun bootstrapper_intent() = runUnitTest {
         var hadIntent = false
         val store = scope.container("init") {
             debugChecks = true
@@ -104,7 +104,7 @@ internal class BootstrapperTest {
     }
 
     @Test
-    fun bootstrapper_update_state() = runTest(dispatchTimeoutMs = 2000) {
+    fun bootstrapper_update_state() = runUnitTest {
         val initialState = "init"
         val store = scope.container(initialState) {
             debugChecks = true
@@ -118,7 +118,7 @@ internal class BootstrapperTest {
     }
 
     @Test
-    fun bootstrapper_side_effect() = runTest(dispatchTimeoutMs = 2000) {
+    fun bootstrapper_side_effect() = runUnitTest {
         val store = scope.container<String, String>("init") {
             debugChecks = true
             bootstrapper = {
@@ -129,7 +129,7 @@ internal class BootstrapperTest {
     }
 
     @Test
-    fun bootstrapper_side_job() = runTest(dispatchTimeoutMs = 2000) {
+    fun bootstrapper_side_job() = runUnitTest {
         val initialState = "init"
         val store = scope.container<String, String>(initialState) {
             debugChecks = true
@@ -147,7 +147,7 @@ internal class BootstrapperTest {
     }
 
     @Test
-    fun bootstrapper_cancellation() = runTest(dispatchTimeoutMs = 2000) {
+    fun bootstrapper_cancellation() = runUnitTest {
         val def = CompletableDeferred<FluxoEvent<*, *, *>>()
         scope.container("init") {
             debugChecks = false
@@ -164,7 +164,7 @@ internal class BootstrapperTest {
     }
 
     @Test
-    fun bootstrapper_repeat_on_subscription() = runTest(dispatchTimeoutMs = 2000) {
+    fun bootstrapper_repeat_on_subscription() = runUnitTest {
         val initialState = "init"
         val store = scope.container<String, String>(initialState) {
             onStart {

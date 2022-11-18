@@ -13,7 +13,7 @@ import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
 @ExperimentalCoroutinesApi
-fun unitTest(
+fun runUnitTest(
     context: CoroutineContext = EmptyCoroutineContext,
     dispatchTimeoutMs: Long = DEFAULT_DISPATCH_TIMEOUT_MS,
     testBody: suspend TestScope.() -> Unit,
