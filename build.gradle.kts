@@ -40,8 +40,9 @@ setupDefaults(
     multiplatformConfigurator = {
         android()
         jvm()
-        js(IR) { // BOTH not supported by 'turbine'.
+        js(IR) {
             nodejs()
+            browser()
         }
         linuxX64()
         mingwX64()
