@@ -29,7 +29,7 @@ plugins {
     alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.kotlin.multiplatform) apply false
     alias(libs.plugins.kotlinx.binCompatValidator) apply false
-    alias(libs.plugins.kotlinx.kover) apply false
+    alias(libs.plugins.kotlinx.kover)
     alias(libs.plugins.deps.analysis)
     alias(libs.plugins.deps.versions)
     alias(libs.plugins.task.tree)
@@ -97,6 +97,39 @@ dependencyAnalysis {
             }
             onUnusedDependencies {
                 severity("fail")
+            }
+        }
+    }
+}
+
+koverMerged {
+    enable()
+
+    val isCi by isCI()
+    val isRelease by isRelease()
+    xmlReport {
+        onCheck.set(true)
+        reportFile.set(layout.buildDirectory.file("reports/kover-merged-report.xml"))
+    }
+    if (!isCi) {
+        htmlReport {
+            onCheck.set(true)
+            reportDir.set(layout.buildDirectory.dir("reports/kover-merged-report-html")) // change report directory
+        }
+    }
+
+    if (isRelease) {
+        verify {
+            onCheck.set(true)
+            rule {
+                isEnabled = true
+                target = kotlinx.kover.api.VerificationTarget.ALL
+                bound {
+                    minValue = 10
+                    maxValue = 20
+                    counter = kotlinx.kover.api.CounterType.LINE
+                    valueType = kotlinx.kover.api.VerificationValueType.COVERED_PERCENTAGE
+                }
             }
         }
     }
