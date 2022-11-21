@@ -9,30 +9,70 @@ on:
       - '**.md'
 
 jobs:
-  testAndBuild:
+  os-checks:
     strategy:
       fail-fast: false
       matrix:
-        java: [ 11 ]
-        os: [ 'ubuntu-latest', 'macos-latest', 'windows-latest' ]
+        java: [ '11' ]
+        os: [ 'macos-latest', 'windows-latest' ]
 
     name: 'Test on ${{ matrix.os }} JDK ${{ matrix.java }}'
     runs-on: ${{ matrix.os }}
 
     steps:
-      - name: Update Ubuntu dependencies
-        if: runner.os == 'ubuntu-latest'
-        run: sudo apt-get update
+      - name: Checkout
+        uses: actions/checkout@v3
 
-      - name: Install Ubuntu dependencies
-        if: runner.os == 'ubuntu-latest'
+      - name: 'Set up JDK ${{ matrix.java }}'
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '${{ matrix.java }}'
+
+      - name: Cache kotlin konan
+        uses: actions/cache@v3
+        with:
+          path: ~/.konan
+          key: ${{ matrix.os }}-konan-${{ hashFiles('**/*.konan*') }}
+          restore-keys: ${{ matrix.os }}-konan-
+
+      - name: 'Build and check (${{ matrix.os }})'
+        uses: gradle/gradle-build-action@v2
+        env:
+          CI: true
+        with:
+          gradle-home-cache-cleanup: true
+          arguments: build check -Dsplit_targets --no-daemon --stacktrace --no-configuration-cache --continue
+
+      - name: Upload failure artifacts
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: reports
+          path: |
+            **/build/reports/
+            !**/build/reports/configuration-cache/
+            !**/build/reports/dependency-analysis/
+
+
+  test-and-build:
+    strategy:
+      fail-fast: false
+      matrix:
+        java: [ 11 ]
+        os: [ 'ubuntu-latest' ]
+
+    name: 'Test on ${{ matrix.os }} JDK ${{ matrix.java }}'
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Install Ubuntu dependencies for JS
         run: sudo apt-get install nodejs chromium-browser
 
       - name: Checkout
         uses: actions/checkout@v3
 
       - name: Validate Gradle Wrapper
-        if: runner.os == 'ubuntu-latest'
         uses: gradle/wrapper-validation-action@v1
 
       - name: 'Set up JDK ${{ matrix.java }}'
@@ -45,30 +85,17 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.konan
-          key: ${{ runner.os }}-konan-${{ hashFiles('**/*.konan*') }}
-          restore-keys: |
-            ${{ runner.os }}-konan-
+          key: ${{ matrix.os }}-konan-${{ hashFiles('**/*.konan*') }}
+          restore-keys: ${{ matrix.os }}-konan-
 
-      - name: Test and build (Current OS only)
-        if: runner.os != 'ubuntu-latest'
-        uses: gradle/gradle-build-action@v2
-        env:
-          CI: true
-        with:
-          gradle-home-cache-cleanup: true
-          arguments: build check -Dsplit_targets --no-daemon --stacktrace --no-configuration-cache --continue
-
-      - name: Test and build (everything possible)
-        if: runner.os == 'ubuntu-latest'
+      - name: Test and build everything possible
         uses: gradle/gradle-build-action@v2
         env:
           CI: true
         with:
           gradle-home-cache-cleanup: true
           # arguments: projectHealth buildHealth
-          arguments: |
-            build check apiCheck mergeLintSarif mergeDetektSarif
-            --no-daemon --stacktrace --no-configuration-cache --continue
+          arguments: build check --no-daemon --stacktrace --no-configuration-cache --continue
 
       - name: Upload failure artifacts
         if: failure()
@@ -77,11 +104,12 @@ jobs:
           name: reports
           path: |
             **/build/reports/
+            !**/build/reports/configuration-cache/
             !**/build/reports/dependency-analysis/
 
       - name: Upload merged sarif (Lint)
         uses: github/codeql-action/upload-sarif@v2
-        if: (success() || failure()) && runner.os == 'ubuntu-latest'
+        if: success() || failure()
         continue-on-error: true
         with:
           sarif_file: build/lint-merged.sarif
@@ -89,7 +117,7 @@ jobs:
 
       - name: Upload merged sarif (Detekt)
         uses: github/codeql-action/upload-sarif@v2
-        if: (success() || failure()) && runner.os == 'ubuntu-latest'
+        if: success() || failure()
         continue-on-error: true
         with:
           sarif_file: build/detekt-merged.sarif
