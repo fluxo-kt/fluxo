@@ -21,18 +21,18 @@ jobs:
 
     steps:
       - name: Update Ubuntu dependencies
-        if: matrix.os == 'ubuntu-latest'
+        if: runner.os == 'ubuntu-latest'
         run: sudo apt-get update
 
       - name: Install Ubuntu dependencies
-        if: matrix.os == 'ubuntu-latest'
+        if: runner.os == 'ubuntu-latest'
         run: sudo apt-get install nodejs chromium-browser
 
       - name: Checkout
         uses: actions/checkout@v3
 
       - name: Validate Gradle Wrapper
-        if: matrix.os == 'ubuntu-latest'
+        if: runner.os == 'ubuntu-latest'
         uses: gradle/wrapper-validation-action@v1
 
       - name: 'Set up JDK ${{ matrix.java }}'
@@ -41,26 +41,25 @@ jobs:
           distribution: 'temurin'
           java-version: '${{ matrix.java }}'
 
-      - name: Setup Gradle then test and build
+      - name: Cache kotlin konan
+        uses: actions/cache@v3
+        with:
+          path: ~/.konan
+          key: ${{ runner.os }}-konan-${{ hashFiles('**/*.konan*') }}
+          restore-keys: |
+            ${{ runner.os }}-konan-
+
+      - name: Test and build
         uses: gradle/gradle-build-action@v2
         env:
           CI: true
         with:
-          # arguments: projectHealth buildHealth
-          arguments: build check apiCheck mergeLintSarif mergeDetektSarif -Dsplit_targets --no-daemon --stacktrace --continue
           gradle-home-cache-cleanup: true
-
-      - uses: github/codeql-action/upload-sarif@v2
-        if: success() || failure()
-        with:
-          sarif_file: build/lint-merged.sarif
-          category: lint
-
-      - uses: github/codeql-action/upload-sarif@v2
-        if: success() || failure()
-        with:
-          sarif_file: build/detekt-merged.sarif
-          category: detekt
+          # arguments: projectHealth buildHealth
+          arguments: |
+            build check apiCheck mergeLintSarif mergeDetektSarif
+            -Dsplit_targets
+            --no-daemon --stacktrace --no-configuration-cache --continue
 
       - name: Upload failure artifacts
         if: failure()
@@ -70,3 +69,17 @@ jobs:
           path: |
             **/build/reports/
             !**/build/reports/dependency-analysis/
+
+      - uses: github/codeql-action/upload-sarif@v2
+        if: (success() || failure()) && runner.os == 'ubuntu-latest'
+        continue-on-error: true
+        with:
+          sarif_file: build/lint-merged.sarif
+          category: lint
+
+      - uses: github/codeql-action/upload-sarif@v2
+        if: (success() || failure()) && runner.os == 'ubuntu-latest'
+        continue-on-error: true
+        with:
+          sarif_file: build/detekt-merged.sarif
+          category: detekt
