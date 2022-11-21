@@ -1,6 +1,7 @@
 dependencies {
     compileOnly(libs.plugin.android)
-    compileOnly(libs.plugin.detekt)
+    implementation(libs.plugin.detekt)
+    implementation(projects.setup)
 }
 
 gradlePlugin {

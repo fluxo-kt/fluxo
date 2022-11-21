@@ -33,7 +33,6 @@ plugins {
     alias(libs.plugins.deps.analysis)
     alias(libs.plugins.deps.versions)
     alias(libs.plugins.task.tree)
-    alias(libs.plugins.detekt)
 }
 
 setupDefaults(

@@ -11,6 +11,6 @@ internal val Project.multiplatformExtension: KotlinMultiplatformExtension
 internal inline fun <reified T : Any> Project.hasExtension(): Boolean =
     extensions.findByType<T>() != null
 
-internal fun Project.checkIsRootProject() {
-    check(rootProject == this) { "Must be called on a root project" }
+fun Project.checkIsRootProject() {
+    require(rootProject == this) { "Must be called on a root project" }
 }

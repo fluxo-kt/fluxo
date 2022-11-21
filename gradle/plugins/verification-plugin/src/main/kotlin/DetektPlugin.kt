@@ -1,18 +1,21 @@
+import fluxo.library
+import fluxo.libsCatalog
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import io.gitlab.arturbosch.detekt.report.ReportMergeTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.getByType
 
 class DetektPlugin : Plugin<Project> {
+    internal companion object {
+        internal const val PLUGIN_ID = "io.gitlab.arturbosch.detekt"
+    }
 
     override fun apply(target: Project) {
-        target.plugins.apply("io.gitlab.arturbosch.detekt")
-        target.plugins.withId("io.gitlab.arturbosch.detekt") {
+        target.plugins.apply(PLUGIN_ID)
+        target.plugins.withId(PLUGIN_ID) {
             val rootProject = target.rootProject
 
             target.extensions.configure<DetektExtension> {
@@ -21,13 +24,14 @@ class DetektPlugin : Plugin<Project> {
                 baseline = target.file("detekt-baseline.xml")
                 basePath = rootProject.projectDir.absolutePath
 
-                val localDetektConfig = target.file("detekt.yml")
-                val rootDetektConfig = target.rootProject.file("detekt.yml")
-                val rootDetektComposeConfig = target.rootProject.file("detekt-compose.yml")
-                if (localDetektConfig.exists()) {
-                    config.from(localDetektConfig, rootDetektConfig, rootDetektComposeConfig)
-                } else {
-                    config.from(rootDetektConfig, rootDetektComposeConfig)
+                val files = arrayOf(
+                    target.file("detekt.yml"),
+                    target.rootProject.file("detekt.yml"),
+                    target.rootProject.file("detekt-compose.yml"),
+                ).filter { it.exists() }.toTypedArray()
+                if (files.isNotEmpty()) {
+                    @Suppress("SpreadOperator")
+                    config.from(*files)
                 }
             }
 
@@ -37,10 +41,7 @@ class DetektPlugin : Plugin<Project> {
             }
 
             rootProject.plugins.withId("fluxo-collect-sarif") {
-                rootProject.tasks.named(
-                    CollectSarifPlugin.MERGE_DETEKT_TASK_NAME,
-                    ReportMergeTask::class.java,
-                ) {
+                rootProject.tasks.named(CollectSarifPlugin.MERGE_DETEKT_TASK_NAME, ReportMergeTask::class.java) {
                     input.from(detektTask.map { it.sarifReportFile }.orNull)
                     mustRunAfter(detektTask)
                 }
@@ -48,14 +49,10 @@ class DetektPlugin : Plugin<Project> {
         }
 
         target.dependencies {
-            // Add to all modules (even ones that don't use Compose) as detecting Compose can be messy, and this should be okay for now.
-            add(
-                "detektPlugins",
-                target.rootProject.extensions.getByType<VersionCatalogsExtension>()
-                    .named("libs")
-                    .findLibrary("detekt-compose")
-                    .get()
-            )
+            val libsCatalog = target.rootProject.libsCatalog
+            add("detektPlugins", libsCatalog.library("detekt-formatting"))
+            // Add to all modules (even ones that don't use Compose) as detecting Compose can be messy.
+            add("detektPlugins", libsCatalog.library("detekt-compose"))
         }
     }
 }
