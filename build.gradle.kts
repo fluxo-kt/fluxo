@@ -46,7 +46,13 @@ setupDefaults(
         linuxX64()
         mingwX64()
         iosCompat()
-        watchosCompat()
+
+        // Until the fix in Kotlin 1.8 https://youtrack.jetbrains.com/issue/KT-54814
+        val isCi by isCI()
+        if (!isCi || !libs.versions.kotlin.get().startsWith("1.7")) {
+            watchosCompat()
+        }
+
         tvosCompat()
         macosCompat()
 
