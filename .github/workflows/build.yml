@@ -49,7 +49,17 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-konan-
 
-      - name: Test and build
+      - name: Test and build (Current OS only)
+        if: runner.os != 'ubuntu-latest'
+        uses: gradle/gradle-build-action@v2
+        env:
+          CI: true
+        with:
+          gradle-home-cache-cleanup: true
+          arguments: build check -Dsplit_targets --no-daemon --stacktrace --no-configuration-cache --continue
+
+      - name: Test and build (everything possible)
+        if: runner.os == 'ubuntu-latest'
         uses: gradle/gradle-build-action@v2
         env:
           CI: true
@@ -58,7 +68,6 @@ jobs:
           # arguments: projectHealth buildHealth
           arguments: |
             build check apiCheck mergeLintSarif mergeDetektSarif
-            -Dsplit_targets
             --no-daemon --stacktrace --no-configuration-cache --continue
 
       - name: Upload failure artifacts
@@ -70,14 +79,16 @@ jobs:
             **/build/reports/
             !**/build/reports/dependency-analysis/
 
-      - uses: github/codeql-action/upload-sarif@v2
+      - name: Upload merged sarif (Lint)
+        uses: github/codeql-action/upload-sarif@v2
         if: (success() || failure()) && runner.os == 'ubuntu-latest'
         continue-on-error: true
         with:
           sarif_file: build/lint-merged.sarif
           category: lint
 
-      - uses: github/codeql-action/upload-sarif@v2
+      - name: Upload merged sarif (Detekt)
+        uses: github/codeql-action/upload-sarif@v2
         if: (success() || failure()) && runner.os == 'ubuntu-latest'
         continue-on-error: true
         with:
