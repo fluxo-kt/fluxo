@@ -17,6 +17,7 @@ jobs:
         os: [ 'macos-latest', 'windows-latest' ]
 
     name: 'Test on ${{ matrix.os }} JDK ${{ matrix.java }}'
+    timeout-minutes: 60
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -37,12 +38,13 @@ jobs:
           restore-keys: ${{ matrix.os }}-konan-
 
       - name: 'Build and check (${{ matrix.os }})'
+        timeout-minutes: 30
         uses: gradle/gradle-build-action@v2
         env:
           CI: true
         with:
           gradle-home-cache-cleanup: true
-          arguments: build check -Dsplit_targets --no-daemon --stacktrace --no-configuration-cache --continue
+          arguments: build check -Dsplit_targets --stacktrace --no-configuration-cache --continue
 
       - name: Upload failure artifacts
         if: failure()
@@ -63,6 +65,7 @@ jobs:
         os: [ 'ubuntu-latest' ]
 
     name: 'Test on ${{ matrix.os }} JDK ${{ matrix.java }}'
+    timeout-minutes: 60
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -85,14 +88,17 @@ jobs:
           key: ${{ matrix.os }}-konan-${{ hashFiles('**/*.konan*') }}
           restore-keys: ${{ matrix.os }}-konan-
 
-      - name: Test and build everything possible
+      - name: Setup Gradle
+        timeout-minutes: 30
         uses: gradle/gradle-build-action@v2
-        env:
-          CI: true
         with:
           gradle-home-cache-cleanup: true
-          # arguments: projectHealth buildHealth
-          arguments: build check --no-daemon --stacktrace --no-configuration-cache --continue
+
+      - name: Test and build everything possible
+        timeout-minutes: 50
+        env:
+          CI: true
+        run: ./gradlew build check --stacktrace --no-configuration-cache --continue
 
       - name: Upload failure artifacts
         if: failure()
