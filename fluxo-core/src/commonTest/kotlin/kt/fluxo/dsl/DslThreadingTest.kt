@@ -1,9 +1,6 @@
 package kt.fluxo.dsl
 
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -14,24 +11,18 @@ import kotlinx.coroutines.withTimeout
 import kt.fluxo.core.ContainerHost
 import kt.fluxo.core.container
 import kt.fluxo.core.intent
+import kt.fluxo.test.CoroutineScopeAwareTest
 import kt.fluxo.test.IgnoreNativeAndJs
 import kt.fluxo.test.ScopedBlockingWorkSimulator
 import kt.fluxo.test.runBlocking
 import kt.fluxo.test.test
 import kotlin.random.Random
-import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 
-internal class DslThreadingTest {
+internal class DslThreadingTest : CoroutineScopeAwareTest() {
 
-    private val scope = CoroutineScope(Job())
     private val middleware = BaseDslMiddleware()
-
-    @AfterTest
-    fun afterTest() {
-        scope.cancel()
-    }
 
     @Test
     @IgnoreNativeAndJs

@@ -14,12 +14,12 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withContext
 import kt.fluxo.core.StoreClosedException
 import kt.fluxo.core.container
+import kt.fluxo.test.CoroutineScopeAwareTest
 import kt.fluxo.test.KMM_PLATFORM
 import kt.fluxo.test.Platform
 import kt.fluxo.test.mayFailWith
 import kt.fluxo.test.runUnitTest
 import kotlin.coroutines.cancellation.CancellationException
-import kotlin.test.AfterTest
 import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -27,15 +27,9 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
-internal class ContainerExceptionHandlerTest {
-
-    private val scope = CoroutineScope(Job() + CoroutineExceptionHandler { _, _ -> /*just be silent*/ })
-
-    @AfterTest
-    fun afterTest() {
-        scope.cancel()
-    }
-
+internal class ContainerExceptionHandlerTest : CoroutineScopeAwareTest(
+    context = Job() + CoroutineExceptionHandler { _, _ -> /*just be silent*/ },
+) {
     @Test
     fun by_default_exception_breaks_the_scope() = runUnitTest {
         val initState = 10

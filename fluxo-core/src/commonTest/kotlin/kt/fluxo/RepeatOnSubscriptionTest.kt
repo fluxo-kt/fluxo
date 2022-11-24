@@ -1,9 +1,6 @@
 package kt.fluxo
 
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
@@ -14,19 +11,14 @@ import kt.fluxo.core.container
 import kt.fluxo.core.dsl.SideJobScope
 import kt.fluxo.core.intent
 import kt.fluxo.core.repeatOnSubscription
-import kotlin.test.AfterTest
+import kt.fluxo.test.CoroutineScopeAwareTest
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
-internal class RepeatOnSubscriptionTest {
-    private val initialState = State()
-    private val scope = CoroutineScope(Job())
+internal class RepeatOnSubscriptionTest : CoroutineScopeAwareTest() {
 
-    @AfterTest
-    fun afterTest() {
-        scope.cancel()
-    }
+    private val initialState = State()
 
     @Test
     fun test_does_not_hang_when_using_repeatOnSubscription() = runTest {

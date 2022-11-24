@@ -1,28 +1,17 @@
 package kt.fluxo.data
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import kt.fluxo.core.data.GuaranteedEffect
 import kt.fluxo.core.store
-import kotlin.test.AfterTest
+import kt.fluxo.test.CoroutineScopeAwareTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 
-class GuaranteedEffectTest {
-
-    private val scope = CoroutineScope(Job())
-
-    @AfterTest
-    fun afterTest() {
-        scope.cancel()
-    }
-
+internal class GuaranteedEffectTest : CoroutineScopeAwareTest() {
 
     @Test
     fun guaranteed_effect_can_resend_itself(): TestResult {

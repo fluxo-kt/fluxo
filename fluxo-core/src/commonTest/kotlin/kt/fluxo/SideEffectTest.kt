@@ -1,29 +1,19 @@
 package kt.fluxo
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import kt.fluxo.core.Container
 import kt.fluxo.core.container
+import kt.fluxo.test.CoroutineScopeAwareTest
 import kt.fluxo.test.test
 import kotlin.random.Random
-import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
-internal class SideEffectTest {
-
-    private val scope = CoroutineScope(Job())
-
-    @AfterTest
-    fun afterTest() {
-        scope.cancel()
-    }
+internal class SideEffectTest : CoroutineScopeAwareTest() {
 
     @Test
     fun side_effects_are_emitted_ordered_by_default() = runTest {

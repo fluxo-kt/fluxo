@@ -1,28 +1,19 @@
 package kt.fluxo
 
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.test.runTest
 import kt.fluxo.core.ContainerHost
 import kt.fluxo.core.container
 import kt.fluxo.core.intent
 import kt.fluxo.core.intercept.FluxoEvent
+import kt.fluxo.test.CoroutineScopeAwareTest
 import kt.fluxo.test.test
 import kotlin.random.Random
-import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
-internal class StateTest {
-
-    private val scope = CoroutineScope(Job())
-
-    @AfterTest
-    fun afterTest() {
-        scope.cancel()
-    }
+internal class StateTest : CoroutineScopeAwareTest() {
 
     @Test
     fun initial_state_emitted_on_connection() {

@@ -1,26 +1,16 @@
 package kt.fluxo
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.test.runTest
 import kt.fluxo.core.ContainerHost
 import kt.fluxo.core.container
 import kt.fluxo.core.intent
+import kt.fluxo.test.CoroutineScopeAwareTest
 import kt.fluxo.test.test
 import kotlin.random.Random
-import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-internal class ContainerLifecycleTest {
-
-    private val scope = CoroutineScope(Job())
-
-    @AfterTest
-    fun afterTest() {
-        scope.cancel()
-    }
+internal class ContainerLifecycleTest : CoroutineScopeAwareTest() {
 
     @Test
     fun onCreate_called_once_after_connecting_to_container() = runTest {

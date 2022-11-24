@@ -1,28 +1,18 @@
 package kt.fluxo
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import kt.fluxo.core.Container
 import kt.fluxo.core.container
+import kt.fluxo.test.CoroutineScopeAwareTest
 import kt.fluxo.test.test
 import kotlin.random.Random
-import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-internal class ContainerThreadingTest {
-
-    private val scope = CoroutineScope(Job())
-
-    @AfterTest
-    fun afterTest() {
-        scope.cancel()
-    }
+internal class ContainerThreadingTest : CoroutineScopeAwareTest() {
 
     @Test
     fun container_can_process_second_action_while_the_first_suspended() = runTest {

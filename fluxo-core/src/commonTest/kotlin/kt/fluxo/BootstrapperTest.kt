@@ -1,9 +1,7 @@
 package kt.fluxo
 
 import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.InternalCoroutinesApi
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.take
@@ -13,10 +11,10 @@ import kt.fluxo.core.container
 import kt.fluxo.core.dsl.SideJobScope.RestartState
 import kt.fluxo.core.intercept.FluxoEvent
 import kt.fluxo.core.repeatOnSubscription
+import kt.fluxo.test.CoroutineScopeAwareTest
 import kt.fluxo.test.IgnoreJs
 import kt.fluxo.test.runBlocking
 import kt.fluxo.test.runUnitTest
-import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -26,14 +24,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 @OptIn(InternalCoroutinesApi::class)
-internal class BootstrapperTest {
-
-    private val scope = CoroutineScope(Job())
-
-    @AfterTest
-    fun afterTest() {
-        scope.cancel()
-    }
+internal class BootstrapperTest : CoroutineScopeAwareTest() {
 
     @Test
     @IgnoreJs
@@ -164,7 +155,7 @@ internal class BootstrapperTest {
     @Test
     fun b_repeat_on_subscription() = runUnitTest {
         val initialState = "init"
-        val store = scope.container<String, String>(initialState) {
+        val store = backgroundScope.container<String, String>(initialState) {
             onStart {
                 var i = 0
                 repeatOnSubscription(stopTimeout = 0) {
