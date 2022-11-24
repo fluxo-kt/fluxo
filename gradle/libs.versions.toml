@@ -90,6 +90,7 @@ plugin-android = { module = "com.android.tools.build:gradle", version.ref = "and
 # https://github.com/twitter/compose-rules/releases
 detekt-compose = "com.twitter.compose.rules:detekt:0.0.26"
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
+detekt-core = { module = "io.gitlab.arturbosch.detekt:detekt-core", version.ref = "detekt" }
 
 plugin-binCompatValidator = { module = "org.jetbrains.kotlinx:binary-compatibility-validator", version.ref = "bin-compat-validator" }
 
