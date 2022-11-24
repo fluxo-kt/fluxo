@@ -1,4 +1,4 @@
-package kt.fluxo.dsl
+package kt.fluxo.tests.dsl
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.currentCoroutineContext

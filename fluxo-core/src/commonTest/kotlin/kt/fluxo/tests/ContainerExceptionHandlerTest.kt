@@ -1,4 +1,4 @@
-package kt.fluxo
+package kt.fluxo.tests
 
 import app.cash.turbine.testIn
 import kotlinx.coroutines.CoroutineExceptionHandler

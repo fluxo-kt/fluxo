@@ -1,4 +1,4 @@
-package kt.fluxo.data
+package kt.fluxo.tests.data
 
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.takeWhile

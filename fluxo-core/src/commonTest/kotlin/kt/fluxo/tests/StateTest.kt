@@ -1,4 +1,4 @@
-package kt.fluxo
+package kt.fluxo.tests
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.test.runTest

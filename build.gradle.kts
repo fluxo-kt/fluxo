@@ -143,6 +143,13 @@ koverMerged {
             }
         }
     }
+
+    filters {
+        classes {
+            excludes += listOf("kt.fluxo.test.*")
+            excludes += listOf("kt.fluxo.tests.*")
+        }
+    }
 }
 
 allprojects {
