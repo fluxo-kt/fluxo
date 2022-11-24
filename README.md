@@ -5,15 +5,30 @@
 
 **Fluxo** is a simple yet super powerful MVVM+ / MVI library for Kotlin Multiplatform.
 
+**Work-In-Progress**, first release is coming.
+
+**Fluxo** was started as a test for the hypothesis:
+_it should be possible to combine all the strong sides of strict **Redux/MVI** with flexibility,
+ease of readability, and maintainability of the **MVVM+**._
+
+The experiment paid off!
+It is possible to combine **MVVM+** with high-quality time-travel, logging,
+auto-analysis of the transition graph and much more.
+A long list of features is implemented gradually in this library (see the [Roadmap][#roadmap] for details).
+
+Basic usage is elementary, yet you can take advantage of fine-tuning and super powerful features when you need them.
+
 * Kotlin **coroutine-based** state handling.
 * **Multiplatform**, supports all KMM targets (**Android**, **iOS**, **JVM**, **JS**, **Native**..).
 * Simple usage, type-safe, no-boilerplate.
 * Different usage styles:
-  * Strict **Redux/MVI**
+  * Strict **Redux/MVI** (the highest correctness guarantees, but may be subjectively less readable and intuitive)
   * Simple and flexible **MVVM+**
-    ([contextual reduction](https://dev.to/feresr/a-case-against-the-mvi-architecture-pattern-1add)
-    , [orbit-way](https://github.com/orbit-mvi/orbit-mvi#what-is-orbit))
-  * Redux-style discrete Inputs with MVVM+ style reduction DSL
+    (see [contextual reduction](https://dev.to/feresr/a-case-against-the-mvi-architecture-pattern-1add),
+    [orbit-way](https://github.com/orbit-mvi/orbit-mvi#what-is-orbit), intuitively readable, may be easier to maintain,
+    support every feature and more :)
+  * Redux-style discrete Inputs with MVVM+ style reduction DSL (hybrid way)
+  * _More is coming…_
 * **Side effects** support (sometimes called news or events).
   * Four strategies allow you to fully control how side effects sharing can be handled in the Store
     (_RECEIVE_, _CONSUME_, _SHARE_, _DISABLE_).
