@@ -11,7 +11,6 @@ import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.provideDelegate
 import org.gradle.kotlin.dsl.withType
 import org.gradle.language.base.plugins.LifecycleBasePlugin
 
@@ -59,6 +58,12 @@ fun Project.setupVerification() {
                 txt.required.set(false)
                 xml.required.set(false)
             }
+        }.matching {
+            println("Detekt task: :$name:${it.name}")
+            // Avoid Exception during IR lowering (detektAndroidDebugAndroidTest)
+            // Unhandled intrinsic in ExpressionCodegen: FUN FUNCTION_FOR_DEFAULT_PARAMETER name:runBlocking$default [expect]
+            // https://youtrack.jetbrains.com/issue/KT-52829#focus=Comments-27-6658039.0-0
+            !it.name.contains("DebugAndroidTest")
         }
         val detektAll = tasks.register("detektAll") {
             group = LifecycleBasePlugin.VERIFICATION_GROUP
@@ -67,14 +72,11 @@ fun Project.setupVerification() {
         }
         mergeDetekt.configure {
             input.from(detektTasks.map { it.sarifReportFile })
+            dependsOn(detektAll)
             mustRunAfter(detektTasks)
         }
         tasks.findByName("check")?.configure<Task> {
-            dependsOn(mergeLint)
-            val isCi by isCI()
-            if (isCi) {
-                dependsOn(mergeDetekt, detektAll)
-            }
+            dependsOn(mergeDetekt)
         }
 
         dependencies {
@@ -117,6 +119,9 @@ private fun Project.setupLint(mergeLint: TaskProvider<ReportMergeTask>) {
         arrayOf("lintReportDebug", "lintReportRelease").forEach { taskName ->
             input.from(tasks.named(taskName, AndroidLintTask::class.java).flatMap { it.sarifReportOutputFile })
         }
+    }
+    tasks.findByName("check")?.configure<Task> {
+        dependsOn(mergeLint)
     }
 }
 
