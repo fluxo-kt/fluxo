@@ -128,18 +128,25 @@ koverMerged {
         }
     }
 
-    if (isRelease) {
-        verify {
-            onCheck.set(true)
-            rule {
-                isEnabled = true
-                target = kotlinx.kover.api.VerificationTarget.ALL
-                bound {
-                    minValue = 10
-                    maxValue = 20
-                    counter = kotlinx.kover.api.CounterType.LINE
-                    valueType = kotlinx.kover.api.VerificationValueType.COVERED_PERCENTAGE
-                }
+    verify {
+        onCheck.set(true)
+        rule {
+            isEnabled = true
+            target = kotlinx.kover.api.VerificationTarget.ALL
+            bound {
+                minValue = 74
+                counter = kotlinx.kover.api.CounterType.LINE
+                valueType = kotlinx.kover.api.VerificationValueType.COVERED_PERCENTAGE
+            }
+            bound {
+                minValue = 63
+                counter = kotlinx.kover.api.CounterType.INSTRUCTION
+                valueType = kotlinx.kover.api.VerificationValueType.COVERED_PERCENTAGE
+            }
+            bound {
+                minValue = 63
+                counter = kotlinx.kover.api.CounterType.BRANCH
+                valueType = kotlinx.kover.api.VerificationValueType.COVERED_PERCENTAGE
             }
         }
     }
