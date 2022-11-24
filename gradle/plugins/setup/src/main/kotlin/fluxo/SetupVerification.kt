@@ -6,7 +6,6 @@ import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import io.gitlab.arturbosch.detekt.report.ReportMergeTask
 import org.gradle.api.Project
-import org.gradle.api.Task
 import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.configure
@@ -19,11 +18,17 @@ fun Project.setupVerification() {
 
     val mergeLint = tasks.register(MERGE_LINT_TASK_NAME, ReportMergeTask::class.java) {
         group = JavaBasePlugin.VERIFICATION_GROUP
+        description = "Merges all Lint reports from all modules to the root one"
         output.set(project.layout.buildDirectory.file("lint-merged.sarif"))
     }
     val mergeDetekt = tasks.register(MERGE_DETEKT_TASK_NAME, ReportMergeTask::class.java) {
         group = JavaBasePlugin.VERIFICATION_GROUP
+        description = "Merges all Detekt reports from all modules to the root one"
         output.set(project.layout.buildDirectory.file("detekt-merged.sarif"))
+    }
+
+    tasks.matching { it.name == "check" }.configureEach {
+        dependsOn(mergeDetekt, mergeLint)
     }
 
     val detektCompose = rootProject.file("detekt-compose.yml")
@@ -59,7 +64,6 @@ fun Project.setupVerification() {
                 xml.required.set(false)
             }
         }.matching {
-            println("Detekt task: :$name:${it.name}")
             // Avoid Exception during IR lowering (detektAndroidDebugAndroidTest)
             // Unhandled intrinsic in ExpressionCodegen: FUN FUNCTION_FOR_DEFAULT_PARAMETER name:runBlocking$default [expect]
             // https://youtrack.jetbrains.com/issue/KT-52829#focus=Comments-27-6658039.0-0
@@ -72,11 +76,8 @@ fun Project.setupVerification() {
         }
         mergeDetekt.configure {
             input.from(detektTasks.map { it.sarifReportFile })
+            dependsOn(detektTasks)
             dependsOn(detektAll)
-            mustRunAfter(detektTasks)
-        }
-        tasks.findByName("check")?.configure<Task> {
-            dependsOn(mergeDetekt)
         }
 
         dependencies {
@@ -115,13 +116,15 @@ private fun Project.setupLint(mergeLint: TaskProvider<ReportMergeTask>) {
             checkDependencies = true
         }
     }
-    mergeLint.configure {
-        arrayOf("lintReportDebug", "lintReportRelease").forEach { taskName ->
-            input.from(tasks.named(taskName, AndroidLintTask::class.java).flatMap { it.sarifReportOutputFile })
+
+    tasks.withType<AndroidLintTask> {
+        val lintTask = this
+        if (name.startsWith("lintReport")) {
+            mergeLint.configure {
+                input.from(lintTask.sarifReportOutputFile)
+                dependsOn(lintTask)
+            }
         }
-    }
-    tasks.findByName("check")?.configure<Task> {
-        dependsOn(mergeLint)
     }
 }
 

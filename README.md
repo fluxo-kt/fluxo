@@ -14,7 +14,7 @@ ease of readability, and maintainability of the **MVVM+**._
 The experiment paid off!
 It is possible to combine **MVVM+** with high-quality time-travel, logging,
 auto-analysis of the transition graph and much more.
-A long list of features is implemented gradually in this library (see the [Roadmap][#roadmap] for details).
+A long list of features is implemented gradually in this library (see the [Roadmap](#roadmap) for details).
 
 Basic usage is elementary, yet you can take advantage of fine-tuning and super powerful features when you need them.
 
