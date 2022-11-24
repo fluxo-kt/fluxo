@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+  <!-- Ignore InvalidPackage: Invalid package reference in -->
+  <!-- org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm; not included in Android: -->
+  <!-- java.lang.instrument. Referenced from kotlinx.coroutines.debug.AgentPremain.-->
+  <issue id="InvalidPackage">
+    <ignore regexp="kotlinx.coroutines.debug.AgentPremain"/>
+  </issue>
+</lint>

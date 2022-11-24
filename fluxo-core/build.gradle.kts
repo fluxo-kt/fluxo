@@ -11,8 +11,6 @@ plugins {
     alias(libs.plugins.kotlinx.kover)
     alias(libs.plugins.kotlin.dokka)
     id("fluxo-setup")
-    id("fluxo-lint")
-    id("fluxo-detekt")
 }
 apply<kotlinx.atomicfu.plugin.gradle.AtomicFUGradlePlugin>()
 

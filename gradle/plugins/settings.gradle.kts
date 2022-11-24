@@ -24,7 +24,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "plugins"
 
-include("build-convenience")
 include("release-dependencies-diff")
 include("setup")
-include("verification-plugin")

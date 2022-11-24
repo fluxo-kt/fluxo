@@ -10,7 +10,7 @@ dependencies {
     compileOnly(libs.plugin.android)
     compileOnly(libs.plugin.intellij)
     compileOnly(libs.plugin.binCompatValidator)
-    compileOnly(libs.plugin.detekt)
+    implementation(libs.plugin.detekt)
 }
 
 gradlePlugin {

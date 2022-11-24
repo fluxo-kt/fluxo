@@ -2,10 +2,15 @@
 
 import fluxo.AndroidConfig
 import fluxo.ensureUnreachableTasksDisabled
+import fluxo.getValue
 import fluxo.iosCompat
+import fluxo.isCI
+import fluxo.isRelease
 import fluxo.macosCompat
 import fluxo.setupDefaults
+import fluxo.setupVerification
 import fluxo.tvosCompat
+import fluxo.useK2
 import fluxo.watchosCompat
 
 buildscript {
@@ -19,8 +24,6 @@ buildscript {
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
     id("fluxo-setup")
-    id("fluxo-build-convenience")
-    id("fluxo-collect-sarif")
     id("release-dependencies-diff-compare")
     id("release-dependencies-diff-create") apply false
     alias(libs.plugins.android.lib) apply false
@@ -85,6 +88,8 @@ setupDefaults(
         buildToolsVersion = libs.versions.androidBuildTools.get(),
     ),
 )
+
+setupVerification()
 
 ensureUnreachableTasksDisabled()
 
@@ -205,7 +210,7 @@ allprojects {
 
 subprojects {
     // Convenience task that will print full dependencies tree for any module
-    // Use `buildEnvironment` task for plugins report
+    // Use `buildEnvironment` task for the report about plugins
     // https://docs.gradle.org/current/userguide/viewing_debugging_dependencies.html
     tasks.register<DependencyReportTask>("allDeps")
 
