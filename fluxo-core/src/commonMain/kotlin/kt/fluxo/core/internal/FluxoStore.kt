@@ -146,7 +146,9 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
             }
         }
         // Shouldn't close immediately with scope, when interceptors set
-        interceptorScope = if (interceptors.isEmpty()) scope else {
+        interceptorScope = if (interceptors.isEmpty()) {
+            scope
+        } else {
             scope + conf.interceptorContext + SupervisorJob() + when {
                 !debugChecks -> EmptyCoroutineContext
                 else -> CoroutineName("$F[$name:interceptorScope]")
@@ -166,7 +168,9 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
                 when (it) {
                     is StoreRequest.HandleIntent -> {
                         @Suppress("UNINITIALIZED_VARIABLE")
-                        val resent = if (requestsChannel.trySend(it).isSuccess) true else {
+                        val resent = if (requestsChannel.trySend(it).isSuccess) {
+                            true
+                        } else {
                             it.intent.closeSafely()
                             false
                         }
@@ -207,7 +211,9 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
             val channel = Channel<SideEffect>(conf.sideEffectBufferSize, BufferOverflow.SUSPEND) {
                 scope.launch(Dispatchers.Unconfined, CoroutineStart.UNDISPATCHED) {
                     @Suppress("UNINITIALIZED_VARIABLE")
-                    val resent = if (sideEffectChannel!!.trySend(it).isSuccess) true else {
+                    val resent = if (sideEffectChannel!!.trySend(it).isSuccess) {
+                        true
+                    } else {
                         it.closeSafely()
                         false
                     }
@@ -218,7 +224,9 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
             }
             sideEffectChannel = channel
             sideEffectsSubscriptionCount = MutableStateFlow(0)
-            val flow = if (sideEffectStrategy === SideEffectsStrategy.CONSUME) channel.consumeAsFlow() else {
+            val flow = if (sideEffectStrategy === SideEffectsStrategy.CONSUME) {
+                channel.consumeAsFlow()
+            } else {
                 check(!debugChecks || sideEffectStrategy === SideEffectsStrategy.RECEIVE)
                 channel.receiveAsFlow()
             }
@@ -240,7 +248,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
                 when {
                     !debugChecks -> EmptyCoroutineContext
                     else -> CoroutineName("$F[$name:lazyStart]")
-                }
+                },
             ) {
                 // start on the first subscriber.
                 subscriptions.first { it > 0 }
@@ -254,7 +262,10 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
 
     override fun start(): Job? {
         if (!isActive) {
-            throw StoreClosedException("Store is closed, it cannot be restarted", cancellationCause?.let { it.cause ?: it })
+            throw StoreClosedException(
+                "Store is closed, it cannot be restarted",
+                cancellationCause?.let { it.cause ?: it },
+            )
         }
         if (initialised.compareAndSet(expect = false, update = true)) {
             return launch()
@@ -279,7 +290,8 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         start()
         val i = if (DEBUG || debugChecks) debugIntentWrapper(intent) else intent
         scope.launch(Dispatchers.Unconfined, start = CoroutineStart.UNDISPATCHED) {
-            @Suppress("DeferredResultUnused") sendAsync(i)
+            @Suppress("DeferredResultUnused")
+            sendAsync(i)
         }
     }
 
@@ -310,18 +322,20 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         if (!scope.isActive) {
             sideEffect.closeSafely(cancellationCause)
             events.emit(FluxoEvent.SideEffectUndelivered(this@FluxoStore, sideEffect, resent = false))
-        } else try {
-            if (sideEffect is GuaranteedEffect<*>) {
-                sideEffect.setResendFunction(::postSideEffectSync)
+        } else {
+            try {
+                if (sideEffect is GuaranteedEffect<*>) {
+                    sideEffect.setResendFunction(::postSideEffectSync)
+                }
+                sideEffectChannel?.send(sideEffect)
+                    ?: (sideEffectFlowField as MutableSharedFlow).emit(sideEffect)
+                events.emit(FluxoEvent.SideEffectEmitted(this@FluxoStore, sideEffect))
+            } catch (e: Throwable) {
+                sideEffect.closeSafely(e)
+                events.emit(FluxoEvent.SideEffectUndelivered(this@FluxoStore, sideEffect, resent = false))
+                events.emit(FluxoEvent.UnhandledError(this@FluxoStore, e))
+                handleException(e, currentCoroutineContext())
             }
-            sideEffectChannel?.send(sideEffect)
-                ?: (sideEffectFlowField as MutableSharedFlow).emit(sideEffect)
-            events.emit(FluxoEvent.SideEffectEmitted(this@FluxoStore, sideEffect))
-        } catch (e: Throwable) {
-            sideEffect.closeSafely(e)
-            events.emit(FluxoEvent.SideEffectUndelivered(this@FluxoStore, sideEffect, resent = false))
-            events.emit(FluxoEvent.UnhandledError(this@FluxoStore, e))
-            handleException(e, currentCoroutineContext())
         }
     }
 
@@ -359,7 +373,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         when {
             !debugChecks -> EmptyCoroutineContext
             else -> CoroutineName("$F[$name:launch]")
-        }
+        },
     ) {
         // observe and process intents
         val requestsFlow = requestsChannel.receiveAsFlow()
@@ -452,7 +466,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
                         sendSideEffect = ::postSideEffect,
                         sendSideJob = ::postSideJob,
                         subscriptionCount = subscriptionCount,
-                        coroutineContext = coroutineContext
+                        coroutineContext = coroutineContext,
                     )
                     storeScope.handleIntent(intent)
                     storeScope.close()
@@ -509,7 +523,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
                 context = when {
                     !debugChecks -> EmptyCoroutineContext
                     else -> CoroutineName("$F[$name SideJob $key <= Intent ${request.parent}]")
-                }
+                },
             ) {
                 try {
                     val sideJobScope = SideJobScopeImpl(
@@ -533,7 +547,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
                     events.emit(FluxoEvent.SideJobError(this@FluxoStore, key, restartState, e))
                     handleException(e, currentCoroutineContext())
                 }
-            }
+            },
         )
     }
 
@@ -544,12 +558,16 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
             coroutineScope {
                 val bootstrapperScope = BootstrapperScopeImpl(
                     bootstrapper = bootstrapper,
-                    guardian = if (!debugChecks) null else InputStrategyGuardian(
-                        parallelProcessing = false,
-                        isBootstrap = true,
-                        intent = null,
-                        handler = bootstrapper,
-                    ),
+                    guardian = if (!debugChecks) {
+                        null
+                    } else {
+                        InputStrategyGuardian(
+                            parallelProcessing = false,
+                            isBootstrap = true,
+                            intent = null,
+                            handler = bootstrapper,
+                        )
+                    },
                     getState = mutableState::value,
                     updateStateAndGet = ::updateStateAndGet,
                     sendIntent = ::sendAsync,

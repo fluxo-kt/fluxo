@@ -1,4 +1,4 @@
-@file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE", "TooManyFunctions")
+@file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE", "TooManyFunctions", "TrailingCommaOnCallSite")
 
 package kt.fluxo.core
 
@@ -241,16 +241,14 @@ public inline fun <Intent, State, SideEffect : Any> store(
  */
 @FluxoDsl
 @InlineOnly
-public inline fun <S, SE : Any> ContainerHost<S, SE>.intent(noinline intent: FluxoIntent<S, SE>): Unit =
-    container.send(intent)
+public inline fun <S, SE : Any> ContainerHost<S, SE>.intent(noinline intent: FluxoIntent<S, SE>): Unit = container.send(intent)
 
 /**
  * Build and execute a functional [intent][FluxoIntent] on [Store].
  */
 @FluxoDsl
 @InlineOnly
-public inline fun <S, SE : Any> Container<S, SE>.intent(noinline intent: FluxoIntent<S, SE>): Unit =
-    send(intent)
+public inline fun <S, SE : Any> Container<S, SE>.intent(noinline intent: FluxoIntent<S, SE>): Unit = send(intent)
 
 /**
  *
@@ -261,13 +259,15 @@ public inline fun <S, SE : Any> Container<S, SE>.intent(noinline intent: FluxoIn
 public suspend fun <I, S, SE : Any> StoreScope<I, S, SE>.repeatOnSubscription(
     key: String = StoreScope.DEFAULT_REPEAT_ON_SUBSCRIPTION_JOB,
     stopTimeout: Long = 100L,
-    block: suspend SideJobScope<I, S, SE>.() -> Unit
+    block: suspend SideJobScope<I, S, SE>.() -> Unit,
 ) {
     sideJob(key) {
         val upstream = this@repeatOnSubscription.subscriptionCount
         if (stopTimeout > 0L) {
             upstream.mapLatest {
-                if (it > 0) true else {
+                if (it > 0) {
+                    true
+                } else {
                     delay(stopTimeout)
                     false
                 }

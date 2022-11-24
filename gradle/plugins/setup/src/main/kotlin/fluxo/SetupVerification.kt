@@ -83,7 +83,7 @@ fun Project.setupVerification() {
             !it.name.contains("DebugAndroidTest")
         }
         if (mergeDetektBaselinesTask != null) {
-            val baselineTasks = tasks.withType<DetektCreateBaselineTask>() {
+            val baselineTasks = tasks.withType<DetektCreateBaselineTask> {
                 baseline.set(file("$detektBaselineIntermediate-$name.xml"))
             }.matching(irLoweringErrorAvoidance)
             mergeDetektBaselinesTask.configure {

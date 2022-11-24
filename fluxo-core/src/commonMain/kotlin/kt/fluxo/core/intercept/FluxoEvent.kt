@@ -8,6 +8,7 @@ import kt.fluxo.core.dsl.SideJobScope.RestartState
 import kt.fluxo.core.dsl.SideJobScope.RestartState.Restarted
 import kt.fluxo.core.Bootstrapper as B
 
+@Suppress("ArgumentListWrapping")
 public sealed class FluxoEvent<Intent, State, SideEffect : Any>(
     public val store: Store<Intent, State, SideEffect>,
 ) {

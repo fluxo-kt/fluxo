@@ -25,7 +25,7 @@ internal fun StateFlow<Int>.plusIn(scope: CoroutineScope, other: StateFlow<Int>)
 
 internal class SubscriptionCountFlow<T>(
     private val subscriptionCount: MutableStateFlow<Int>,
-    private val delegate: Flow<T>
+    private val delegate: Flow<T>,
 ) : Flow<T> {
 
     override suspend fun collect(collector: FlowCollector<T>) {

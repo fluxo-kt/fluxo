@@ -15,7 +15,11 @@ import kt.fluxo.core.dsl.InputStrategyScope
 internal object LifoInputStrategy : InputStrategy() {
 
     override fun <Request> createQueue(onUndeliveredElement: ((Request) -> Unit)?): Channel<Request> {
-        return Channel(capacity = Channel.CONFLATED, onBufferOverflow = BufferOverflow.SUSPEND, onUndeliveredElement = onUndeliveredElement)
+        return Channel(
+            capacity = Channel.CONFLATED,
+            onBufferOverflow = BufferOverflow.SUSPEND,
+            onUndeliveredElement = onUndeliveredElement,
+        )
     }
 
     override suspend fun <Request> (InputStrategyScope<Request>).processRequests(queue: Flow<Request>) {

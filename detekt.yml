@@ -2,6 +2,13 @@
 # https://github.com/detekt/detekt/blob/main/detekt-core/src/main/resources/default-detekt-config.yml
 # https://github.com/detekt/detekt/blob/main/detekt-formatting/src/main/resources/config/config.yml
 
+output-reports:
+  active: true
+  exclude:
+    - 'TxtOutputReport'
+    - 'XmlOutputReport'
+    - 'MdOutputReport'
+
 style:
   LoopWithTooManyJumpStatements:
     maxJumpCount: 2
@@ -11,11 +18,48 @@ style:
     maxLineLength: 140
 
 formatting:
+  ArgumentListWrapping:
+    maxLineLength: 140
+  BlockCommentInitialStarAlignment:
+    active: true
+  CommentWrapping:
+    active: true
+  DiscouragedCommentLocation:
+    active: true
+  FunKeywordSpacing:
+    active: true
+  FunctionReturnTypeSpacing:
+    active: true
+  FunctionSignature:
+    active: true
+    maxLineLength: 140
+  FunctionStartOfBodySpacing:
+    active: true
+  FunctionTypeReferenceSpacing:
+    active: true
+  KdocWrapping:
+    active: true
   MaximumLineLength:
     maxLineLength: 140
+  ModifierListSpacing:
+    active: true
   NoConsecutiveBlankLines:
     active: false
+  NullableTypeSpacing:
+    active: true
   ParameterListWrapping:
     maxLineLength: 140
+  TrailingCommaOnCallSite:
+    active: true
+    autoCorrect: false
+  TrailingCommaOnDeclarationSite:
+    active: true
+    autoCorrect: false
+  TypeArgumentListSpacing:
+    active: true
+  TypeParameterListSpacing:
+    active: true
+  UnnecessaryParenthesesBeforeTrailingLambda:
+    active: true
   Wrapping:
     active: false

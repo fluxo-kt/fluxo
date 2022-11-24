@@ -20,6 +20,6 @@ package kt.fluxo.core.annotation
 @Target(
     AnnotationTarget.FUNCTION,
     AnnotationTarget.PROPERTY_GETTER,
-    AnnotationTarget.PROPERTY_SETTER
+    AnnotationTarget.PROPERTY_SETTER,
 )
 public expect annotation class CallSuper()

@@ -37,7 +37,8 @@ public suspend fun <S, SE : Any> Container<S, SE>.orbit(intent: FluxoIntent<S, S
 @InlineOnly
 @Deprecated(
     message = "Please use the send instead",
-    level = DeprecationLevel.WARNING, replaceWith = ReplaceWith("send(intent)"),
+    level = DeprecationLevel.WARNING,
+    replaceWith = ReplaceWith("send(intent)"),
 )
 public inline fun <I, S, SE : Any> Store<I, S, SE>.accept(intent: I): Unit = send(intent)
 
