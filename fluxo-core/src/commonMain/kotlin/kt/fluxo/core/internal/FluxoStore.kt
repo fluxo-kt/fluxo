@@ -244,7 +244,9 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
             ) {
                 // start on the first subscriber.
                 subscriptions.first { it > 0 }
-                start()
+                if (isActive && this@FluxoStore.isActive) {
+                    start()
+                }
             }
         }
     }
