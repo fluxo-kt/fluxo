@@ -44,7 +44,7 @@ jobs:
           CI: true
         with:
           gradle-home-cache-cleanup: true
-          arguments: build check -Dsplit_targets --stacktrace --no-configuration-cache --continue
+          arguments: build check -Dsplit_targets --stacktrace --continue
 
       - name: Upload failure artifacts
         if: failure()
@@ -59,7 +59,7 @@ jobs:
 
   test-and-build:
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         java: [ 11 ]
         os: [ 'ubuntu-latest' ]
@@ -70,7 +70,7 @@ jobs:
 
     steps:
       - name: Install Ubuntu dependencies for JS
-        run: sudo apt-get install nodejs chromium-browser
+        run: sudo apt-get -y install nodejs chromium-browser
 
       - name: Checkout
         uses: actions/checkout@v3
@@ -89,7 +89,7 @@ jobs:
           restore-keys: ${{ matrix.os }}-konan-
 
       - name: Setup Gradle
-        timeout-minutes: 30
+        timeout-minutes: 15
         uses: gradle/gradle-build-action@v2
         with:
           gradle-home-cache-cleanup: true
@@ -98,10 +98,10 @@ jobs:
         timeout-minutes: 50
         env:
           CI: true
-        run: ./gradlew build check --stacktrace --no-configuration-cache --continue
+        run: ./gradlew build check --debug --stacktrace --no-configuration-cache --no-build-cache --continue
 
       - name: Upload failure artifacts
-        if: failure()
+        if: success() || failure()
         uses: actions/upload-artifact@v3
         with:
           name: reports
