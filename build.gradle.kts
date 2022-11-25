@@ -159,6 +159,13 @@ koverMerged {
     }
 }
 
+if (hasProperty("buildScan")) {
+    buildScan {
+        termsOfServiceUrl = "https://gradle.com/terms-of-service"
+        termsOfServiceAgree = "yes"
+    }
+}
+
 allprojects {
     afterEvaluate {
         // Workaround for https://youtrack.jetbrains.com/issue/KT-52776

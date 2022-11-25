@@ -20,6 +20,10 @@ pluginManagement {
     includeBuild("gradle/plugins")
 }
 
+plugins {
+    id("com.gradle.enterprise") version "3.11.4"
+}
+
 dependencyResolutionManagement {
     // :kotlinNodeJsSetup requires adding of project repository
     // repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)

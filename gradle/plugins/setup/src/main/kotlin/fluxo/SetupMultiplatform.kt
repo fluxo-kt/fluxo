@@ -3,6 +3,8 @@ package fluxo
 import org.gradle.api.NamedDomainObjectCollection
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
+import org.gradle.api.plugins.JavaPluginExtension
+import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
@@ -15,6 +17,14 @@ import kotlin.properties.ReadOnlyProperty
 fun Project.setupMultiplatform(
     targets: MultiplatformConfigurator = requireDefaults(),
 ) {
+    libsCatalog.findVersion("javaLangTarget").map { version ->
+        extensions.configure<JavaPluginExtension>("java") {
+            toolchain {
+                languageVersion.set(JavaLanguageVersion.of(version.toString().toInt()))
+            }
+        }
+    }
+
     multiplatformExtension.apply {
         with(targets) { invoke() }
 

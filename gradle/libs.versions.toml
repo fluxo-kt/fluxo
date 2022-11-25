@@ -14,7 +14,7 @@ androidCompileSdk = "33"
 androidBuildTools = "33.0.0"
 
 # Java/Kotlin compatibility
-javaLangTarget = "1.8"
+javaLangTarget = "11"
 kotlinLangVersion = "1.7"
 
 # https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-gradle-plugin
@@ -27,7 +27,7 @@ ksp = "1.7.21-1.0.8"
 coroutines = "1.6.4"
 
 # https://plugins.gradle.org/plugin/org.gradle.kotlin.embedded-kotlin
-gradle-embedded-kotlin = "3.1.0"
+gradle-embedded-kotlin = "3.2.1"
 
 # Public API management tool
 # https://github.com/Kotlin/binary-compatibility-validator/releases
@@ -101,7 +101,7 @@ kotlin-gradle-api = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin-api", 
 
 # Gradle plugin for building plugins for IntelliJ-based IDEs
 # https://github.com/JetBrains/gradle-intellij-plugin/releases
-plugin-intellij = { module = "org.jetbrains.intellij.plugins:gradle-intellij-plugin", version = "1.9.0" }
+plugin-intellij = { module = "org.jetbrains.intellij.plugins:gradle-intellij-plugin", version = "1.10.0" }
 
 
 [plugins]
@@ -135,7 +135,7 @@ deps-versions = { id = "com.github.ben-manes.versions", version = "0.44.0" }
 
 # Detect unused and misused dependencies
 # https://github.com/autonomousapps/dependency-analysis-android-gradle-plugin/tags
-deps-analysis = { id = "com.autonomousapps.dependency-analysis", version = "1.14.1" }
+deps-analysis = { id = "com.autonomousapps.dependency-analysis", version = "1.16.0" }
 
 # 'taskTree' task that prints task dependency tree
 # https://github.com/dorongold/gradle-task-tree
