@@ -14,10 +14,10 @@ jobs:
       fail-fast: false
       matrix:
         java: [ '11' ]
-        os: [ 'macos-latest', 'windows-latest' ]
+        os: [ 'macos-latest', 'windows-latest', 'ubuntu-latest' ]
 
     name: 'Test on ${{ matrix.os }} JDK ${{ matrix.java }}'
-    timeout-minutes: 60
+    timeout-minutes: 45
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -30,56 +30,10 @@ jobs:
           distribution: 'temurin'
           java-version: '${{ matrix.java }}'
 
-      - name: Cache kotlin konan
-        uses: actions/cache@v3
+      - name: 'Set up NodeJS 18'
+        uses: actions/setup-node@v3
         with:
-          path: ~/.konan
-          key: ${{ matrix.os }}-konan-${{ hashFiles('**/*.konan*') }}
-          restore-keys: ${{ matrix.os }}-konan-
-
-      - name: 'Build and check (${{ matrix.os }})'
-        timeout-minutes: 30
-        uses: gradle/gradle-build-action@v2
-        env:
-          CI: true
-        with:
-          gradle-home-cache-cleanup: true
-          arguments: build check -Dsplit_targets --stacktrace --continue
-
-      - name: Upload failure artifacts
-        if: failure()
-        uses: actions/upload-artifact@v3
-        with:
-          name: reports
-          path: |
-            **/build/reports/
-            !**/build/reports/configuration-cache/
-            !**/build/reports/dependency-analysis/
-
-
-  test-and-build:
-    strategy:
-      fail-fast: true
-      matrix:
-        java: [ 11 ]
-        os: [ 'ubuntu-latest' ]
-
-    name: 'Test on ${{ matrix.os }} JDK ${{ matrix.java }}'
-    timeout-minutes: 60
-    runs-on: ${{ matrix.os }}
-
-    steps:
-      - name: Install Ubuntu dependencies for JS
-        run: sudo apt-get -y install nodejs chromium-browser
-
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: 'Set up JDK ${{ matrix.java }}'
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '${{ matrix.java }}'
+          node-version: 18
 
       - name: Cache kotlin konan
         uses: actions/cache@v3
@@ -88,17 +42,25 @@ jobs:
           key: ${{ matrix.os }}-konan-${{ hashFiles('**/*.konan*') }}
           restore-keys: ${{ matrix.os }}-konan-
 
-      - name: Setup Gradle
-        timeout-minutes: 15
+      - name: 'Build and check on macOS (complete)'
+        if: matrix.os == 'macos-latest'
+        timeout-minutes: 35
         uses: gradle/gradle-build-action@v2
-        with:
-          gradle-home-cache-cleanup: true
-
-      - name: Test and build everything possible
-        timeout-minutes: 50
         env:
           CI: true
-        run: ./gradlew build check --debug --stacktrace --no-configuration-cache --no-build-cache --continue
+        with:
+          gradle-home-cache-cleanup: true
+          arguments: build check --stacktrace --continue --scan
+
+      - name: 'Build and check on ${{ matrix.os }} (split_targets, macOS ignored)'
+        if: matrix.os != 'macos-latest'
+        timeout-minutes: 25
+        uses: gradle/gradle-build-action@v2
+        env:
+          CI: true
+        with:
+          gradle-home-cache-cleanup: true
+          arguments: build check -Dsplit_targets --stacktrace --continue --scan
 
       - name: Upload code coverage
         uses: codecov/codecov-action@v3
@@ -114,27 +76,27 @@ jobs:
           move_coverage_to_trash: true
           fail_ci_if_error: false
 
-      - name: Upload failure artifacts
+      - name: Upload reports
         if: success() || failure()
         uses: actions/upload-artifact@v3
         with:
-          name: reports
+          name: 'reports-${{ matrix.os }}'
           path: |
             **/build/reports/
             !**/build/reports/configuration-cache/
             !**/build/reports/dependency-analysis/
 
       - name: Upload merged sarif (Lint)
+        if: (success() || failure()) && matrix.os != 'windows-latest'
         uses: github/codeql-action/upload-sarif@v2
-        if: success() || failure()
         continue-on-error: true
         with:
           sarif_file: build/lint-merged.sarif
           category: lint
 
       - name: Upload merged sarif (Detekt)
-        uses: github/codeql-action/upload-sarif@v2
         if: success() || failure()
+        uses: github/codeql-action/upload-sarif@v2
         continue-on-error: true
         with:
           sarif_file: build/detekt-merged.sarif

@@ -48,8 +48,8 @@ private fun getTargetForTaskName(taskName: String): ApiTarget? {
 
 private fun Project.isMultiplatformApiTargetAllowed(target: ApiTarget): Boolean =
     when (target) {
-        ApiTarget.ANDROID -> isMultiplatformTargetEnabled(Target.ANDROID) && Compilations.isGenericEnabled
-        ApiTarget.JVM -> isMultiplatformTargetEnabled(Target.JVM) && Compilations.isGenericEnabled
+        ApiTarget.ANDROID -> isMultiplatformTargetEnabled(Target.ANDROID) && Compilations.isGenericEnabledLivelockAware(this)
+        ApiTarget.JVM -> isMultiplatformTargetEnabled(Target.JVM) && Compilations.isGenericEnabledLivelockAware(this)
     }
 
 private enum class ApiTarget {

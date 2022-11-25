@@ -4,7 +4,7 @@
 [![codecov](https://codecov.io/gh/fluxo-kt/fluxo/branch/main/graph/badge.svg?token=LKCNVWR8QC)](https://codecov.io/gh/fluxo-kt/fluxo)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
-**Fluxo** is a simple yet super powerful MVVM+ / MVI library for Kotlin Multiplatform.
+**Fluxo** is a simple yet super powerful MVI / MVVM+ library for Kotlin Multiplatform.
 
 **Work-In-Progress**, first release is coming.
 

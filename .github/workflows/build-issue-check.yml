@@ -1,0 +1,60 @@
+# Temp workflow to see if Gradle livelock issue has gone
+# https://github.com/gradle/gradle/issues/20455#issuecomment-1327259045
+name: CI livelock check (fail expected)
+
+on:
+  schedule:
+    - cron: '0 10 * * 1'
+
+jobs:
+  gradle-livelock-checks:
+    strategy:
+      fail-fast: true
+      matrix:
+        java: [ '11' ]
+        os: [ 'ubuntu-latest' ]
+
+    name: 'Test on ${{ matrix.os }} JDK ${{ matrix.java }}'
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: 'Set up JDK ${{ matrix.java }}'
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '${{ matrix.java }}'
+
+      - name: 'Set up NodeJS 18'
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Cache kotlin konan
+        uses: actions/cache@v3
+        with:
+          path: ~/.konan
+          key: ${{ matrix.os }}-konan-${{ hashFiles('**/*.konan*') }}
+          restore-keys: ${{ matrix.os }}-konan-
+
+      - name: 'Build and check (${{ matrix.os }})'
+        timeout-minutes: 10
+        uses: gradle/gradle-build-action@v2
+        env:
+          CI: true
+        with:
+          gradle-home-cache-cleanup: true
+          arguments: build check -i --stacktrace --continue --scan
+
+      - name: Upload reports
+        if: success() || failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: 'reports-${{ matrix.os }}'
+          path: |
+            **/build/reports/
+            !**/build/reports/configuration-cache/
+            !**/build/reports/dependency-analysis/

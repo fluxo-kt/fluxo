@@ -1,5 +1,6 @@
 package fluxo
 
+import org.gradle.api.Project
 import org.gradle.internal.os.OperatingSystem
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
@@ -13,6 +14,13 @@ internal object Compilations {
     val isGenericEnabled: Boolean get() = isValidOs { it.isLinux }
     val isDarwinEnabled: Boolean get() = isValidOs { it.isMacOsX }
     val isWindowsEnabled: Boolean get() = isValidOs { it.isWindows }
+
+    // Try to overcome the Gradle livelock issue
+    // https://github.com/gradle/gradle/issues/20455#issuecomment-1327259045
+    fun isGenericEnabledLivelockAware(project: Project): Boolean = when {
+        project.isCI().get() -> isDarwinEnabled
+        else -> isGenericEnabled
+    }
 
     private fun isValidOs(predicate: (OperatingSystem) -> Boolean): Boolean =
         !EnvParams.splitTargets || predicate(OperatingSystem.current())
@@ -40,10 +48,12 @@ private fun KotlinTarget.disableCompilations() {
 private fun KotlinTarget.isCompilationAllowed(): Boolean =
     when (platformType) {
         KotlinPlatformType.common -> true
+
         KotlinPlatformType.jvm,
         KotlinPlatformType.js,
         KotlinPlatformType.androidJvm,
-        KotlinPlatformType.wasm -> Compilations.isGenericEnabled
+        KotlinPlatformType.wasm -> Compilations.isGenericEnabledLivelockAware(project)
+
         KotlinPlatformType.native -> (this as KotlinNativeTarget).isCompilationAllowed()
     }
 
@@ -53,9 +63,11 @@ private fun KotlinNativeTarget.isCompilationAllowed(): Boolean =
         Family.IOS,
         Family.TVOS,
         Family.WATCHOS -> Compilations.isDarwinEnabled
+
         Family.LINUX,
         Family.ANDROID,
         Family.WASM -> Compilations.isGenericEnabled
+
         Family.MINGW -> Compilations.isWindowsEnabled
         Family.ZEPHYR -> error("Unsupported family: $family")
     }

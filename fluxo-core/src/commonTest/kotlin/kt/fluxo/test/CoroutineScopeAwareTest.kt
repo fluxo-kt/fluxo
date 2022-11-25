@@ -3,7 +3,6 @@ package kt.fluxo.test
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
-import kt.fluxo.core.annotation.CallSuper
 import kotlin.coroutines.CoroutineContext
 import kotlin.test.AfterTest
 
