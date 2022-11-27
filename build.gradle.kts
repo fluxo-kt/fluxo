@@ -134,17 +134,17 @@ koverMerged {
             isEnabled = true
             target = kotlinx.kover.api.VerificationTarget.ALL
             bound {
-                minValue = 74
+                minValue = 73
                 counter = kotlinx.kover.api.CounterType.LINE
                 valueType = kotlinx.kover.api.VerificationValueType.COVERED_PERCENTAGE
             }
             bound {
-                minValue = 63
+                minValue = 60
                 counter = kotlinx.kover.api.CounterType.INSTRUCTION
                 valueType = kotlinx.kover.api.VerificationValueType.COVERED_PERCENTAGE
             }
             bound {
-                minValue = 63
+                minValue = 60
                 counter = kotlinx.kover.api.CounterType.BRANCH
                 valueType = kotlinx.kover.api.VerificationValueType.COVERED_PERCENTAGE
             }

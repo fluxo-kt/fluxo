@@ -100,6 +100,20 @@ jobs:
           CI: true
         run: ./gradlew build check --debug --stacktrace --no-configuration-cache --no-build-cache --continue
 
+      - name: Upload code coverage
+        uses: codecov/codecov-action@v3
+        env:
+          OS: ${{ matrix.os }}
+          JAVA_VERSION: ${{ matrix.java }}
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./build/reports/kover-merged-report.xml
+          env_vars: OS,JAVA_VERSION
+          flags: 'unit-tests,${{ matrix.os }}'
+          name: 'codecov-${{ matrix.os }}'
+          move_coverage_to_trash: true
+          fail_ci_if_error: false
+
       - name: Upload failure artifacts
         if: success() || failure()
         uses: actions/upload-artifact@v3

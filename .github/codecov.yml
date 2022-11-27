@@ -1,0 +1,17 @@
+coverage:
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 1%
+
+comment:
+  layout: "header,reach,diff,flags,tree,betaprofiling,footer"
+  show_critical_paths: true
+
+profiling:
+  critical_files_paths:
+    - fluxo-core/src/commonMain/kotlin/kt/fluxo/core/internal/FluxoStore.kt
+
+github_checks:
+  annotations: false
