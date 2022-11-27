@@ -1,0 +1,16 @@
+.git/
+.github/
+
+.idea/
+.fleet/
+.run/
+
+.gradle/
+**/.gradle/
+**/build/
+build/
+
+local.properties
+
+_/
+*.log

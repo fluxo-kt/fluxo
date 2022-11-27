@@ -20,7 +20,7 @@ A long list of features is implemented gradually in this library (see the [Roadm
 Basic usage is elementary, yet you can take advantage of fine-tuning and super powerful features when you need them.
 
 * Kotlin **coroutine-based** state handling.
-* **Multiplatform**, supports all KMM targets (**Android**, **iOS**, **JVM**, **JS**, **Native**..).
+* **Multiplatform**, supports all KMM targets (**Android**, **iOS**, **JVM**, **JS**, **Linux**, **Windows/MinGW**, **macOS**, etc.).
 * Simple usage, type-safe, no-boilerplate.
 * Different usage styles:
   * Strict **Redux/MVI** (the highest correctness guarantees, but may be subjectively less readable and intuitive)
@@ -109,7 +109,7 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super p
 - [FSM: Finite-state machine](https://en.wikipedia.org/wiki/Finite-state_machine)
 - [SAM: State-Action-Model](https://sam.js.org/)
 
-## Inspired and based on:
+## Inspired and based on ideas from:
 
 - [Ballast](https://github.com/copper-leaf/ballast)
 - [Orbit MVI](https://github.com/orbit-mvi/orbit-mvi)

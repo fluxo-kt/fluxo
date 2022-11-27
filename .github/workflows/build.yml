@@ -63,6 +63,7 @@ jobs:
           arguments: build check -Dsplit_targets --stacktrace --continue --scan
 
       - name: Upload code coverage
+        if: success() || failure()
         uses: codecov/codecov-action@v3
         env:
           OS: ${{ matrix.os }}
