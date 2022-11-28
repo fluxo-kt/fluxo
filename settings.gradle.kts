@@ -32,6 +32,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "fluxo-kt"
+rootProject.name = "fluxo-mvi"
 
 include(":fluxo-core")
