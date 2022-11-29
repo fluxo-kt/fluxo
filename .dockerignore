@@ -13,4 +13,13 @@ build/
 local.properties
 
 _/
+**/*-baseline.xml
+**/*.bat
+*.bat
 *.log
+*.md
+*.yml
+*lint.xml
+.editorconfig
+.git*
+LICENSE
