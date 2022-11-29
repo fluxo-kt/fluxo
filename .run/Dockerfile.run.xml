@@ -3,7 +3,6 @@
     <deployment type="dockerfile">
       <settings>
         <option name="imageTag" value="fluxo" />
-        <option name="attachToContainerNeeded" value="true" />
         <option name="containerName" value="fluxo-test" />
         <option name="showCommandPreview" value="true" />
         <option name="sourceFilePath" value="Dockerfile" />

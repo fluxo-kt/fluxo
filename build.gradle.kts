@@ -166,6 +166,22 @@ if (hasProperty("buildScan")) {
     }
 }
 
+tasks.register<Task>(name = "resolveDependencies") {
+    group = "other"
+    description = "Resolve and prefetch dependencies"
+    doLast {
+        rootProject.allprojects.forEach { p ->
+            p.configurations.plus(p.buildscript.configurations)
+                .filter { it.isCanBeResolved }.forEach {
+                    try {
+                        it.resolve()
+                    } catch (_: Throwable) {
+                    }
+                }
+        }
+    }
+}
+
 allprojects {
     afterEvaluate {
         // Workaround for https://youtrack.jetbrains.com/issue/KT-52776
