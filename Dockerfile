@@ -1,6 +1,8 @@
 # Linux tests and checks for Fluxo
 
-FROM cimg/android:2022.09-browsers
+# https://github.com/CircleCI-Public/cimg-android
+# https://hub.docker.com/r/cimg/android/tags
+FROM cimg/android:2022.06-browsers
 LABEL maintainer="Artyom Shendrik <artyom.shendrik@gmail.com>"
 LABEL name=fluxo-test
 

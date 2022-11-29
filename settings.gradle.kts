@@ -1,3 +1,5 @@
+enableFeaturePreview("VERSION_CATALOGS")
+enableFeaturePreview("VERSION_ORDERING_V2")
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {

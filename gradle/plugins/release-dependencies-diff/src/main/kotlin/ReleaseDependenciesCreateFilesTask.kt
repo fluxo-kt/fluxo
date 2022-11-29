@@ -18,8 +18,7 @@ abstract class ReleaseDependenciesCreateFilesTask : DependencyReportTask() {
     )
     var directoryName: String? = DEPS_DIR
 
-    @Suppress("UnstableApiUsage")
-    override fun calculateReportModelFor(project: Project): DependencyReportModel {
+    override fun generate(project: Project) {
         val isJavaLibrary = project.plugins.hasPlugin("java")
 
         val isAndroidLibrary =
@@ -30,10 +29,11 @@ abstract class ReleaseDependenciesCreateFilesTask : DependencyReportTask() {
         // don't have any code or build.gradle files.
         if (isAndroidLibrary) {
             setConfiguration("releaseRuntimeClasspath")
+            super.generate(project)
         } else if (isJavaLibrary) {
             setConfiguration("runtimeClasspath")
+            super.generate(project)
         }
-        return super.calculateReportModelFor(project)
     }
 
     override fun getOutputFile(): File? {
