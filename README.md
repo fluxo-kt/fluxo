@@ -20,7 +20,7 @@ A long list of features is implemented gradually in this library (see the [Roadm
 Basic usage is elementary, yet you can take advantage of fine-tuning and super powerful features when you need them.
 
 * Kotlin **coroutine-based** state handling.
-* **Multiplatform**, supports all KMM targets (**Android**, **iOS**, **JVM**, **JS**, **Linux**, **Windows/MinGW**, **macOS**, etc.).
+* **Multiplatform**, supports all Kotlin MPP/KMM targets (**Android**, **iOS**, **JVM**, **JS**, **Linux**, **Windows/MinGW**, **macOS**, etc.).
 * Simple usage, type-safe, no-boilerplate.
 * Different usage styles:
   * Strict **Redux/MVI** (the highest correctness guarantees, but may be subjectively less readable and intuitive)
