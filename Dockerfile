@@ -13,7 +13,8 @@ RUN sudo rm -rfv /usr/lib/jvm/openjdk-11
 
 # Prepare project and preload dependencies + konan caches (Kotlin Native)
 COPY --chown=circleci:circleci . .
-RUN ./gradlew resolveDependencies commonize -i --no-daemon --no-watch-fs --continue --stacktrace --console=plain --scan \
+RUN ./gradlew commonize --no-daemon --no-watch-fs --continue --stacktrace \
+    && ./gradlew resolveDependencies --no-daemon --no-watch-fs --continue --stacktrace \
     && ./gradlew -i --stop
 
 # Run in container
