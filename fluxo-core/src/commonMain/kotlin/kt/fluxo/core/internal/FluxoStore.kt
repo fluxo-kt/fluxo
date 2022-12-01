@@ -18,6 +18,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.produce
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
@@ -26,12 +27,14 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.transformWhile
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
+import kotlinx.coroutines.selects.select
 import kotlinx.coroutines.withContext
 import kt.fluxo.core.Bootstrapper
 import kt.fluxo.core.FluxoSettings
@@ -627,7 +630,28 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         val interceptorScope = interceptorScope
         if (interceptorScope !== scope && interceptorScope.isActive) {
             interceptorScope.launch(start = CoroutineStart.UNDISPATCHED) {
-                delay(DELAY_TO_CLOSE_INTERCEPTOR_SCOPE_MILLIS)
+                try {
+                    select {
+                        // Case 1: No intercepters listening
+                        val events = events
+                        val subscriptionCount = events.subscriptionCount
+                        produce { send(subscriptionCount.filter { it <= 0 }.first()) }
+                            .onReceiveCatching { Unit }
+
+                        // Case 2: Last event received
+                        produce { send(events.filter { it is FluxoEvent.StoreClosed }.first()) }
+                            .onReceiveCatching { Unit }
+
+                        // Case 3: Processing timeout
+                        onTimeout(DELAY_TO_CLOSE_INTERCEPTOR_SCOPE_MILLIS) { Unit }
+                    }
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Throwable) {
+                    events.tryEmit(FluxoEvent.UnhandledError(this@FluxoStore, e))
+                    // For unexpected changes in experimental "select"
+                    delay(DELAY_TO_CLOSE_INTERCEPTOR_SCOPE_MILLIS)
+                }
                 interceptorScope.cancel(cancellationCause)
                 events.resetReplayCache()
             }
