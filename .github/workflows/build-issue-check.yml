@@ -4,7 +4,7 @@ name: CI livelock check (fail expected)
 
 on:
   schedule:
-    - cron: '0 10 * * 1'
+    - cron: '0 10 * * 1,5'
 
 jobs:
   gradle-livelock-checks:
