@@ -636,14 +636,14 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
                         val events = events
                         val subscriptionCount = events.subscriptionCount
                         produce { send(subscriptionCount.filter { it <= 0 }.first()) }
-                            .onReceiveCatching { Unit }
+                            .onReceiveCatching { }
 
                         // Case 2: Last event received
                         produce { send(events.filter { it is FluxoEvent.StoreClosed }.first()) }
-                            .onReceiveCatching { Unit }
+                            .onReceiveCatching { }
 
                         // Case 3: Processing timeout
-                        onTimeout(DELAY_TO_CLOSE_INTERCEPTOR_SCOPE_MILLIS) { Unit }
+                        onTimeout(DELAY_TO_CLOSE_INTERCEPTOR_SCOPE_MILLIS) { }
                     }
                 } catch (e: CancellationException) {
                     throw e
