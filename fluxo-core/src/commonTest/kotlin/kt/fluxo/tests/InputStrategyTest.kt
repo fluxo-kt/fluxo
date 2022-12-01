@@ -1,7 +1,11 @@
 package kt.fluxo.tests
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kt.fluxo.core.InputStrategy
@@ -9,14 +13,15 @@ import kt.fluxo.core.InputStrategy.InBox.Fifo
 import kt.fluxo.core.InputStrategy.InBox.Lifo
 import kt.fluxo.core.InputStrategy.InBox.Parallel
 import kt.fluxo.core.closeAndWait
+import kt.fluxo.core.dsl.InputStrategyScope
 import kt.fluxo.core.store
 import kt.fluxo.test.CoroutineScopeAwareTest
+import kt.fluxo.test.IgnoreJs
 import kt.fluxo.test.runUnitTest
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
-
 
 @Suppress("SuspendFunctionOnCoroutineScope")
 internal class InputStrategyTest : CoroutineScopeAwareTest() {
@@ -71,7 +76,8 @@ internal class InputStrategyTest : CoroutineScopeAwareTest() {
     fun fifo_background_scope() = runUnitTest(dispatchTimeoutMs = 3_000) { backgroundScope.fifo_test() }
 
     @Test
-    fun fifo_generic_scope() = runUnitTest(dispatchTimeoutMs = 10_000) { scope.fifo_test() }
+    @IgnoreJs
+    fun fifo_generic_scope() = runUnitTest(dispatchTimeoutMs = 20_000) { scope.fifo_test() }
 
     private suspend fun CoroutineScope.fifo_test() = input_strategy_test(strategy = Fifo, equal = true)
 
@@ -107,5 +113,30 @@ internal class InputStrategyTest : CoroutineScopeAwareTest() {
         val results = input_strategy_test(strategy = Parallel, equal = false, generic = generic)
         assertEquals(NUMBER_OF_ITEMS, results.size)
         assertEquals(NUMBER_OF_ITEMS, results.toHashSet().size)
+    }
+
+
+    @Test
+    fun custom_test_scope() = runUnitTest { custom_test() }
+
+    @Test
+    fun custom_background_scope() = runUnitTest { backgroundScope.custom_test() }
+
+    @Test
+    fun custom_generic_scope() = runUnitTest { scope.custom_test() }
+
+    private suspend fun CoroutineScope.custom_test() {
+        val results = input_strategy_test(strategy = CustomInputStrategy(), equal = false)
+        assertEquals(NUMBER_OF_ITEMS - 1, results.last())
+        assertTrue(results.size < NUMBER_OF_ITEMS, "Expected to have cancelled intents with Custom strategy")
+    }
+
+    /** Useless strategy, just for testing */
+    private class CustomInputStrategy : InputStrategy() {
+        override fun <Request> createQueue(onUndeliveredElement: ((Request) -> Unit)?): Channel<Request> =
+            Channel(capacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST, onUndeliveredElement = onUndeliveredElement)
+
+        override suspend fun <Request> (InputStrategyScope<Request>).processRequests(queue: Flow<Request>) =
+            queue.collectLatest(this)
     }
 }

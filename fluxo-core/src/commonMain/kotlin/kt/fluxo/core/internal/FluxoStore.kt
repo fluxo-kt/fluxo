@@ -34,6 +34,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import kotlinx.coroutines.selects.select
+import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
 import kt.fluxo.core.Bootstrapper
 import kt.fluxo.core.FluxoSettings
@@ -172,17 +173,24 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         // — sending operation cancelled before it had a chance to actually send the element.
         // — receiving operation retrieved the element from the channel cancelled when trying to return it the caller.
         // — channel cancelled, in which case onUndeliveredElement called on every remaining element in the channel's buffer.
+        val intentResendLock = if (inputStrategy.resendUndelivered) Mutex() else null
         requestsChannel = inputStrategy.createQueue {
             scope.launch(Dispatchers.Unconfined, CoroutineStart.UNDISPATCHED) {
                 when (it) {
                     is StoreRequest.HandleIntent -> {
-                        @Suppress("UNINITIALIZED_VARIABLE")
-                        val resent = when {
-                            inputStrategy.resendUndelivered && requestsChannel.trySend(it).isSuccess -> true
-                            else -> {
-                                it.intent.closeSafely()
-                                false
+                        // We don't want to fall into the recursion, so only one resending per moment.
+                        var resent = false
+                        if (isActive && intentResendLock != null && intentResendLock.tryLock()) {
+                            try {
+                                @Suppress("UNINITIALIZED_VARIABLE")
+                                resent = requestsChannel.trySend(it).isSuccess
+                            } catch (_: Throwable) {
+                            } finally {
+                                intentResendLock.unlock()
                             }
+                        }
+                        if (!resent) {
+                            it.intent.closeSafely()
                         }
                         if (isActive) {
                             events.emit(FluxoEvent.IntentUndelivered(this@FluxoStore, it.intent, resent = resent))
@@ -216,14 +224,22 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
             sideEffectsSubscriptionCount = flow.subscriptionCount
             sideEffectFlowField = flow
         } else {
+            val seResendLock = Mutex()
             val channel = Channel<SideEffect>(conf.sideEffectBufferSize, BufferOverflow.SUSPEND) {
                 scope.launch(Dispatchers.Unconfined, CoroutineStart.UNDISPATCHED) {
-                    @Suppress("UNINITIALIZED_VARIABLE")
-                    val resent = if (sideEffectChannel!!.trySend(it).isSuccess) {
-                        true
-                    } else {
+                    // We don't want to fall into the recursion, so only one resending per moment.
+                    var resent = false
+                    if (isActive && seResendLock.tryLock()) {
+                        try {
+                            @Suppress("UNINITIALIZED_VARIABLE")
+                            resent = sideEffectChannel!!.trySend(it).isSuccess
+                        } catch (_: Throwable) {
+                        } finally {
+                            seResendLock.unlock()
+                        }
+                    }
+                    if (!resent) {
                         it.closeSafely()
-                        false
                     }
                     if (isActive) {
                         events.emit(FluxoEvent.SideEffectUndelivered(this@FluxoStore, it, resent = resent))
