@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.sync.Mutex
+import kt.fluxo.core.closeAndWait
 import kt.fluxo.core.container
 import kt.fluxo.core.dsl.SideJobScope.RestartState
 import kt.fluxo.core.intercept.FluxoEvent
@@ -15,7 +16,6 @@ import kt.fluxo.test.CoroutineScopeAwareTest
 import kt.fluxo.test.IgnoreJs
 import kt.fluxo.test.runBlocking
 import kt.fluxo.test.runUnitTest
-import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -121,10 +121,9 @@ internal class BootstrapperTest : CoroutineScopeAwareTest() {
     }
 
     @Test
-    @Ignore // fails under Ubuntu and macOS, should be fixed!
     fun b_side_job() = runUnitTest {
         val initialState = "init"
-        val store = backgroundScope.container<String, String>(initialState) {
+        val store = container<String, String>(initialState) {
             debugChecks = true
             bootstrapperJob {
                 assertEquals(initialState, currentStateWhenStarted)
@@ -135,6 +134,7 @@ internal class BootstrapperTest : CoroutineScopeAwareTest() {
             }
         }
         assertEquals("$initialState.sideJob", store.stateFlow.first { it != initialState })
+        store.closeAndWait()
     }
 
     @Test
@@ -155,10 +155,9 @@ internal class BootstrapperTest : CoroutineScopeAwareTest() {
     }
 
     @Test
-    @Ignore // fails under Win and macOS occasionally, should be fixed!
     fun b_repeat_on_subscription() = runUnitTest {
         val initialState = "init"
-        val store = backgroundScope.container<String, String>(initialState) {
+        val store = container<String, String>(initialState) {
             onStart {
                 var i = 0
                 repeatOnSubscription(stopTimeout = 0) {
@@ -169,5 +168,6 @@ internal class BootstrapperTest : CoroutineScopeAwareTest() {
         }
         assertContentEquals(listOf(initialState, "update0"), store.stateFlow.take(2).toList())
         assertContentEquals(listOf("update0", "update1"), store.stateFlow.take(2).toList())
+        store.closeAndWait()
     }
 }

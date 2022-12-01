@@ -4,11 +4,13 @@ package kt.fluxo.core
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
+import kt.fluxo.core.annotation.ExperimentalFluxoApi
 import kt.fluxo.core.annotation.FluxoDsl
 import kt.fluxo.core.dsl.SideJobScope
 import kt.fluxo.core.dsl.StoreScope
@@ -249,6 +251,15 @@ public inline fun <S, SE : Any> ContainerHost<S, SE>.intent(noinline intent: Flu
 @FluxoDsl
 @InlineOnly
 public inline fun <S, SE : Any> Container<S, SE>.intent(noinline intent: FluxoIntent<S, SE>): Unit = send(intent)
+
+/**
+ * Works only for the standart implementation of Fluxo [Store] ([FluxoStore]).
+ */
+@ExperimentalFluxoApi
+public suspend fun Store<*, *, *>.closeAndWait() {
+    close()
+    (this as FluxoStore).interceptorScope.coroutineContext[Job]!!.join()
+}
 
 /**
  *

@@ -7,6 +7,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import kt.fluxo.core.ContainerHost
+import kt.fluxo.core.closeAndWait
 import kt.fluxo.core.container
 import kt.fluxo.core.dsl.SideJobScope
 import kt.fluxo.core.intent
@@ -36,6 +37,8 @@ internal class RepeatOnSubscriptionTest : CoroutineScopeAwareTest() {
 
         val states = host.container.stateFlow.take(2).toList()
         assertContentEquals(listOf(initialState, State(42)), states)
+
+        host.container.closeAndWait()
     }
 
     private inner class TestMiddleware : ContainerHost<State, Nothing> {

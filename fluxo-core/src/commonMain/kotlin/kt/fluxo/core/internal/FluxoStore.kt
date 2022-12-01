@@ -61,7 +61,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
     private companion object {
         private const val F = "Fluxo"
 
-        private const val DELAY_TO_CLOSE_INTERCEPTOR_SCOPE_MILLIS = 5_000L
+        private const val DELAY_TO_CLOSE_INTERCEPTOR_SCOPE_MILLIS = 1_500L
 
         private val storeNumber = atomic(0)
     }
@@ -72,7 +72,9 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
     private val scope: CoroutineScope
     private val intentContext: CoroutineContext
     private val sideJobScope: CoroutineScope
-    private val interceptorScope: CoroutineScope
+
+    @InternalFluxoApi
+    internal val interceptorScope: CoroutineScope
     private val requestsChannel: Channel<StoreRequest<Intent, State>>
 
     private val sideJobsMap = ConcurrentHashMap<String, RunningSideJob<Intent, State, SideEffect>>()
@@ -627,6 +629,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
             interceptorScope.launch(start = CoroutineStart.UNDISPATCHED) {
                 delay(DELAY_TO_CLOSE_INTERCEPTOR_SCOPE_MILLIS)
                 interceptorScope.cancel(cancellationCause)
+                events.resetReplayCache()
             }
         }
     }

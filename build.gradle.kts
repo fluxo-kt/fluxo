@@ -59,7 +59,7 @@ setupDefaults(
         tvosCompat()
         macosCompat()
 
-        sourceSets.matching { it.name.endsWith("Test") }.all {
+        sourceSets.all {
             languageSettings {
                 optIn("kotlinx.coroutines.ExperimentalCoroutinesApi")
             }
