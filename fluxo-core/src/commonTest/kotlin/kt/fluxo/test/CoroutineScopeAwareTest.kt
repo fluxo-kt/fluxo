@@ -10,6 +10,9 @@ import kotlin.test.AfterTest
 internal open class CoroutineScopeAwareTest(
     context: CoroutineContext = Job(),
 ) {
+    internal companion object {
+        internal const val INIT = "init"
+    }
 
     protected val scope = CoroutineScope(context)
 

@@ -27,6 +27,8 @@ public abstract class InputStrategy {
 
     public open val rollbackOnCancellation: Boolean get() = !parallelProcessing
 
+    public open val resendUndelivered: Boolean get() = true
+
     public abstract suspend fun <Request> InputStrategyScope<Request>.processRequests(queue: Flow<Request>)
 
 

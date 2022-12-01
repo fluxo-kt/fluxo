@@ -165,15 +165,15 @@ public class FluxoSettings<Intent, State, SideEffect : Any> {
 
     /**
      * Ordered processing strategy. Predictable and intuitive. Best for background.
-     * Consider [Fifo] for the UI or more responsiveness instead.
+     * Consider [Lifo] for the UI or more responsiveness instead.
      */
     @get:JvmName("Fifo")
     public inline val Fifo: InputStrategy get() = InputStrategy.Fifo
 
     /**
      * UI events oriented strategy. Cancels previous unfinished intents when receives new one.
-     *
      * Provides more responsiveness, but can lose some intents!
+     * Use [Fifo] if you need more predictable behavior.
      */
     @get:JvmName("Lifo")
     public inline val Lifo: InputStrategy get() = InputStrategy.Lifo

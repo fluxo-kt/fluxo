@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
+import kt.fluxo.core.closeAndWait
 import kt.fluxo.core.data.GuaranteedEffect
 import kt.fluxo.core.store
 import kt.fluxo.test.CoroutineScopeAwareTest
@@ -29,6 +30,7 @@ internal class GuaranteedEffectTest : CoroutineScopeAwareTest() {
             }.collect()
 
             assertEquals(2, effects)
+            store.closeAndWait()
         }
     }
 }

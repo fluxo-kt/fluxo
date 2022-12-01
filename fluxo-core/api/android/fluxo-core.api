@@ -66,6 +66,7 @@ public abstract class kt/fluxo/core/InputStrategy {
 	public fun createQueue (Lkotlin/jvm/functions/Function1;)Lkotlinx/coroutines/channels/Channel;
 	public static synthetic fun createQueue$default (Lkt/fluxo/core/InputStrategy;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkotlinx/coroutines/channels/Channel;
 	public fun getParallelProcessing ()Z
+	public fun getResendUndelivered ()Z
 	public fun getRollbackOnCancellation ()Z
 	public abstract fun processRequests (Lkotlin/jvm/functions/Function2;Lkotlinx/coroutines/flow/Flow;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }

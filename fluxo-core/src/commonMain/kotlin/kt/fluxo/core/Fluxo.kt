@@ -253,12 +253,16 @@ public inline fun <S, SE : Any> ContainerHost<S, SE>.intent(noinline intent: Flu
 public inline fun <S, SE : Any> Container<S, SE>.intent(noinline intent: FluxoIntent<S, SE>): Unit = send(intent)
 
 /**
- * Works only for the standart implementation of Fluxo [Store] ([FluxoStore]).
+ *
+ *
+ * NOTE: Works only for the standart implementation of Fluxo [Store] ([FluxoStore]).
  */
 @ExperimentalFluxoApi
 public suspend fun Store<*, *, *>.closeAndWait() {
     close()
-    (this as FluxoStore).interceptorScope.coroutineContext[Job]!!.join()
+    val store = this as FluxoStore
+    store.interceptorScope.coroutineContext[Job]!!.join()
+    store.intentContext[Job]!!.join()
 }
 
 /**

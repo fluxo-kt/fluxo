@@ -22,6 +22,8 @@ internal object LifoInputStrategy : InputStrategy() {
         )
     }
 
+    override val resendUndelivered: Boolean get() = false
+
     override suspend fun <Request> (InputStrategyScope<Request>).processRequests(queue: Flow<Request>) {
         queue.collectLatest(this)
     }
