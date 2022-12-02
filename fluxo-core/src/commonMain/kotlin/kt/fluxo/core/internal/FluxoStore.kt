@@ -18,7 +18,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.produce
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.Flow
@@ -28,6 +27,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.produceIn
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.transformWhile
 import kotlinx.coroutines.isActive
@@ -654,16 +654,16 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         val interceptorScope = interceptorScope
         if (interceptorScope !== scope && interceptorScope.isActive) {
             interceptorScope.launch(start = CoroutineStart.UNDISPATCHED) {
+                val events = events
+                val noSubscriptions = events.subscriptionCount.filter { it <= 0 }.produceIn(this)
+                val closeEvent = events.filter { it is FluxoEvent.StoreClosed }.produceIn(this)
                 select {
                     // Case 1: No intercepters listening
-                    val events = events
-                    val subscriptionCount = events.subscriptionCount
-                    produce { send(subscriptionCount.filter { it <= 0 }.first()) }
-                        .onReceiveCatching {}
+                    val block: suspend (Any?) -> Unit = {}
+                    noSubscriptions.onReceiveCatching(block)
 
                     // Case 2: Last event received
-                    produce { send(events.filter { it is FluxoEvent.StoreClosed }.first()) }
-                        .onReceiveCatching {}
+                    closeEvent.onReceiveCatching(block)
 
                     // Case 3: Processing timeout
                     onTimeout(DELAY_TO_CLOSE_INTERCEPTOR_SCOPE_MILLIS) {}
