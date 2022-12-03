@@ -12,7 +12,7 @@ try {
         val dom = Parser.xmlParser().parseInput(koverFile.readText(), "")
         val counters = dom.select("report > counter").reversed()
         if (counters.isNotEmpty()) {
-            println("<details><summary>### Code metrics and coverage</summary><p>")
+            println("#### Code metrics and coverage")
             println("| Tracked  | Total | Covered | Missed |")
             println("| -------  | ----- | ------- | ------ |")
 
@@ -47,7 +47,6 @@ try {
                     )
                 )
             }
-            println("</p></details>")
         }
     }
 } catch (e: Throwable) {
