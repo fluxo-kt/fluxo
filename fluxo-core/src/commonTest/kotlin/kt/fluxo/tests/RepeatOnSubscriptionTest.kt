@@ -13,6 +13,7 @@ import kt.fluxo.core.dsl.SideJobScope
 import kt.fluxo.core.intent
 import kt.fluxo.core.repeatOnSubscription
 import kt.fluxo.test.CoroutineScopeAwareTest
+import kt.fluxo.test.IgnoreLinux
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -22,6 +23,7 @@ internal class RepeatOnSubscriptionTest : CoroutineScopeAwareTest() {
     private val initialState = State()
 
     @Test
+    @IgnoreLinux
     fun test_does_not_hang_when_using_repeatOnSubscription() = runTest {
         val host = TestMiddleware()
 
