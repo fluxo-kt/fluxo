@@ -42,11 +42,42 @@ try {
                 val totalD = total.toDouble()
 
                 println(
-                    "| %s  | %d | %.2f%% (%d) | %.2f%% (%d) |".format(
+                    "| %s | %d | %.2f%% (%d) | %.2f%% (%d) |".format(
                         type, total, covered / totalD * 100, covered, missed / totalD * 100, missed
                     )
                 )
             }
+        }
+    }
+} catch (e: Throwable) {
+    e.printStackTrace(System.err)
+}
+
+// Tests summary
+try {
+    val testsFile = File("build/tests-report-merged.xml")
+    if (testsFile.exists()) {
+        val dom = Parser.xmlParser().parseInput(testsFile.readText(), "")
+        val total = dom.selectFirst("report > total")
+        if (total != null) {
+            println("#### Tests summary")
+            println("| Result  | Total | Skipped | Failed | Duration (sec) |")
+            println("| -------  | ----- | ------- | ------ | ------ |")
+
+            val status = total.attr("status").let {
+                when (it) {
+                    "FAILED" -> "❌ FAILED"
+                    "SUCCESS" -> "✅ SUCCESS"
+                    "LINE" -> "SKIPPED"
+                    else -> it
+                }
+            }
+            val totalTests = total.attr("tests").toIntOrNull() ?: 0
+            val skipped = total.attr("skipped").toIntOrNull() ?: 0
+            val failures = total.attr("failures").toIntOrNull() ?: 0
+            val timeSeconds = total.attr("time") ?: "-"
+
+            println("| %s | %d | %d | %d | %s |".format(status, totalTests, skipped, failures, timeSeconds))
         }
     }
 } catch (e: Throwable) {
