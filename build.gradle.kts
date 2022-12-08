@@ -184,8 +184,10 @@ tasks.register<Task>(name = "resolveDependencies") {
 
 allprojects {
     afterEvaluate {
+        // Fixes webpack-cli incompatibility by pinning the newest version.
         // Workaround for https://youtrack.jetbrains.com/issue/KT-52776
         rootProject.extensions.findByType<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension>()?.apply {
+            // https://www.npmjs.com/package/webpack-cli?activeTab=versions
             versions.webpackCli.version = "4.10.0"
         }
 
@@ -213,18 +215,21 @@ allprojects {
                     "-Xjsr305=strict",
                     "-Xjvm-default=all",
                     "-Xtype-enhancement-improvements-strict-mode",
+                    "-Xvalidate-bytecode",
+                    "-Xvalidate-ir",
                     "-opt-in=kotlin.RequiresOptIn",
                 )
+
+                // more data on MVVM+ lambda intents for debugging
+                // indy mode provides arguments names
                 freeCompilerArgs += if (isCi || isRelease) listOf(
                     "-Xlambdas=indy",
                     "-Xsam-conversions=indy",
-                    "-Xvalidate-bytecode",
-                    "-Xvalidate-ir",
                 ) else listOf(
-                    // more data on lambdas for debugging
                     "-Xlambdas=class",
                     "-Xsam-conversions=class",
                 )
+
                 if (useK2) {
                     freeCompilerArgs += "-Xuse-k2"
                 }
