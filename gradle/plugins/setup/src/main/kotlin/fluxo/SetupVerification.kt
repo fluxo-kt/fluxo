@@ -128,6 +128,8 @@ fun Project.setupVerification() {
             setupLint(mergeLint)
         }
     }
+
+    setupTestsReport()
 }
 
 private fun Project.setupLint(mergeLint: TaskProvider<ReportMergeTask>) {
@@ -159,5 +161,5 @@ private fun Project.setupLint(mergeLint: TaskProvider<ReportMergeTask>) {
 }
 
 private const val DETEKT_PLUGIN_ID = "io.gitlab.arturbosch.detekt"
-private const val MERGE_LINT_TASK_NAME: String = "mergeLintSarif"
-private const val MERGE_DETEKT_TASK_NAME: String = "mergeDetektSarif"
+private const val MERGE_LINT_TASK_NAME = "mergeLintSarif"
+private const val MERGE_DETEKT_TASK_NAME = "mergeDetektSarif"
