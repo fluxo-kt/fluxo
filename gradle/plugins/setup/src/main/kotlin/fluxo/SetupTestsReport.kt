@@ -1,5 +1,6 @@
 package fluxo
 
+import groovy.time.TimeCategory
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.file.RegularFileProperty
@@ -16,8 +17,8 @@ import org.gradle.kotlin.dsl.withType
 import org.gradle.work.DisableCachingByDefault
 import org.jetbrains.kotlin.gradle.tasks.KotlinTest
 import java.io.FileOutputStream
-import java.util.Queue
-import java.util.concurrent.ConcurrentHashMap
+import java.lang.System.currentTimeMillis
+import java.util.Date
 import java.util.concurrent.ConcurrentLinkedQueue
 import javax.xml.stream.XMLOutputFactory
 
@@ -31,6 +32,10 @@ fun Project.setupTestsReport() {
     }
 
     allprojects {
+        tasks.matching { it.name == "check" || it.name == "allTests" }.configureEach {
+            finalizedBy(mergedReport)
+        }
+
         tasks.withType<AbstractTestTask> {
             val testTask = this
             finalizedBy(mergedReport)
@@ -60,20 +65,28 @@ fun Project.setupTestsReport() {
 
 private const val TEST_REPORTS_TASK_NAME = "mergedTestReport"
 
+/**
+ * Exports merged JUnit-like XML tests report for all tests in all projects
+ */
 @DisableCachingByDefault(because = "Not cacheable")
 private abstract class TestsReportsMergeTask : DefaultTask() {
 
     @get:OutputFile
     abstract val output: RegularFileProperty
 
-    private val resultsMap = ConcurrentHashMap<AbstractTestTask, Queue<Pair<TestDescriptor, TestResult>>>()
+    private val testResults = ConcurrentLinkedQueue<ReportTestResult>()
 
     @TaskAction
     fun merge() {
         logger.info("Input")
-        logger.info("${resultsMap.size} test tasks with ${resultsMap.values.sumOf { it.size }} tests")
+        logger.info("${testResults.size} tests")
         val outputFile = output.get().asFile.absoluteFile
         logger.info("Output = $outputFile")
+
+        var totalTests = 0L
+        var totalSkipped = 0L
+        var totalFailures = 0L
+        var totalTimeMillis = 0L
 
         val factory = XMLOutputFactory.newInstance()
         val writer = factory.createXMLStreamWriter(FileOutputStream(outputFile))
@@ -81,78 +94,102 @@ private abstract class TestsReportsMergeTask : DefaultTask() {
             writer.writeStartDocument()
             writer.writeStartElement("report")
 
-            // FIXME: Group tests by class instead of tasks (so platform tasks will be groupped in the)
-            for ((testTask, queue) in resultsMap) {
-                val projectName = testTask.project.name
-                val targetName = (testTask as? KotlinTest)?.targetName ?: testTask.name
+            for ((testSuite, results) in testResults
+                .groupBy { it.testSuite }
+                .mapValues { it.value.sortedBy { t -> t.name } }
+            ) {
+                writer.writeStartElement("testsuite")
+                writer.writeAttribute("name", testSuite)
 
-                for ((testSuite, results) in queue.groupBy {
-                    val className = it.first.className ?: ""
-                    ":$projectName $className"
-                }) {
-                    var tests = 0L
-                    var skipped = 0L
-                    var failures = 0L
-                    var time = 0L
-                    var timestamp = 0L
-                    for ((_, r) in results) {
-                        skipped += r.skippedTestCount
-                        failures += r.failedTestCount
-                        tests += maxOf(r.testCount, r.skippedTestCount + r.failedTestCount + r.successfulTestCount)
-                        time += r.endTime - r.startTime
-                        if (r.endTime > timestamp) {
-                            timestamp = r.endTime
-                        }
+                var testSuiteTests = 0L
+                var testSuiteSkipped = 0L
+                var testSuiteFailures = 0L
+                var testSuiteTimeMillis = 0L
+                var testSuiteTimestamp = 0L
+                for (i in results.indices) {
+                    val r = results[i].result
+                    testSuiteSkipped += r.skippedTestCount
+                    testSuiteFailures += r.failedTestCount
+                    testSuiteTests += maxOf(r.testCount, r.skippedTestCount + r.failedTestCount + r.successfulTestCount)
+                    testSuiteTimeMillis += r.endTime - r.startTime
+                    if (r.endTime > testSuiteTimestamp) {
+                        testSuiteTimestamp = r.endTime
                     }
+                }
+                totalTests += testSuiteTests
+                totalSkipped += testSuiteSkipped
+                totalFailures += testSuiteFailures
+                totalTimeMillis += testSuiteTimeMillis
 
-                    writer.writeStartElement("testsuite")
-                    writer.writeAttribute("name", testSuite)
-                    writer.writeAttribute("tests", tests.toString())
-                    writer.writeAttribute("skipped", skipped.toString())
-                    writer.writeAttribute("failures", failures.toString())
-                    if (VERBOSE_OUTPUT) {
-                        writer.writeAttribute("errors", "0")
-                        writer.writeAttribute("hostname", "")
-                    }
-                    writer.writeAttribute("timestamp", timestamp.toString())
-                    writer.writeAttribute("time", (time / 1000f).toString())
+                writer.writeAttribute("tests", testSuiteTests.toString())
+                writer.writeAttribute("skipped", testSuiteSkipped.toString())
+                writer.writeAttribute("failures", testSuiteFailures.toString())
+                if (VERBOSE_OUTPUT) {
+                    writer.writeAttribute("errors", "0")
+                    writer.writeAttribute("hostname", "")
+                }
+                writer.writeAttribute("timestamp", testSuiteTimestamp.toString())
+                writer.writeAttribute("time", (testSuiteTimeMillis / 1000f).toString())
 
-                    if (VERBOSE_OUTPUT) {
-                        writer.writeEmptyElement("properties")
-                    }
 
-                    for ((d, r) in results) {
-                        writer.writeStartElement("testcase")
+                if (VERBOSE_OUTPUT) {
+                    writer.writeEmptyElement("properties")
+                }
 
-                        var name = d.name
-                        if (targetName.isNotBlank()) {
-                            name += "[$targetName]"
-                        }
+                for (i in results.indices) {
+                    val rtr = results[i]
+                    val r = rtr.result
+                    writer.writeStartElement("testcase")
 
-                        writer.writeAttribute("name", name)
-                        writer.writeAttribute("classname", d.className ?: "")
-                        writer.writeAttribute("time", ((r.endTime - r.startTime) / 1000f).toString())
+                    writer.writeAttribute("name", rtr.name)
+                    writer.writeAttribute("classname", rtr.desc.className ?: "")
+                    writer.writeAttribute("time", ((r.endTime - r.startTime) / 1000f).toString())
 
-                        if (r.resultType == TestResult.ResultType.SKIPPED) {
+                    when (r.resultType) {
+                        TestResult.ResultType.SKIPPED -> {
                             writer.writeEmptyElement("skipped")
                         }
 
-                        writer.writeEndElement()
-                    }
+                        TestResult.ResultType.FAILURE -> {
+                            writer.writeStartElement("failure")
 
-                    if (VERBOSE_OUTPUT) {
-                        writer.writeStartElement("system-out")
-                        writer.writeCData("")
-                        writer.writeEndElement()
+                            val es = r.exceptions
+                            writer.writeAttribute("message", es.firstOrNull()?.toString() ?: "")
+                            writer.writeAttribute("type", es.firstOrNull()?.javaClass?.name ?: "")
+                            writer.writeCData(es.joinToString("\n\n") { it.stackTraceToString() })
 
-                        writer.writeStartElement("system-err")
-                        writer.writeCData("")
-                        writer.writeEndElement()
+                            writer.writeEndElement()
+                        }
+
+                        else -> {}
                     }
 
                     writer.writeEndElement()
                 }
+
+                if (VERBOSE_OUTPUT) {
+                    writer.writeStartElement("system-out")
+                    writer.writeCData("")
+                    writer.writeEndElement()
+
+                    writer.writeStartElement("system-err")
+                    writer.writeCData("")
+                    writer.writeEndElement()
+                }
+
+                writer.writeEndElement()
             }
+
+            val totalSuccesses = totalTests - totalFailures - totalSkipped
+            val status = if (totalFailures > 0) "FAILED" else if (totalSuccesses > 0) "SUCCESS" else "SKIPPED"
+            writer.writeStartElement("total")
+            writer.writeAttribute("status", status)
+            writer.writeAttribute("tests", totalTests.toString())
+            writer.writeAttribute("skipped", totalSkipped.toString())
+            writer.writeAttribute("failures", totalFailures.toString())
+            writer.writeAttribute("timestamp", currentTimeMillis().toString())
+            writer.writeAttribute("time", (totalTimeMillis / 1000f).toString())
+            writer.writeEndElement()
 
             writer.writeEndElement()
             writer.writeEndDocument()
@@ -161,22 +198,71 @@ private abstract class TestsReportsMergeTask : DefaultTask() {
             writer.close()
         }
 
-        // TODO: Final test results report in console
+        // Final test results report in console
+        val now = currentTimeMillis()
+        val totalSuccesses = totalTests - totalFailures - totalSkipped
+        val status = if (totalFailures > 0) "FAILED" else if (totalSuccesses > 0) "SUCCESS" else "SKIPPED"
+        val summary = "Overall tests result: $status (" +
+            "$totalTests tests, " +
+            "$totalSuccesses successes, " +
+            "$totalFailures failures, " +
+            "$totalSkipped skipped" +
+            ") " +
+            "in ${TimeCategory.minus(Date(now), Date(now - totalTimeMillis))}" +
+            "\n" +
+            "Merged XML tests report to $outputFile"
 
-        logger.lifecycle("Merged XML tests report to $outputFile")
-        resultsMap.clear()
+        logger.lifecycle(formatSummary(summary))
+        testResults.clear()
     }
 
     fun registerTestResult(testTask: AbstractTestTask, desc: TestDescriptor, result: TestResult) {
-        var queue = resultsMap[testTask]
-        if (queue == null) {
-            val q = ConcurrentLinkedQueue<Pair<TestDescriptor, TestResult>>()
-            queue = resultsMap.putIfAbsent(testTask, q) ?: q
-        }
-        queue.add(desc to result)
+        testResults.add(ReportTestResult(testTask, desc, result))
     }
 
     private companion object {
         const val VERBOSE_OUTPUT = false
     }
+
+    private class ReportTestResult(
+        val task: AbstractTestTask,
+        val desc: TestDescriptor,
+        val result: TestResult,
+    ) {
+        val testSuite get() = ":${task.project.name} ${desc.className ?: ""}"
+
+        val name: String
+
+        init {
+            var name = desc.displayName
+            if (!name.endsWith(']')) {
+                val targetName = (task as? KotlinTest)?.targetName ?: task.name.substringBeforeLast("Test")
+                if (targetName.isNotBlank()) {
+                    name += "[$targetName]"
+                }
+            }
+            this.name = name
+        }
+    }
+}
+
+private fun formatSummary(summary: String): String {
+    val maxLength = summary.lines().maxOf { it.length }
+
+    val sb = StringBuilder(maxLength * 5)
+    sb.append('_')
+    for (i in 1..maxLength) sb.append('_')
+    sb.append('_')
+    sb.append('\n')
+
+    summary.lines().joinTo(sb, separator = "\n") {
+        '|' + it + " ".repeat(maxLength - it.length) + '|'
+    }
+    sb.append('\n')
+
+    sb.append('-')
+    for (i in 1..maxLength) sb.append('-')
+    sb.append('-')
+
+    return sb.toString()
 }
