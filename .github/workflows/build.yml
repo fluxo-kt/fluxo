@@ -66,6 +66,7 @@ jobs:
         if: success() || failure()
         continue-on-error: true
         run: ./.github/workflows/summary.main.kts >> $GITHUB_STEP_SUMMARY
+        shell: bash
 
       - name: Upload code coverage
         if: success() || failure()

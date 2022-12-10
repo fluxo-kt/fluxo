@@ -66,7 +66,7 @@ fun Project.setupTestsReport() {
 private const val TEST_REPORTS_TASK_NAME = "mergedTestReport"
 
 /**
- * Exports merged JUnit-like XML tests report for all tests in all projects
+ * Exports merged JUnit-like XML tests report for all tests in all projects.
  */
 @DisableCachingByDefault(because = "Not cacheable")
 private abstract class TestsReportsMergeTask : DefaultTask() {
@@ -88,6 +88,8 @@ private abstract class TestsReportsMergeTask : DefaultTask() {
         var totalFailures = 0L
         var totalTimeMillis = 0L
 
+        val fails = ArrayList<String>()
+        val kmpTargets = HashSet<String>()
         val factory = XMLOutputFactory.newInstance()
         val writer = factory.createXMLStreamWriter(FileOutputStream(outputFile))
         try {
@@ -141,8 +143,10 @@ private abstract class TestsReportsMergeTask : DefaultTask() {
                     val r = rtr.result
                     writer.writeStartElement("testcase")
 
+                    rtr.kmpTarget?.let { kmpTargets += it }
+
                     writer.writeAttribute("name", rtr.name)
-                    writer.writeAttribute("classname", rtr.desc.className ?: "")
+                    writer.writeAttribute("classname", rtr.className)
                     writer.writeAttribute("time", ((r.endTime - r.startTime) / 1000f).toString())
 
                     when (r.resultType) {
@@ -157,6 +161,8 @@ private abstract class TestsReportsMergeTask : DefaultTask() {
                             writer.writeAttribute("message", es.firstOrNull()?.toString() ?: "")
                             writer.writeAttribute("type", es.firstOrNull()?.javaClass?.name ?: "")
                             writer.writeCData(es.joinToString("\n\n") { it.stackTraceToString() })
+
+                            fails += "$testSuite.${rtr.name}"
 
                             writer.writeEndElement()
                         }
@@ -189,6 +195,7 @@ private abstract class TestsReportsMergeTask : DefaultTask() {
             writer.writeAttribute("failures", totalFailures.toString())
             writer.writeAttribute("timestamp", currentTimeMillis().toString())
             writer.writeAttribute("time", (totalTimeMillis / 1000f).toString())
+            writer.writeAttribute("kmpTargets", kmpTargets.size.toString())
             writer.writeEndElement()
 
             writer.writeEndElement()
@@ -206,13 +213,14 @@ private abstract class TestsReportsMergeTask : DefaultTask() {
             "$totalTests tests, " +
             "$totalSuccesses successes, " +
             "$totalFailures failures, " +
-            "$totalSkipped skipped" +
+            "$totalSkipped skipped, " +
+            "${kmpTargets.size} KMP targets" +
             ") " +
             "in ${TimeCategory.minus(Date(now), Date(now - totalTimeMillis))}" +
             "\n" +
             "Merged XML tests report to $outputFile"
 
-        logger.lifecycle(formatSummary(summary))
+        logger.lifecycle(formatSummary(summary, fails))
         testResults.clear()
     }
 
@@ -223,46 +231,54 @@ private abstract class TestsReportsMergeTask : DefaultTask() {
     private companion object {
         const val VERBOSE_OUTPUT = false
     }
+}
 
-    private class ReportTestResult(
-        val task: AbstractTestTask,
-        val desc: TestDescriptor,
-        val result: TestResult,
-    ) {
-        val testSuite get() = ":${task.project.name} ${desc.className ?: ""}"
+private class ReportTestResult(
+    task: AbstractTestTask,
+    desc: TestDescriptor,
+    val result: TestResult,
+) {
+    val className = desc.className ?: ""
 
-        val name: String
+    val testSuite = ":${task.project.name} $className"
 
-        init {
-            var name = desc.displayName
-            if (!name.endsWith(']')) {
-                val targetName = (task as? KotlinTest)?.targetName ?: task.name.substringBeforeLast("Test")
-                if (targetName.isNotBlank()) {
-                    name += "[$targetName]"
-                }
+    val name: String
+    val kmpTarget: String?
+
+    init {
+        var name = desc.displayName
+        if (!name.endsWith(']')) {
+            val targetName = (task as? KotlinTest)?.targetName ?: task.name.substringBeforeLast("Test")
+            if (targetName.isNotBlank()) {
+                name += "[$targetName]"
             }
-            this.name = name
         }
+        this.name = name
+
+        kmpTarget = name.substringAfterLast('[', "").takeIf { it.isNotEmpty() }
     }
 }
 
-private fun formatSummary(summary: String): String {
-    val maxLength = summary.lines().maxOf { it.length }
+private fun formatSummary(summary: String, fails: List<String>): String {
+    val maxLength = summary.lines().maxOf { it.length + 1 }
 
-    val sb = StringBuilder(maxLength * 5)
-    sb.append('_')
-    for (i in 1..maxLength) sb.append('_')
-    sb.append('_')
+    val sb = StringBuilder(maxLength * (6 + fails.size))
+    for (i in 1..(maxLength + 2)) sb.append('_')
     sb.append('\n')
 
-    summary.lines().joinTo(sb, separator = "\n") {
-        '|' + it + " ".repeat(maxLength - it.length) + '|'
+    summary.lines().joinTo(sb, separator = "\n", postfix = "\n") {
+        "| " + it + " ".repeat(maxLength - it.length) + '|'
     }
-    sb.append('\n')
 
-    sb.append('-')
-    for (i in 1..maxLength) sb.append('-')
-    sb.append('-')
+    for (i in 1..(maxLength + 2)) sb.append('-')
+
+    if (fails.isNotEmpty()) {
+        sb.append('\n')
+        for (fail in fails) {
+            sb.append("| FAILED ").append(fail).append('\n')
+        }
+        for (i in 1..(maxLength + 2)) sb.append('-')
+    }
 
     return sb.toString()
 }

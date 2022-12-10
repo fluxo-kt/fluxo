@@ -9,6 +9,8 @@ import java.io.File
 try {
     val koverFile = File("build/reports/kover-merged-report.xml")
     if (koverFile.exists()) {
+        System.err.println("Kover report FOUND: $koverFile")
+
         val dom = Parser.xmlParser().parseInput(koverFile.readText(), "")
         val counters = dom.select("report > counter").reversed()
         if (counters.isNotEmpty()) {
@@ -47,22 +49,31 @@ try {
                     )
                 )
             }
+        } else {
+            System.err.println("No <counter> tags found in report")
         }
+    } else {
+        System.err.println("Kover report NOT found: $koverFile")
     }
 } catch (e: Throwable) {
+    System.err.println("Kover report error: $e")
     e.printStackTrace(System.err)
 }
 
 // Tests summary
 try {
+    println()
     val testsFile = File("build/tests-report-merged.xml")
     if (testsFile.exists()) {
+        System.err.println("Tests report FOUND: $testsFile")
+
         val dom = Parser.xmlParser().parseInput(testsFile.readText(), "")
+        println("#### Tests summary")
+
         val total = dom.selectFirst("report > total")
         if (total != null) {
-            println("#### Tests summary")
-            println("| Result  | Total | Skipped | Failed | Duration (sec) |")
-            println("| -------  | ----- | ------- | ------ | ------ |")
+            println("| Result  | Total | Skipped | Failed | Duration (sec) | KMP targets |")
+            println("| -------  | ----- | ------- | ------ | ------ | ------ |")
 
             val status = total.attr("status").let {
                 when (it) {
@@ -75,11 +86,33 @@ try {
             val totalTests = total.attr("tests").toIntOrNull() ?: 0
             val skipped = total.attr("skipped").toIntOrNull() ?: 0
             val failures = total.attr("failures").toIntOrNull() ?: 0
+            val kmpTargets = total.attr("kmpTargets").toIntOrNull() ?: 0
             val timeSeconds = total.attr("time") ?: "-"
 
-            println("| %s | %d | %d | %d | %s |".format(status, totalTests, skipped, failures, timeSeconds))
+            println("| %s | %d | %d | %d | %s | %d |".format(status, totalTests, skipped, failures, timeSeconds, kmpTargets))
+        } else {
+            System.err.println("No <total> tags found in tests report")
         }
+
+        val failures = dom.select("testcase > failure")
+        for (fail in failures) {
+            val testcase = fail.parent()
+            val testsuite = testcase?.parent()
+
+            val suiteName = testsuite?.attr("name")?.takeIf { it.isNotEmpty() }
+                ?: testcase?.attr("classname") ?: ""
+
+            val testName = testcase?.attr("name")?.takeIf { it.isNotEmpty() }
+                ?: fail.attr("type")
+
+            val failDetails = fail.wholeText().trim().takeIf { it.isNotEmpty() } ?: fail.attr("message")
+
+            println("<details><summary>❌ <i>$suiteName</i>.<b>$testName</b></summary><p><pre language=\"kotlin\">\n$failDetails</pre></p></details>")
+        }
+    } else {
+        System.err.println("Tests report NOT found: $testsFile")
     }
 } catch (e: Throwable) {
+    System.err.println("Tests report error: $e")
     e.printStackTrace(System.err)
 }
