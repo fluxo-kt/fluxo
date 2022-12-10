@@ -14,7 +14,7 @@ androidCompileSdk = "33"
 androidBuildTools = "33.0.0"
 
 # Java/Kotlin compatibility
-javaLangTarget = "11"
+javaLangTarget = "1.8"
 kotlinLangVersion = "1.7"
 
 # https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-gradle-plugin

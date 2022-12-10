@@ -71,4 +71,13 @@ kotlin {
 
 android {
     namespace = "kt.fluxo.core"
+
+    // Optimize code with R8 for android release aar
+    // TODO: On-device tests for aar
+    buildTypes {
+        release {
+            isMinifyEnabled = true
+            proguardFile("../rules.pro")
+        }
+    }
 }

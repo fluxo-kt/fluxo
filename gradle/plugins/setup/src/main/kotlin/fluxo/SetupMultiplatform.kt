@@ -20,7 +20,7 @@ fun Project.setupMultiplatform(
     libsCatalog.findVersion("javaLangTarget").map { version ->
         extensions.configure<JavaPluginExtension>("java") {
             toolchain {
-                languageVersion.set(JavaLanguageVersion.of(version.toString().toInt()))
+                languageVersion.set(JavaLanguageVersion.of(version.toString().substringAfter('.').toInt()))
             }
         }
     }
