@@ -15,6 +15,7 @@ import kotlinx.coroutines.withContext
 import kt.fluxo.core.StoreClosedException
 import kt.fluxo.core.container
 import kt.fluxo.test.CoroutineScopeAwareTest
+import kt.fluxo.test.IgnoreNative
 import kt.fluxo.test.KMM_PLATFORM
 import kt.fluxo.test.Platform
 import kt.fluxo.test.mayFailWith
@@ -31,6 +32,7 @@ internal class ContainerExceptionHandlerTest : CoroutineScopeAwareTest(
     context = Job() + CoroutineExceptionHandler { _, _ -> /*just be silent*/ },
 ) {
     @Test
+    @IgnoreNative
     fun by_default_exception_breaks_the_scope() = runUnitTest {
         val initState = 10
         val container = scope.container(initState)
