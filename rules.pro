@@ -29,3 +29,5 @@
 # https://jakewharton.com/r8-optimization-value-assumption/
 # https://www.guardsquare.com/en/products/proguard/manual/examples#androidsdk
 -assumenosideeffects class android.os.Build$VERSION { int SDK_INT return 15..2147483647; }
+
+-keep class kotlin.Metadata
