@@ -158,6 +158,7 @@ koverMerged {
                 "kt.fluxo.tests.*",
                 // Inline DSL, coverage not detected properly (still everything covered!)
                 "kt.fluxo.core.FluxoKt*",
+                "kt.fluxo.core.dsl.MigrationKt*",
             )
         }
     }
