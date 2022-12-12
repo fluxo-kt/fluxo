@@ -2,6 +2,12 @@ public abstract interface class kt/fluxo/core/ContainerHost {
 	public abstract fun getContainer ()Lkt/fluxo/core/Store;
 }
 
+public final class kt/fluxo/core/FluxoDslKt {
+	public static final fun closeAndWait (Lkt/fluxo/core/Store;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static final fun repeatOnSubscription (Lkt/fluxo/core/dsl/StoreScope;Ljava/lang/String;JLkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun repeatOnSubscription$default (Lkt/fluxo/core/dsl/StoreScope;Ljava/lang/String;JLkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+}
+
 public abstract interface class kt/fluxo/core/FluxoInterceptor {
 	public fun onNotify (Lkt/fluxo/core/intercept/FluxoEvent;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun onNotify$suspendImpl (Lkt/fluxo/core/FluxoInterceptor;Lkt/fluxo/core/intercept/FluxoEvent;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -10,12 +16,6 @@ public abstract interface class kt/fluxo/core/FluxoInterceptor {
 
 public final class kt/fluxo/core/FluxoInterceptorKt {
 	public static final fun create (Lkotlin/jvm/functions/Function1;)Lkt/fluxo/core/FluxoInterceptor;
-}
-
-public final class kt/fluxo/core/FluxoKt {
-	public static final fun closeAndWait (Lkt/fluxo/core/Store;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static final fun repeatOnSubscription (Lkt/fluxo/core/dsl/StoreScope;Ljava/lang/String;JLkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun repeatOnSubscription$default (Lkt/fluxo/core/dsl/StoreScope;Ljava/lang/String;JLkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 }
 
 public final class kt/fluxo/core/FluxoSettings {

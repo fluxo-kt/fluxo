@@ -116,7 +116,6 @@ koverMerged {
     enable()
 
     val isCi by isCI()
-    val isRelease by isRelease()
     xmlReport {
         onCheck.set(true)
         reportFile.set(layout.buildDirectory.file("reports/kover-merged-report.xml"))
@@ -153,8 +152,13 @@ koverMerged {
 
     filters {
         classes {
-            excludes += listOf("kt.fluxo.test.*")
-            excludes += listOf("kt.fluxo.tests.*")
+            excludes += listOf(
+                // Test classes
+                "kt.fluxo.test.*",
+                "kt.fluxo.tests.*",
+                // Inline DSL, coverage not detected properly (still everything covered!)
+                "kt.fluxo.core.FluxoKt*",
+            )
         }
     }
 }
