@@ -1,129 +1,106 @@
 package kt.fluxo.tests
 
-import kotlinx.coroutines.coroutineScope
+import app.cash.turbine.test
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.runTest
 import kt.fluxo.core.Container
+import kt.fluxo.core.closeAndWait
 import kt.fluxo.core.container
-import kt.fluxo.test.CoroutineScopeAwareTest
-import kt.fluxo.test.test
-import kotlin.random.Random
+import kt.fluxo.test.runUnitTest
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
-import kotlin.test.assertNotEquals
 
-internal class SideEffectTest : CoroutineScopeAwareTest() {
+internal class SideEffectTest {
 
     @Test
-    fun side_effects_are_emitted_ordered_by_default() = runTest {
+    fun side_effects_are_emitted_ordered_by_default() = runUnitTest {
         // Uses Fifo strategy by default, saving order of intents
-        val container = scope.container<Unit, Int>(Unit)
-
-        val testSideEffectObserver1 = container.sideEffectFlow.test()
-
-        repeat(1000) {
-            container.someFlow(it)
+        val container = backgroundScope.container<Unit, Int>(Unit)
+        container.sideEffectFlow.test {
+            repeat(1000) {
+                container.postSideEffect(it)
+            }
+            repeat(1000) {
+                assertEquals(it, awaitItem())
+            }
+            container.close()
+            awaitComplete()
         }
-
-        testSideEffectObserver1.awaitCount(1000, 10_000)
-
-        assertContentEquals(0..999, testSideEffectObserver1.values)
+        container.closeAndWait()
     }
 
     @Test
-    fun side_effects_are_not_multicast() = runTest {
-        val action = Random.nextInt()
-        val action2 = Random.nextInt()
-        val action3 = Random.nextInt()
-        val container = scope.container<Unit, Int>(Unit)
-
-        val testSideEffectObserver1 = container.sideEffectFlow.test()
-        val testSideEffectObserver2 = container.sideEffectFlow.test()
-        val testSideEffectObserver3 = container.sideEffectFlow.test()
-
-        container.someFlow(action)
-        container.someFlow(action2)
-        container.someFlow(action3)
-
-        val timeout = 200L
-        testSideEffectObserver1.awaitCount(3, timeout, throwTimeout = false)
-        testSideEffectObserver2.awaitCount(3, timeout, throwTimeout = false)
-        testSideEffectObserver3.awaitCount(3, timeout, throwTimeout = false)
-
-        assertNotEquals(listOf(action, action2, action3), testSideEffectObserver1.values)
-        assertNotEquals(listOf(action, action2, action3), testSideEffectObserver2.values)
-        assertNotEquals(listOf(action, action2, action3), testSideEffectObserver3.values)
+    fun side_effects_are_not_multicast() = runUnitTest {
+        val container = backgroundScope.container<Unit, Int>(Unit)
+        val result = MutableStateFlow<List<Int>>(listOf())
+        val block: suspend CoroutineScope.() -> Unit = {
+            container.sideEffectFlow.collect {
+                do {
+                    val prev = result.value
+                    val next = result.value + it
+                } while (!result.compareAndSet(prev, next))
+            }
+        }
+        repeat(3) {
+            backgroundScope.launch(block = block)
+        }
+        repeat(3) {
+            container.postSideEffect(it)
+        }
+        val results = result.first { it.size == 3 }
+        assertEquals(listOf(0, 1, 2), results)
+        container.closeAndWait()
     }
 
     @Test
-    fun side_effects_are_cached_when_there_are_no_subscribers() = runTest {
-        val action = Random.nextInt()
-        val action2 = Random.nextInt()
-        val action3 = Random.nextInt()
-        val container = scope.container<Unit, Int>(Unit)
-
-        container.someFlow(action)
-        container.someFlow(action2)
-        container.someFlow(action3)
-
-        val testSideEffectObserver1 = container.sideEffectFlow.test()
-
-        testSideEffectObserver1.awaitCount(3)
-
-        assertContentEquals(listOf(action, action2, action3), testSideEffectObserver1.values)
+    fun side_effects_are_cached_when_there_are_no_subscribers() = runUnitTest {
+        val container = backgroundScope.container<Unit, Int>(Unit)
+        repeat(3) {
+            container.postSideEffect(it)
+        }
+        assertContentEquals(listOf(0, 1, 2), container.sideEffectFlow.take(3).toList())
+        container.closeAndWait()
     }
 
     @Test
-    fun consumed_side_effects_are_not_resent() = runTest {
-        val action = Random.nextInt()
-        val action2 = Random.nextInt()
-        val action3 = Random.nextInt()
-        val container = scope.container<Unit, Int>(Unit)
-        val testSideEffectObserver1 = container.sideEffectFlow.test()
+    fun consumed_side_effects_are_not_resent() = runUnitTest {
+        val container = backgroundScope.container<Unit, Int>(Unit)
+        val flow = container.sideEffectFlow
+        repeat(5) {
+            container.postSideEffect(it)
+        }
+        assertContentEquals(listOf(0, 1, 2), flow.take(3).toList())
+        assertContentEquals(listOf(3), flow.take(1).toList())
+        container.close()
 
-        container.someFlow(action)
-        container.someFlow(action2)
-        container.someFlow(action3)
-        testSideEffectObserver1.awaitCount(3)
-        testSideEffectObserver1.close()
-
-        val testSideEffectObserver2 = container.sideEffectFlow.test()
-
-        testSideEffectObserver1.awaitCount(3, 10L)
-
-        assertEquals(0, testSideEffectObserver2.values.size, "should be empty")
+        assertContentEquals(listOf(4), flow.toList())
+        container.closeAndWait()
     }
 
     @Test
-    fun only_new_side_effects_are_emitted_when_resubscribing() = runTest {
-        val action = Random.nextInt()
-        val container = scope.container<Unit, Int>(Unit)
+    fun only_new_side_effects_are_emitted_when_resubscribing() = runUnitTest {
+        val container = backgroundScope.container<Unit, Int>(Unit)
+        val flow = container.sideEffectFlow
+        container.postSideEffect(123)
+        assertContentEquals(listOf(123), flow.take(1).toList())
 
-        val testSideEffectObserver1 = container.sideEffectFlow.test()
-
-        container.someFlow(action)
-
-        testSideEffectObserver1.awaitCount(1)
-        testSideEffectObserver1.close()
-
-        coroutineScope {
-            launch {
-                repeat(1000) {
-                    container.someFlow(it)
-                }
+        backgroundScope.launch {
+            repeat(1000) {
+                container.postSideEffect(it)
             }
         }
 
-        val testSideEffectObserver2 = container.sideEffectFlow.test()
-        testSideEffectObserver2.awaitCount(1000)
-
-        assertContentEquals(listOf(action), testSideEffectObserver1.values)
-        assertContentEquals(0..999, testSideEffectObserver2.values)
+        assertContentEquals(0..999, flow.take(1000).toList())
+        container.closeAndWait()
     }
 
 
-    private suspend fun Container<Unit, Int>.someFlow(action: Int) = send {
-        postSideEffect(action)
+    private suspend fun Container<Unit, Int>.postSideEffect(value: Int) = send {
+        postSideEffect(value)
     }
 }
