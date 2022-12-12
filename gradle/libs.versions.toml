@@ -14,6 +14,7 @@ androidCompileSdk = "33"
 androidBuildTools = "33.0.0"
 
 # Java/Kotlin compatibility
+javaToolchain = "11"
 javaLangTarget = "1.8"
 kotlinLangVersion = "1.7"
 

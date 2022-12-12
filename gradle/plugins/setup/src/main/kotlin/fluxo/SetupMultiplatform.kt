@@ -17,7 +17,7 @@ import kotlin.properties.ReadOnlyProperty
 fun Project.setupMultiplatform(
     targets: MultiplatformConfigurator = requireDefaults(),
 ) {
-    libsCatalog.findVersion("javaLangTarget").map { version ->
+    libsCatalog.findVersion("javaToolchain").map { version ->
         extensions.configure<JavaPluginExtension>("java") {
             toolchain {
                 languageVersion.set(JavaLanguageVersion.of(version.toString().substringAfter('.').toInt()))
