@@ -15,7 +15,7 @@ public abstract class InputStrategy {
      *
      * @param onUndeliveredElement See "Undelivered elements" section in [Channel] documentation for details.
      */
-    public open fun <Request> createQueue(onUndeliveredElement: ((Request) -> Unit)? = null): Channel<Request> {
+    public open fun <Request> createQueue(onUndeliveredElement: ((Request) -> Unit)?): Channel<Request> {
         return Channel(
             capacity = Channel.UNLIMITED,
             onBufferOverflow = BufferOverflow.SUSPEND,
