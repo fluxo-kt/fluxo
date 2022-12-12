@@ -6,6 +6,7 @@
 -dontskipnonpubliclibraryclasses
 -dontskipnonpubliclibraryclassmembers
 -allowaccessmodification
+-repackageclasses 'kt.fluxo.f'
 
 -adaptresourcefilenames    **.properties,**.gif,**.jpg,**.png,**.webp
 -adaptresourcefilecontents **.properties,META-INF/MANIFEST.MF
