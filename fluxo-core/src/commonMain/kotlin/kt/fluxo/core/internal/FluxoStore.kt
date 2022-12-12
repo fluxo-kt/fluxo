@@ -146,7 +146,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         }
 
         sideJobScope = if (intentHandler is ReducerIntentHandler && bootstrapper == null) {
-            // Minor optimization as side jobs not available when bootstrapper not set and ReducerIntentHandler used.
+            // Minor optimization as side jobs are not available when bootstrapper is not set and ReducerIntentHandler is used.
             scope
         } else {
             scope + conf.sideJobsContext + exceptionHandler + SupervisorJob(job) + when {

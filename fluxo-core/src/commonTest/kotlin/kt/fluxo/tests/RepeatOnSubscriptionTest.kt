@@ -1,9 +1,9 @@
 package kt.fluxo.tests
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import kt.fluxo.core.ContainerHost
@@ -14,6 +14,7 @@ import kt.fluxo.core.intent
 import kt.fluxo.core.repeatOnSubscription
 import kt.fluxo.test.CoroutineScopeAwareTest
 import kt.fluxo.test.IgnoreLinux
+import kt.fluxo.test.runUnitTest
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -23,8 +24,36 @@ internal class RepeatOnSubscriptionTest : CoroutineScopeAwareTest() {
     private val initialState = State()
 
     @Test
+    fun repeatOnSubscription_mechanics() = runUnitTest {
+        // TestScope will disable actual delay waiting
+        for (stopTimeout in longArrayOf(0, 1000)) {
+            for (scope in arrayOf(this, backgroundScope)) {
+                val container = scope.container(initialState) {
+                    onStart {
+                        repeatOnSubscription(stopTimeout = stopTimeout) {
+                            updateState { it.copy(count = it.count + 1) }
+                        }
+                    }
+                }
+
+                assertEquals(initialState, container.state)
+
+                val states = container.stateFlow.take(2).toList()
+                assertContentEquals(listOf(initialState, State(1)), states)
+
+                delay(stopTimeout)
+                val states2 = container.stateFlow.take(2).toList()
+                assertContentEquals(listOf(State(1), State(2)), states2)
+
+                container.closeAndWait()
+            }
+        }
+    }
+
+
+    @Test
     @IgnoreLinux
-    fun test_does_not_hang_when_using_repeatOnSubscription() = runTest {
+    fun test_does_not_hang_when_using_repeatOnSubscription() = runUnitTest {
         val host = TestMiddleware()
 
         assertEquals(initialState, host.container.state)
