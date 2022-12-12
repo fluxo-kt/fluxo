@@ -77,8 +77,8 @@ try {
 
             val status = total.attr("status").let {
                 when (it) {
-                    "FAILED" -> "❌ FAILED"
-                    "SUCCESS" -> "✅ SUCCESS"
+                    "FAILED" -> "&#10060; FAILED" // ❌
+                    "SUCCESS" -> "&#9989; SUCCESS" // ✅
                     "LINE" -> "SKIPPED"
                     else -> it
                 }
@@ -107,7 +107,8 @@ try {
 
             val failDetails = fail.wholeText().trim().takeIf { it.isNotEmpty() } ?: fail.attr("message")
 
-            println("<details><summary>❌ <i>$suiteName</i>.<b>$testName</b></summary><p><pre language=\"kotlin\">\n$failDetails</pre></p></details>")
+            // ❌
+            println("<details><summary>&#10060; <i>$suiteName</i>.<b>$testName</b></summary><p><pre language=\"kotlin\">\n$failDetails</pre></p></details>")
         }
     } else {
         System.err.println("Tests report NOT found: $testsFile")
