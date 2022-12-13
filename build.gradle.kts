@@ -133,17 +133,17 @@ koverMerged {
             isEnabled = true
             target = kotlinx.kover.api.VerificationTarget.ALL
             bound {
-                minValue = 73
+                minValue = 80
                 counter = kotlinx.kover.api.CounterType.LINE
                 valueType = kotlinx.kover.api.VerificationValueType.COVERED_PERCENTAGE
             }
             bound {
-                minValue = 60
+                minValue = 74
                 counter = kotlinx.kover.api.CounterType.INSTRUCTION
                 valueType = kotlinx.kover.api.VerificationValueType.COVERED_PERCENTAGE
             }
             bound {
-                minValue = 60
+                minValue = 63
                 counter = kotlinx.kover.api.CounterType.BRANCH
                 valueType = kotlinx.kover.api.VerificationValueType.COVERED_PERCENTAGE
             }
@@ -159,6 +159,12 @@ koverMerged {
                 // Inline DSL, coverage not detected properly (still everything covered!)
                 "kt.fluxo.core.FluxoKt*",
                 "kt.fluxo.core.dsl.MigrationKt*",
+            )
+        }
+        annotations {
+            excludes += listOf(
+                // Coverage not detected properly for inline methods (still everything covered!)
+                "kotlin.internal.InlineOnly",
             )
         }
     }
