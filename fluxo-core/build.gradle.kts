@@ -2,6 +2,7 @@ import fluxo.bundle
 import fluxo.dependsOn
 import fluxo.setupBinaryCompatibilityValidator
 import fluxo.setupMultiplatform
+import fluxo.setupPublication
 import fluxo.setupSourceSets
 
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
@@ -15,7 +16,7 @@ plugins {
 apply<kotlinx.atomicfu.plugin.gradle.AtomicFUGradlePlugin>()
 
 setupMultiplatform()
-// TODO: setupPublication()
+setupPublication()
 setupBinaryCompatibilityValidator()
 
 kotlin {

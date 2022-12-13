@@ -1,6 +1,7 @@
 @file:Suppress("SuspiciousCollectionReassignment")
 
 import fluxo.AndroidConfig
+import fluxo.PublicationConfig
 import fluxo.ensureUnreachableTasksDisabled
 import fluxo.getValue
 import fluxo.iosCompat
@@ -12,6 +13,7 @@ import fluxo.setupVerification
 import fluxo.tvosCompat
 import fluxo.useK2
 import fluxo.watchosCompat
+import java.net.URL
 
 buildscript {
     dependencies {
@@ -86,6 +88,29 @@ setupDefaults(
         compileSdkVersion = libs.versions.androidCompileSdk.get().toInt(),
         targetSdkVersion = libs.versions.androidTargetSdk.get().toInt(),
         buildToolsVersion = libs.versions.androidBuildTools.get(),
+    ),
+    publicationConfig = PublicationConfig(
+        // https://central.sonatype.org/publish/publish-gradle/
+        // https://central.sonatype.org/publish/publish-guide/#initial-setup
+        // https://central.sonatype.org/publish/requirements/coordinates/#choose-your-coordinates
+        // https://github.com/jonashackt/github-actions-release-maven
+        // https://dev.to/kotlin/how-to-build-and-publish-a-kotlin-multiplatform-library-creating-your-first-library-1bp8
+        group = "io.github.fluxo-kt",
+        version = libs.versions.fluxo.get(),
+        projectName = "Fluxo",
+        projectDescription = "Kotlin Multiplatform MVI / MVVM+ framework",
+        projectUrl = "https://github.com/fluxo-kt/fluxo-mvi",
+        scmUrl = "scm:git:git://github.com/fluxo-kt/fluxo-mvi.git",
+        licenseName = "The Apache License, Version 2.0",
+        licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0.txt",
+        developerId = "amal",
+        developerName = "Artyom Shendrik",
+        developerEmail = "artyom.shendrik@gmail.com",
+        signingKey = System.getenv("SIGNING_KEY"),
+        signingPassword = System.getenv("SIGNING_PASSWORD"),
+        repositoryUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/",
+        repositoryUserName = System.getenv("OSSRH_USER"),
+        repositoryPassword = System.getenv("OSSRH_PASSWORD"),
     ),
 )
 
@@ -194,6 +219,24 @@ tasks.register<Task>(name = "resolveDependencies") {
 }
 
 allprojects {
+    plugins.withType<org.jetbrains.dokka.gradle.DokkaPlugin> {
+        tasks.withType<org.jetbrains.dokka.gradle.DokkaTask>().configureEach {
+            dokkaSourceSets {
+                configureEach {
+                    if (name.startsWith("ios")) {
+                        displayName.set("ios")
+                    }
+
+                    sourceLink {
+                        localDirectory.set(rootDir)
+                        remoteUrl.set(URL("https://github.com/fluxo-kt/fluxo-mvi/blob/main"))
+                        remoteLineSuffix.set("#L")
+                    }
+                }
+            }
+        }
+    }
+
     afterEvaluate {
         // Fixes webpack-cli incompatibility by pinning the newest version.
         // Workaround for https://youtrack.jetbrains.com/issue/KT-52776

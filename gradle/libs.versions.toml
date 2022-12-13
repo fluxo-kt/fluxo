@@ -7,6 +7,9 @@
 
 
 [versions]
+
+fluxo = "0.1.0-SNAPSHOT"
+
 # 21 is default for new projects per May 2021, required for Compose
 androidMinSdk = "15"
 androidTargetSdk = "33"
@@ -23,6 +26,10 @@ kotlin = "1.7.21"
 
 # https://github.com/google/ksp/releases
 ksp = "1.7.21-1.0.8"
+
+# Dokka is a documentation engine for Kotlin/Java
+# https://github.com/Kotlin/dokka/releases
+dokka = "1.7.20"
 
 # https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-coroutines-core
 coroutines = "1.6.4"
@@ -100,6 +107,8 @@ plugin-binCompatValidator = { module = "org.jetbrains.kotlinx:binary-compatibili
 plugin-kotlinx-atomicfu = { module = "org.jetbrains.kotlinx:atomicfu-gradle-plugin", version = "0.18.5" }
 kotlin-gradle-api = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin-api", version.ref = "kotlin" }
 
+plugin-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
+
 # Gradle plugin for building plugins for IntelliJ-based IDEs
 # https://github.com/JetBrains/gradle-intellij-plugin/releases
 plugin-intellij = { module = "org.jetbrains.intellij.plugins:gradle-intellij-plugin", version = "1.10.0" }
@@ -115,9 +124,7 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 
-# Dokka is a documentation engine for Kotlin/Java
-# https://github.com/Kotlin/dokka/releases
-kotlin-dokka = { id = "org.jetbrains.dokka", version = "1.7.20" }
+kotlin-dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 
 # Gradle plugin for Kotlin code coverage agents
 # https://github.com/Kotlin/kotlinx-kover/releases
