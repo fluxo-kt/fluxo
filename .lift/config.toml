@@ -1,0 +1,5 @@
+# Sonatype Lift configuration
+# https://help.sonatype.com/lift/configuring-lift
+# https://help.sonatype.com/lift/configuring-lift/build-and-.toml-details
+
+jdkVersion = "11"
