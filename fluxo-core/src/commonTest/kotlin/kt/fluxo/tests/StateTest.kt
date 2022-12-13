@@ -1,17 +1,21 @@
 package kt.fluxo.tests
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.test.runTest
 import kt.fluxo.core.ContainerHost
 import kt.fluxo.core.container
 import kt.fluxo.core.intent
 import kt.fluxo.core.intercept.FluxoEvent
 import kt.fluxo.test.CoroutineScopeAwareTest
+import kt.fluxo.test.runUnitTest
 import kt.fluxo.test.test
 import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertIs
 
 internal class StateTest : CoroutineScopeAwareTest() {
 
@@ -58,6 +62,26 @@ internal class StateTest : CoroutineScopeAwareTest() {
         assertEquals(testStateObserver.values.last(), middleware.container.state)
 
         middleware.container.close()
+    }
+
+    @Test
+    fun close_on_exception() = runUnitTest {
+        var ex: Throwable? = null
+        val container = container(Unit) {
+            name = ""
+            scope = CoroutineScope(SupervisorJob())
+            exceptionHandler { _, throwable ->
+                ex = throwable
+            }
+            onStart {
+                require(false)
+            }
+            debugChecks = false
+            closeOnExceptions = true
+        }
+        container.start()?.join()
+        assertIs<IllegalArgumentException>(ex)
+        assertFalse(container.isActive)
     }
 
     private data class TestState(val id: Int = Random.nextInt())

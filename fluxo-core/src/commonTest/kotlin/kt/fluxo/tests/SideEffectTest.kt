@@ -14,6 +14,7 @@ import kt.fluxo.test.runUnitTest
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 internal class SideEffectTest {
 
@@ -99,6 +100,16 @@ internal class SideEffectTest {
         container.closeAndWait()
     }
 
+    @Test
+    fun disabled_side_effects() = runUnitTest {
+        val container = container(Unit) {
+            name = ""
+        }
+        assertFailsWith<IllegalStateException> {
+            container.sideEffectFlow
+        }
+        container.closeAndWait()
+    }
 
     private suspend fun Container<Unit, Int>.postSideEffect(value: Int) = send {
         postSideEffect(value)

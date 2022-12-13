@@ -7,6 +7,7 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kt.fluxo.core.annotation.FluxoDsl
 import kt.fluxo.core.annotation.NotThreadSafe
 import kt.fluxo.core.debug.DEBUG
@@ -53,6 +54,9 @@ public class FluxoSettings<Intent, State, SideEffect : Any> {
 
     /**
      * Either a positive [SideEffect]s channel capacity or one of the constants defined in [Channel.Factory].
+     * Used as a `extraBufferCapacity` parameter for [MutableSharedFlow] when [SideEffectsStrategy.SHARE] used.
+     *
+     * @see sideEffectsStrategy
      */
     public var sideEffectBufferSize: Int = Channel.BUFFERED
 
@@ -116,10 +120,18 @@ public class FluxoSettings<Intent, State, SideEffect : Any> {
 
     /**
      * A strategy to be applied when sharing side effects.
+     * [sideEffectBufferSize] defaults to `0` when [SideEffectsStrategy.SHARE] used.
      *
      * @see SideEffectsStrategy
+     * @see sideEffectBufferSize
      */
     public var sideEffectsStrategy: SideEffectsStrategy = SideEffectsStrategy.RECEIVE
+        set(value) {
+            field = value
+            if (value is SideEffectsStrategy.SHARE && sideEffectBufferSize == Channel.BUFFERED) {
+                sideEffectBufferSize = 0
+            }
+        }
 
     // endregion
 

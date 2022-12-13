@@ -4,6 +4,10 @@ coverage:
       default:
         target: auto
         threshold: 1%
+    patch:
+      default:
+        target: 65%
+        threshold: 3%
 
 comment:
   layout: "header,reach,diff,flags,tree,betaprofiling,footer"
