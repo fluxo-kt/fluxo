@@ -89,29 +89,38 @@ setupDefaults(
         targetSdkVersion = libs.versions.androidTargetSdk.get().toInt(),
         buildToolsVersion = libs.versions.androidBuildTools.get(),
     ),
-    publicationConfig = PublicationConfig(
-        // https://central.sonatype.org/publish/publish-gradle/
-        // https://central.sonatype.org/publish/publish-guide/#initial-setup
-        // https://central.sonatype.org/publish/requirements/coordinates/#choose-your-coordinates
-        // https://github.com/jonashackt/github-actions-release-maven
-        // https://dev.to/kotlin/how-to-build-and-publish-a-kotlin-multiplatform-library-creating-your-first-library-1bp8
-        group = "io.github.fluxo-kt",
-        version = libs.versions.fluxo.get(),
-        projectName = "Fluxo",
-        projectDescription = "Kotlin Multiplatform MVI / MVVM+ framework",
-        projectUrl = "https://github.com/fluxo-kt/fluxo-mvi",
-        scmUrl = "scm:git:git://github.com/fluxo-kt/fluxo-mvi.git",
-        licenseName = "The Apache License, Version 2.0",
-        licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0.txt",
-        developerId = "amal",
-        developerName = "Artyom Shendrik",
-        developerEmail = "artyom.shendrik@gmail.com",
-        signingKey = System.getenv("SIGNING_KEY"),
-        signingPassword = System.getenv("SIGNING_PASSWORD"),
-        repositoryUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/",
-        repositoryUserName = System.getenv("OSSRH_USER"),
-        repositoryPassword = System.getenv("OSSRH_PASSWORD"),
-    ),
+    publicationConfig = run {
+        val fluxoVersion = libs.versions.fluxo.get()
+        PublicationConfig(
+            // https://central.sonatype.org/publish/publish-gradle/
+            // https://central.sonatype.org/publish/publish-guide/#initial-setup
+            // https://central.sonatype.org/publish/requirements/coordinates/#choose-your-coordinates
+            // https://github.com/jonashackt/github-actions-release-maven
+            // https://dev.to/kotlin/how-to-build-and-publish-a-kotlin-multiplatform-library-creating-your-first-library-1bp8
+            group = "io.github.fluxo-kt",
+            version = fluxoVersion,
+            projectName = "Fluxo",
+            projectDescription = "Kotlin Multiplatform MVI / MVVM+ framework",
+            projectUrl = "https://github.com/fluxo-kt/fluxo-mvi",
+            scmUrl = "scm:git:git://github.com/fluxo-kt/fluxo-mvi.git",
+            licenseName = "The Apache License, Version 2.0",
+            licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0.txt",
+            developerId = "amal",
+            developerName = "Artyom Shendrik",
+            developerEmail = "artyom.shendrik@gmail.com",
+            signingKey = System.getenv("SIGNING_KEY"),
+            signingPassword = System.getenv("SIGNING_PASSWORD"),
+            repositoryUrl = when {
+                fluxoVersion.endsWith("SNAPSHOT") ->
+                    "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+
+                else ->
+                    "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            },
+            repositoryUserName = System.getenv("OSSRH_USER"),
+            repositoryPassword = System.getenv("OSSRH_PASSWORD"),
+        )
+    },
 )
 
 setupVerification()
