@@ -7,7 +7,7 @@ import kt.fluxo.test.runUnitTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-internal class ReducerTest {
+class ReducerTest {
     @Test
     fun basic_reducer_usage() = runUnitTest {
         val store = store<Int, Int>(0, reducer = { it })
