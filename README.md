@@ -66,7 +66,6 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super p
 ### Roadmap
 
 - [ ] Complete code coverage with tests
-  - [ ] Reducer tests
   - [ ] MVI Store tests
   - [ ] Side effects strategies/cache/guarantees tests
 - [ ] sideJob helpers for logic called on a specific state or side effect (see _Kotlin-Bloc_).
