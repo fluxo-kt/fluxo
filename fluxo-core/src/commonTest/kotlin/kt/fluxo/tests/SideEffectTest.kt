@@ -2,37 +2,55 @@ package kt.fluxo.tests
 
 import app.cash.turbine.test
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kt.fluxo.core.Container
+import kt.fluxo.core.SideEffectsStrategy
 import kt.fluxo.core.closeAndWait
 import kt.fluxo.core.container
+import kt.fluxo.core.debug.debugClassName
+import kt.fluxo.core.intercept.FluxoEvent
+import kt.fluxo.core.internal.Closeable
+import kt.fluxo.test.CoroutineScopeAwareTest
+import kt.fluxo.test.IgnoreJs
+import kt.fluxo.test.IgnoreLinux
+import kt.fluxo.test.IgnoreNativeAndJs
 import kt.fluxo.test.runUnitTest
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertTrue
 
-internal class SideEffectTest {
+internal class SideEffectTest : CoroutineScopeAwareTest() {
+    private companion object {
+        private val BASIC_STRATEGIES = arrayOf(SideEffectsStrategy.RECEIVE, SideEffectsStrategy.CONSUME)
+    }
 
     @Test
+    @IgnoreJs
     fun side_effects_are_emitted_ordered_by_default() = runUnitTest {
-        // Uses Fifo strategy by default, saving order of intents
-        val container = backgroundScope.container<Unit, Int>(Unit)
-        container.sideEffectFlow.test {
-            repeat(1000) {
-                container.postSideEffect(it)
+        for (strategy in BASIC_STRATEGIES) {
+            // Uses Fifo strategy by default, saving order of intents
+            val container = backgroundScope.container<Unit, Int>(Unit) {
+                sideEffectsStrategy = strategy
             }
-            repeat(1000) {
-                assertEquals(it, awaitItem())
+            container.sideEffectFlow.test {
+                repeat(1000) {
+                    container.postSideEffect(it)
+                }
+                repeat(1000) {
+                    assertEquals(it, awaitItem())
+                }
+                container.close()
+                awaitComplete()
             }
-            container.close()
-            awaitComplete()
+            container.closeAndWait()
         }
-        container.closeAndWait()
     }
 
     @Test
@@ -58,15 +76,26 @@ internal class SideEffectTest {
         container.closeAndWait()
     }
 
+
     @Test
-    fun side_effects_are_cached_when_there_are_no_subscribers() = runUnitTest {
-        val container = backgroundScope.container<Unit, Int>(Unit)
+    fun side_effects_are_cached_when_there_are_no_subscribers__receive_strategy() =
+        side_effects_are_cached_when_there_are_no_subscribers(SideEffectsStrategy.RECEIVE)
+
+    @Test
+    fun side_effects_are_cached_when_there_are_no_subscribers__consume_strategy() =
+        side_effects_are_cached_when_there_are_no_subscribers(SideEffectsStrategy.CONSUME)
+
+    private fun side_effects_are_cached_when_there_are_no_subscribers(strategy: SideEffectsStrategy) = runUnitTest {
+        val container = backgroundScope.container<Unit, Int>(Unit) {
+            sideEffectsStrategy = strategy
+        }
         repeat(3) {
             container.postSideEffect(it)
         }
         assertContentEquals(listOf(0, 1, 2), container.sideEffectFlow.take(3).toList())
         container.closeAndWait()
     }
+
 
     @Test
     fun consumed_side_effects_are_not_resent() = runUnitTest {
@@ -102,16 +131,94 @@ internal class SideEffectTest {
 
     @Test
     fun disabled_side_effects() = runUnitTest {
-        val container = container(Unit) {
-            name = ""
+        for (strategy in BASIC_STRATEGIES + SideEffectsStrategy.SHARE()) {
+            val container = container(Unit) {
+                // cover additional lines of code
+                name = ""
+                debugChecks = false
+            }
+            assertFailsWith<IllegalStateException> {
+                container.sideEffectFlow
+            }
+            container.closeAndWait()
         }
-        assertFailsWith<IllegalStateException> {
-            container.sideEffectFlow
+    }
+
+    private suspend fun Container<Unit, Int>.postSideEffect(value: Int) = send(intent = {
+        postSideEffect(sideEffect = value)
+    })
+
+
+    @Test
+    fun side_effects_can_be_collected_only_once_with_consume_strategy() = runUnitTest {
+        val container = container<Unit, Int>(Unit) {
+            sideEffectsStrategy = SideEffectsStrategy.CONSUME
         }
+        container.postSideEffect(1)
+        val flow = container.sideEffectFlow
+        assertContentEquals(listOf(1), flow.take(1).toList())
+        assertFailsWith<IllegalStateException> { flow.take(1).toList() }
+        container.postSideEffect(2)
+        assertFailsWith<IllegalStateException> { flow.take(1).toList() }
         container.closeAndWait()
     }
 
-    private suspend fun Container<Unit, Int>.postSideEffect(value: Int) = send {
-        postSideEffect(value)
+    @Test
+    @IgnoreLinux
+    fun unconsumed_side_effects_will_be_closed() = runUnitTest {
+        for (strategy in arrayOf(SideEffectsStrategy.RECEIVE, SideEffectsStrategy.SHARE())) {
+            val container = scope.container<Unit, Any>(initialState = Unit, settings = {
+                sideEffectsStrategy = strategy
+                debugChecks = false
+                closeOnExceptions = false
+            })
+            var hasCloses = false
+            val post = backgroundScope.launch {
+                val closeable = object : Closeable {
+                    override fun close() {
+                        if (hasCloses) {
+                            throw IllegalStateException()
+                        }
+                        hasCloses = true
+                    }
+                }
+                repeat(100) {
+                    container.send(intent = {
+                        postSideEffect(sideEffect = if (it % 2 == 0) it else closeable)
+                    })
+                }
+            }
+            container.sideEffectFlow.take(30).toList()
+            post.join()
+            container.closeAndWait()
+            assertTrue(hasCloses, "Expected to have closed effects (strategy: ${strategy.debugClassName()})")
+        }
+    }
+
+    @Test
+    @IgnoreNativeAndJs
+    fun undelivered_side_effects() = runUnitTest {
+        for (strategy in BASIC_STRATEGIES) {
+            val container = scope.container<Unit, Int>(initialState = Unit, settings = {
+                sideEffectsStrategy = strategy
+                sideEffectBufferSize = Channel.CONFLATED
+            })
+            var hasUndelivered = false
+            val intercept = launch {
+                container.eventsFlow.first { it is FluxoEvent.SideEffectUndelivered }
+                hasUndelivered = true
+            }
+            val post = backgroundScope.launch {
+                repeat(1000) {
+                    container.postSideEffect(it)
+                }
+            }
+            val effects = container.sideEffectFlow.take(50).toList()
+            assertEquals(50, effects.size, "effects.size = ${effects.size} (strategy: ${strategy.debugClassName()})")
+            post.join()
+            container.closeAndWait()
+            intercept.join()
+            assertTrue(hasUndelivered, "Expected to have undelivered side effects (strategy: ${strategy.debugClassName()})")
+        }
     }
 }

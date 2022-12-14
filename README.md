@@ -65,15 +65,12 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super p
 
 ### Roadmap
 
-- [ ] Complete code coverage with tests
-  - [ ] MVI Store tests
-  - [ ] Side effects strategies/cache/guarantees tests
+- [ ] Complete pipeline interception (as with OkHttp, etc.)
 - [ ] sideJob helpers for logic called on a specific state or side effect (see _Kotlin-Bloc_).
 - [ ] [SAM: State-Action-Model](https://sam.js.org/), composable
   - [ ] functions as first-class citizens
 - [ ] Store to Store connection
 - [ ] FSM: Strict finite-state machine style with edges declaration
-- [ ] Complete pipeline interception (as with OkHttp, etc.)
 - [ ] SideJobs registry/management API
 - [ ] [Partial state change with effect](https://github.com/uniflow-kt/uniflow-kt/blob/master/doc/notify_update.md)
 - [ ] Common Async/UI/Repository/Cached states

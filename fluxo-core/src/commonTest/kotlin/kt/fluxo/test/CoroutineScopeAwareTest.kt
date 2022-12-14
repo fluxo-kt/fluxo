@@ -6,7 +6,6 @@ import kotlinx.coroutines.cancel
 import kotlin.coroutines.CoroutineContext
 import kotlin.test.AfterTest
 
-
 internal open class CoroutineScopeAwareTest(
     context: CoroutineContext = Job(),
 ) {

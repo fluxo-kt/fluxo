@@ -207,17 +207,17 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         // Prepare side effects handling, considering all available strategies
         var subscriptionCount = mutableState.subscriptionCount
         val sideEffectsSubscriptionCount: StateFlow<Int>?
-        val sideEffectStrategy = conf.sideEffectsStrategy
-        if (sideEffectStrategy === SideEffectsStrategy.DISABLE) {
+        val sideEffectsStrategy = conf.sideEffectsStrategy
+        if (sideEffectsStrategy === SideEffectsStrategy.DISABLE) {
             // Disable side effects
             sideEffectChannel = null
             sideEffectFlowField = null
             sideEffectsSubscriptionCount = null
-        } else if (sideEffectStrategy is SideEffectsStrategy.SHARE) {
+        } else if (sideEffectsStrategy is SideEffectsStrategy.SHARE) {
             // MutableSharedFlow-based SideEffect
             sideEffectChannel = null
             val flow = MutableSharedFlow<SideEffect>(
-                replay = sideEffectStrategy.replay,
+                replay = sideEffectsStrategy.replay,
                 extraBufferCapacity = conf.sideEffectBufferSize,
                 onBufferOverflow = BufferOverflow.SUSPEND,
             )
@@ -248,10 +248,10 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
             }
             sideEffectChannel = channel
             sideEffectsSubscriptionCount = MutableStateFlow(0)
-            val flow = if (sideEffectStrategy === SideEffectsStrategy.CONSUME) {
+            val flow = if (sideEffectsStrategy === SideEffectsStrategy.CONSUME) {
                 channel.consumeAsFlow()
             } else {
-                check(!debugChecks || sideEffectStrategy === SideEffectsStrategy.RECEIVE)
+                check(!debugChecks || sideEffectsStrategy === SideEffectsStrategy.RECEIVE)
                 channel.receiveAsFlow()
             }
             sideEffectFlowField = SubscriptionCountFlow(sideEffectsSubscriptionCount, flow)
@@ -642,7 +642,9 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
             }
             sideEffectChannel?.apply {
                 while (!isEmpty) {
-                    receiveCatching().getOrNull()?.closeSafely(cancellationCause)
+                    val result = receiveCatching()
+                    if (result.isClosed) break
+                    result.getOrNull()?.closeSafely(cancellationCause)
                 }
                 close(cancellationCause?.cause)
             }
