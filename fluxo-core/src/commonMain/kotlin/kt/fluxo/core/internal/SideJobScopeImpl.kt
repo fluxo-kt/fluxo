@@ -15,7 +15,7 @@ internal class SideJobScopeImpl<in Intent, State, in SideEffect : Any>(
     coroutineScope: CoroutineScope,
 ) : SideJobScope<Intent, State, SideEffect>, CoroutineScope by coroutineScope {
 
-    override suspend fun updateState(block: (State) -> State) = updateStateAndGet(block)
+    override suspend fun updateState(function: (State) -> State) = updateStateAndGet(function)
 
     override suspend fun postIntent(intent: Intent) = sendIntent(intent)
 

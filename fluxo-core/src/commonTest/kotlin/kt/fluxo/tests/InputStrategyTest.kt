@@ -6,21 +6,28 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kt.fluxo.core.InputStrategy
 import kt.fluxo.core.InputStrategy.InBox.Fifo
 import kt.fluxo.core.InputStrategy.InBox.Lifo
 import kt.fluxo.core.InputStrategy.InBox.Parallel
+import kt.fluxo.core.StoreRuntimeException
 import kt.fluxo.core.closeAndWait
+import kt.fluxo.core.container
 import kt.fluxo.core.dsl.InputStrategyScope
+import kt.fluxo.core.dsl.StoreScope
+import kt.fluxo.core.intent
 import kt.fluxo.core.store
 import kt.fluxo.test.CoroutineScopeAwareTest
 import kt.fluxo.test.IgnoreJs
 import kt.fluxo.test.runUnitTest
+import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
 @Suppress("SuspendFunctionOnCoroutineScope")
@@ -138,5 +145,30 @@ internal class InputStrategyTest : CoroutineScopeAwareTest() {
 
         override suspend fun <Request> (InputStrategyScope<Request>).processRequests(queue: Flow<Request>) =
             queue.collectLatest(this)
+    }
+
+
+    @Test
+    fun input_guardian_correctness() = runUnitTest {
+        val intent: suspend StoreScope<*, Int, *>.() -> Unit = intent@{
+            assertEquals(0, state)
+            // Parallel input strategy requires that inputs only access or update the state at most once.
+            assertFailsWith<StoreRuntimeException> { state }
+            sideJob(key = "${Random.nextLong()}") {
+                // intent scope has already been closed.
+                assertFailsWith<StoreRuntimeException> { this@intent.noOp() }
+                updateState { it + 1 }
+            }
+            // sideJob already declared
+            assertFailsWith<StoreRuntimeException> { noOp() }
+        }
+        val container = backgroundScope.container(0) {
+            inputStrategy = Parallel
+            debugChecks = true
+            bootstrapper = intent
+        }
+        container.intent(intent)
+        container.stateFlow.first { it == 2 }
+        container.close()
     }
 }

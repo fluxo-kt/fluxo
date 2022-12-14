@@ -586,7 +586,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
                         null
                     } else {
                         InputStrategyGuardian(
-                            parallelProcessing = false,
+                            parallelProcessing = inputStrategy.parallelProcessing,
                             isBootstrap = true,
                             intent = null,
                             handler = bootstrapper,

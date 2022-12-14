@@ -24,9 +24,9 @@ internal open class StoreScopeImpl<in Intent, State, SideEffect : Any>(
             return getState()
         }
 
-    final override suspend fun updateState(block: (State) -> State): State {
+    final override suspend fun updateState(function: (State) -> State): State {
         guardian?.checkStateUpdate()
-        return updateStateAndGet(block)
+        return updateStateAndGet(function)
     }
 
     final override suspend fun postSideEffect(sideEffect: SideEffect) {
