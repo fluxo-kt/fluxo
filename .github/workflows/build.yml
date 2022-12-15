@@ -109,3 +109,9 @@ jobs:
         with:
           sarif_file: build/detekt-merged.sarif
           category: detekt
+
+      - name: Publish JUnit test results as a pull request check
+        if: github.repository == 'fluxo-kt/fluxo-mvi' && github.ref == 'refs/heads/main'
+        uses: mikepenz/action-junit-report@v3
+        with:
+          report_paths: '**/build/test-results/*/TEST-*.xml'
