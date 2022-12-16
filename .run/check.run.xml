@@ -11,6 +11,7 @@
       <option name="taskNames">
         <list>
           <option value="build" />
+          <option value="assemble" />
           <option value="check" />
         </list>
       </option>

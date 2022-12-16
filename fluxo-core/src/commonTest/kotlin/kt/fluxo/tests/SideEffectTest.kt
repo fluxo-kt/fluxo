@@ -197,7 +197,7 @@ internal class SideEffectTest : CoroutineScopeAwareTest() {
 
     @Test
     @IgnoreNativeAndJs
-    fun undelivered_side_effects() = runUnitTest {
+    fun undelivered_side_effects() = runUnitTest(dispatchTimeoutMs = 10_000) {
         for (strategy in BASIC_STRATEGIES) {
             val container = scope.container<Unit, Int>(initialState = Unit, settings = {
                 sideEffectsStrategy = strategy

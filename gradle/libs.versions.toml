@@ -59,6 +59,20 @@ detekt = "1.22.0"
 androidx-annotation = "1.5.0"
 
 
+# NPM repo dependencies
+
+# https://www.npmjs.com/package/karma?activeTab=versions
+js-karma = "6.4.1"
+# https://www.npmjs.com/package/mocha?activeTab=versions
+js-mocha = "10.2.0"
+# https://www.npmjs.com/package/webpack?activeTab=versions
+js-webpack = "5.75.0"
+# https://www.npmjs.com/package/webpack-cli?activeTab=versions
+js-webpackCli = "5.0.1"
+# https://www.npmjs.com/package/webpack-dev-server?activeTab=versions
+js-webpackDevServer = "4.11.1"
+
+
 [libraries]
 
 kotlin-atomicfu = { module = "org.jetbrains.kotlin:atomicfu", version.ref = "kotlin" }

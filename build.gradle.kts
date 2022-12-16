@@ -249,9 +249,13 @@ allprojects {
     afterEvaluate {
         // Fixes webpack-cli incompatibility by pinning the newest version.
         // Workaround for https://youtrack.jetbrains.com/issue/KT-52776
+        // Also see https://github.com/rjaros/kvision/blob/d9044ab/build.gradle.kts#L28
         rootProject.extensions.findByType<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension>()?.apply {
-            // https://www.npmjs.com/package/webpack-cli?activeTab=versions
-            versions.webpackCli.version = "4.10.0"
+            versions.karma.version = libs.versions.js.karma.get()
+            versions.mocha.version = libs.versions.js.mocha.get()
+            versions.webpack.version = libs.versions.js.webpack.get()
+            versions.webpackCli.version = libs.versions.js.webpackCli.get()
+            versions.webpackDevServer.version = libs.versions.js.webpackDevServer.get()
         }
 
         val isCi by isCI()
