@@ -3,4 +3,4 @@
 # https://help.sonatype.com/lift/configuring-lift/build-and-.toml-details
 
 jdkVersion = "11"
-build = "gradlew build"
+build = "gradlew build assemble"

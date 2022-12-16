@@ -47,7 +47,7 @@ jobs:
           CI: true
         with:
           gradle-home-cache-cleanup: true
-          arguments: build check -i --stacktrace --continue --scan
+          arguments: build assemble check -i --stacktrace --continue --scan
 
       - name: Upload reports
         if: success() || failure()
