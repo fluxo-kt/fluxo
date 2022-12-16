@@ -239,23 +239,28 @@ private class ReportTestResult(
     val result: TestResult,
 ) {
     val className = desc.className ?: ""
-
     val testSuite = ":${task.project.name} $className"
-
-    val name: String
+    val testTaskName = task.name.substringBeforeLast("Test")
     val kmpTarget: String?
+    val name: String
 
     init {
         var name = desc.displayName
         if (!name.endsWith(']')) {
-            val targetName = (task as? KotlinTest)?.targetName ?: task.name.substringBeforeLast("Test")
+            val targetName = (task as? KotlinTest)?.targetName ?: testTaskName
             if (targetName.isNotBlank()) {
                 name += "[$targetName]"
             }
         }
-        this.name = name
 
-        kmpTarget = name.substringAfterLast('[', "").takeIf { it.isNotEmpty() }
+        kmpTarget = name.substringAfterLast('[', "").trimEnd(']').takeIf { it.isNotEmpty() }
+
+        // Show target details in test name (browser/node, background, etc.)
+        if (kmpTarget != testTaskName && ", " !in name) {
+            name = name.substringBeforeLast('[') + "[$testTaskName]"
+        }
+
+        this.name = name
     }
 }
 
