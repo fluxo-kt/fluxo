@@ -3,6 +3,8 @@ package kt.fluxo.test
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
@@ -17,7 +19,29 @@ fun runUnitTest(
     context: CoroutineContext = EmptyCoroutineContext,
     dispatchTimeoutMs: Long = DEFAULT_DISPATCH_TIMEOUT_MS,
     testBody: suspend TestScope.() -> Unit,
-): TestResult = runTest(context, dispatchTimeoutMs, testBody)
+): TestResult {
+    var scope: TestScope? = null
+    return try {
+        runTest(context, dispatchTimeoutMs) {
+            scope = this
+            testBody()
+        }
+    } catch (e: IllegalStateException) {
+        val s = scope
+        if (e.message == "Check failed." && s != null) {
+            try {
+                for (scope in arrayOf(s, s.backgroundScope)) {
+                    @OptIn(InternalCoroutinesApi::class)
+                    scope.coroutineContext[Job]
+                        ?.getCancellationException()
+                        ?.let(e::addSuppressed)
+                }
+            } catch (_: IllegalStateException) {
+            }
+        }
+        throw e
+    }
+}
 
 internal const val DEFAULT_DISPATCH_TIMEOUT_MS = 2_000L
 
