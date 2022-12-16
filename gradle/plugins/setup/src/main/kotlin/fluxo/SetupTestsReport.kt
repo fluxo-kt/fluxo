@@ -22,6 +22,8 @@ import java.util.Date
 import java.util.concurrent.ConcurrentLinkedQueue
 import javax.xml.stream.XMLOutputFactory
 
+private const val TEST_REPORTS_TASK_NAME = "mergedTestReport"
+
 fun Project.setupTestsReport() {
     checkIsRootProject()
 
@@ -31,12 +33,24 @@ fun Project.setupTestsReport() {
         output.set(project.layout.buildDirectory.file("tests-report-merged.xml"))
     }
 
+    val disableTests by disableTests()
+    if (disableTests) {
+        logger.lifecycle("Test tasks disabled!")
+    }
+
     allprojects {
-        tasks.matching { it.name == "check" || it.name == "allTests" }.configureEach {
-            finalizedBy(mergedReport)
+        if (!disableTests) {
+            tasks.matching { it.name == "check" || it.name == "allTests" }.configureEach {
+                finalizedBy(mergedReport)
+            }
         }
 
-        tasks.withType<AbstractTestTask> {
+        tasks.withType<AbstractTestTask> configuration@{
+            if (disableTests) {
+                enabled = false
+                return@configuration
+            }
+
             val testTask = this
             finalizedBy(mergedReport)
 
@@ -62,8 +76,6 @@ fun Project.setupTestsReport() {
         }
     }
 }
-
-private const val TEST_REPORTS_TASK_NAME = "mergedTestReport"
 
 /**
  * Exports merged JUnit-like XML tests report for all tests in all projects.

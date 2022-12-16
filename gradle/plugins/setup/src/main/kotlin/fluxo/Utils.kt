@@ -57,3 +57,4 @@ private fun Project.envOrPropFlag(name: String): Provider<Boolean> {
 fun Project.isCI(): Provider<Boolean> = envOrPropFlag("CI")
 fun Project.isRelease(): Provider<Boolean> = envOrPropFlag("RELEASE")
 fun Project.useK2(): Provider<Boolean> = envOrPropFlag("USE_KOTLIN_K2")
+fun Project.disableTests(): Provider<Boolean> = envOrPropFlag("DISABLE_TESTS")

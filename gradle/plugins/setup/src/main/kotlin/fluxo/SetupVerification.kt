@@ -92,7 +92,11 @@ fun Project.setupVerification() {
             }
         }
 
+        val disableTests by disableTests()
         val detektTasks = tasks.withType<Detekt> {
+            if (disableTests) {
+                enabled = false
+            }
             reports {
                 sarif.required.set(true)
                 html.required.set(true)
@@ -149,7 +153,11 @@ private fun Project.setupLint(mergeLint: TaskProvider<ReportMergeTask>) {
         }
     }
 
+    val disableTests by disableTests()
     tasks.withType<AndroidLintTask> {
+        if (disableTests) {
+            enabled = false
+        }
         val lintTask = this
         if (name.startsWith("lintReport")) {
             mergeLint.configure {
