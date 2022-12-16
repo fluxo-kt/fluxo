@@ -20,9 +20,6 @@ public final class kt/fluxo/core/FluxoInterceptorKt {
 
 public final class kt/fluxo/core/FluxoSettings {
 	public fun <init> ()V
-	public final fun Fifo ()Lkt/fluxo/core/InputStrategy;
-	public final fun Lifo ()Lkt/fluxo/core/InputStrategy;
-	public final fun Parallel ()Lkt/fluxo/core/InputStrategy;
 	public final fun bootstrapperJob (Ljava/lang/String;Lkotlin/jvm/functions/Function2;)V
 	public static synthetic fun bootstrapperJob$default (Lkt/fluxo/core/FluxoSettings;Ljava/lang/String;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)V
 	public final fun getBootstrapper ()Lkotlin/jvm/functions/Function2;
@@ -35,7 +32,6 @@ public final class kt/fluxo/core/FluxoSettings {
 	public final fun getInterceptorContext ()Lkotlin/coroutines/CoroutineContext;
 	public final fun getInterceptors ()Ljava/util/List;
 	public final fun getName ()Ljava/lang/String;
-	public final fun getRepeatOnSubscribedStopTimeout ()J
 	public final fun getScope ()Lkotlinx/coroutines/CoroutineScope;
 	public final fun getSideEffectBufferSize ()I
 	public final fun getSideEffectsStrategy ()Lkt/fluxo/core/SideEffectsStrategy;
@@ -53,7 +49,6 @@ public final class kt/fluxo/core/FluxoSettings {
 	public final fun setInterceptorContext (Lkotlin/coroutines/CoroutineContext;)V
 	public final fun setLazy (Z)V
 	public final fun setName (Ljava/lang/String;)V
-	public final fun setRepeatOnSubscribedStopTimeout (J)V
 	public final fun setScope (Lkotlinx/coroutines/CoroutineScope;)V
 	public final fun setSideEffectBufferSize (I)V
 	public final fun setSideEffectsStrategy (Lkt/fluxo/core/SideEffectsStrategy;)V

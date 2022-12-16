@@ -179,6 +179,7 @@ public class FluxoSettings<Intent, State, SideEffect : Any> {
      * Ordered processing strategy. Predictable and intuitive. Best for background.
      * Consider [Lifo] for the UI or more responsiveness instead.
      */
+    @InlineOnly
     @get:JvmName("Fifo")
     public inline val Fifo: InputStrategy get() = InputStrategy.Fifo
 
@@ -187,10 +188,12 @@ public class FluxoSettings<Intent, State, SideEffect : Any> {
      * Provides more responsiveness, but can lose some intents!
      * Use [Fifo] if you need more predictable behavior.
      */
+    @InlineOnly
     @get:JvmName("Lifo")
     public inline val Lifo: InputStrategy get() = InputStrategy.Lifo
 
     /** Parallel processing of all intents. No guarantee that inputs will be processed in any given order. */
+    @InlineOnly
     @get:JvmName("Parallel")
     public inline val Parallel: InputStrategy get() = InputStrategy.Parallel
 
@@ -200,12 +203,15 @@ public class FluxoSettings<Intent, State, SideEffect : Any> {
     // region Migration helpers
 
     /**
-     * Not applicable from here. Use stopTimeout parameter for the [repeatOnSubscription] method instead.
+     * Not applicable from here! Use stopTimeout parameter for the [repeatOnSubscription] method instead.
      *
      * @see repeatOnSubscription
      */
-    @Deprecated("Use stopTimeout parameter for repeatOnSubscription method instead")
-    public var repeatOnSubscribedStopTimeout: Long = 0L
+    @InlineOnly
+    @Deprecated("Not applicable from here! Use stopTimeout parameter for repeatOnSubscription method instead")
+    public var repeatOnSubscribedStopTimeout: Long
+        inline get() = 0
+        inline set(@Suppress("UNUSED_PARAMETER") value) {}
 
     // endregion
 }
