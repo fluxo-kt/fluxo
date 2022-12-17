@@ -1,5 +1,7 @@
 package kt.fluxo.test
 
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -21,7 +23,9 @@ fun testLog(message: Any?) {
 }
 
 private const val MAX_THREAD_INFO_LEN = 52
-private val TIME_ZONE = TimeZone.currentSystemDefault()
+
+@Suppress("PrivatePropertyName")
+private val TIME_ZONE: TimeZone = TimeZone.currentSystemDefault()
 
 private fun String.atLeast(size: Int, placeholder: Char = '0'): String {
     if (length >= size) return this
@@ -30,3 +34,10 @@ private fun String.atLeast(size: Int, placeholder: Char = '0'): String {
 
 @Suppress("NO_ACTUAL_FOR_EXPECT")
 internal expect fun threadInfo(): String?
+
+
+operator fun <T> StateFlow<T>.getValue(thisRef: Any?, property: Any?): T = value
+
+operator fun <T> MutableStateFlow<T>.setValue(thisRef: Any?, property: Any?, value: T) {
+    this.value = value
+}

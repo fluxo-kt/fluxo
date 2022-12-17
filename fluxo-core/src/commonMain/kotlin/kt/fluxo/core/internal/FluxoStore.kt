@@ -20,6 +20,7 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -52,6 +53,7 @@ import kt.fluxo.core.intercept.FluxoEvent
 import kt.fluxo.core.intercept.StoreRequest
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
+import kotlin.coroutines.coroutineContext
 
 @PublishedApi
 @InternalFluxoApi
@@ -105,7 +107,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
     private val debugChecks = conf.debugChecks
     private val closeOnExceptions = conf.closeOnExceptions
     private val inputStrategy = conf.inputStrategy
-    private val interceptors = conf.interceptors.toList()
+    private val interceptors = conf.interceptors.toTypedArray()
     private val bootstrapper = conf.bootstrapper
     private val intentFilter = conf.intentFilter
 
@@ -191,15 +193,14 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
                         }
                         if (!resent) {
                             it.intent.closeSafely()
+                            it.deferred?.cancel()
                         }
                         if (isActive) {
                             events.emit(FluxoEvent.IntentUndelivered(this@FluxoStore, it.intent, resent = resent))
                         }
                     }
 
-                    is StoreRequest.RestoreState -> if (isActive) {
-                        updateState(it.state)
-                    }
+                    is StoreRequest.RestoreState -> updateState(it)
                 }
             }
         }
@@ -233,6 +234,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
                         try {
                             @Suppress("UNINITIALIZED_VARIABLE")
                             resent = sideEffectChannel!!.trySend(it).isSuccess
+                            events.emit(FluxoEvent.SideEffectUndelivered(this@FluxoStore, it, resent = resent))
                         } catch (_: Throwable) {
                         } finally {
                             seResendLock.unlock()
@@ -240,9 +242,6 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
                     }
                     if (!resent) {
                         it.closeSafely()
-                    }
-                    if (isActive) {
-                        events.emit(FluxoEvent.SideEffectUndelivered(this@FluxoStore, it, resent = resent))
                     }
                 }
             }
@@ -325,6 +324,17 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
 
     // region Internals
 
+    private suspend fun updateState(request: StoreRequest.RestoreState<Intent, State>): State {
+        try {
+            val state = updateState(request.state)
+            request.deferred?.complete(Unit)
+            return state
+        } catch (e: Throwable) {
+            request.deferred?.cancel(e.toCancellationException())
+            throw e
+        }
+    }
+
     private suspend fun updateState(nextValue: State): State = updateStateAndGet { nextValue }
 
     private suspend fun updateStateAndGet(function: (State) -> State): State {
@@ -339,12 +349,14 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
                 }
                 return nextValue
             }
+            // TODO: we may need to close nextValue here
+            coroutineContext.ensureActive()
         }
     }
 
     private suspend fun postSideEffect(sideEffect: SideEffect) {
-        if (!scope.isActive) {
-            sideEffect.closeSafely(cancellationCause)
+        if (!isActive) {
+            sideEffect.closeSafely(cancellationCause?.cause)
             events.emit(FluxoEvent.SideEffectUndelivered(this@FluxoStore, sideEffect, resent = false))
         } else {
             try {
@@ -355,10 +367,17 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
                     ?: (sideEffectFlowField as MutableSharedFlow).emit(sideEffect)
                 events.emit(FluxoEvent.SideEffectEmitted(this@FluxoStore, sideEffect))
             } catch (e: Throwable) {
-                sideEffect.closeSafely(e)
                 events.emit(FluxoEvent.SideEffectUndelivered(this@FluxoStore, sideEffect, resent = false))
+                if (e is CancellationException) {
+                    sideEffect.closeSafely(e.cause)
+                    if (!isActive) {
+                        return
+                    }
+                } else {
+                    sideEffect.closeSafely(e)
+                }
                 events.emit(FluxoEvent.UnhandledError(this@FluxoStore, e))
-                handleException(e, currentCoroutineContext())
+                handleException(e, coroutineContext)
             }
         }
     }
@@ -385,9 +404,11 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
             try {
                 close() // Close if Closeable resource
             } catch (e: Throwable) {
-                if (cause != null) e.addSuppressed(cause)
+                if (cause != null) {
+                    e.addSuppressed(cause)
+                }
                 events.emit(FluxoEvent.UnhandledError(this@FluxoStore, e))
-                handleException(e, currentCoroutineContext())
+                handleException(e, coroutineContext)
             }
         }
     }
@@ -414,13 +435,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
                     }
                 }
 
-                is StoreRequest.RestoreState -> {
-                    try {
-                        updateState(request.state)
-                    } finally {
-                        request.deferred?.complete(Unit)
-                    }
-                }
+                is StoreRequest.RestoreState -> updateState(request)
             }
         }
         scope.launch(intentContext, start = CoroutineStart.UNDISPATCHED) {
@@ -508,7 +523,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         } catch (e: Throwable) {
             deferred?.completeExceptionally(e)
             events.emit(FluxoEvent.IntentError(this, intent, e))
-            handleException(e, currentCoroutineContext())
+            handleException(e, coroutineContext)
         }
     }
 
@@ -518,7 +533,6 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         events.emit(FluxoEvent.SideJobQueued(this@FluxoStore, request.key))
 
         val key = request.key
-        val block = request.block
 
         val map = sideJobsMap
         val prevJob = map[key]
@@ -562,6 +576,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
 
                     // Await all children completions with coroutineScope
                     coroutineScope {
+                        val block = request.block
                         sideJobScope.block()
                     }
                     events.emit(FluxoEvent.SideJobCompleted(this@FluxoStore, key, restartState))
@@ -619,6 +634,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         events.tryEmit(FluxoEvent.StoreClosed(this, cause))
 
         val cancellationCause = cause.toCancellationException() ?: cancellationCause
+        val cause = cancellationCause?.cause
 
         // Useful if intentContext has ovirriden Job
         intentContext.cancel(cancellationCause)
@@ -634,19 +650,19 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         @OptIn(ExperimentalCoroutinesApi::class)
         // FIXME: Test case when interceptorScope is already closed here
         interceptorScope.launch(Dispatchers.Unconfined + Job(), CoroutineStart.UNDISPATCHED) {
-            mutableState.value.closeSafely(cancellationCause)
+            mutableState.value.closeSafely(cause)
             (sideEffectFlowField as? MutableSharedFlow)?.apply {
                 val replayCache = replayCache
                 resetReplayCache()
-                replayCache.forEach { it.closeSafely(cancellationCause) }
+                replayCache.forEach { it.closeSafely(cause) }
             }
             sideEffectChannel?.apply {
                 while (!isEmpty) {
                     val result = receiveCatching()
                     if (result.isClosed) break
-                    result.getOrNull()?.closeSafely(cancellationCause)
+                    result.getOrNull()?.closeSafely(cause)
                 }
-                close(cancellationCause?.cause)
+                close(cause)
             }
         }
 

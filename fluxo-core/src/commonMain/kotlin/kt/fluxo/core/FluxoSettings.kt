@@ -170,6 +170,12 @@ public class FluxoSettings<Intent, State, SideEffect : Any> {
         exceptionHandler = CoroutineExceptionHandler(handler)
     }
 
+    /** [exceptionHandler] convenience method */
+    @InlineOnly
+    public inline fun onError(crossinline handler: CoroutineContext.(Throwable) -> Unit) {
+        exceptionHandler = CoroutineExceptionHandler(handler)
+    }
+
     // endregion
 
 

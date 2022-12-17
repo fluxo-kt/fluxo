@@ -3,6 +3,7 @@ package kt.fluxo.tests
 import app.cash.turbine.test
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
+import kt.fluxo.core.closeAndWait
 import kt.fluxo.core.container
 import kt.fluxo.core.dsl.SideJobScope.RestartState
 import kt.fluxo.core.dsl.StoreScope
@@ -101,9 +102,7 @@ internal class SideJobTest {
     fun sj_error() = runUnitTest {
         var caught: Throwable? = null
         val store = backgroundScope.container<String, String>("init") {
-            exceptionHandler { _, e ->
-                caught = e
-            }
+            onError { caught = it }
         }
         store.intent {
             sideJob {
@@ -123,8 +122,8 @@ internal class SideJobTest {
             }
         }
         assertIs<UnsupportedOperationException>(caught)
-        assertTrue(store.isActive)
-        store.close()
+        assertTrue(store.isActive, "Store is closed. Expected to be active")
+        store.closeAndWait()
     }
 
     @Test

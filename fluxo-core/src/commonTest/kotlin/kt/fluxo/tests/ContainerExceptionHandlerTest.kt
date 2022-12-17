@@ -1,6 +1,5 @@
 package kt.fluxo.tests
 
-import app.cash.turbine.testIn
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -8,74 +7,65 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.yield
 import kt.fluxo.core.StoreClosedException
+import kt.fluxo.core.closeAndWait
 import kt.fluxo.core.container
-import kt.fluxo.test.CoroutineScopeAwareTest
-import kt.fluxo.test.IgnoreNative
-import kt.fluxo.test.KMM_PLATFORM
-import kt.fluxo.test.Platform
-import kt.fluxo.test.mayFailWith
+import kt.fluxo.test.getValue
 import kt.fluxo.test.runUnitTest
+import kt.fluxo.test.setValue
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
-import kotlin.test.assertTrue
 
-internal class ContainerExceptionHandlerTest : CoroutineScopeAwareTest(
-    context = Job() + CoroutineExceptionHandler { _, _ -> /*just be silent*/ },
-) {
+class ContainerExceptionHandlerTest {
+
     @Test
-    @IgnoreNative
-    fun by_default_exception_breaks_the_scope() = runUnitTest {
-        val initState = 10
-        val container = scope.container(initState)
-        val newState = 20
-
-        var completionException: Throwable? = null
-        scope.coroutineContext[Job]?.invokeOnCompletion {
-            completionException = it
+    fun by_default_exception_breaks_the_store() = runUnitTest {
+        val initState = 1
+        var completionException by MutableStateFlow<Throwable?>(null)
+        val job = Job()
+        val container = container(initState) {
+            // Override job to disable error propagation in TestScope
+            scope = CoroutineScope(job)
+            onError { completionException = it }
+            closeOnExceptions = true
         }
-
         container.send {
             throw IllegalStateException()
         }
+        yield()
 
-        mayFailWith<StoreClosedException> {
+        assertFailsWith<StoreClosedException> {
             container.send {
-                updateState { newState }
+                updateState { 2 }
             }
         }
+        yield()
 
-        assertFailsWith<CancellationException> {
-            container.stateFlow.testIn(scope).run {
-                assertEquals(initState, awaitItem())
-                awaitComplete()
-            }
-        }
+        assertEquals(false, container.isActive, "Container is active but shouldn't.")
+        assertEquals(false, job.isActive, "Job is active but shouldn't.")
+        assertEquals(initState, container.stateFlow.first())
 
-        assertEquals(false, scope.isActive, "Scope is active but shouldn't.")
-        if (KMM_PLATFORM != Platform.MINGW) {
-            assertIs<IllegalStateException>(completionException, "completionException was not caught.")
-        } else {
-            assertIs<IllegalStateException?>(completionException, "completionException was not caught.")
-        }
+        assertIs<IllegalStateException>(completionException, "completionException was not caught.")
     }
 
     @Test
     fun with_exception_handler_exceptions_are_caught() = runUnitTest {
         val initState = 10
         val exceptions = mutableListOf<Throwable>()
-        val handler = CoroutineExceptionHandler { _, throwable -> exceptions += throwable }
-        val container = scope.container(initState) {
-            exceptionHandler = handler
+        val container = container(initState) {
             intentContext = Dispatchers.Unconfined
+            onError { exceptions += it }
+            closeOnExceptions = false
         }
         val newState = 20
 
@@ -91,9 +81,10 @@ internal class ContainerExceptionHandlerTest : CoroutineScopeAwareTest(
         }.join()
 
         assertEquals(newState, container.state)
-        assertEquals(true, scope.isActive)
         assertEquals(1, exceptions.size)
-        assertTrue { exceptions.first() is IllegalStateException }
+        assertIs<IllegalStateException>(exceptions.first(), "completionException was not caught.")
+
+        container.closeAndWait()
     }
 
     @Test

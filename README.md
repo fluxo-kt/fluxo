@@ -51,8 +51,9 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super p
 * Leak-free transfer, delivery
   guarantees [[1](https://github.com/Kotlin/kotlinx.coroutines/issues/1936), [2](https://gmk57.medium.com/unfortunately-events-may-be-dropped-if-channel-receiveasflow-cfe78ae29004)].
 * Strictly not recommended, but JVM `Closeable` resources partially supported as a state and side effects.
-  * The previous state will be properly closed on change.
+  * The previous state will be closed on change.
   * Side effects closed when not delivered.
+  * However, no clear guarantees!
 * Intentionally unopinionated, extensible API: you can follow guides or use it as you want.
 * Well tested.
 * Reactive streams compatibility

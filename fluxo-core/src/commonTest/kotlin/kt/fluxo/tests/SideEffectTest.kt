@@ -2,12 +2,14 @@ package kt.fluxo.tests
 
 import app.cash.turbine.test
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.yield
 import kt.fluxo.core.Container
 import kt.fluxo.core.SideEffectsStrategy
 import kt.fluxo.core.closeAndWait
@@ -15,24 +17,21 @@ import kt.fluxo.core.container
 import kt.fluxo.core.debug.debugClassName
 import kt.fluxo.core.intercept.FluxoEvent
 import kt.fluxo.core.internal.Closeable
-import kt.fluxo.test.CoroutineScopeAwareTest
-import kt.fluxo.test.IgnoreJs
-import kt.fluxo.test.IgnoreLinux
-import kt.fluxo.test.IgnoreNativeAndJs
+import kt.fluxo.test.getValue
 import kt.fluxo.test.runUnitTest
+import kt.fluxo.test.setValue
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
-internal class SideEffectTest : CoroutineScopeAwareTest() {
+internal class SideEffectTest {
     private companion object {
         private val BASIC_STRATEGIES = arrayOf(SideEffectsStrategy.RECEIVE, SideEffectsStrategy.CONSUME)
     }
 
     @Test
-    @IgnoreJs
     fun side_effects_are_emitted_ordered_by_default() = runUnitTest {
         for (strategy in BASIC_STRATEGIES) {
             // Uses Fifo strategy by default, saving order of intents
@@ -40,12 +39,17 @@ internal class SideEffectTest : CoroutineScopeAwareTest() {
                 sideEffectsStrategy = strategy
             }
             container.sideEffectFlow.test {
-                repeat(1000) {
-                    container.postSideEffect(it)
+                val n = 500
+                val post = backgroundScope.launch {
+                    repeat(n) {
+                        container.postSideEffect(it)
+                        yield()
+                    }
                 }
-                repeat(1000) {
+                repeat(n) {
                     assertEquals(it, awaitItem())
                 }
+                post.join()
                 container.close()
                 awaitComplete()
             }
@@ -163,62 +167,71 @@ internal class SideEffectTest : CoroutineScopeAwareTest() {
         container.closeAndWait()
     }
 
-    @Test
-    @IgnoreLinux
-    fun unconsumed_side_effects_will_be_closed() = runUnitTest {
-        for (strategy in arrayOf(SideEffectsStrategy.RECEIVE, SideEffectsStrategy.SHARE())) {
-            val container = scope.container<Unit, Any>(initialState = Unit, settings = {
-                sideEffectsStrategy = strategy
-                debugChecks = false
-                closeOnExceptions = false
-            })
-            var hasCloses = false
-            val post = backgroundScope.launch {
-                val closeable = object : Closeable {
-                    override fun close() {
-                        if (hasCloses) {
-                            throw IllegalStateException()
-                        }
-                        hasCloses = true
-                    }
-                }
-                repeat(100) {
-                    container.send(intent = {
-                        postSideEffect(sideEffect = if (it % 2 == 0) it else closeable)
-                    })
-                }
-            }
-            container.sideEffectFlow.take(30).toList()
-            post.join()
-            container.closeAndWait()
-            assertTrue(hasCloses, "Expected to have closed effects (strategy: ${strategy.debugClassName()})")
-        }
-    }
 
     @Test
-    @IgnoreNativeAndJs
-    fun undelivered_side_effects() = runUnitTest(dispatchTimeoutMs = 10_000) {
-        for (strategy in BASIC_STRATEGIES) {
-            val container = scope.container<Unit, Int>(initialState = Unit, settings = {
-                sideEffectsStrategy = strategy
-                sideEffectBufferSize = Channel.CONFLATED
-            })
-            var hasUndelivered = false
-            val intercept = launch {
-                container.eventsFlow.first { it is FluxoEvent.SideEffectUndelivered }
-                hasUndelivered = true
-            }
-            val post = backgroundScope.launch {
-                repeat(1000) {
-                    container.postSideEffect(it)
-                }
-            }
-            val effects = container.sideEffectFlow.take(50).toList()
-            assertEquals(50, effects.size, "effects.size = ${effects.size} (strategy: ${strategy.debugClassName()})")
-            post.join()
-            container.closeAndWait()
-            intercept.join()
-            assertTrue(hasUndelivered, "Expected to have undelivered side effects (strategy: ${strategy.debugClassName()})")
+    fun unconsumed_side_effects_will_be_closed__consume_strategy() = unconsumed_side_effects_will_be_closed(SideEffectsStrategy.CONSUME)
+
+    @Test
+    fun unconsumed_side_effects_will_be_closed__receive_strategy() = unconsumed_side_effects_will_be_closed(SideEffectsStrategy.RECEIVE)
+
+    private fun unconsumed_side_effects_will_be_closed(strategy: SideEffectsStrategy) = runUnitTest {
+        val container = container<Unit, Any>(initialState = Unit, settings = {
+            sideEffectsStrategy = strategy
+            scope = CoroutineScope(SupervisorJob())
+            debugChecks = false
+            closeOnExceptions = false
+            onError {}
+        })
+        val collect = backgroundScope.launch {
+            container.sideEffectFlow.take(30).toList()
         }
+
+        var hasCloses = false
+        val closeable = object : Closeable {
+            override fun close() {
+                if (hasCloses) {
+                    throw IllegalStateException()
+                }
+                hasCloses = true
+            }
+        }
+        repeat(100) {
+            container.send(intent = {
+                postSideEffect(sideEffect = if (it % 2 == 0) it else closeable)
+            })
+        }
+
+        collect.join()
+        container.closeAndWait()
+        assertTrue(hasCloses, "Expected to have closed effects (strategy: ${strategy.debugClassName()})")
+    }
+
+
+    @Test
+    fun undelivered_side_effects__consume_strategy() = undelivered_side_effects(SideEffectsStrategy.CONSUME)
+
+    @Test
+    fun undelivered_side_effects__receive_strategy() = undelivered_side_effects(SideEffectsStrategy.RECEIVE)
+
+    private fun undelivered_side_effects(strategy: SideEffectsStrategy) = runUnitTest {
+        val container = backgroundScope.container<Unit, Int>(initialState = Unit, settings = {
+            sideEffectsStrategy = strategy
+            sideEffectBufferSize = Channel.CONFLATED
+        })
+        var hasUndelivered by MutableStateFlow(false)
+        val intercept = backgroundScope.launch {
+            container.eventsFlow.first { it is FluxoEvent.SideEffectUndelivered }
+            hasUndelivered = true
+        }
+        launch {
+            val effects = container.sideEffectFlow.take(16).toList()
+            assertTrue(effects.isNotEmpty(), "effects.size = ${effects.size} (strategy: ${strategy.debugClassName()})")
+        }
+        repeat(200) {
+            container.postSideEffect(it)
+        }
+        intercept.join()
+        assertTrue(hasUndelivered, "Expected to have undelivered side effects (strategy: ${strategy.debugClassName()})")
+        container.closeAndWait()
     }
 }
