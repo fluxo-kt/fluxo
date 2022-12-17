@@ -355,30 +355,24 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
     }
 
     private suspend fun postSideEffect(sideEffect: SideEffect) {
-        if (!isActive) {
-            sideEffect.closeSafely(cancellationCause?.cause)
-            events.emit(FluxoEvent.SideEffectUndelivered(this@FluxoStore, sideEffect, resent = false))
-        } else {
-            try {
-                if (sideEffect is GuaranteedEffect<*>) {
-                    sideEffect.setResendFunction(::postSideEffectSync)
-                }
-                sideEffectChannel?.send(sideEffect)
-                    ?: (sideEffectFlowField as MutableSharedFlow).emit(sideEffect)
-                events.emit(FluxoEvent.SideEffectEmitted(this@FluxoStore, sideEffect))
-            } catch (e: Throwable) {
-                events.emit(FluxoEvent.SideEffectUndelivered(this@FluxoStore, sideEffect, resent = false))
-                if (e is CancellationException) {
-                    sideEffect.closeSafely(e.cause)
-                    if (!isActive) {
-                        return
-                    }
-                } else {
-                    sideEffect.closeSafely(e)
-                }
-                events.emit(FluxoEvent.UnhandledError(this@FluxoStore, e))
-                handleException(e, coroutineContext)
+        try {
+            if (!isActive) {
+                throw cancellationCause ?: CancellationException(F)
             }
+            if (sideEffect is GuaranteedEffect<*>) {
+                sideEffect.setResendFunction(::postSideEffectSync)
+            }
+            sideEffectChannel?.send(sideEffect)
+                ?: (sideEffectFlowField as MutableSharedFlow).emit(sideEffect)
+            events.emit(FluxoEvent.SideEffectEmitted(this@FluxoStore, sideEffect))
+        } catch (e: CancellationException) {
+            events.emit(FluxoEvent.SideEffectUndelivered(this@FluxoStore, sideEffect, resent = false))
+            sideEffect.closeSafely(e.cause)
+        } catch (e: Throwable) {
+            events.emit(FluxoEvent.SideEffectUndelivered(this@FluxoStore, sideEffect, resent = false))
+            events.emit(FluxoEvent.UnhandledError(this@FluxoStore, e))
+            sideEffect.closeSafely(e)
+            handleException(e, coroutineContext)
         }
     }
 
@@ -634,7 +628,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         events.tryEmit(FluxoEvent.StoreClosed(this, cause))
 
         val cancellationCause = cause.toCancellationException() ?: cancellationCause
-        val cause = cancellationCause?.cause
+        val ceCause = cancellationCause?.cause
 
         // Useful if intentContext has ovirriden Job
         intentContext.cancel(cancellationCause)
@@ -650,19 +644,19 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         @OptIn(ExperimentalCoroutinesApi::class)
         // FIXME: Test case when interceptorScope is already closed here
         interceptorScope.launch(Dispatchers.Unconfined + Job(), CoroutineStart.UNDISPATCHED) {
-            mutableState.value.closeSafely(cause)
+            mutableState.value.closeSafely(ceCause)
             (sideEffectFlowField as? MutableSharedFlow)?.apply {
                 val replayCache = replayCache
                 resetReplayCache()
-                replayCache.forEach { it.closeSafely(cause) }
+                replayCache.forEach { it.closeSafely(ceCause) }
             }
             sideEffectChannel?.apply {
                 while (!isEmpty) {
                     val result = receiveCatching()
                     if (result.isClosed) break
-                    result.getOrNull()?.closeSafely(cause)
+                    result.getOrNull()?.closeSafely(ceCause)
                 }
-                close(cause)
+                close(ceCause)
             }
         }
 
