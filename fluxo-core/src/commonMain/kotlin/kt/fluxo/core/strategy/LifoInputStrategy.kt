@@ -8,9 +8,12 @@ import kt.fluxo.core.InputStrategy
 import kt.fluxo.core.dsl.InputStrategyScope
 
 /**
- * UI events oriented strategy. Cancels previous unfinished intents when receives new one.
+ * `Last-in, first-out` - strategy optimized for lots of events (e.g. user actions).
+ * Provides more responsiveness comparing to [Fifo][FifoInputStrategy], but can lose some intents!
  *
- * Provides more responsiveness, but can lose some intents!
+ * **IMPORTANT:** Cancels previous unfinished intents when receives new one!
+ *
+ * Consider [Parallel][ParallelInputStrategy] if you steel need more responsiveness, but without dropping of any event.
  */
 internal object LifoInputStrategy : InputStrategy() {
 

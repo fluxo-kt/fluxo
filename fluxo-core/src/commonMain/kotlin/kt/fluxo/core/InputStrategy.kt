@@ -37,21 +37,29 @@ public abstract class InputStrategy {
      */
     public companion object InBox {
         /**
-         * Ordered processing strategy. Predictable and intuitive. Best for background.
-         * Consider [Lifo] for the UI or more responsiveness instead.
+         * `First-in, first-out` - ordered processing strategy. Predictable and intuitive, default choice.
+         *
+         * Consider [Parallel] or [Lifo] instead if you need more responsiveness.
          */
         @get:JvmName("Fifo")
         public val Fifo: InputStrategy get() = FifoInputStrategy
 
         /**
-         * UI events oriented strategy. Cancels previous unfinished intents when receives new one.
+         * `Last-in, first-out` - strategy optimized for lots of events (e.g. user actions).
+         * Provides more responsiveness comparing to [Fifo], but can lose some intents!
          *
-         * Provides more responsiveness, but can lose some intents!
+         * **IMPORTANT:** Cancels previous unfinished intents when receives new one!
+         *
+         * Consider [Parallel] if you steel need more responsiveness, but without dropping of any event.
          */
         @get:JvmName("Lifo")
         public val Lifo: InputStrategy get() = LifoInputStrategy
 
-        /** Parallel processing of all intents. No guarantee that inputs will be processed in any given order. */
+        /**
+         * Parallel processing of all intents, can provide better responsiveness comparing to [Fifo].
+         *
+         * **IMPORTANT:** No guarantee that inputs will be processed in any given order!
+         */
         @get:JvmName("Parallel")
         public val Parallel: InputStrategy get() = ParallelInputStrategy
     }

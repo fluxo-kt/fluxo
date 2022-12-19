@@ -121,7 +121,7 @@ internal fun MavenPublication.setupPublicationPom(
             }
         }
         artifact(dokkaHtmlAsJavadoc)
-    } catch (e: Throwable) {
+    } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
         project.logger.lifecycle("Fallback to Javadoc. Dokka publication setup error: $e", e)
         artifact(project.javadocJarTask())
     }

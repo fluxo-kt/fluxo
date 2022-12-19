@@ -66,7 +66,7 @@ internal abstract class MergeDetektBaselinesTask : DefaultTask() {
 
         val bp = try {
             BaselineProvider.load()
-        } catch (e: Throwable) {
+        } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
             throw IllegalStateException("Couldn't load BaselineProvider: $e", e)
         }
         val merged = baselineFiles

@@ -6,10 +6,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kt.fluxo.core.Store
 import kt.fluxo.core.annotation.FluxoDsl
-import kt.fluxo.core.annotation.InternalFluxoApi
 
 @FluxoDsl
-@InternalFluxoApi
 public interface SideJobScope<in Intent, State, in SideEffect : Any> : CoroutineScope {
 
     public val currentStateWhenStarted: State

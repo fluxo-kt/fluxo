@@ -55,7 +55,7 @@ try {
     } else {
         System.err.println("Kover report NOT found: $koverFile")
     }
-} catch (e: Throwable) {
+} catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
     System.err.println("Kover report error: $e")
     e.printStackTrace(System.err)
 }
@@ -113,7 +113,7 @@ try {
     } else {
         System.err.println("Tests report NOT found: $testsFile")
     }
-} catch (e: Throwable) {
+} catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
     System.err.println("Tests report error: $e")
     e.printStackTrace(System.err)
 }

@@ -12,7 +12,6 @@ import kt.fluxo.core.annotation.InternalFluxoApi
 import kotlin.internal.InlineOnly
 
 @FluxoDsl
-@InternalFluxoApi
 public interface StoreScope<in Intent, State, in SideEffect : Any> : CoroutineScope {
 
     @InternalFluxoApi

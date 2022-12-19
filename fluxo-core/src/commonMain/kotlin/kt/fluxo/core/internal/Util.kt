@@ -1,3 +1,5 @@
+@file:Suppress("KDocUnresolvedReference")
+
 package kt.fluxo.core.internal
 
 import kotlinx.coroutines.CancellationException
@@ -38,6 +40,15 @@ internal class SubscriptionCountFlow<T>(
     }
 }
 
+/**
+ * Atomically adds the given [delta] to the current [value][StateFlow.value].
+ *
+ * @param delta the value to add
+ * @return the previous value
+ *
+ * @see MutableStateFlow.compareAndSet
+ * @see java.util.concurrent.atomic.AtomicInteger.getAndAdd
+ */
 internal fun MutableStateFlow<Int>.getAndAdd(delta: Int): Int {
     while (true) {
         val value = value
