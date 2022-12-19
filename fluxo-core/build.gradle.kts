@@ -20,8 +20,6 @@ setupPublication()
 setupBinaryCompatibilityValidator()
 
 kotlin {
-    explicitApi()
-
     setupSourceSets {
         val js by bundle()
         val jsNative by bundle()
@@ -66,19 +64,6 @@ kotlin {
         java.main.dependencies {
             compileOnly(libs.androidx.annotation)
             compileOnly(libs.jsr305)
-        }
-    }
-}
-
-android {
-    namespace = "kt.fluxo.core"
-
-    // Optimize code with R8 for android release aar
-    // TODO: On-device tests for aar
-    buildTypes {
-        release {
-            isMinifyEnabled = true
-            proguardFile("../rules.pro")
         }
     }
 }

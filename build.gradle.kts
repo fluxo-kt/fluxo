@@ -42,6 +42,8 @@ plugins {
 
 setupDefaults(
     multiplatformConfigurator = {
+        explicitApi()
+
         android()
         jvm()
         js(IR) {
@@ -88,6 +90,20 @@ setupDefaults(
         compileSdkVersion = libs.versions.androidCompileSdk.get().toInt(),
         targetSdkVersion = libs.versions.androidTargetSdk.get().toInt(),
         buildToolsVersion = libs.versions.androidBuildTools.get(),
+        configurator = {
+            if (this is com.android.build.gradle.LibraryExtension) {
+                namespace = "kt.fluxo.core"
+
+                // Optimize code with R8 for android release aar
+                // TODO: On-device tests for aar
+                buildTypes {
+                    release {
+                        isMinifyEnabled = true
+                        proguardFile(rootProject.file("rules.pro"))
+                    }
+                }
+            }
+        },
     ),
     publicationConfig = run {
         val fluxoVersion = libs.versions.fluxo.get()
@@ -289,13 +305,16 @@ allprojects {
 
                 // more data on MVVM+ lambda intents for debugging
                 // indy mode provides arguments names
-                freeCompilerArgs += if (isCi || isRelease) listOf(
-                    "-Xlambdas=indy",
-                    "-Xsam-conversions=indy",
-                ) else listOf(
-                    "-Xlambdas=class",
-                    "-Xsam-conversions=class",
-                )
+                freeCompilerArgs += when {
+                    isCi || isRelease -> listOf(
+                        "-Xlambdas=indy",
+                        "-Xsam-conversions=indy",
+                    )
+                    else -> listOf(
+                        "-Xlambdas=class",
+                        "-Xsam-conversions=class",
+                    )
+                }
 
                 if (useK2) {
                     freeCompilerArgs += "-Xuse-k2"

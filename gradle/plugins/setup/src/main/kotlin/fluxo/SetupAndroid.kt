@@ -52,23 +52,28 @@ internal fun Project.setupAndroidCommon(config: AndroidConfig) {
             targetSdk = config.targetSdkVersion
         }
 
+        val javaLangTarget = libsCatalog.findVersion("javaLangTarget").get().toString()
         compileOptions {
-            sourceCompatibility(JavaVersion.VERSION_1_8)
-            targetCompatibility(JavaVersion.VERSION_1_8)
+            val javaVersion = JavaVersion.toVersion(javaLangTarget)
+            sourceCompatibility(javaVersion)
+            targetCompatibility(javaVersion)
         }
 
         withGroovyBuilder {
             "kotlinOptions" {
-                setProperty("jvmTarget", "1.8")
+                setProperty("jvmTarget", javaLangTarget)
             }
         }
+
+        config.configurator?.invoke(this)
     }
 
+    val disableTests by disableTests()
     tasks.withType<AndroidLintTask> {
-        enabled = Compilations.isGenericEnabled
+        enabled = Compilations.isGenericEnabled && !disableTests
     }
 
     tasks.withType<AndroidLintTextOutputTask> {
-        enabled = Compilations.isGenericEnabled
+        enabled = Compilations.isGenericEnabled && !disableTests
     }
 }
