@@ -24,9 +24,7 @@ import kt.fluxo.core.internal.FluxoStore
 @ExperimentalFluxoApi
 public suspend fun Store<*, *, *>.closeAndWait() {
     close()
-    val store = this as FluxoStore
-    store.interceptorScope.coroutineContext[Job]!!.join()
-    store.intentContext[Job]!!.join()
+    (this as FluxoStore).intentContext[Job]!!.join()
 }
 
 /**

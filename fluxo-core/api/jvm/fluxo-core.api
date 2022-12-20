@@ -31,7 +31,6 @@ public final class kt/fluxo/core/FluxoSettings {
 	public final fun getInputStrategy ()Lkt/fluxo/core/InputStrategy;
 	public final fun getIntentContext ()Lkotlin/coroutines/CoroutineContext;
 	public final fun getIntentFilter ()Lkotlin/jvm/functions/Function2;
-	public final fun getInterceptorContext ()Lkotlin/coroutines/CoroutineContext;
 	public final fun getInterceptors ()Ljava/util/List;
 	public final fun getName ()Ljava/lang/String;
 	public final fun getScope ()Lkotlinx/coroutines/CoroutineScope;
@@ -48,7 +47,6 @@ public final class kt/fluxo/core/FluxoSettings {
 	public final fun setInputStrategy (Lkt/fluxo/core/InputStrategy;)V
 	public final fun setIntentContext (Lkotlin/coroutines/CoroutineContext;)V
 	public final fun setIntentFilter (Lkotlin/jvm/functions/Function2;)V
-	public final fun setInterceptorContext (Lkotlin/coroutines/CoroutineContext;)V
 	public final fun setLazy (Z)V
 	public final fun setName (Ljava/lang/String;)V
 	public final fun setScope (Lkotlinx/coroutines/CoroutineScope;)V
@@ -105,7 +103,6 @@ public final class kt/fluxo/core/SideEffectsStrategy$SHARE : kt/fluxo/core/SideE
 
 public abstract interface class kt/fluxo/core/Store : java/io/Closeable {
 	public abstract fun close ()V
-	public abstract fun getEventsFlow ()Lkotlinx/coroutines/flow/Flow;
 	public abstract fun getName ()Ljava/lang/String;
 	public abstract fun getSideEffectFlow ()Lkotlinx/coroutines/flow/Flow;
 	public fun getState ()Ljava/lang/Object;
@@ -152,7 +149,7 @@ public abstract interface class kt/fluxo/core/dsl/BootstrapperScope : kt/fluxo/c
 }
 
 public abstract interface class kt/fluxo/core/dsl/InterceptorScope : kotlinx/coroutines/CoroutineScope {
-	public abstract fun getStoreName ()Ljava/lang/String;
+	public abstract fun getStore ()Lkt/fluxo/core/Store;
 	public abstract fun postRequest (Lkt/fluxo/core/intercept/StoreRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
@@ -341,6 +338,32 @@ public final class kt/fluxo/core/intercept/FluxoEvent$UnhandledError : kt/fluxo/
 	public fun toString ()Ljava/lang/String;
 }
 
+public abstract interface class kt/fluxo/core/intercept/FluxoInterceptor {
+	public fun bootstrap (Lkt/fluxo/core/dsl/InterceptorScope;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun bootstrap$suspendImpl (Lkt/fluxo/core/intercept/FluxoInterceptor;Lkt/fluxo/core/dsl/InterceptorScope;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun closed (Lkt/fluxo/core/dsl/InterceptorScope;Ljava/lang/Throwable;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun closed$suspendImpl (Lkt/fluxo/core/intercept/FluxoInterceptor;Lkt/fluxo/core/dsl/InterceptorScope;Ljava/lang/Throwable;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun intent (Lkt/fluxo/core/dsl/InterceptorScope;Lkt/fluxo/core/intercept/StoreRequest$HandleIntent;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun intent$suspendImpl (Lkt/fluxo/core/intercept/FluxoInterceptor;Lkt/fluxo/core/dsl/InterceptorScope;Lkt/fluxo/core/intercept/StoreRequest$HandleIntent;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun intentQueue (Lkt/fluxo/core/dsl/InterceptorScope;Ljava/lang/Object;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun intentQueue$suspendImpl (Lkt/fluxo/core/intercept/FluxoInterceptor;Lkt/fluxo/core/dsl/InterceptorScope;Ljava/lang/Object;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun intentUndelivered (Lkt/fluxo/core/dsl/InterceptorScope;Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun intentUndelivered$suspendImpl (Lkt/fluxo/core/intercept/FluxoInterceptor;Lkt/fluxo/core/dsl/InterceptorScope;Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun sideEffect (Lkt/fluxo/core/dsl/InterceptorScope;Ljava/lang/Object;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun sideEffect$suspendImpl (Lkt/fluxo/core/intercept/FluxoInterceptor;Lkt/fluxo/core/dsl/InterceptorScope;Ljava/lang/Object;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun sideEffectUndelivered (Lkt/fluxo/core/dsl/InterceptorScope;Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun sideEffectUndelivered$suspendImpl (Lkt/fluxo/core/intercept/FluxoInterceptor;Lkt/fluxo/core/dsl/InterceptorScope;Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun sideJob (Lkt/fluxo/core/dsl/InterceptorScope;Ljava/lang/String;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun sideJob$suspendImpl (Lkt/fluxo/core/intercept/FluxoInterceptor;Lkt/fluxo/core/dsl/InterceptorScope;Ljava/lang/String;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun sideJobQueue (Lkt/fluxo/core/dsl/InterceptorScope;Ljava/lang/String;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun sideJobQueue$suspendImpl (Lkt/fluxo/core/intercept/FluxoInterceptor;Lkt/fluxo/core/dsl/InterceptorScope;Ljava/lang/String;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun started (Lkt/fluxo/core/dsl/InterceptorScope;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun started$suspendImpl (Lkt/fluxo/core/intercept/FluxoInterceptor;Lkt/fluxo/core/dsl/InterceptorScope;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun stateChanged (Lkt/fluxo/core/dsl/InterceptorScope;Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun stateChanged$suspendImpl (Lkt/fluxo/core/intercept/FluxoInterceptor;Lkt/fluxo/core/dsl/InterceptorScope;Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun unhandledError (Lkt/fluxo/core/dsl/InterceptorScope;Ljava/lang/Throwable;)V
+}
+
 public abstract interface class kt/fluxo/core/intercept/StoreRequest {
 }
 
@@ -367,7 +390,6 @@ public final class kt/fluxo/core/internal/FluxoIntentHandler : kt/fluxo/core/Int
 public final class kt/fluxo/core/internal/FluxoStore : kt/fluxo/core/Store {
 	public fun <init> (Ljava/lang/Object;Lkt/fluxo/core/IntentHandler;Lkt/fluxo/core/FluxoSettings;)V
 	public fun close ()V
-	public fun getEventsFlow ()Lkotlinx/coroutines/flow/Flow;
 	public fun getName ()Ljava/lang/String;
 	public fun getSideEffectFlow ()Lkotlinx/coroutines/flow/Flow;
 	public fun getStateFlow ()Lkotlinx/coroutines/flow/StateFlow;

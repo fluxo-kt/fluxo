@@ -39,5 +39,6 @@ rootProject.name = "fluxo-mvi"
 
 include(":fluxo-core")
 include(":fluxo-data")
+include(":fluxo-event-stream")
 
 include(":benchmarks:jmh")

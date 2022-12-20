@@ -16,7 +16,8 @@ internal actual fun <I> debugIntentWrapper(intent: I): I {
     val fluxoIntent = (intent as? FluxoIntent<Any?, Any>) ?: return intent
 
     @Suppress("ThrowingExceptionsWithoutMessageOrCause")
-    val traceElement = Throwable().stackTrace.getOrNull(2)
+    val stackTrace = Throwable().stackTrace
+    val traceElement = stackTrace.getOrNull(2)
     val methodName = traceElement?.methodName.let {
         when {
             !it.isNullOrEmpty() && it != "invoke" && it != "invokeSuspend" -> it // function name

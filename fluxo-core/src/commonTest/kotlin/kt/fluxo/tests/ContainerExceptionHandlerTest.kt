@@ -26,6 +26,8 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
 
+// FIXME: Test cancellation of different parts with or without closeOnExceptions mode
+
 class ContainerExceptionHandlerTest {
 
     @Test

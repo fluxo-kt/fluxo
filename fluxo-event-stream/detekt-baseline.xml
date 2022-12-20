@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ForbiddenComment:FluxoEventListener.kt$// FIXME: interceptors.add(FluxoEventListener(onEvent))</ID>
+    <ID>TooGenericExceptionCaught:FluxoEventInterceptor.kt$FluxoEventInterceptor$e: Throwable</ID>
+    <ID>TooManyFunctions:FluxoEventInterceptor.kt$FluxoEventInterceptor&lt;I, S, SE : Any> : FluxoInterceptorFluxoEventSource</ID>
+    <ID>UnusedPrivateMember:FluxoEventListener.kt$crossinline onEvent: (event: FluxoEvent&lt;I, S, SE>) -> Unit</ID>
+  </CurrentIssues>
+</SmellBaseline>

@@ -12,7 +12,7 @@ import kt.fluxo.core.annotation.FluxoDsl
 import kt.fluxo.core.annotation.NotThreadSafe
 import kt.fluxo.core.debug.DEBUG
 import kt.fluxo.core.dsl.StoreScope.Companion.BOOTSTRAPPER_SIDE_JOB
-import kt.fluxo.core.intercept.FluxoEvent
+import kt.fluxo.core.intercept.FluxoInterceptor
 import kt.fluxo.core.internal.InputStrategyGuardian
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
@@ -99,26 +99,16 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
      * Attach loggers, time-travelling, analytics, everything you want.
      *
      * @see FluxoInterceptor
+     * @see kt.fluxo.events.FluxoEventInterceptor
      */
-    public val interceptors: MutableList<FluxoInterceptor<Intent, State, SideEffect>> = mutableListOf()
-
-    /** [interceptors] convenience method */
-    @InlineOnly
-    public inline fun interceptor(crossinline onEvent: (event: FluxoEvent<Intent, State, SideEffect>) -> Unit) {
-        interceptors.add(FluxoInterceptor(onEvent))
-    }
-
-    /** [interceptors] convenience method */
-    @InlineOnly
-    public inline fun onEvent(crossinline onEvent: (event: FluxoEvent<Intent, State, SideEffect>) -> Unit) {
-        interceptor(onEvent)
-    }
+    public val interceptors: MutableList<out FluxoInterceptor<Intent, State, SideEffect>> = mutableListOf()
 
     /**
      * If you need to filter out some [Intent]s.
      *
      * (`true` to accept intent, `false` otherwise)
      */
+    @Deprecated("Use interceptor instead")
     public var intentFilter: IntentFilter<in Intent, State>? = null
 
     /**
@@ -159,7 +149,6 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
     public var eventLoopContext: CoroutineContext = Dispatchers.Default
     public var intentContext: CoroutineContext = EmptyCoroutineContext
     public var sideJobsContext: CoroutineContext = EmptyCoroutineContext
-    public var interceptorContext: CoroutineContext = EmptyCoroutineContext
 
     /**
      * [CoroutineExceptionHandler] to receive exception happened in processing.

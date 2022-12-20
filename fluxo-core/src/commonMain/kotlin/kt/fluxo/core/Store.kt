@@ -3,9 +3,7 @@ package kt.fluxo.core
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
-import kt.fluxo.core.annotation.ExperimentalFluxoApi
 import kt.fluxo.core.annotation.ThreadSafe
-import kt.fluxo.core.intercept.FluxoEvent
 import kt.fluxo.core.internal.Closeable
 import kotlin.js.JsName
 
@@ -49,9 +47,6 @@ public interface Store<Intent, State, SideEffect : Any> : Closeable {
      * @throws IllegalStateException if [SideEffect]s where disabled for this [Store].
      */
     public val sideEffectFlow: Flow<SideEffect>
-
-    @ExperimentalFluxoApi
-    public val eventsFlow: Flow<FluxoEvent<Intent, State, SideEffect>>
 
     public val isActive: Boolean
 

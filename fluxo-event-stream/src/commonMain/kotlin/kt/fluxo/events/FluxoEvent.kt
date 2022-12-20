@@ -1,14 +1,15 @@
 @file:Suppress("MemberVisibilityCanBePrivate", "NO_EXPLICIT_VISIBILITY_IN_API_MODE")
 
-package kt.fluxo.core.intercept
+package kt.fluxo.events
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
+import kt.fluxo.core.SideJob
 import kt.fluxo.core.Store
-import kt.fluxo.core.dsl.SideJobScope.RestartState
-import kt.fluxo.core.dsl.SideJobScope.RestartState.Restarted
+import kt.fluxo.core.annotation.ExperimentalFluxoApi
 import kt.fluxo.core.Bootstrapper as B
 
-@Suppress("ArgumentListWrapping")
+@ExperimentalFluxoApi
 public sealed class FluxoEvent<Intent, State, SideEffect : Any>(
     public val store: Store<Intent, State, SideEffect>,
 ) {
@@ -42,7 +43,8 @@ public sealed class FluxoEvent<Intent, State, SideEffect : Any>(
         override fun toString(): String = "Bootstrapper completed: $store, $bootstrapper"
     }
 
-    class BootstrapperCancelled<I, S, SE : Any>(store: Store<I, S, SE>, val bootstrapper: B<I, S, SE>) : FluxoEvent<I, S, SE>(store) {
+    class BootstrapperCancelled<I, S, SE : Any>(store: Store<I, S, SE>, val bootstrapper: B<I, S, SE>, val ce: CancellationException) :
+        FluxoEvent<I, S, SE>(store) {
         override fun toString(): String = "Bootstrapper cancelled: $store, $bootstrapper"
     }
 
@@ -71,7 +73,8 @@ public sealed class FluxoEvent<Intent, State, SideEffect : Any>(
         override fun toString(): String = "Intent handled: $store, $intent"
     }
 
-    class IntentCancelled<I, S, SE : Any>(store: Store<I, S, SE>, val intent: I) : FluxoEvent<I, S, SE>(store) {
+    class IntentCancelled<I, S, SE : Any>(store: Store<I, S, SE>, val intent: I, val ce: CancellationException) :
+        FluxoEvent<I, S, SE>(store) {
         override fun toString(): String = "Intent cancelled: $store, $intent"
     }
 
@@ -86,10 +89,8 @@ public sealed class FluxoEvent<Intent, State, SideEffect : Any>(
      *
      * See "Undelivered elements" section in [Channel] documentation for details.
      * Also see [GitHub issue](https://github.com/Kotlin/kotlinx.coroutines/issues/1936).
-     *
-     * @param resent `true` if [intent] successfully resent to the [Channel] and can be delivered later
      */
-    class IntentUndelivered<I, S, SE : Any>(store: Store<I, S, SE>, val intent: I, val resent: Boolean) : FluxoEvent<I, S, SE>(store) {
+    class IntentUndelivered<I, S, SE : Any>(store: Store<I, S, SE>, val intent: I) : FluxoEvent<I, S, SE>(store) {
         override fun toString(): String = "Intent undelivered: $store, $intent"
     }
 
@@ -108,14 +109,8 @@ public sealed class FluxoEvent<Intent, State, SideEffect : Any>(
      *
      * See "Undelivered elements" section in [Channel] documentation for details.
      * Also see [GitHub issue](https://github.com/Kotlin/kotlinx.coroutines/issues/1936).
-     *
-     * @param resent `true` if [sideEffect] successfully resent to the [Channel] and can be delivered later
      */
-    class SideEffectUndelivered<I, S, SE : Any>(
-        store: Store<I, S, SE>,
-        val sideEffect: SE,
-        val resent: Boolean,
-    ) : FluxoEvent<I, S, SE>(store) {
+    class SideEffectUndelivered<I, S, SE : Any>(store: Store<I, S, SE>, val sideEffect: SE) : FluxoEvent<I, S, SE>(store) {
         override fun toString(): String = "SideEffect undelivered: $store, $sideEffect"
     }
 
@@ -123,29 +118,33 @@ public sealed class FluxoEvent<Intent, State, SideEffect : Any>(
 
     // region Side Jobs
 
-    class SideJobQueued<I, S, SE : Any>(store: Store<I, S, SE>, val key: String) : FluxoEvent<I, S, SE>(store) {
+    class SideJobQueued<I, S, SE : Any, SJ : SideJob<I, S, SE>>(store: Store<I, S, SE>, val key: String, val sideJob: SJ) :
+        FluxoEvent<I, S, SE>(store) {
         override fun toString(): String = "sideJob queued: $store, $key"
     }
 
-    class SideJobStarted<I, S, SE : Any>(store: Store<I, S, SE>, val key: String, val restartState: RestartState) :
+    class SideJobStarted<I, S, SE : Any, SJ : SideJob<I, S, SE>>(store: Store<I, S, SE>, val key: String, val sideJob: SJ) :
         FluxoEvent<I, S, SE>(store) {
-        override fun toString(): String = "sideJob ${if (restartState === Restarted) "restarted" else "started"}: $store, $key"
+        override fun toString(): String = "sideJob started: $store, $key"
     }
 
-    class SideJobCompleted<I, S, SE : Any>(store: Store<I, S, SE>, val key: String, val restartState: RestartState) :
+    class SideJobCompleted<I, S, SE : Any, SJ : SideJob<I, S, SE>>(store: Store<I, S, SE>, val key: String, val sideJob: SJ) :
         FluxoEvent<I, S, SE>(store) {
-        override fun toString(): String = "sideJob${if (restartState === Restarted) " (restarted)" else ""} completed: $store, $key"
+        override fun toString(): String = "sideJob completed: $store, $key"
     }
 
-    class SideJobCancelled<I, S, SE : Any>(store: Store<I, S, SE>, val key: String, val restartState: RestartState) :
-        FluxoEvent<I, S, SE>(store) {
-        override fun toString(): String = "sideJob${if (restartState === Restarted) " (restarted)" else ""} cancelled: $store, $key"
+    class SideJobCancelled<I, S, SE : Any, SJ : SideJob<I, S, SE>>(
+        store: Store<I, S, SE>,
+        val key: String,
+        val sideJob: SJ,
+        val ce: CancellationException,
+    ) : FluxoEvent<I, S, SE>(store) {
+        override fun toString(): String = "sideJob cancelled: $store, $key"
     }
 
-    class SideJobError<I, S, SE : Any>(store: Store<I, S, SE>, val key: String, val restartState: RestartState, val e: Throwable) :
+    class SideJobError<I, S, SE : Any, SJ : SideJob<I, S, SE>>(store: Store<I, S, SE>, val key: String, val sideJob: SJ, val e: Throwable) :
         FluxoEvent<I, S, SE>(store) {
-        override fun toString(): String =
-            " sideJob${if (restartState === Restarted) " (restarted)" else ""} error: $store, $key (${e.message ?: e})"
+        override fun toString(): String = "sideJob error: $store, $key (${e.message ?: e})"
     }
 
     // endregion

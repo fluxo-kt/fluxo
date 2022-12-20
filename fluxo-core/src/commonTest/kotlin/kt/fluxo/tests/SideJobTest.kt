@@ -9,8 +9,8 @@ import kt.fluxo.core.dsl.SideJobScope.RestartState
 import kt.fluxo.core.dsl.StoreScope
 import kt.fluxo.core.dsl.accept
 import kt.fluxo.core.intent
-import kt.fluxo.core.intercept.FluxoEvent
 import kt.fluxo.core.store
+import kt.fluxo.events.FluxoEvent
 import kt.fluxo.test.runUnitTest
 import kotlin.test.Test
 import kotlin.test.assertEquals

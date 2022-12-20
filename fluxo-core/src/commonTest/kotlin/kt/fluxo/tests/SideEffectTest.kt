@@ -15,8 +15,8 @@ import kt.fluxo.core.SideEffectsStrategy
 import kt.fluxo.core.closeAndWait
 import kt.fluxo.core.container
 import kt.fluxo.core.debug.debugClassName
-import kt.fluxo.core.intercept.FluxoEvent
 import kt.fluxo.core.internal.Closeable
+import kt.fluxo.events.FluxoEvent
 import kt.fluxo.test.IgnoreJs
 import kt.fluxo.test.getValue
 import kt.fluxo.test.runUnitTest

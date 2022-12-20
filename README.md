@@ -75,7 +75,8 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super p
 * Strictly not recommended, but JVM `Closeable` resources partially supported as a state and side effects.
   * The previous state will be closed on change.
   * Side effects closed when not delivered.
-  * However, no clear guarantees!
+* Powerful interceptors support – monitor, rewrite, and retry anything.
+  * Receive all events as a neat coroutine `Flow` with [fluxo-event-stream](`fluxo-event-stream`).
 * Intentionally unopinionated, extensible API: you can follow guides or use it as you want.
 * Well tested.
 * Reactive streams compatibility
@@ -88,7 +89,7 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super p
 
 ### Roadmap
 
-* [ ] Complete pipeline interception (as with OkHttp, etc.)
+* [ ] Performance improvements.
 * [ ] sideJob helpers for logic called on a specific state or side effect (see _Kotlin-Bloc_).
 * [ ] [SAM: State-Action-Model](https://sam.js.org/), composable
   * [ ] functions as first-class citizens
@@ -154,4 +155,3 @@ available, see the [tags on this repository](../../tags).
 
 This project is licensed under the Apache License, Version 2.0 — see the
 [license](LICENSE) file for details.
-
