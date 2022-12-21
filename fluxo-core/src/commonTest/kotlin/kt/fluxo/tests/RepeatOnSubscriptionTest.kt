@@ -1,11 +1,8 @@
 package kt.fluxo.tests
 
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeout
 import kt.fluxo.core.ContainerHost
 import kt.fluxo.core.closeAndWait
 import kt.fluxo.core.container
@@ -13,7 +10,6 @@ import kt.fluxo.core.dsl.SideJobScope
 import kt.fluxo.core.intent
 import kt.fluxo.core.repeatOnSubscription
 import kt.fluxo.test.CoroutineScopeAwareTest
-import kt.fluxo.test.IgnoreNative
 import kt.fluxo.test.runUnitTest
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
@@ -52,17 +48,12 @@ internal class RepeatOnSubscriptionTest : CoroutineScopeAwareTest() {
 
 
     @Test
-    @IgnoreNative
     fun test_does_not_hang_when_using_repeatOnSubscription() = runUnitTest {
         val host = TestMiddleware()
 
         assertEquals(initialState, host.container.state)
 
-        withContext(Dispatchers.Default) {
-            withTimeout(timeMillis = 1000L) {
-                host.callOnSubscription { 42 }
-            }
-        }
+        host.callOnSubscription { 42 }
 
         assertEquals(initialState, host.container.state)
 
