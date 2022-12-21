@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kt.fluxo.core.annotation.ExperimentalFluxoApi
 import kt.fluxo.core.annotation.FluxoDsl
-import kt.fluxo.core.dsl.SideJobScope
 import kt.fluxo.core.dsl.StoreScope
 import kt.fluxo.core.internal.FluxoStore
 
@@ -39,7 +38,7 @@ public suspend fun Store<*, *, *>.closeAndWait() {
 public suspend fun <I, S, SE : Any> StoreScope<I, S, SE>.repeatOnSubscription(
     key: String = StoreScope.DEFAULT_REPEAT_ON_SUBSCRIPTION_JOB,
     stopTimeout: Long = 100L,
-    block: suspend SideJobScope<I, S, SE>.() -> Unit,
+    block: SideJob<I, S, SE>,
 ) {
     sideJob(key) {
         val upstream = this@repeatOnSubscription.subscriptionCount

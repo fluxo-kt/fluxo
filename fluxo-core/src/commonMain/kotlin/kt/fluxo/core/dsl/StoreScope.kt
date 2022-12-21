@@ -6,6 +6,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kt.fluxo.core.SideJob
 import kt.fluxo.core.Store
 import kt.fluxo.core.annotation.FluxoDsl
 import kt.fluxo.core.annotation.InternalFluxoApi
@@ -57,8 +58,7 @@ public interface StoreScope<in Intent, State, in SideEffect : Any> : CoroutineSc
         replaceWith = ReplaceWith("sideJob(key, block)"),
         level = DeprecationLevel.ERROR,
     )
-    public fun launch(key: String = DEFAULT_SIDE_JOB, block: suspend SideJobScope<Intent, State, SideEffect>.() -> Unit): Unit =
-        throw NotImplementedError()
+    public fun launch(key: String = DEFAULT_SIDE_JOB, block: SideJob<Intent, State, SideEffect>): Unit = throw NotImplementedError()
 
     @InlineOnly
     @Deprecated(
@@ -66,8 +66,7 @@ public interface StoreScope<in Intent, State, in SideEffect : Any> : CoroutineSc
         replaceWith = ReplaceWith("sideJob(key, block)"),
         level = DeprecationLevel.ERROR,
     )
-    public fun async(key: String = DEFAULT_SIDE_JOB, block: suspend SideJobScope<Intent, State, SideEffect>.() -> Unit): Unit =
-        throw NotImplementedError()
+    public fun async(key: String = DEFAULT_SIDE_JOB, block: SideJob<Intent, State, SideEffect>): Unit = throw NotImplementedError()
 
     // endregion
 

@@ -3,7 +3,7 @@
 package kt.fluxo.core.internal
 
 import kotlinx.coroutines.flow.StateFlow
-import kt.fluxo.core.dsl.SideJobScope
+import kt.fluxo.core.SideJob
 import kt.fluxo.core.dsl.StoreScope
 import kotlin.coroutines.CoroutineContext
 
@@ -34,7 +34,7 @@ internal open class StoreScopeImpl<in Intent, State, SideEffect : Any>(
         sendSideEffect(sideEffect)
     }
 
-    final override suspend fun sideJob(key: String, block: suspend SideJobScope<Intent, State, SideEffect>.() -> Unit) {
+    final override suspend fun sideJob(key: String, block: SideJob<Intent, State, SideEffect>) {
         guardian?.checkSideJob()
         sendSideJob(SideJobRequest(key, job, block))
     }

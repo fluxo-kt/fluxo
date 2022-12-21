@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kt.fluxo.core.annotation.FluxoDsl
 import kt.fluxo.core.annotation.NotThreadSafe
 import kt.fluxo.core.debug.DEBUG
-import kt.fluxo.core.dsl.SideJobScope
 import kt.fluxo.core.dsl.StoreScope.Companion.BOOTSTRAPPER_SIDE_JOB
 import kt.fluxo.core.intercept.FluxoEvent
 import kt.fluxo.core.internal.InputStrategyGuardian
@@ -79,7 +78,7 @@ public class FluxoSettings<Intent, State, SideEffect : Any> {
     }
 
     /** [bootstrapper] convenience method when you need only a [sideJob][kt.fluxo.core.dsl.StoreScope.sideJob] */
-    public fun bootstrapperJob(key: String = BOOTSTRAPPER_SIDE_JOB, block: suspend SideJobScope<Intent, State, SideEffect>.() -> Unit) {
+    public fun bootstrapperJob(key: String = BOOTSTRAPPER_SIDE_JOB, block: SideJob<Intent, State, SideEffect>) {
         this.bootstrapper = { sideJob(key, block) }
     }
 

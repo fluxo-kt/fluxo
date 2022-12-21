@@ -1,9 +1,9 @@
 package kt.fluxo.core.internal
 
-import kt.fluxo.core.dsl.SideJobScope
+import kt.fluxo.core.SideJob
 
 internal class SideJobRequest<out Intent, State, out SideEffect : Any>(
     val key: String,
     val parent: Any?,
-    val block: suspend SideJobScope<Intent, State, SideEffect>.() -> Unit,
+    val block: SideJob<Intent, State, SideEffect>,
 )
