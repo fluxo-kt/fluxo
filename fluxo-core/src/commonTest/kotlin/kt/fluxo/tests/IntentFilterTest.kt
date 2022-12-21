@@ -20,7 +20,7 @@ class IntentFilterTest {
                 updateState { intent }
             },
             setup = {
-                intentFilter = { it % 2 == 0 }
+                intentFilter { it % 2 == 0 }
             },
         )
         repeat(1000, store::send)

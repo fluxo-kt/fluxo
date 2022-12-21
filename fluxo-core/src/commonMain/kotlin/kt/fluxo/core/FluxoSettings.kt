@@ -8,11 +8,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kt.fluxo.core.annotation.ExperimentalFluxoApi
 import kt.fluxo.core.annotation.FluxoDsl
 import kt.fluxo.core.annotation.NotThreadSafe
 import kt.fluxo.core.debug.DEBUG
+import kt.fluxo.core.dsl.InterceptorScope
 import kt.fluxo.core.dsl.StoreScope.Companion.BOOTSTRAPPER_SIDE_JOB
 import kt.fluxo.core.intercept.FluxoInterceptor
+import kt.fluxo.core.intercept.StoreRequest
 import kt.fluxo.core.internal.InputStrategyGuardian
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
@@ -104,12 +107,23 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
     public val interceptors: MutableList<FluxoInterceptor<Intent, State, SideEffect>> = mutableListOf()
 
     /**
-     * If you need to filter out some [Intent]s.
+     * Convenience methods for [interceptors] if you need to filter out some [Intent]s.
      *
      * (`true` to accept intent, `false` otherwise)
      */
-    @Deprecated("Use interceptor instead")
-    public var intentFilter: IntentFilter<in Intent, State>? = null
+    @InlineOnly
+    @ExperimentalFluxoApi
+    public inline fun intentFilter(crossinline predicate: State.(intent: Intent) -> Boolean) {
+        interceptors.add(0, object : FluxoInterceptor<Intent, State, SideEffect> {
+            override suspend fun <R : StoreRequest.HandleIntent<Intent, State>> InterceptorScope<Intent, State, SideEffect>.intent(
+                request: R, proceed: suspend (request: R) -> Unit
+            ) {
+                if (store.state.predicate(request.intent)) {
+                    proceed(request)
+                }
+            }
+        })
+    }
 
     /**
      * Take full control of the intent processing pipeline.
