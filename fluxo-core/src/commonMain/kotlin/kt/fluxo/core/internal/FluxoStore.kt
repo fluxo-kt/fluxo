@@ -193,7 +193,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
                         }
                         if (!resent) {
                             it.intent.closeSafely()
-                            it.deferred?.cancel()
+                            it.deferred.cancel()
                         }
                         if (isActive) {
                             events.emit(FluxoEvent.IntentUndelivered(this@FluxoStore, it.intent, resent = resent))
@@ -303,10 +303,10 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
     override suspend fun sendAsync(intent: Intent): Deferred<Unit> {
         start()
         val i = if (DEBUG || debugChecks) debugIntentWrapper(intent) else intent
-        val deferred = CompletableDeferred<Unit>()
-        requestsChannel.send(StoreRequest.HandleIntent(deferred, i))
+        val request = StoreRequest.HandleIntent<Intent, State>(i)
+        requestsChannel.send(request)
         events.emit(FluxoEvent.IntentQueued(this, i))
-        return deferred
+        return request.deferred
     }
 
     override fun send(intent: Intent) {
@@ -327,10 +327,10 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
     private suspend fun updateState(request: StoreRequest.RestoreState<Intent, State>): State {
         try {
             val state = updateState(request.state)
-            request.deferred?.complete(Unit)
+            request.deferred.complete(Unit)
             return state
         } catch (e: Throwable) {
-            request.deferred?.cancel(e.toCancellationException())
+            request.deferred.cancel(e.toCancellationException())
             throw e
         }
     }

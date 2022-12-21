@@ -339,13 +339,15 @@ public abstract interface class kt/fluxo/core/intercept/StoreRequest {
 }
 
 public final class kt/fluxo/core/intercept/StoreRequest$HandleIntent : kt/fluxo/core/intercept/StoreRequest {
-	public fun <init> (Lkotlinx/coroutines/CompletableDeferred;Ljava/lang/Object;)V
+	public fun <init> (Ljava/lang/Object;Lkotlinx/coroutines/CompletableDeferred;)V
+	public synthetic fun <init> (Ljava/lang/Object;Lkotlinx/coroutines/CompletableDeferred;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun getDeferred ()Lkotlinx/coroutines/CompletableDeferred;
 	public final fun getIntent ()Ljava/lang/Object;
 }
 
 public final class kt/fluxo/core/intercept/StoreRequest$RestoreState : kt/fluxo/core/intercept/StoreRequest {
-	public fun <init> (Lkotlinx/coroutines/CompletableDeferred;Ljava/lang/Object;)V
+	public fun <init> (Ljava/lang/Object;Lkotlinx/coroutines/CompletableDeferred;)V
+	public synthetic fun <init> (Ljava/lang/Object;Lkotlinx/coroutines/CompletableDeferred;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun getDeferred ()Lkotlinx/coroutines/CompletableDeferred;
 	public final fun getState ()Ljava/lang/Object;
 }
