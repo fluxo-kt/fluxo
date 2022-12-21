@@ -21,7 +21,7 @@ import kt.fluxo.core.dsl.StoreScope
 import kt.fluxo.core.intent
 import kt.fluxo.core.store
 import kt.fluxo.test.CoroutineScopeAwareTest
-import kt.fluxo.test.IgnoreJs
+import kt.fluxo.test.IgnoreNativeAndJs
 import kt.fluxo.test.runUnitTest
 import kotlin.random.Random
 import kotlin.test.Test
@@ -83,7 +83,7 @@ internal class InputStrategyTest : CoroutineScopeAwareTest() {
     fun fifo_background_scope() = runUnitTest(dispatchTimeoutMs = 3_000) { backgroundScope.fifo_test() }
 
     @Test
-    @IgnoreJs
+    @IgnoreNativeAndJs
     fun fifo_generic_scope() = runUnitTest(dispatchTimeoutMs = 20_000) { scope.fifo_test() }
 
     private suspend fun CoroutineScope.fifo_test() = input_strategy_test(strategy = Fifo, equal = true)
