@@ -42,7 +42,7 @@ public inline fun <I, S, SE : Any> FluxoEventListener(
 @InlineOnly
 @ExperimentalFluxoApi
 public inline fun <I, S, SE : Any> FluxoSettings<I, S, SE>.interceptor(crossinline onEvent: (event: FluxoEvent<I, S, SE>) -> Unit) {
-    // FIXME: interceptors.add(FluxoEventListener(onEvent))
+    eventInterceptor().addListener(FluxoEventListener(onEvent))
 }
 
 /** [FluxoSettings.interceptors] convenience method */
@@ -50,4 +50,17 @@ public inline fun <I, S, SE : Any> FluxoSettings<I, S, SE>.interceptor(crossinli
 @ExperimentalFluxoApi
 public inline fun <I, S, SE : Any> FluxoSettings<I, S, SE>.onEvent(crossinline onEvent: (event: FluxoEvent<I, S, SE>) -> Unit) {
     interceptor(onEvent)
+}
+
+/** Convenience method for getting existing [FluxoEventInterceptor] or adding a new one */
+@ExperimentalFluxoApi
+public fun <I, S, SE : Any> FluxoSettings<I, S, SE>.eventInterceptor(): FluxoEventInterceptor<I, S, SE> {
+    for (interceptor in interceptors) {
+        if (interceptor is FluxoEventInterceptor) {
+            return interceptor
+        }
+    }
+    val interceptor = FluxoEventInterceptor<I, S, SE>()
+    interceptors.add(interceptor)
+    return interceptor
 }

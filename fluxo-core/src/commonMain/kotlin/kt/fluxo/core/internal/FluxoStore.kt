@@ -539,7 +539,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
                     interceptorCallScope.intercept(
                         request.block,
                         { scope, value, proceed ->
-                            scope.sideJob(key, value, proceed)
+                            scope.sideJob(key, value, restartState, proceed)
                         },
                     ) { finalSideJob ->
                         val sideJobScope = SideJobScopeImpl(

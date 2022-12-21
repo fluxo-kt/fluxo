@@ -2,7 +2,9 @@ package kt.fluxo.tests
 
 import app.cash.turbine.test
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.isActive
+import kt.fluxo.core.FluxoIntent
 import kt.fluxo.core.closeAndWait
 import kt.fluxo.core.container
 import kt.fluxo.core.dsl.SideJobScope.RestartState
@@ -11,6 +13,7 @@ import kt.fluxo.core.dsl.accept
 import kt.fluxo.core.intent
 import kt.fluxo.core.store
 import kt.fluxo.events.FluxoEvent
+import kt.fluxo.events.eventInterceptor
 import kt.fluxo.test.runUnitTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -101,18 +104,20 @@ internal class SideJobTest {
     @Test
     fun sj_error() = runUnitTest {
         var caught: Throwable? = null
+        val eventsFlow: Flow<FluxoEvent<FluxoIntent<String, String>, String, String>>
         val store = backgroundScope.container<String, String>("init") {
             onError { caught = it }
+            eventsFlow = eventInterceptor().eventsFlow
         }
         store.intent {
             sideJob {
                 throw UnsupportedOperationException()
             }
         }
-        store.eventsFlow.test {
+        eventsFlow.test {
             while (true) {
                 val event = awaitItem()
-                if (event is FluxoEvent.SideJobError) {
+                if (event is FluxoEvent.SideJobError<*, *, *>) {
                     assertEquals(RestartState.Initial, event.restartState)
                     assertEquals(StoreScope.DEFAULT_SIDE_JOB, event.key)
                     assertIs<UnsupportedOperationException>(event.e)

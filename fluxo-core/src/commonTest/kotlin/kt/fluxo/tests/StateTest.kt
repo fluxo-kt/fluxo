@@ -7,6 +7,7 @@ import kt.fluxo.core.ContainerHost
 import kt.fluxo.core.container
 import kt.fluxo.core.intent
 import kt.fluxo.events.FluxoEvent
+import kt.fluxo.events.interceptor
 import kt.fluxo.test.CoroutineScopeAwareTest
 import kt.fluxo.test.runUnitTest
 import kt.fluxo.test.test

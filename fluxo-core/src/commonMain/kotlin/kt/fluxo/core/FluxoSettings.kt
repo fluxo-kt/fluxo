@@ -101,7 +101,7 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
      * @see FluxoInterceptor
      * @see kt.fluxo.events.FluxoEventInterceptor
      */
-    public val interceptors: MutableList<out FluxoInterceptor<Intent, State, SideEffect>> = mutableListOf()
+    public val interceptors: MutableList<FluxoInterceptor<Intent, State, SideEffect>> = mutableListOf()
 
     /**
      * If you need to filter out some [Intent]s.

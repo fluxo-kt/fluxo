@@ -2,7 +2,6 @@ package kt.fluxo.events
 
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -11,6 +10,7 @@ import kt.fluxo.core.Bootstrapper
 import kt.fluxo.core.SideJob
 import kt.fluxo.core.annotation.ExperimentalFluxoApi
 import kt.fluxo.core.dsl.InterceptorScope
+import kt.fluxo.core.dsl.SideJobScope
 import kt.fluxo.core.intercept.FluxoInterceptor
 import kt.fluxo.core.intercept.StoreRequest
 import kotlin.coroutines.CoroutineContext
@@ -23,14 +23,7 @@ import kotlin.coroutines.CoroutineContext
 @ExperimentalFluxoApi
 public class FluxoEventInterceptor<I, S, SE : Any>(
     private val flow: MutableSharedFlow<FluxoEvent<I, S, SE>> = MutableSharedFlow(extraBufferCapacity = 256),
-    @Suppress("UNCHECKED_CAST")
-    private val listeners: Array<out FluxoEventListener<I, S, SE>> = EMPTY_LISTENERS as Array<out FluxoEventListener<I, S, SE>>,
-    coroutineContext: CoroutineContext = Dispatchers.Default,
 ) : FluxoInterceptor<I, S, SE>, FluxoEventSource<I, S, SE> {
-
-    private companion object {
-        private val EMPTY_LISTENERS: Array<out FluxoEventListener<*, *, *>> = arrayOf()
-    }
 
     @ExperimentalFluxoApi
     @Suppress("MemberVisibilityCanBePrivate")
@@ -42,15 +35,11 @@ public class FluxoEventInterceptor<I, S, SE : Any>(
     }
 
 
-    init {
-        // launch interceptors handling (stop on StoreClosed)
-        if (listeners.isNotEmpty()) {
-            val scope = CoroutineScope(coroutineContext)
-            for (i in listeners.indices) {
-                with(listeners[i]) {
-                    scope.start(eventsFlow)
-                }
-            }
+    override fun addListener(listener: FluxoEventListener<I, S, SE>, coroutineContext: CoroutineContext) {
+        // launch interceptor handling (stop on StoreClosed)
+        val scope = CoroutineScope(coroutineContext)
+        with(listener) {
+            scope.start(eventsFlow)
         }
     }
 
@@ -74,8 +63,7 @@ public class FluxoEventInterceptor<I, S, SE : Any>(
 
 
     public override suspend fun <B : Bootstrapper<I, S, SE>> InterceptorScope<I, S, SE>.bootstrap(
-        bootstrapper: B,
-        proceed: suspend (bootstrapper: B) -> Unit,
+        bootstrapper: B, proceed: suspend (bootstrapper: B) -> Unit,
     ) {
         flow.emit(FluxoEvent.BootstrapperStarted(store, bootstrapper))
         try {
@@ -96,8 +84,7 @@ public class FluxoEventInterceptor<I, S, SE : Any>(
     }
 
     public override suspend fun <R : StoreRequest.HandleIntent<I, S>> InterceptorScope<I, S, SE>.intent(
-        request: R,
-        proceed: suspend (request: R) -> Unit,
+        request: R, proceed: suspend (request: R) -> Unit,
     ) {
         try {
             flow.emit(FluxoEvent.IntentAccepted(store, request.intent))
@@ -106,7 +93,7 @@ public class FluxoEventInterceptor<I, S, SE : Any>(
         } catch (ce: CancellationException) {
             flow.emit(FluxoEvent.IntentCancelled(store, request.intent, ce))
             throw ce
-        } catch (e: Throwable) {
+        } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
             flow.emit(FluxoEvent.IntentError(store, request.intent, e))
             throw e
         }
@@ -137,19 +124,17 @@ public class FluxoEventInterceptor<I, S, SE : Any>(
     }
 
     public override suspend fun <SJ : SideJob<I, S, SE>> InterceptorScope<I, S, SE>.sideJob(
-        key: String,
-        sideJob: SJ,
-        proceed: suspend (SJ) -> Unit,
+        key: String, sideJob: SJ, restartState: SideJobScope.RestartState, proceed: suspend (SJ) -> Unit,
     ) {
         try {
-            flow.emit(FluxoEvent.SideJobStarted(store, key, sideJob))
+            flow.emit(FluxoEvent.SideJobStarted(store, key, sideJob, restartState))
             proceed(sideJob)
-            flow.emit(FluxoEvent.SideJobCompleted(store, key, sideJob))
+            flow.emit(FluxoEvent.SideJobCompleted(store, key, sideJob, restartState))
         } catch (ce: CancellationException) {
-            flow.emit(FluxoEvent.SideJobCancelled(store, key, sideJob, ce))
+            flow.emit(FluxoEvent.SideJobCancelled(store, key, sideJob, restartState, ce))
             throw ce
         } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
-            flow.emit(FluxoEvent.SideJobError(store, key, sideJob, e))
+            flow.emit(FluxoEvent.SideJobError(store, key, sideJob, restartState, e))
             throw e
         }
     }

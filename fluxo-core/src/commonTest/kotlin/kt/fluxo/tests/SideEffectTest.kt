@@ -4,6 +4,7 @@ import app.cash.turbine.test
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.take
@@ -11,12 +12,14 @@ import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
 import kt.fluxo.core.Container
+import kt.fluxo.core.FluxoIntent
 import kt.fluxo.core.SideEffectsStrategy
 import kt.fluxo.core.closeAndWait
 import kt.fluxo.core.container
 import kt.fluxo.core.debug.debugClassName
 import kt.fluxo.core.internal.Closeable
 import kt.fluxo.events.FluxoEvent
+import kt.fluxo.events.eventInterceptor
 import kt.fluxo.test.IgnoreJs
 import kt.fluxo.test.getValue
 import kt.fluxo.test.runUnitTest
@@ -216,13 +219,15 @@ internal class SideEffectTest {
     fun undelivered_side_effects__receive_strategy() = undelivered_side_effects(SideEffectsStrategy.RECEIVE)
 
     private fun undelivered_side_effects(strategy: SideEffectsStrategy) = runUnitTest {
+        val eventsFlow: Flow<FluxoEvent<FluxoIntent<Unit, Int>, Unit, Int>>
         val container = backgroundScope.container<Unit, Int>(initialState = Unit, setup = {
             sideEffectsStrategy = strategy
             sideEffectBufferSize = Channel.CONFLATED
+            eventsFlow = eventInterceptor().eventsFlow
         })
         var hasUndelivered by MutableStateFlow(false)
         val intercept = backgroundScope.launch {
-            container.eventsFlow.first { it is FluxoEvent.SideEffectUndelivered }
+            eventsFlow.first { it is FluxoEvent.SideEffectUndelivered }
             hasUndelivered = true
         }
         launch {
