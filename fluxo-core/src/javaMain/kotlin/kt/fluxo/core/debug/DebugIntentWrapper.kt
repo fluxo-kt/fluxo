@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap
 import kotlin.internal.InlineOnly
 
 // TODO: Only for test/debug variants?
-@Suppress("UNCHECKED_CAST")
+@Suppress("UNCHECKED_CAST", "ReturnCount")
 internal actual fun <I> debugIntentWrapper(intent: I): I {
     if (intent is FluxoIntentDebug<*, *>) return intent
     val fluxoIntent = (intent as? FluxoIntent<Any?, Any>) ?: return intent
@@ -63,7 +63,7 @@ private fun reflectArgs(clazz: Class<FluxoIntent<Any?, Any>>, fluxoIntent: Fluxo
     }
 
     if (cache.isEmpty()) {
-        intentArgumentsCache[clazz] = EMPTY_ARGUMENTS_CACHE
+        intentArgumentsCache[clazz] = emptyArgumentsCache
         return emptyList()
     }
 
@@ -101,7 +101,7 @@ private data class FluxoIntentDebug<S, SE : Any>(
 }
 
 private val intentArgumentsCache = ConcurrentHashMap<Class<*>, Array<Pair<String, Field>>>()
-private val EMPTY_ARGUMENTS_CACHE = emptyArray<Pair<String, Field>>()
+private val emptyArgumentsCache = emptyArray<Pair<String, Field>>()
 
 
 @InlineOnly
