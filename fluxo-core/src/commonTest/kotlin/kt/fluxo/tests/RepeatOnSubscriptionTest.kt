@@ -49,7 +49,6 @@ internal class RepeatOnSubscriptionTest : CoroutineScopeAwareTest() {
 
 
     @Test
-    @IgnoreNative
     fun test_does_not_hang_when_using_repeatOnSubscription() = runUnitTest {
         val host = TestMiddleware()
 

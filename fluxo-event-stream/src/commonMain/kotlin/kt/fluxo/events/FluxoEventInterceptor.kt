@@ -63,7 +63,8 @@ public class FluxoEventInterceptor<I, S, SE : Any>(
 
 
     public override suspend fun <B : Bootstrapper<I, S, SE>> InterceptorScope<I, S, SE>.bootstrap(
-        bootstrapper: B, proceed: suspend (bootstrapper: B) -> Unit,
+        bootstrapper: B,
+        proceed: suspend (bootstrapper: B) -> Unit,
     ) {
         flow.emit(FluxoEvent.BootstrapperStarted(store, bootstrapper))
         try {
@@ -84,7 +85,8 @@ public class FluxoEventInterceptor<I, S, SE : Any>(
     }
 
     public override suspend fun <R : StoreRequest.HandleIntent<I, S>> InterceptorScope<I, S, SE>.intent(
-        request: R, proceed: suspend (request: R) -> Unit,
+        request: R,
+        proceed: suspend (request: R) -> Unit,
     ) {
         try {
             flow.emit(FluxoEvent.IntentAccepted(store, request.intent))
@@ -124,7 +126,10 @@ public class FluxoEventInterceptor<I, S, SE : Any>(
     }
 
     public override suspend fun <SJ : SideJob<I, S, SE>> InterceptorScope<I, S, SE>.sideJob(
-        key: String, sideJob: SJ, restartState: SideJobScope.RestartState, proceed: suspend (SJ) -> Unit,
+        key: String,
+        sideJob: SJ,
+        restartState: SideJobScope.RestartState,
+        proceed: suspend (SJ) -> Unit,
     ) {
         try {
             flow.emit(FluxoEvent.SideJobStarted(store, key, sideJob, restartState))

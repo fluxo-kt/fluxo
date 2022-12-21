@@ -87,24 +87,27 @@ public final class kt/fluxo/events/FluxoEvent$SideEffectUndelivered : kt/fluxo/e
 }
 
 public final class kt/fluxo/events/FluxoEvent$SideJobCancelled : kt/fluxo/events/FluxoEvent {
-	public fun <init> (Lkt/fluxo/core/Store;Ljava/lang/String;Lkotlin/jvm/functions/Function2;Ljava/util/concurrent/CancellationException;)V
+	public fun <init> (Lkt/fluxo/core/Store;Ljava/lang/String;Lkotlin/jvm/functions/Function2;Lkt/fluxo/core/dsl/SideJobScope$RestartState;Ljava/util/concurrent/CancellationException;)V
 	public final fun getCe ()Ljava/util/concurrent/CancellationException;
 	public final fun getKey ()Ljava/lang/String;
+	public final fun getRestartState ()Lkt/fluxo/core/dsl/SideJobScope$RestartState;
 	public final fun getSideJob ()Lkotlin/jvm/functions/Function2;
 	public fun toString ()Ljava/lang/String;
 }
 
 public final class kt/fluxo/events/FluxoEvent$SideJobCompleted : kt/fluxo/events/FluxoEvent {
-	public fun <init> (Lkt/fluxo/core/Store;Ljava/lang/String;Lkotlin/jvm/functions/Function2;)V
+	public fun <init> (Lkt/fluxo/core/Store;Ljava/lang/String;Lkotlin/jvm/functions/Function2;Lkt/fluxo/core/dsl/SideJobScope$RestartState;)V
 	public final fun getKey ()Ljava/lang/String;
+	public final fun getRestartState ()Lkt/fluxo/core/dsl/SideJobScope$RestartState;
 	public final fun getSideJob ()Lkotlin/jvm/functions/Function2;
 	public fun toString ()Ljava/lang/String;
 }
 
 public final class kt/fluxo/events/FluxoEvent$SideJobError : kt/fluxo/events/FluxoEvent {
-	public fun <init> (Lkt/fluxo/core/Store;Ljava/lang/String;Lkotlin/jvm/functions/Function2;Ljava/lang/Throwable;)V
+	public fun <init> (Lkt/fluxo/core/Store;Ljava/lang/String;Lkotlin/jvm/functions/Function2;Lkt/fluxo/core/dsl/SideJobScope$RestartState;Ljava/lang/Throwable;)V
 	public final fun getE ()Ljava/lang/Throwable;
 	public final fun getKey ()Ljava/lang/String;
+	public final fun getRestartState ()Lkt/fluxo/core/dsl/SideJobScope$RestartState;
 	public final fun getSideJob ()Lkotlin/jvm/functions/Function2;
 	public fun toString ()Ljava/lang/String;
 }
@@ -117,8 +120,9 @@ public final class kt/fluxo/events/FluxoEvent$SideJobQueued : kt/fluxo/events/Fl
 }
 
 public final class kt/fluxo/events/FluxoEvent$SideJobStarted : kt/fluxo/events/FluxoEvent {
-	public fun <init> (Lkt/fluxo/core/Store;Ljava/lang/String;Lkotlin/jvm/functions/Function2;)V
+	public fun <init> (Lkt/fluxo/core/Store;Ljava/lang/String;Lkotlin/jvm/functions/Function2;Lkt/fluxo/core/dsl/SideJobScope$RestartState;)V
 	public final fun getKey ()Ljava/lang/String;
+	public final fun getRestartState ()Lkt/fluxo/core/dsl/SideJobScope$RestartState;
 	public final fun getSideJob ()Lkotlin/jvm/functions/Function2;
 	public fun toString ()Ljava/lang/String;
 }
@@ -148,8 +152,9 @@ public final class kt/fluxo/events/FluxoEvent$UnhandledError : kt/fluxo/events/F
 
 public final class kt/fluxo/events/FluxoEventInterceptor : kt/fluxo/core/intercept/FluxoInterceptor, kt/fluxo/events/FluxoEventSource {
 	public fun <init> ()V
-	public fun <init> (Lkotlinx/coroutines/flow/MutableSharedFlow;[Lkt/fluxo/events/FluxoEventListener;Lkotlin/coroutines/CoroutineContext;)V
-	public synthetic fun <init> (Lkotlinx/coroutines/flow/MutableSharedFlow;[Lkt/fluxo/events/FluxoEventListener;Lkotlin/coroutines/CoroutineContext;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Lkotlinx/coroutines/flow/MutableSharedFlow;)V
+	public synthetic fun <init> (Lkotlinx/coroutines/flow/MutableSharedFlow;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun addListener (Lkt/fluxo/events/FluxoEventListener;Lkotlin/coroutines/CoroutineContext;)V
 	public fun bootstrap (Lkt/fluxo/core/dsl/InterceptorScope;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun closed (Lkt/fluxo/core/dsl/InterceptorScope;Ljava/lang/Throwable;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun getEventsFlow ()Lkotlinx/coroutines/flow/Flow;
@@ -159,7 +164,7 @@ public final class kt/fluxo/events/FluxoEventInterceptor : kt/fluxo/core/interce
 	public fun intentUndelivered (Lkt/fluxo/core/dsl/InterceptorScope;Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun sideEffect (Lkt/fluxo/core/dsl/InterceptorScope;Ljava/lang/Object;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun sideEffectUndelivered (Lkt/fluxo/core/dsl/InterceptorScope;Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public fun sideJob (Lkt/fluxo/core/dsl/InterceptorScope;Ljava/lang/String;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun sideJob (Lkt/fluxo/core/dsl/InterceptorScope;Ljava/lang/String;Lkotlin/jvm/functions/Function2;Lkt/fluxo/core/dsl/SideJobScope$RestartState;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun sideJobQueue (Lkt/fluxo/core/dsl/InterceptorScope;Ljava/lang/String;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun started (Lkt/fluxo/core/dsl/InterceptorScope;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun stateChanged (Lkt/fluxo/core/dsl/InterceptorScope;Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -174,9 +179,12 @@ public abstract interface class kt/fluxo/events/FluxoEventListener {
 
 public final class kt/fluxo/events/FluxoEventListenerKt {
 	public static final fun create (Lkotlin/jvm/functions/Function1;)Lkt/fluxo/events/FluxoEventListener;
+	public static final fun eventInterceptor (Lkt/fluxo/core/FluxoSettings;)Lkt/fluxo/events/FluxoEventInterceptor;
 }
 
 public abstract interface class kt/fluxo/events/FluxoEventSource {
+	public abstract fun addListener (Lkt/fluxo/events/FluxoEventListener;Lkotlin/coroutines/CoroutineContext;)V
+	public static synthetic fun addListener$default (Lkt/fluxo/events/FluxoEventSource;Lkt/fluxo/events/FluxoEventListener;Lkotlin/coroutines/CoroutineContext;ILjava/lang/Object;)V
 	public abstract fun getEventsFlow ()Lkotlinx/coroutines/flow/Flow;
 }
 

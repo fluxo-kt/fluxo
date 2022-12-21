@@ -353,8 +353,8 @@ public abstract interface class kt/fluxo/core/intercept/FluxoInterceptor {
 	public static synthetic fun sideEffect$suspendImpl (Lkt/fluxo/core/intercept/FluxoInterceptor;Lkt/fluxo/core/dsl/InterceptorScope;Ljava/lang/Object;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun sideEffectUndelivered (Lkt/fluxo/core/dsl/InterceptorScope;Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun sideEffectUndelivered$suspendImpl (Lkt/fluxo/core/intercept/FluxoInterceptor;Lkt/fluxo/core/dsl/InterceptorScope;Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public fun sideJob (Lkt/fluxo/core/dsl/InterceptorScope;Ljava/lang/String;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun sideJob$suspendImpl (Lkt/fluxo/core/intercept/FluxoInterceptor;Lkt/fluxo/core/dsl/InterceptorScope;Ljava/lang/String;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun sideJob (Lkt/fluxo/core/dsl/InterceptorScope;Ljava/lang/String;Lkotlin/jvm/functions/Function2;Lkt/fluxo/core/dsl/SideJobScope$RestartState;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun sideJob$suspendImpl (Lkt/fluxo/core/intercept/FluxoInterceptor;Lkt/fluxo/core/dsl/InterceptorScope;Ljava/lang/String;Lkotlin/jvm/functions/Function2;Lkt/fluxo/core/dsl/SideJobScope$RestartState;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun sideJobQueue (Lkt/fluxo/core/dsl/InterceptorScope;Ljava/lang/String;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun sideJobQueue$suspendImpl (Lkt/fluxo/core/intercept/FluxoInterceptor;Lkt/fluxo/core/dsl/InterceptorScope;Ljava/lang/String;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun started (Lkt/fluxo/core/dsl/InterceptorScope;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;

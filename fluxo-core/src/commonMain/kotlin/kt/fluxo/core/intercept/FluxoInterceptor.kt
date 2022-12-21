@@ -1,10 +1,10 @@
 package kt.fluxo.core.intercept
 
-import kt.fluxo.core.Bootstrapper as Boot
 import kt.fluxo.core.SideJob
 import kt.fluxo.core.annotation.ExperimentalFluxoApi
 import kt.fluxo.core.dsl.SideJobScope.RestartState
 import kt.fluxo.core.intercept.StoreRequest.HandleIntent
+import kt.fluxo.core.Bootstrapper as Boot
 import kt.fluxo.core.dsl.InterceptorScope as Scope
 
 @ExperimentalFluxoApi
@@ -37,7 +37,10 @@ public interface FluxoInterceptor<I, S, SE : Any> {
     public suspend fun <SJ : SideJob<I, S, SE>> Scope<I, S, SE>.sideJobQueue(key: String, sideJob: SJ) {}
 
     public suspend fun <SJ : SideJob<I, S, SE>> Scope<I, S, SE>.sideJob(
-        key: String, sideJob: SJ, restartState: RestartState, proceed: suspend (SJ) -> Unit,
+        key: String,
+        sideJob: SJ,
+        restartState: RestartState,
+        proceed: suspend (SJ) -> Unit,
     ) {
     }
 }

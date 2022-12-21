@@ -125,27 +125,39 @@ public sealed class FluxoEvent<Intent, State, SideEffect : Any>(
     }
 
     class SideJobStarted<I, S, SE : Any>(
-        store: Store<I, S, SE>, val key: String, val sideJob: SideJob<I, S, SE>, val restartState: SideJobScope.RestartState
+        store: Store<I, S, SE>,
+        val key: String,
+        val sideJob: SideJob<I, S, SE>,
+        val restartState: SideJobScope.RestartState,
     ) : FluxoEvent<I, S, SE>(store) {
         override fun toString(): String = "sideJob started: $store, $key"
     }
 
     class SideJobCompleted<I, S, SE : Any>(
-        store: Store<I, S, SE>, val key: String, val sideJob: SideJob<I, S, SE>, val restartState: SideJobScope.RestartState,
+        store: Store<I, S, SE>,
+        val key: String,
+        val sideJob: SideJob<I, S, SE>,
+        val restartState: SideJobScope.RestartState,
     ) : FluxoEvent<I, S, SE>(store) {
         override fun toString(): String = "sideJob completed: $store, $key"
     }
 
     class SideJobCancelled<I, S, SE : Any>(
-        store: Store<I, S, SE>, val key: String, val sideJob: SideJob<I, S, SE>,
-        val restartState: SideJobScope.RestartState, val ce: CancellationException,
+        store: Store<I, S, SE>,
+        val key: String,
+        val sideJob: SideJob<I, S, SE>,
+        val restartState: SideJobScope.RestartState,
+        val ce: CancellationException,
     ) : FluxoEvent<I, S, SE>(store) {
         override fun toString(): String = "sideJob cancelled: $store, $key"
     }
 
     class SideJobError<I, S, SE : Any>(
-        store: Store<I, S, SE>, val key: String, val sideJob: SideJob<I, S, SE>,
-        val restartState: SideJobScope.RestartState, val e: Throwable,
+        store: Store<I, S, SE>,
+        val key: String,
+        val sideJob: SideJob<I, S, SE>,
+        val restartState: SideJobScope.RestartState,
+        val e: Throwable,
     ) :
         FluxoEvent<I, S, SE>(store) {
         override fun toString(): String = "sideJob error: $store, $key (${e.message ?: e})"
