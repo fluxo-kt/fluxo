@@ -129,7 +129,7 @@ internal fun MavenPublication.setupPublicationPom(
     pom {
         name.set(config.projectName)
         description.set(config.projectDescription)
-        url.set(config.projectUrl)
+        url.set(config.publicationUrl)
 
         if (!config.licenseName.isNullOrEmpty()) {
             licenses {
@@ -152,6 +152,9 @@ internal fun MavenPublication.setupPublicationPom(
             url.set(config.projectUrl)
             connection.set(config.scmUrl)
             developerConnection.set(config.scmUrl)
+            config.scmTag.takeIf { !it.isNullOrEmpty() }?.let {
+                tag.set(it)
+            }
         }
     }
 }
@@ -160,7 +163,10 @@ internal fun Project.setupPublicationRepository(config: PublicationConfig) {
     val isSigningEnabled = !config.signingKey.isNullOrEmpty()
 
     if (isSigningEnabled) {
+        logger.lifecycle("SIGNING KEY SET, applying signing configuration")
         plugins.apply("signing")
+    } else {
+        logger.warn("SIGNING KEY IS NOT SET! Publications are unsigned")
     }
 
     extensions.configure<PublishingExtension> {

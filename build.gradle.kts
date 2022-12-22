@@ -3,13 +3,16 @@
 import fluxo.AndroidConfig
 import fluxo.PublicationConfig
 import fluxo.ensureUnreachableTasksDisabled
+import fluxo.envOrProp
 import fluxo.getValue
 import fluxo.iosCompat
 import fluxo.isCI
 import fluxo.isRelease
 import fluxo.macosCompat
+import fluxo.scmTag
 import fluxo.setupDefaults
 import fluxo.setupVerification
+import fluxo.signingKey
 import fluxo.tvosCompat
 import fluxo.useK2
 import fluxo.watchosCompat
@@ -106,7 +109,11 @@ setupDefaults(
         },
     ),
     publicationConfig = run {
-        val fluxoVersion = libs.versions.fluxo.get()
+        val version = libs.versions.fluxo.get()
+        val isSnapshot = version.endsWith("SNAPSHOT", ignoreCase = true)
+        val scmTag = if (isSnapshot) scmTag().orNull ?: "main" else "v$version"
+        val url = "https://github.com/fluxo-kt/fluxo-mvi"
+        val publicationUrl = "$url/tree/$scmTag"
         PublicationConfig(
             // https://central.sonatype.org/publish/publish-gradle/
             // https://central.sonatype.org/publish/publish-guide/#initial-setup
@@ -114,27 +121,20 @@ setupDefaults(
             // https://github.com/jonashackt/github-actions-release-maven
             // https://dev.to/kotlin/how-to-build-and-publish-a-kotlin-multiplatform-library-creating-your-first-library-1bp8
             group = "io.github.fluxo-kt",
-            version = fluxoVersion,
+            version = version,
             projectName = "Fluxo",
             projectDescription = "Kotlin Multiplatform MVI / MVVM+ framework",
-            projectUrl = "https://github.com/fluxo-kt/fluxo-mvi",
+            projectUrl = url,
+            publicationUrl = publicationUrl,
             scmUrl = "scm:git:git://github.com/fluxo-kt/fluxo-mvi.git",
-            licenseName = "The Apache License, Version 2.0",
-            licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0.txt",
+            scmTag = scmTag,
             developerId = "amal",
             developerName = "Artyom Shendrik",
             developerEmail = "artyom.shendrik@gmail.com",
-            signingKey = System.getenv("SIGNING_KEY"),
-            signingPassword = System.getenv("SIGNING_PASSWORD"),
-            repositoryUrl = when {
-                fluxoVersion.endsWith("SNAPSHOT") ->
-                    "https://s01.oss.sonatype.org/content/repositories/snapshots/"
-
-                else ->
-                    "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-            },
-            repositoryUserName = System.getenv("OSSRH_USER"),
-            repositoryPassword = System.getenv("OSSRH_PASSWORD"),
+            signingKey = signingKey(),
+            signingPassword = envOrProp("SIGNING_PASSWORD").orNull,
+            repositoryUserName = envOrProp("OSSRH_USER").orNull,
+            repositoryPassword = envOrProp("OSSRH_PASSWORD").orNull,
         )
     },
 )
@@ -310,6 +310,7 @@ allprojects {
                         "-Xlambdas=indy",
                         "-Xsam-conversions=indy",
                     )
+
                     else -> listOf(
                         "-Xlambdas=class",
                         "-Xsam-conversions=class",
