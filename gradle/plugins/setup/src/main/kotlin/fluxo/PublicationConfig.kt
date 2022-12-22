@@ -34,6 +34,7 @@ class PublicationConfig(
 
     // Halpful links:
     // https://proandroiddev.com/publishing-android-libraries-to-mavencentral-in-2021-8ac9975c3e52
+    // https://github.com/jveverka/java-11-examples/blob/b9819fe0/artefact-publishing-demo/test-artefact/README.md
     // https://motorro.medium.com/thanks-a-lot-for-this-step-by-step-instructions-f6fecbe5a4e6
     // https://central.sonatype.org/publish/requirements/gpg/
 )

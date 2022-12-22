@@ -1,5 +1,6 @@
 # Fluxo MVI / MVVM+ Multiplatform
 
+[![Snapshot Version](https://img.shields.io/nexus/s/https/s01.oss.sonatype.org/io.github.fluxo-kt/fluxo-core.svg)](https://s01.oss.sonatype.org/content/repositories/snapshots/io/github/fluxo-kt/fluxo-core/)
 [![Build](../../actions/workflows/build.yml/badge.svg)](../../actions/workflows/build.yml)
 [![codecov](https://codecov.io/gh/fluxo-kt/fluxo-mvi/branch/main/graph/badge.svg?token=LKCNVWR8QC)](https://codecov.io/gh/fluxo-kt/fluxo-mvi)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
@@ -7,6 +8,19 @@
 **Fluxo** is a simple yet super powerful MVI / MVVM+ library for Kotlin Multiplatform.
 
 **Work-In-Progress**, first release is coming.
+
+### TLDR: Use SNAPSHOT Artefact in Gradle
+
+```kotlin
+dependencies {
+    implementation("io.github.fluxo-kt:fluxo-core:0.1.0-SNAPSHOT")
+}
+repositories {
+    maven(url = "https://s01.oss.sonatype.org/content/repositories/snapshots/")
+}
+```
+
+### Info
 
 **Fluxo** was started as a test for the hypothesis:
 _it should be possible to combine all the strong sides of strict **Redux/MVI** with flexibility,
