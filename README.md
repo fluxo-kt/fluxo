@@ -7,7 +7,7 @@
 
 **Fluxo** is a simple yet super powerful MVI / MVVM+ library for Kotlin Multiplatform.
 
-**Work-In-Progress**, first release is coming.
+**Work-In-Progress**, first release is coming. **API is not stable yet!**
 
 ### TLDR: Use SNAPSHOT Artefact in Gradle
 
@@ -20,7 +20,7 @@ repositories {
 }
 ```
 
-### Info
+## Overview
 
 **Fluxo** was started as a test for the hypothesis:
 _it should be possible to combine all the strong sides of strict **Redux/MVI** with flexibility,

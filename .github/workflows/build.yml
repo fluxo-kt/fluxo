@@ -52,6 +52,17 @@ jobs:
           gradle-home-cache-cleanup: true
           arguments: build assemble check --stacktrace --continue --scan
 
+      - name: 'Publish SNAPSHOT'
+        if: success() && matrix.os == 'macos-latest' && github.ref == 'refs/heads/main' && github.repository == 'fluxo-kt/fluxo-mvi' && github.event_name == 'push'
+        continue-on-error: true
+        env:
+          CI: true
+          OSSRH_USER: ${{ secrets.OSSRH_USER }}
+          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+        run: ./gradlew publish --stacktrace --scan
+
       - name: 'Build and check on ${{ matrix.os }} (split_targets, macOS ignored)'
         if: matrix.os != 'macos-latest'
         timeout-minutes: 25
