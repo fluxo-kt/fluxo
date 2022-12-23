@@ -69,6 +69,7 @@ setupDefaults(
         sourceSets.all {
             languageSettings {
                 optIn("kotlinx.coroutines.ExperimentalCoroutinesApi")
+                progressiveMode = true
             }
         }
 
@@ -301,6 +302,7 @@ allprojects {
                     "-Xvalidate-bytecode",
                     "-Xvalidate-ir",
                     "-opt-in=kotlin.RequiresOptIn",
+                    "-progressive",
                 )
 
                 // more data on MVVM+ lambda intents for debugging
