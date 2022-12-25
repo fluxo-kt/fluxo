@@ -11,12 +11,12 @@
 
 ### Roadmap
 
-- [ ] `FluxoData` Mapping and handling utils.
-- [ ] Fetching utils for easier `FluxoData` usage.
-  - [ ] \(Optional) Retry logic.
+* [ ] `FluxoData` Mapping and handling utils.
+* [ ] Fetching utils for easier `FluxoData` usage.
+  * [ ] \(Optional) Retry logic.
 
 ### Inspired and based on ideas from:
 
-- [Kotlin Result](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-result/)
-- [Ballast Cached](https://copper-leaf.github.io/ballast/wiki/modules/ballast-repository/#cached)
-- [Uniflow UIState](https://github.com/uniflow-kt/uniflow-kt/blob/2a8835b/uniflow-core/src/main/kotlin/io/uniflow/core/flow/data/UIState.kt#L25)
+* [Kotlin Result](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-result/)
+* [Ballast Cached](https://copper-leaf.github.io/ballast/wiki/modules/ballast-repository/#cached)
+* [Uniflow UIState](https://github.com/uniflow-kt/uniflow-kt/blob/2a8835b/uniflow-core/src/main/kotlin/io/uniflow/core/flow/data/UIState.kt#L25)

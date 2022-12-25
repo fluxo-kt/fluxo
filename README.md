@@ -83,50 +83,50 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super p
 
 ### Roadmap
 
-- [ ] Complete pipeline interception (as with OkHttp, etc.)
-- [ ] sideJob helpers for logic called on a specific state or side effect (see _Kotlin-Bloc_).
-- [ ] [SAM: State-Action-Model](https://sam.js.org/), composable
-  - [ ] functions as first-class citizens
-- [ ] Store to Store connection
-- [ ] FSM: Strict finite-state machine style with edges declaration
-- [ ] SideJobs registry/management API
-- [ ] [Partial state change with effect](https://github.com/uniflow-kt/uniflow-kt/blob/master/doc/notify_update.md)
-- [ ] Debug checks
-- [ ] \(Optional) Java-friendly API
-- [ ] Compose integration tests, examples and docs
-- [ ] ViewModel integration tests, examples and docs
-- [ ] SavedState (android state preservation) integration tests, examples and docs
-- [ ] [Essenty](https://github.com/arkivanov/Essenty) integration tests, examples and docs
-- [ ] Compose Desktop (JetBrains) integration tests, examples and docs
-- [ ] Rx* libraries integration tests, examples and docs
-- [ ] LiveData integration tests, examples and docs
-- [ ] [Arrow](https://arrow-kt.io/) integration tests, examples and docs
-- [ ] Time-travel (MviKotlin, Ballast, Flipper integration)
-- [ ] Logging module
-- [ ] Unit test library
-  - [ ] Espresso idling resource support
-- [ ] DI support tests, examples and docs
-- [ ] [State graph tools](https://github.com/Kontur-Mobile/VisualFSM#tools-of-visualfsm)
-  - [ ] Get unreachable states, build an Edge List, build states Adjacency Map.
-  - [ ] App containers aggregation for graph tools
-- [ ] Analytics/Crashlytics integration
-- [ ] Orbit, MVI Kotlin, etc. migration examples and tests for migration helpers.
-- [ ] Documentation and examples
-- [ ] \(Optional) Undo/Redo
-- [ ] \(Optional) Stores synchronization
+* [ ] Complete pipeline interception (as with OkHttp, etc.)
+* [ ] sideJob helpers for logic called on a specific state or side effect (see _Kotlin-Bloc_).
+* [ ] [SAM: State-Action-Model](https://sam.js.org/), composable
+  * [ ] functions as first-class citizens
+* [ ] Store to Store connection
+* [ ] FSM: Strict finite-state machine style with edges declaration
+* [ ] SideJobs registry/management API
+* [ ] [Partial state change with effect](https://github.com/uniflow-kt/uniflow-kt/blob/master/doc/notify_update.md)
+* [ ] Debug checks
+* [ ] \(Optional) Java-friendly API
+* [ ] Compose integration tests, examples and docs
+* [ ] ViewModel integration tests, examples and docs
+* [ ] SavedState (android state preservation) integration tests, examples and docs
+* [ ] [Essenty](https://github.com/arkivanov/Essenty) integration tests, examples and docs
+* [ ] Compose Desktop (JetBrains) integration tests, examples and docs
+* [ ] Rx* libraries integration tests, examples and docs
+* [ ] LiveData integration tests, examples and docs
+* [ ] [Arrow](https://arrow-kt.io/) integration tests, examples and docs
+* [ ] Time-travel (MviKotlin, Ballast, Flipper integration)
+* [ ] Logging module
+* [ ] Unit test library
+  * [ ] Espresso idling resource support
+* [ ] DI support tests, examples and docs
+* [ ] [State graph tools](https://github.com/Kontur-Mobile/VisualFSM#tools-of-visualfsm)
+  * [ ] Get unreachable states, build an Edge List, build states Adjacency Map.
+  * [ ] App containers aggregation for graph tools
+* [ ] Analytics/Crashlytics integration
+* [ ] Orbit, MVI Kotlin, etc. migration examples and tests for migration helpers.
+* [ ] Documentation and examples
+* [ ] \(Optional) Undo/Redo
+* [ ] \(Optional) Stores synchronization
 
 ### Based on architectural ideas:
 
-- [MVI: Model-View-Intent](http://hannesdorfmann.com/android/model-view-intent/)
-- [MVVM: Model-View-ViewModel](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93viewmodel)
-- [FSM: Finite-state machine](https://en.wikipedia.org/wiki/Finite-state_machine)
-- [SAM: State-Action-Model](https://sam.js.org/)
+* [MVI: Model-View-Intent](http://hannesdorfmann.com/android/model-view-intent/)
+* [MVVM: Model-View-ViewModel](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93viewmodel)
+* [FSM: Finite-state machine](https://en.wikipedia.org/wiki/Finite-state_machine)
+* [SAM: State-Action-Model](https://sam.js.org/)
 
 ### Inspired and based on ideas from:
 
-- [Ballast](https://github.com/copper-leaf/ballast)
-- [Orbit MVI](https://github.com/orbit-mvi/orbit-mvi)
-- [MVIKotlin](https://github.com/arkivanov/MVIKotlin)
+* [Ballast](https://github.com/copper-leaf/ballast)
+* [Orbit MVI](https://github.com/orbit-mvi/orbit-mvi)
+* [MVIKotlin](https://github.com/arkivanov/MVIKotlin)
 
 ### Versioning
 
