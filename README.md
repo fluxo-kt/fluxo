@@ -34,7 +34,8 @@ A long list of features is implemented gradually in this library (see the [Roadm
 Basic usage is elementary, yet you can take advantage of fine-tuning and super powerful features when you need them.
 
 * Kotlin **coroutine-based** state handling.
-* **Multiplatform**, supports all Kotlin MPP/KMM targets (**Android**, **iOS**, **JVM**, **JS**, **Linux**, **Windows/MinGW**, **macOS**, etc.).
+* **Multiplatform**, supports all Kotlin MPP/KMM targets (**Android**, **iOS**, **JVM**, **JS**, **Linux**,
+  **Windows/MinGW**, **macOS**, etc.).
 * Simple usage, type-safe, no-boilerplate.
 * Different usage styles:
   * Strict **Redux/MVI** (the highest correctness guarantees, but may be subjectively less readable and intuitive)
@@ -112,25 +113,25 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super p
 - [ ] \(Optional) Undo/Redo
 - [ ] \(Optional) Stores synchronization
 
-## Based on architectural ideas:
+### Based on architectural ideas:
 
 - [MVI: Model-View-Intent](http://hannesdorfmann.com/android/model-view-intent/)
 - [MVVM: Model-View-ViewModel](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93viewmodel)
 - [FSM: Finite-state machine](https://en.wikipedia.org/wiki/Finite-state_machine)
 - [SAM: State-Action-Model](https://sam.js.org/)
 
-## Inspired and based on ideas from:
+### Inspired and based on ideas from:
 
 - [Ballast](https://github.com/copper-leaf/ballast)
 - [Orbit MVI](https://github.com/orbit-mvi/orbit-mvi)
 - [MVIKotlin](https://github.com/arkivanov/MVIKotlin)
 
-## Versioning
+### Versioning
 
 **Fluxo** uses [SemVer](http://semver.org/) for versioning. For the versions
 available, see the [tags on this repository](../../tags).
 
-## Code quality checks
+### Code quality checks
 
 [![CodeFactor](https://www.codefactor.io/repository/github/fluxo-kt/fluxo-mvi/badge/main)](https://www.codefactor.io/repository/github/fluxo-kt/fluxo-mvi/overview/main)
 [![CodeBeat](https://codebeat.co/badges/5ed83de6-f399-4880-9a94-d42d1ab43b89)](https://codebeat.co/projects/github-com-fluxo-kt-fluxo-mvi-main)
@@ -139,7 +140,7 @@ available, see the [tags on this repository](../../tags).
 <br>
 [![CodeClimate](https://api.codeclimate.com/v1/badges/af292519a2481f9a47a6/maintainability)](https://codeclimate.com/github/fluxo-kt/fluxo-mvi/maintainability)
 
-## License
+### License
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 

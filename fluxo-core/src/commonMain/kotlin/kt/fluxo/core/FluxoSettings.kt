@@ -181,23 +181,31 @@ public class FluxoSettings<Intent, State, SideEffect : Any> {
     // region Accessors for in-box input strategies
 
     /**
-     * Ordered processing strategy. Predictable and intuitive. Best for background.
-     * Consider [Lifo] for the UI or more responsiveness instead.
+     * `First-in, first-out` - ordered processing strategy. Predictable and intuitive, default choice.
+     *
+     * Consider [Parallel] or [Lifo] instead if you need more responsiveness.
      */
     @InlineOnly
     @get:JvmName("Fifo")
     public inline val Fifo: InputStrategy get() = InputStrategy.Fifo
 
     /**
-     * UI events oriented strategy. Cancels previous unfinished intents when receives new one.
-     * Provides more responsiveness, but can lose some intents!
-     * Use [Fifo] if you need more predictable behavior.
+     * `Last-in, first-out` - strategy optimized for lots of events (e.g. user actions).
+     * Provides more responsiveness comparing to [Fifo], but can lose some intents!
+     *
+     * **IMPORTANT:** Cancels previous unfinished intents when receives new one!
+     *
+     * Consider [Parallel] if you steel need more responsiveness, but without dropping of any event.
      */
     @InlineOnly
     @get:JvmName("Lifo")
     public inline val Lifo: InputStrategy get() = InputStrategy.Lifo
 
-    /** Parallel processing of all intents. No guarantee that inputs will be processed in any given order. */
+    /**
+     * Parallel processing of all intents, can provide better responsiveness comparing to [Fifo].
+     *
+     * **IMPORTANT:** No guarantee that inputs will be processed in any given order!
+     */
     @InlineOnly
     @get:JvmName("Parallel")
     public inline val Parallel: InputStrategy get() = InputStrategy.Parallel
