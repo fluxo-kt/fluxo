@@ -1,6 +1,7 @@
 import fluxo.setupBinaryCompatibilityValidator
 import fluxo.setupMultiplatform
 import fluxo.setupPublication
+import fluxo.setupSourceSets
 
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
@@ -14,3 +15,21 @@ plugins {
 setupMultiplatform()
 setupPublication()
 setupBinaryCompatibilityValidator()
+
+kotlin {
+    setupSourceSets {
+        all {
+            languageSettings {
+                optIn("kotlin.contracts.ExperimentalContracts")
+                optIn("kotlinx.coroutines.ExperimentalCoroutinesApi")
+            }
+        }
+
+        common.main.dependencies {
+            implementation(libs.kotlinx.coroutines.core)
+        }
+        common.test.dependencies {
+            implementation(libs.kotlinx.coroutines.test)
+        }
+    }
+}

@@ -1,12 +1,12 @@
 package kt.fluxo.tests
 
-import kt.fluxo.data.FluxoData
-import kt.fluxo.data.FluxoData.Companion.cached
-import kt.fluxo.data.FluxoData.Companion.empty
-import kt.fluxo.data.FluxoData.Companion.failure
-import kt.fluxo.data.FluxoData.Companion.loading
-import kt.fluxo.data.FluxoData.Companion.notLoaded
-import kt.fluxo.data.FluxoData.Companion.success
+import kt.fluxo.data.FluxoResult
+import kt.fluxo.data.FluxoResult.Companion.cached
+import kt.fluxo.data.FluxoResult.Companion.empty
+import kt.fluxo.data.FluxoResult.Companion.failure
+import kt.fluxo.data.FluxoResult.Companion.loading
+import kt.fluxo.data.FluxoResult.Companion.notLoaded
+import kt.fluxo.data.FluxoResult.Companion.success
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -14,7 +14,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-class FluxoDataTest {
+class FluxoResultTest {
     @Test
     fun not_loaded_state() {
         for (it in arrayOf(notLoaded(), notLoaded(value = null))) {
@@ -23,6 +23,7 @@ class FluxoDataTest {
             assertFalse(it.isCached)
             assertFalse(it.isLoading)
             assertFalse(it.isSuccess)
+            assertFalse(it.isFailure)
             assertFalse(it.isFailed)
             assertNull(it.value)
             assertNull(it.error)
@@ -34,6 +35,7 @@ class FluxoDataTest {
             assertFalse(it.isCached)
             assertFalse(it.isLoading)
             assertFalse(it.isSuccess)
+            assertFalse(it.isFailure)
             assertFalse(it.isFailed)
             assertEquals("Value", it.value)
             assertNull(it.error)
@@ -45,6 +47,7 @@ class FluxoDataTest {
             assertFalse(it.isCached)
             assertFalse(it.isLoading)
             assertFalse(it.isSuccess)
+            assertFalse(it.isFailure)
             assertFalse(it.isFailed)
             assertTrue(it.value.isEmpty())
             assertNull(it.error)
@@ -56,6 +59,7 @@ class FluxoDataTest {
             assertFalse(it.isCached)
             assertFalse(it.isLoading)
             assertFalse(it.isSuccess)
+            assertFalse(it.isFailure)
             assertFalse(it.isFailed)
             assertEquals("", it.value)
             assertNull(it.error)
@@ -71,6 +75,7 @@ class FluxoDataTest {
             assertTrue(it.isCached)
             assertFalse(it.isLoading)
             assertTrue(it.isSuccess)
+            assertFalse(it.isFailure)
             assertFalse(it.isFailed)
             assertNull(it.value)
             assertNull(it.error)
@@ -82,6 +87,7 @@ class FluxoDataTest {
             assertTrue(it.isCached)
             assertFalse(it.isLoading)
             assertTrue(it.isSuccess)
+            assertFalse(it.isFailure)
             assertFalse(it.isFailed)
             assertEquals("Value", it.value)
             assertNull(it.error)
@@ -97,6 +103,7 @@ class FluxoDataTest {
             assertFalse(it.isCached)
             assertTrue(it.isLoading)
             assertFalse(it.isSuccess)
+            assertFalse(it.isFailure)
             assertFalse(it.isFailed)
             assertNull(it.value)
             assertNull(it.error)
@@ -108,6 +115,7 @@ class FluxoDataTest {
             assertFalse(it.isCached)
             assertTrue(it.isLoading)
             assertTrue(it.isSuccess)
+            assertFalse(it.isFailure)
             assertFalse(it.isFailed)
             assertEquals("Value", it.value)
             assertNull(it.error)
@@ -123,6 +131,7 @@ class FluxoDataTest {
             assertFalse(it.isCached)
             assertFalse(it.isLoading)
             assertTrue(it.isSuccess)
+            assertFalse(it.isFailure)
             assertFalse(it.isFailed)
             assertNull(it.value)
             assertNull(it.error)
@@ -134,6 +143,7 @@ class FluxoDataTest {
             assertFalse(it.isCached)
             assertFalse(it.isLoading)
             assertTrue(it.isSuccess)
+            assertFalse(it.isFailure)
             assertFalse(it.isFailed)
             assertEquals("Value", it.value)
             assertNull(it.error)
@@ -151,6 +161,7 @@ class FluxoDataTest {
             assertFalse(it.isCached)
             assertFalse(it.isLoading)
             assertTrue(it.isSuccess)
+            assertFalse(it.isFailure)
             assertFalse(it.isFailed)
             assertEquals("Value", it.value)
             assertNull(it.error)
@@ -163,6 +174,7 @@ class FluxoDataTest {
             assertFalse(it.isCached)
             assertFalse(it.isLoading)
             assertTrue(it.isSuccess)
+            assertFalse(it.isFailure)
             assertFalse(it.isFailed)
             assertNull(it.value)
             assertNull(it.error)
@@ -178,10 +190,11 @@ class FluxoDataTest {
             assertFalse(it.isCached)
             assertFalse(it.isLoading)
             assertFalse(it.isSuccess)
+            assertTrue(it.isFailure)
             assertTrue(it.isFailed)
             assertNull(it.value)
             assertNull(it.error)
-            assertEquals("Failed", it.toString())
+            assertEquals("Failure", it.toString())
         }
         failure(error = null, value = "Value").let {
             assertFalse(it.isNotLoaded)
@@ -189,10 +202,11 @@ class FluxoDataTest {
             assertFalse(it.isCached)
             assertFalse(it.isLoading)
             assertFalse(it.isSuccess)
+            assertTrue(it.isFailure)
             assertTrue(it.isFailed)
             assertEquals("Value", it.value)
             assertNull(it.error)
-            assertEquals("Failed(Value)", it.toString())
+            assertEquals("Failure(Value)", it.toString())
         }
         val error = RuntimeException("Message")
         failure(error = error, value = "Value").let {
@@ -201,11 +215,12 @@ class FluxoDataTest {
             assertFalse(it.isCached)
             assertFalse(it.isLoading)
             assertFalse(it.isSuccess)
+            assertTrue(it.isFailure)
             assertTrue(it.isFailed)
             assertEquals("Value", it.value)
             assertEquals("Message", assertNotNull(it.error).message)
             val string = it.toString()
-            assertTrue(string.startsWith("Failed(Value"))
+            assertTrue(string.startsWith("Failure(Value"))
             assertTrue(string.endsWith("Message)"))
         }
         failure(error = error).let {
@@ -214,15 +229,17 @@ class FluxoDataTest {
             assertFalse(it.isCached)
             assertFalse(it.isLoading)
             assertFalse(it.isSuccess)
+            assertTrue(it.isFailure)
             assertTrue(it.isFailed)
             assertNull(it.value)
             assertEquals("Message", assertNotNull(it.error).message)
             val string = it.toString()
-            assertTrue(string.startsWith("Failed("))
+            assertTrue(string.startsWith("Failure("))
             assertTrue(string.endsWith("Message)"))
         }
 
-        assertTrue(FluxoData(null, error, 0).isFailed)
+        assertTrue(FluxoResult(null, error, 0).isFailure)
+        assertTrue(FluxoResult(null, error, 0).isFailed)
     }
 
 
@@ -302,7 +319,7 @@ class FluxoDataTest {
 
     @Test
     fun data_class_api() {
-        assertNotNull(FluxoData.Companion)
+        assertNotNull(FluxoResult.Companion)
 
         val f = failure(null, "")
         f.let { (data) -> assertEquals("", data) }
