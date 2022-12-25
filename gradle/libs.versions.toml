@@ -22,10 +22,10 @@ javaLangTarget = "1.8"
 kotlinLangVersion = "1.7"
 
 # https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-gradle-plugin
-kotlin = "1.7.21"
+kotlin = "1.7.22"
 
 # https://github.com/google/ksp/releases
-ksp = "1.7.21-1.0.8"
+ksp = "1.7.22-1.0.8"
 
 # Dokka is a documentation engine for Kotlin/Java
 # https://github.com/Kotlin/dokka/releases
@@ -101,7 +101,7 @@ arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
 
 test-junit = { module = "junit:junit" }
 # https://mvnrepository.com/artifact/org.robolectric/robolectric
-test-robolectric = { module = "org.robolectric:robolectric", version = "4.9" }
+test-robolectric = { module = "org.robolectric:robolectric", version = "4.9.1" }
 # https://github.com/cashapp/turbine/releases
 test-turbine = { module = "app.cash.turbine:turbine", version = "0.12.1" }
 
@@ -125,7 +125,7 @@ plugin-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref
 
 # Gradle plugin for building plugins for IntelliJ-based IDEs
 # https://github.com/JetBrains/gradle-intellij-plugin/releases
-plugin-intellij = { module = "org.jetbrains.intellij.plugins:gradle-intellij-plugin", version = "1.10.0" }
+plugin-intellij = { module = "org.jetbrains.intellij.plugins:gradle-intellij-plugin", version = "1.11.0" }
 
 
 [plugins]
@@ -157,7 +157,7 @@ deps-versions = { id = "com.github.ben-manes.versions", version = "0.44.0" }
 
 # Detect unused and misused dependencies
 # https://github.com/autonomousapps/dependency-analysis-android-gradle-plugin/tags
-deps-analysis = { id = "com.autonomousapps.dependency-analysis", version = "1.17.0" }
+deps-analysis = { id = "com.autonomousapps.dependency-analysis", version = "1.18.0" }
 
 # 'taskTree' task that prints task dependency tree
 # https://github.com/dorongold/gradle-task-tree
