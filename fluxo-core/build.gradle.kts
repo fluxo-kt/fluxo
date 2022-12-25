@@ -44,6 +44,7 @@ kotlin {
             languageSettings {
                 optIn("kotlin.contracts.ExperimentalContracts")
                 optIn("kotlin.experimental.ExperimentalTypeInference")
+                optIn("kotlinx.coroutines.ExperimentalCoroutinesApi")
                 optIn("kotlinx.coroutines.FlowPreview")
                 optIn("kt.fluxo.core.annotation.ExperimentalFluxoApi")
                 optIn("kt.fluxo.core.annotation.InternalFluxoApi")

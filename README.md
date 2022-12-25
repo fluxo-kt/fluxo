@@ -1,6 +1,6 @@
 # Fluxo MVI / MVVM+ Multiplatform
 
-[![Snapshot Version](https://img.shields.io/nexus/s/https/s01.oss.sonatype.org/io.github.fluxo-kt/fluxo-core.svg)](https://s01.oss.sonatype.org/content/repositories/snapshots/io/github/fluxo-kt/fluxo-core/)
+[![Snapshot Version](https://img.shields.io/nexus/s/https/s01.oss.sonatype.org/io.github.fluxo-kt/fluxo-core.svg)](https://s01.oss.sonatype.org/content/repositories/snapshots/io/github/fluxo-kt/)
 [![Build](../../actions/workflows/build.yml/badge.svg)](../../actions/workflows/build.yml)
 [![codecov](https://codecov.io/gh/fluxo-kt/fluxo-mvi/branch/main/graph/badge.svg?token=LKCNVWR8QC)](https://codecov.io/gh/fluxo-kt/fluxo-mvi)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
@@ -13,10 +13,12 @@
 
 ```kotlin
 dependencies {
-    implementation("io.github.fluxo-kt:fluxo-core:0.1.0-SNAPSHOT")
+  implementation("io.github.fluxo-kt:fluxo-core:0.1.0-SNAPSHOT")
+  // For common data states
+  implementation("io.github.fluxo-kt:fluxo-data:0.1.0-SNAPSHOT")
 }
 repositories {
-    maven(url = "https://s01.oss.sonatype.org/content/repositories/snapshots/")
+  maven(url = "https://s01.oss.sonatype.org/content/repositories/snapshots/")
 }
 ```
 
@@ -60,6 +62,7 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super p
   * _Parallel_, no order guarantees.
   * Create your own!
 * Bootstrap (initialization tasks), eager or lazy initialization.
+* Common data states in a [`fluxo-data`](fluxo-data) module *(Success, Failure, Loading, Cached, Empty, Not Loaded)*.
 * Side jobs for long-running tasks (MVVM+ DSL).
 * Errors handling and on exception behavior control.
 * Leak-free transfer, delivery
@@ -88,7 +91,6 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super p
 - [ ] FSM: Strict finite-state machine style with edges declaration
 - [ ] SideJobs registry/management API
 - [ ] [Partial state change with effect](https://github.com/uniflow-kt/uniflow-kt/blob/master/doc/notify_update.md)
-- [ ] Common Async/UI/Repository/Cached states
 - [ ] Debug checks
 - [ ] \(Optional) Java-friendly API
 - [ ] Compose integration tests, examples and docs

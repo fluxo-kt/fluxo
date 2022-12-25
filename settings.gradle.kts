@@ -35,3 +35,4 @@ dependencyResolutionManagement {
 rootProject.name = "fluxo-mvi"
 
 include(":fluxo-core")
+include(":fluxo-data")

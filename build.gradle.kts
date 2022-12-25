@@ -68,7 +68,6 @@ setupDefaults(
 
         sourceSets.all {
             languageSettings {
-                optIn("kotlinx.coroutines.ExperimentalCoroutinesApi")
                 progressiveMode = true
             }
         }
