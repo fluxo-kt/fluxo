@@ -58,6 +58,10 @@ detekt = "1.22.0"
 # https://developer.android.com/jetpack/androidx/releases/annotation
 androidx-annotation = "1.5.0"
 
+# Java Microbenchmark Harness (JMH)
+# https://github.com/openjdk/jmh/tags
+jmh = "1.36"
+
 
 # NPM repo dependencies
 
@@ -114,6 +118,9 @@ detekt-compose = { module = "com.twitter.compose.rules:detekt", version = "0.0.2
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 detekt-core = { module = "io.gitlab.arturbosch.detekt:detekt-core", version.ref = "detekt" }
 
+jmh-core = { module = "org.openjdk.jmh:jmh-core", version.ref = "jmh" }
+jmh-generator-annprocess = { module = "org.openjdk.jmh:jmh-generator-annprocess", version.ref = "jmh" }
+
 plugin-binCompatValidator = { module = "org.jetbrains.kotlinx:binary-compatibility-validator", version.ref = "bin-compat-validator" }
 
 # The idiomatic way to use atomic operations in Kotlin
@@ -162,3 +169,7 @@ deps-analysis = { id = "com.autonomousapps.dependency-analysis", version = "1.18
 # 'taskTree' task that prints task dependency tree
 # https://github.com/dorongold/gradle-task-tree
 task-tree = { id = "com.dorongold.task-tree", version = "2.1.0" }
+
+# JMH benchmarking for Gradle
+# https://github.com/melix/jmh-gradle-plugin/releases
+jmh = { id = "me.champeau.jmh", version = "0.6.8" }

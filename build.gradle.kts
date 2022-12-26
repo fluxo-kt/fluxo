@@ -202,6 +202,7 @@ koverMerged {
         classes {
             excludes += listOf(
                 // Test classes
+                "kt.fluxo.jmh.*",
                 "kt.fluxo.test.*",
                 "kt.fluxo.tests.*",
                 // Inline DSL, coverage not detected properly (still everything covered!)
@@ -214,6 +215,9 @@ koverMerged {
                 // Coverage not detected properly for inline methods (still everything covered!)
                 "kotlin.internal.InlineOnly",
             )
+        }
+        projects {
+            excludes += listOf("jmh")
         }
     }
 }
