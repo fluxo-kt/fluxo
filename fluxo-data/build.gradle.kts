@@ -33,3 +33,5 @@ kotlin {
         }
     }
 }
+
+android.namespace = "kt.fluxo.data"

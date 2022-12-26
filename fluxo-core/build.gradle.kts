@@ -68,3 +68,5 @@ kotlin {
         }
     }
 }
+
+android.namespace = "kt.fluxo.core"

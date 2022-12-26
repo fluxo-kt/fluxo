@@ -95,8 +95,6 @@ setupDefaults(
         buildToolsVersion = libs.versions.androidBuildTools.get(),
         configurator = {
             if (this is com.android.build.gradle.LibraryExtension) {
-                namespace = "kt.fluxo.core"
-
                 // Optimize code with R8 for android release aar
                 // TODO: On-device tests for aar
                 buildTypes {
