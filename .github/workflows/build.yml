@@ -6,7 +6,12 @@ on:
       - '**.md'
   push:
     paths-ignore:
+      - '**-check.yml'
+      - '**-submission.yml'
+      - '**-validation.yml'
+      - '**.*ignore'
       - '**.md'
+      - '**dependabot.yml'
 
 jobs:
   os-checks:
@@ -21,6 +26,13 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+      - name: Harden Runner
+        if: matrix.os == 'ubuntu-latest'
+        uses: step-security/harden-runner@266a5d6a507c6927766a67b8380f323eacd977a2
+        with:
+          disable-sudo: true
+          egress-policy: audit
+
       - name: Checkout
         uses: actions/checkout@v3
 

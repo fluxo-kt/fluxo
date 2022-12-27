@@ -18,5 +18,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@266a5d6a507c6927766a67b8380f323eacd977a2
+        with:
+          disable-sudo: true
+          egress-policy: audit
       - uses: actions/checkout@v3
       - uses: gradle/wrapper-validation-action@v1

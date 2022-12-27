@@ -34,6 +34,8 @@ dependencyResolutionManagement {
 
 rootProject.name = "fluxo-mvi"
 
+// On modules update, don't forget to update '.github/workflows/deps-submission.yml'!
+
 include(":fluxo-core")
 include(":fluxo-data")
 

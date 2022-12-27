@@ -325,18 +325,6 @@ allprojects {
                 }
             }
         }
-
-        // Remove log pollution until Android support in KMP improves.
-        project.extensions.findByType<org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension>()?.let { kmpExt ->
-            kmpExt.sourceSets.removeAll {
-                setOf(
-                    "androidAndroidTestRelease",
-                    "androidTestFixtures",
-                    "androidTestFixturesDebug",
-                    "androidTestFixturesRelease",
-                ).contains(it.name)
-            }
-        }
     }
 }
 
