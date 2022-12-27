@@ -103,6 +103,11 @@ jsr305 = { module = "com.google.code.findbugs:jsr305", version = "3.0.2" }
 arrow-bom = { module = "io.arrow-kt:arrow-stack", version.ref = "arrow" }
 arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
 
+# build or classpath dependencies for the forced update (security recommendations)
+jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version = "2.12.7.1" }
+woodstox-core = { module = "com.fasterxml.woodstox:woodstox-core", version = "6.4.0" }
+jsoup = { module = "org.jsoup:jsoup", version = "1.15.3" }
+
 test-junit = { module = "junit:junit" }
 # https://mvnrepository.com/artifact/org.robolectric/robolectric
 test-robolectric = { module = "org.robolectric:robolectric", version = "4.9.1" }

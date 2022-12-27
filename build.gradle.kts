@@ -245,7 +245,27 @@ tasks.register<Task>(name = "resolveDependencies") {
     }
 }
 
+val pinnedDeps = arrayOf(
+    libs.jackson.databind,
+    libs.woodstox.core,
+    libs.jsoup,
+).map { it.get() }
+
 allprojects {
+    configurations.all {
+        if (pinnedDeps.isNotEmpty()) {
+            resolutionStrategy.eachDependency {
+                val module = requested.module
+                for (d in pinnedDeps) {
+                    if (d.module == module) {
+                        useVersion(d.versionConstraint.toString())
+                        because("security recommendations")
+                    }
+                }
+            }
+        }
+    }
+
     plugins.withType<org.jetbrains.dokka.gradle.DokkaPlugin> {
         tasks.withType<org.jetbrains.dokka.gradle.DokkaTask>().configureEach {
             dokkaSourceSets {
