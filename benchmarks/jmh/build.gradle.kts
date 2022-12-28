@@ -10,9 +10,29 @@ dependencies {
     jmh(libs.jmh.core)
     jmh(libs.jmh.generator.annprocess)
 
-    jmh(libs.kotlinx.coroutines.core)
-    jmh(projects.fluxoCore)
-    jmh(projects.fluxoData)
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(projects.fluxoCore)
+    implementation(projects.fluxoData)
+
+
+    // Libraries to compare/benchmark against
+
+    // Ballast
+    implementation("io.github.copper-leaf:ballast-core:" + libs.versions.ballast.get())
+
+    // MVICore
+    implementation("com.github.badoo.mvicore:mvicore:" + libs.versions.mvicore.get())
+    implementation("com.github.badoo.mvicore:binder:" + libs.versions.mvicore.get())
+    implementation(libs.kotlinx.coroutines.reactive)
+    implementation(libs.rxjava2)
+
+    // MVIKotlin
+    implementation("com.arkivanov.mvikotlin:mvikotlin:" + libs.versions.mvikotlin.get())
+    implementation("com.arkivanov.mvikotlin:mvikotlin-main:" + libs.versions.mvikotlin.get())
+    implementation("com.arkivanov.mvikotlin:mvikotlin-extensions-coroutines:" + libs.versions.mvikotlin.get())
+
+    // Orbit MVI
+    implementation("org.orbit-mvi:orbit-core:" + libs.versions.orbit.get())
 }
 
 jmh {
