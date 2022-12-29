@@ -32,7 +32,6 @@ private fun String.atLeast(size: Int, placeholder: Char = '0'): String {
     return placeholder.toString().repeat(size - length) + this
 }
 
-@Suppress("NO_ACTUAL_FOR_EXPECT")
 internal expect fun threadInfo(): String?
 
 

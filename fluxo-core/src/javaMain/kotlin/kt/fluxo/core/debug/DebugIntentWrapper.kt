@@ -75,7 +75,8 @@ private fun reflectArgs(clazz: Class<FluxoIntent<Any?, Any>>, fluxoIntent: Fluxo
 private fun AccessibleObject.setAccessibleSafe() {
     try {
         // TODO: No AccessibleObject.canAccess method on Android, but should we use it for Java 9+?
-        @Suppress("DEPRECATION") if (isAccessible) {
+        @Suppress("DEPRECATION")
+        if (isAccessible) {
             return
         }
         isAccessible = true

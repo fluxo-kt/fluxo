@@ -17,7 +17,7 @@ subprojects {
             add("compileOnly", libs.plugin.kotlin)
         }
 
-        tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile::class.java).configureEach {
+        tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile>().configureEach {
             kotlinOptions.jvmTarget = JavaVersion.VERSION_11.name
         }
 

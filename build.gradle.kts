@@ -56,21 +56,9 @@ setupDefaults(
         linuxX64()
         mingwX64()
         iosCompat()
-
-        // Until the fix in Kotlin 1.8 https://youtrack.jetbrains.com/issue/KT-54814
-        val isCi by isCI()
-        if (!isCi || !libs.versions.kotlin.get().startsWith("1.7")) {
-            watchosCompat()
-        }
-
+        watchosCompat()
         tvosCompat()
         macosCompat()
-
-        sourceSets.all {
-            languageSettings {
-                progressiveMode = true
-            }
-        }
 
         targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithTests<*>>().all {
             binaries {
@@ -298,24 +286,25 @@ allprojects {
 
         val isCi by isCI()
         val isRelease by isRelease()
-        val useK2 by useK2()
+        val enableK2 by useK2()
         tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
             val isTestTask = "Test" in name
-            kotlinOptions {
+            val isDebugTask = "Debug" in name
+            compilerOptions {
                 if (!isTestTask && (isCi || isRelease)) {
-                    allWarningsAsErrors = true
+                    allWarningsAsErrors.set(true)
                 }
 
-                val javaVersion = libs.versions.javaLangTarget.get()
-                jvmTarget = javaVersion
-                javaParameters = true
+                jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget(libs.versions.javaLangTarget.get()))
+                javaParameters.set(!isDebugTask)
 
-                val kotlinVersion = libs.versions.kotlinLangVersion.get()
-                languageVersion = kotlinVersion
-                apiVersion = kotlinVersion
+                org.jetbrains.kotlin.gradle.dsl.KotlinVersion.fromVersion(libs.versions.kotlinLangVersion.get()).let {
+                    languageVersion.set(it)
+                    apiVersion.set(it)
+                }
 
                 // https://github.com/JetBrains/kotlin/blob/master/compiler/testData/cli/jvm/extraHelp.out
-                freeCompilerArgs += listOf(
+                freeCompilerArgs.addAll(
                     "-Xcontext-receivers",
                     "-Xjsr305=strict",
                     "-Xjvm-default=all",
@@ -323,12 +312,13 @@ allprojects {
                     "-Xvalidate-bytecode",
                     "-Xvalidate-ir",
                     "-opt-in=kotlin.RequiresOptIn",
-                    "-progressive",
+                    // w: '-progressive' is meaningful only for the latest language version (1.8)
+                    //"-progressive",
                 )
 
                 // more data on MVVM+ lambda intents for debugging
                 // indy mode provides arguments names
-                freeCompilerArgs += when {
+                freeCompilerArgs.addAll(when {
                     isCi || isRelease -> listOf(
                         "-Xlambdas=indy",
                         "-Xsam-conversions=indy",
@@ -338,10 +328,10 @@ allprojects {
                         "-Xlambdas=class",
                         "-Xsam-conversions=class",
                     )
-                }
+                })
 
-                if (useK2) {
-                    freeCompilerArgs += "-Xuse-k2"
+                if (enableK2) {
+                    useK2.set(true)
                 }
             }
         }

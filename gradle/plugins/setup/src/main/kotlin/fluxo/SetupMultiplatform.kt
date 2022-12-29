@@ -132,11 +132,14 @@ private class DefaultMultiplatformSourceSets(
         }
 }
 
-fun NamedDomainObjectContainer<out KotlinSourceSet>.bundle(name: String): SourceSetBundle =
-    SourceSetBundle(
+fun NamedDomainObjectContainer<out KotlinSourceSet>.bundle(name: String): SourceSetBundle {
+    return SourceSetBundle(
         main = maybeCreate("${name}Main"),
-        test = maybeCreate("${name}Test"),
+        // Support for androidSourceSetLayout v2
+        // https://kotlinlang.org/docs/whatsnew18.html#kotlinsourceset-naming-schema
+        test = maybeCreate(if (name == "android") "${name}UnitTest" else "${name}Test"),
     )
+}
 
 fun NamedDomainObjectContainer<out KotlinSourceSet>.bundle(): PropertyDelegateProvider<Any?, ReadOnlyProperty<Any?, SourceSetBundle>> =
     PropertyDelegateProvider { _, property ->

@@ -22,10 +22,10 @@ javaLangTarget = "1.8"
 kotlinLangVersion = "1.7"
 
 # https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-gradle-plugin
-kotlin = "1.7.22"
+kotlin = "1.8.0"
 
 # https://github.com/google/ksp/releases
-ksp = "1.7.22-1.0.8"
+ksp = "1.8.0-1.0.8"
 
 # Dokka is a documentation engine for Kotlin/Java
 # https://github.com/Kotlin/dokka/releases
@@ -42,7 +42,7 @@ gradle-embedded-kotlin = "3.2.6"
 bin-compat-validator = "0.12.1"
 
 # https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google
-android-gradle-plugin = "7.3.1"
+android-gradle-plugin = "7.4.0-beta02"
 
 # Λrrow - Functional companion to Kotlin's Standard Library
 # https://mvnrepository.com/artifact/io.arrow-kt/arrow-core
@@ -91,8 +91,8 @@ kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version 
 
 kotlinx-coroutines-bom = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-bom", version.ref = "coroutines" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
-kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 kotlinx-coroutines-debug = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-debug", version.ref = "coroutines" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
 
