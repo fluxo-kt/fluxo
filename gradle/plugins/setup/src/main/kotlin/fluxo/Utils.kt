@@ -7,7 +7,6 @@ import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.findByType
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
-import java.util.concurrent.TimeUnit
 
 internal val Project.multiplatformExtension: KotlinMultiplatformExtension
     get() = kotlinExtension as KotlinMultiplatformExtension
@@ -85,17 +84,14 @@ fun Project.signingKey(): String? = envOrProp("SIGNING_KEY").orNull?.replace("\\
 
 
 fun Project.runCommand(command: String): String? {
+    // https://docs.gradle.org/7.5.1/userguide/configuration_cache.html#config_cache:requirements:external_processes
     return try {
-        val parts = command.split("\\s".toRegex())
-        val proc = ProcessBuilder(parts)
-            .directory(rootDir)
-            .redirectOutput(ProcessBuilder.Redirect.PIPE)
-            .redirectError(ProcessBuilder.Redirect.INHERIT)
-            .start()
-        proc.waitFor(@Suppress("MagicNumber") 60, TimeUnit.MINUTES)
-        val error = proc.errorStream.bufferedReader().readText().trim()
+        val exec = providers.exec {
+            commandLine(command.split("\\s".toRegex()))
+        }
+        val error = exec.standardError.asText.get()
         when {
-            error.isEmpty() -> proc.inputStream.bufferedReader().readText().trim().ifEmpty { null }
+            error.isEmpty() -> exec.standardOutput.asText.get().trim().ifEmpty { null }
             else -> {
                 logger.error("Error running command `$command`: $error")
                 null
