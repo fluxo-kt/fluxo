@@ -17,6 +17,10 @@ style:
   MaxLineLength:
     maxLineLength: 140
 
+empty-blocks:
+  EmptyFunctionBlock:
+    ignoreOverridden: true
+
 formatting:
   ArgumentListWrapping:
     maxLineLength: 140
