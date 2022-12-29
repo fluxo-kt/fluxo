@@ -17,6 +17,7 @@ import kt.fluxo.core.container
 import kt.fluxo.core.debug.debugClassName
 import kt.fluxo.core.intercept.FluxoEvent
 import kt.fluxo.core.internal.Closeable
+import kt.fluxo.test.IgnoreJs
 import kt.fluxo.test.getValue
 import kt.fluxo.test.runUnitTest
 import kt.fluxo.test.setValue
@@ -32,6 +33,7 @@ internal class SideEffectTest {
     }
 
     @Test
+    @IgnoreJs
     fun side_effects_are_emitted_ordered_by_default() = runUnitTest {
         for (strategy in BASIC_STRATEGIES) {
             // Uses Fifo strategy by default, saving order of intents
