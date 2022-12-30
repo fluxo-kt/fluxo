@@ -6,8 +6,8 @@ coverage:
         threshold: 3%
     patch:
       default:
-        target: 65%
-        threshold: 4%
+        target: auto
+        threshold: 5%
 
 comment:
   layout: "header,reach,diff,flags,tree,betaprofiling,footer"
@@ -16,6 +16,3 @@ comment:
 profiling:
   critical_files_paths:
     - fluxo-core/src/commonMain/kotlin/kt/fluxo/core/internal/FluxoStore.kt
-
-github_checks:
-  annotations: false
