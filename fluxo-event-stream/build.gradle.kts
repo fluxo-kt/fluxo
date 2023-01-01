@@ -24,3 +24,5 @@ kotlin {
         }
     }
 }
+
+android.namespace = "kt.fluxo.event.stream"
