@@ -43,6 +43,27 @@ dependencies {
 
     // Orbit MVI
     implementation("org.orbit-mvi:orbit-core:" + libs.versions.orbit.get())
+
+    // Kotlin Bloc
+    implementation("com.1gravity:bloc-core-android:" + libs.versions.kotlinBloc.get())
+    constraints {
+        implementation("androidx.activity:activity:1.6.1")
+        implementation("androidx.annotation:annotation-experimental:1.3.0")
+        implementation("androidx.collection:collection:1.2.0")
+        implementation("androidx.core:core:1.9.0")
+        implementation("androidx.fragment:fragment:1.5.5")
+        implementation("androidx.lifecycle:lifecycle-common-java8:2.5.1")
+        implementation("androidx.lifecycle:lifecycle-common:2.5.1")
+        implementation("androidx.lifecycle:lifecycle-livedata-core:2.5.1")
+        implementation("androidx.lifecycle:lifecycle-livedata:2.5.1")
+        implementation("androidx.lifecycle:lifecycle-process:2.5.1")
+        implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
+        implementation("androidx.lifecycle:lifecycle-runtime:2.5.1")
+        implementation("androidx.savedstate:savedstate:1.2.0")
+        implementation("androidx.startup:startup-runtime:1.1.1")
+        implementation(libs.essenty.instance.keeper)
+        implementation(libs.essenty.lifecycle)
+    }
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
