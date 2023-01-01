@@ -17,7 +17,7 @@ import kt.fluxo.test.CommonBenchmark.launchCommon
 import kt.fluxo.test.IntentIncrement
 
 internal object BallastBenchmark {
-    fun mviHandler() {
+    fun mviHandler(): Int {
         val dispatcher = newSingleThreadContext(::mviHandler.name)
         val job = SupervisorJob()
         val vm = object : BasicViewModel<IntentIncrement, Nothing, Int>(

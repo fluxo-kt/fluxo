@@ -10,6 +10,9 @@ dependencies {
     jmh(libs.jmh.core)
     jmh(libs.jmh.generator.annprocess)
 
+    testImplementation(kotlin("test"))
+    testImplementation(libs.kotlinx.coroutines.test)
+
     implementation(libs.kotlinx.coroutines.core)
     implementation(projects.fluxoCore)
     implementation(projects.fluxoData)
@@ -48,6 +51,7 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
         // https://github.com/JetBrains/kotlin/blob/master/compiler/testData/cli/jvm/extraHelp.out
         freeCompilerArgs.addAll(
             "-opt-in=kotlinx.coroutines.DelicateCoroutinesApi",
+            "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
             "-progressive",
         )
 
