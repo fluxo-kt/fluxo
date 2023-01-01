@@ -190,7 +190,6 @@ koverMerged {
         classes {
             excludes += listOf(
                 // Test classes
-                "kt.fluxo.jmh.*",
                 "kt.fluxo.test.*",
                 "kt.fluxo.tests.*",
                 // Inline DSL, coverage not detected properly (still everything covered!)

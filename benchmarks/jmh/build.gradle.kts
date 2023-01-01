@@ -38,6 +38,13 @@ dependencies {
 jmh {
     // https://github.com/melix/jmh-gradle-plugin#configuration-options
 
+    // One! pattern (regular expression) for benchmarks to be executed
+    includes.addAll()
+    excludes.addAll()
+
+    // Warmup benchmarks to include in the run with already selected.
+    warmupBenchmarks.addAll(".*Warmup")
+
     warmupIterations.set(2)
     iterations.set(3)
     fork.set(2)
