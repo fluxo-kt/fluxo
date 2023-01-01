@@ -21,12 +21,7 @@ internal object CommonBenchmark {
         }
     }
 
-    internal suspend fun consumeCommon(
-        stateFlow: Flow<Int>,
-        launchDef: Job,
-        parentJob: Job? = null,
-        dispatcher: Closeable? = null,
-    ): Int {
+    internal suspend fun consumeCommon(stateFlow: Flow<Int>, launchDef: Job, parentJob: Job? = null, dispatcher: Closeable? = null): Int {
         val state = stateFlow.first { it >= BENCHMARK_REPETITIONS }
 
         launchDef.join()

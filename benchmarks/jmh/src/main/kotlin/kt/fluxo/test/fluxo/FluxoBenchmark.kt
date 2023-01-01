@@ -28,11 +28,14 @@ internal object FluxoBenchmark {
 
     fun mviReducer(): Int {
         val dispatcher = newSingleThreadContext(::mviReducer.name)
-        val store = store<IntentIncrement, Int>(0, reducer = {
-            when (it) {
-                IntentIncrement.Increment -> this + 1
-            }
-        }) {
+        val store = store<IntentIncrement, Int>(
+            initialState = 0,
+            reducer = {
+                when (it) {
+                    IntentIncrement.Increment -> this + 1
+                }
+            },
+        ) {
             eventLoopContext = dispatcher
             debugChecks = false
             lazy = false
@@ -42,11 +45,14 @@ internal object FluxoBenchmark {
 
     fun mviHandler(): Int {
         val dispatcher = newSingleThreadContext(::mviHandler.name)
-        val store = store<IntentIncrement, Int>(0, handler = { intent ->
-            when (intent) {
-                IntentIncrement.Increment -> updateState { it + 1 }
-            }
-        }) {
+        val store = store<IntentIncrement, Int>(
+            initialState = 0,
+            handler = { intent ->
+                when (intent) {
+                    IntentIncrement.Increment -> updateState { it + 1 }
+                }
+            },
+        ) {
             eventLoopContext = dispatcher
             debugChecks = false
             lazy = false

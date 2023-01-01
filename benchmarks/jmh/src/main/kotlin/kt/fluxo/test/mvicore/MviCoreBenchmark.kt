@@ -19,22 +19,25 @@ internal object MviCoreBenchmark {
                 when (wish) {
                     IntentIncrement.Increment -> state + 1
                 }
-            }
+            },
         )
         runBlocking {
             val launchDef = launchCommon(IntentIncrement.Increment) { feature.accept(it) }
             suspendCoroutine { cont ->
-                feature.subscribe(observer = object : Observer<Int> {
-                    override fun onNext(state: Int) {
-                        if (state >= BENCHMARK_REPETITIONS) {
-                            cont.resume(state)
+                @Suppress("TrailingCommaOnCallSite")
+                feature.subscribe(
+                    observer = object : Observer<Int> {
+                        override fun onNext(state: Int) {
+                            if (state >= BENCHMARK_REPETITIONS) {
+                                cont.resume(state)
+                            }
                         }
-                    }
 
-                    override fun onComplete() {}
-                    override fun onError(e: Throwable) {}
-                    override fun onSubscribe(d: Disposable) {}
-                })
+                        override fun onComplete() {}
+                        override fun onError(e: Throwable) {}
+                        override fun onSubscribe(d: Disposable) {}
+                    },
+                )
             }
             launchDef.join()
         }
