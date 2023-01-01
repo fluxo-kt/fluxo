@@ -12,7 +12,7 @@ import kotlin.internal.InlineOnly
 // TODO: Only for test/debug variants?
 @Suppress("UNCHECKED_CAST", "ReturnCount")
 internal actual fun <I> debugIntentWrapper(intent: I): I {
-    if (intent is FluxoIntentDebug<*, *>) return intent
+    if (!DEBUG || intent is FluxoIntentDebug<*, *>) return intent
     val fluxoIntent = (intent as? FluxoIntent<Any?, Any>) ?: return intent
 
     @Suppress("ThrowingExceptionsWithoutMessageOrCause")

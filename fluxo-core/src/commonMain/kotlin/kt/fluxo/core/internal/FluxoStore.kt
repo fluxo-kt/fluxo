@@ -302,7 +302,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
 
     override suspend fun sendAsync(intent: Intent): Deferred<Unit> {
         start()
-        val i = if (DEBUG || debugChecks) debugIntentWrapper(intent) else intent
+        val i = if (DEBUG && debugChecks) debugIntentWrapper(intent) else intent
         val request = StoreRequest.HandleIntent<Intent, State>(i)
         requestsChannel.send(request)
         events.emit(FluxoEvent.IntentQueued(this, i))
@@ -311,8 +311,8 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
 
     override fun send(intent: Intent) {
         start()
-        val i = if (DEBUG || debugChecks) debugIntentWrapper(intent) else intent
-        scope.launch(Dispatchers.Unconfined, start = CoroutineStart.UNDISPATCHED) {
+        val i = if (DEBUG && debugChecks) debugIntentWrapper(intent) else intent
+        scope.launch(start = CoroutineStart.UNDISPATCHED) {
             @Suppress("DeferredResultUnused")
             sendAsync(i)
         }
