@@ -11,12 +11,13 @@ import kt.fluxo.core.internal.Closeable
 
 internal object CommonBenchmark {
 
-    internal inline fun <I> CoroutineScope.launchCommon(intent: I, crossinline send: suspend (I) -> Unit) = launch {
+    internal inline fun <I> CoroutineScope.launchCommon(intent: I, yield: Boolean = false, crossinline send: suspend (I) -> Unit) = launch {
         @Suppress("UnnecessaryVariable")
         val i = intent
         repeat(BENCHMARK_REPETITIONS) {
             send(i)
-            yield()
+            // Yield makes everything super slow!
+            if (yield) yield()
         }
     }
 
