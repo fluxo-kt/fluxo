@@ -177,7 +177,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         // — channel cancelled, in which case onUndeliveredElement called on every remaining element in the channel's buffer.
         val intentResendLock = if (inputStrategy.resendUndelivered) Mutex() else null
         requestsChannel = inputStrategy.createQueue {
-            scope.launch(Dispatchers.Unconfined, CoroutineStart.UNDISPATCHED) {
+            scope.launch(start = CoroutineStart.UNDISPATCHED) {
                 when (it) {
                     is StoreRequest.HandleIntent -> {
                         // We don't want to fall into the recursion, so only one resending per moment.
@@ -227,7 +227,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         } else {
             val seResendLock = Mutex()
             val channel = Channel<SideEffect>(conf.sideEffectBufferSize, BufferOverflow.SUSPEND) {
-                scope.launch(Dispatchers.Unconfined, CoroutineStart.UNDISPATCHED) {
+                scope.launch(start = CoroutineStart.UNDISPATCHED) {
                     // We don't want to fall into the recursion, so only one resending per moment.
                     var resent = false
                     if (isActive && seResendLock.tryLock()) {
@@ -377,7 +377,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
     }
 
     private fun postSideEffectSync(sideEffect: SideEffect) {
-        scope.launch(Dispatchers.Unconfined, start = CoroutineStart.UNDISPATCHED) {
+        scope.launch(start = CoroutineStart.UNDISPATCHED) {
             postSideEffect(sideEffect)
         }
     }
