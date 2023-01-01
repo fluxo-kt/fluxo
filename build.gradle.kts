@@ -271,6 +271,10 @@ allprojects {
         }
     }
 
+    if (name == "jmh") {
+        return@allprojects
+    }
+
     afterEvaluate {
         // Fixes webpack-cli incompatibility by pinning the newest version.
         // Workaround for https://youtrack.jetbrains.com/issue/KT-52776

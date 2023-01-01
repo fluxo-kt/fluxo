@@ -35,6 +35,26 @@ dependencies {
     implementation("org.orbit-mvi:orbit-core:" + libs.versions.orbit.get())
 }
 
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    java.toolchain.languageVersion.set(JavaLanguageVersion.of(11))
+
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
+        org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_1_9.let {
+            languageVersion.set(it)
+            apiVersion.set(it)
+        }
+
+        // https://github.com/JetBrains/kotlin/blob/master/compiler/testData/cli/jvm/extraHelp.out
+        freeCompilerArgs.addAll(
+            "-opt-in=kotlinx.coroutines.DelicateCoroutinesApi",
+            "-progressive",
+        )
+
+        useK2.set(true)
+    }
+}
+
 jmh {
     // https://github.com/melix/jmh-gradle-plugin#configuration-options
 
