@@ -90,6 +90,11 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super p
 ### Roadmap
 
 * [ ] Performance improvements.
+* [ ] Analyze and choose the best interception schemes
+  * Complete pipeline interception (OkHttp, etc.)
+  * Store decorator (Orbit)
+  * Store factory (MVIKotlin)
+  * Event stream (Ballast)
 * [ ] sideJob helpers for logic called on a specific state or side effect (see _Kotlin-Bloc_).
 * [ ] [SAM: State-Action-Model](https://sam.js.org/), composable
   * [ ] functions as first-class citizens
