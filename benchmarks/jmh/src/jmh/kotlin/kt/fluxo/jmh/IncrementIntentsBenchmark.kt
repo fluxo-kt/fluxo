@@ -16,33 +16,33 @@ import org.openjdk.jmh.infra.Blackhole
  *
  * _Example results:_
  * ```
- * Benchmark                                          Mode  Cnt    Score    Error   Units
- * IncrementIntentsBenchmark.naive__state_flow       thrpt    6   16.543 ±  0.459  ops/ms
- * IncrementIntentsBenchmark.mvicore__mvi_reducer    thrpt    6    3.050 ±  0.033  ops/ms
- * IncrementIntentsBenchmark.mvikotlin__mvi_reducer  thrpt    6    1.805 ±  0.191  ops/ms
- * IncrementIntentsBenchmark.ballast__mvi_handler    thrpt    6    0.372 ±  0.109  ops/ms
- * IncrementIntentsBenchmark.fluxo__mvi_handler      thrpt    6    0.241 ±  0.056  ops/ms
- * IncrementIntentsBenchmark.fluxo__mvi_reducer      thrpt    6    0.218 ±  0.022  ops/ms
- * IncrementIntentsBenchmark.orbit__mvvm_intent      thrpt    6    0.193 ±  0.013  ops/ms
- * IncrementIntentsBenchmark.fluxo__mvvm_intent      thrpt    6    0.017 ±  0.001  ops/ms
+ * Benchmark                                          Mode  Cnt   Score    Error   Units
+ * IncrementIntentsBenchmark.naive__state_flow       thrpt   18  16.712 ±  0.129  ops/ms
+ * IncrementIntentsBenchmark.mvicore__mvi_reducer    thrpt   18   3.055 ±  0.034  ops/ms
+ * IncrementIntentsBenchmark.mvikotlin__mvi_reducer  thrpt   18   1.940 ±  0.153  ops/ms
+ * IncrementIntentsBenchmark.ballast__mvi_handler    thrpt   18   0.383 ±  0.014  ops/ms
+ * IncrementIntentsBenchmark.fluxo__mvvm_intent      thrpt   18   0.270 ±  0.002  ops/ms
+ * IncrementIntentsBenchmark.fluxo__mvi_handler      thrpt   18   0.264 ±  0.005  ops/ms
+ * IncrementIntentsBenchmark.fluxo__mvi_reducer      thrpt   18   0.263 ±  0.005  ops/ms
+ * IncrementIntentsBenchmark.orbit__mvvm_intent      thrpt   18   0.203 ±  0.004  ops/ms
  *
- * IncrementIntentsBenchmark.naive__state_flow        avgt    6    0.071 ±  0.009   ms/op
- * IncrementIntentsBenchmark.mvicore__mvi_reducer     avgt    6    0.377 ±  0.149   ms/op
- * IncrementIntentsBenchmark.mvikotlin__mvi_reducer   avgt    6    0.527 ±  0.062   ms/op
- * IncrementIntentsBenchmark.ballast__mvi_handler     avgt    6    2.538 ±  0.038   ms/op
- * IncrementIntentsBenchmark.fluxo__mvi_handler       avgt    6    3.622 ±  0.206   ms/op
- * IncrementIntentsBenchmark.fluxo__mvi_reducer       avgt    6    4.362 ±  0.162   ms/op
- * IncrementIntentsBenchmark.orbit__mvvm_intent       avgt    6    6.682 ±  1.436   ms/op
- * IncrementIntentsBenchmark.fluxo__mvvm_intent       avgt    6   58.633 ±  1.737   ms/op
+ * IncrementIntentsBenchmark.naive__state_flow        avgt   18   0.060 ±  0.001   ms/op
+ * IncrementIntentsBenchmark.mvicore__mvi_reducer     avgt   18   0.322 ±  0.005   ms/op
+ * IncrementIntentsBenchmark.mvikotlin__mvi_reducer   avgt   18   0.534 ±  0.039   ms/op
+ * IncrementIntentsBenchmark.ballast__mvi_handler     avgt   18   2.507 ±  0.012   ms/op
+ * IncrementIntentsBenchmark.fluxo__mvi_reducer       avgt   18   3.505 ±  0.274   ms/op
+ * IncrementIntentsBenchmark.fluxo__mvvm_intent       avgt   18   3.716 ±  0.049   ms/op
+ * IncrementIntentsBenchmark.fluxo__mvi_handler       avgt   18   3.751 ±  0.038   ms/op
+ * IncrementIntentsBenchmark.orbit__mvvm_intent       avgt   18   5.071 ±  0.115   ms/op
  *
- * IncrementIntentsBenchmark.naive__state_flow          ss    6    0.642 ±  0.087   ms/op
- * IncrementIntentsBenchmark.mvicore__mvi_reducer       ss    6    4.348 ±  2.664   ms/op
- * IncrementIntentsBenchmark.mvikotlin__mvi_reducer     ss    6    5.327 ±  4.415   ms/op
- * IncrementIntentsBenchmark.fluxo__mvi_reducer         ss    6   26.751 ± 15.966   ms/op
- * IncrementIntentsBenchmark.ballast__mvi_handler       ss    6   30.239 ± 16.781   ms/op
- * IncrementIntentsBenchmark.orbit__mvvm_intent         ss    6   36.130 ± 21.458   ms/op
- * IncrementIntentsBenchmark.fluxo__mvi_handler         ss    6   38.908 ± 51.693   ms/op
- * IncrementIntentsBenchmark.fluxo__mvvm_intent         ss    6  135.051 ± 34.694   ms/op
+ * IncrementIntentsBenchmark.naive__state_flow          ss   18   0.549 ±  0.083   ms/op
+ * IncrementIntentsBenchmark.mvicore__mvi_reducer       ss   18   3.573 ±  1.114   ms/op
+ * IncrementIntentsBenchmark.mvikotlin__mvi_reducer     ss   18   3.925 ±  1.105   ms/op
+ * IncrementIntentsBenchmark.fluxo__mvi_handler         ss   18  14.823 ±  2.669   ms/op
+ * IncrementIntentsBenchmark.fluxo__mvvm_intent         ss   18  15.108 ±  2.798   ms/op
+ * IncrementIntentsBenchmark.fluxo__mvi_reducer         ss   18  15.700 ±  1.419   ms/op
+ * IncrementIntentsBenchmark.ballast__mvi_handler       ss   18  16.108 ±  2.178   ms/op
+ * IncrementIntentsBenchmark.orbit__mvvm_intent         ss   18  19.027 ±  3.477   ms/op
  * ```
  */
 @State(Scope.Benchmark)
