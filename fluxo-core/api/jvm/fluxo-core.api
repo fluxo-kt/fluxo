@@ -19,9 +19,11 @@ public final class kt/fluxo/core/FluxoInterceptorKt {
 }
 
 public final class kt/fluxo/core/FluxoSettings {
-	public fun <init> ()V
+	public static final field DEFAULT Lkt/fluxo/core/FluxoSettings;
+	public static final field Factory Lkt/fluxo/core/FluxoSettings$Factory;
 	public final fun bootstrapperJob (Ljava/lang/String;Lkotlin/jvm/functions/Function2;)V
 	public static synthetic fun bootstrapperJob$default (Lkt/fluxo/core/FluxoSettings;Ljava/lang/String;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)V
+	public final fun copy ()Lkt/fluxo/core/FluxoSettings;
 	public final fun getBootstrapper ()Lkotlin/jvm/functions/Function2;
 	public final fun getDebugChecks ()Z
 	public final fun getEventLoopContext ()Lkotlin/coroutines/CoroutineContext;
@@ -53,6 +55,10 @@ public final class kt/fluxo/core/FluxoSettings {
 	public final fun setSideEffectBufferSize (I)V
 	public final fun setSideEffectsStrategy (Lkt/fluxo/core/SideEffectsStrategy;)V
 	public final fun setSideJobsContext (Lkotlin/coroutines/CoroutineContext;)V
+}
+
+public final class kt/fluxo/core/FluxoSettings$Factory {
+	public final fun create ()Lkt/fluxo/core/FluxoSettings;
 }
 
 public abstract class kt/fluxo/core/InputStrategy {

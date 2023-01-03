@@ -7,7 +7,9 @@ import kt.fluxo.core.dsl.InputStrategyScope
 import kt.fluxo.core.strategy.FifoInputStrategy
 import kt.fluxo.core.strategy.LifoInputStrategy
 import kt.fluxo.core.strategy.ParallelInputStrategy
+import kotlin.js.JsName
 import kotlin.jvm.JvmName
+import kotlin.native.ObjCName
 
 public abstract class InputStrategy {
 
@@ -41,6 +43,8 @@ public abstract class InputStrategy {
          *
          * Consider [Parallel] or [Lifo] instead if you need more responsiveness.
          */
+        @JsName("Fifo")
+        @ObjCName("Fifo")
         @get:JvmName("Fifo")
         public val Fifo: InputStrategy get() = FifoInputStrategy
 
@@ -52,6 +56,8 @@ public abstract class InputStrategy {
          *
          * Consider [Parallel] if you steel need more responsiveness, but without dropping of any event.
          */
+        @JsName("Lifo")
+        @ObjCName("Lifo")
         @get:JvmName("Lifo")
         public val Lifo: InputStrategy get() = LifoInputStrategy
 
@@ -60,6 +66,8 @@ public abstract class InputStrategy {
          *
          * **IMPORTANT:** No guarantee that inputs will be processed in any given order!
          */
+        @JsName("Parallel")
+        @ObjCName("Parallel")
         @get:JvmName("Parallel")
         public val Parallel: InputStrategy get() = ParallelInputStrategy
     }

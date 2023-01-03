@@ -36,15 +36,15 @@ A long list of features is implemented gradually in this library (see the [Roadm
 Basic usage is elementary, yet you can take advantage of fine-tuning and super powerful features when you need them.
 
 * Kotlin **coroutine-based** state handling.
-* **Multiplatform**, supports all Kotlin MPP/KMM targets (**Android**, **iOS**, **JVM**, **JS**, **Linux**,
-  **Windows/MinGW**, **macOS**, etc.).
-* Simple usage, type-safe, no-boilerplate.
+* One-liner creation, simple usage, type-safe, no-boilerplate.
+* **Multiplatform**, supports all Kotlin MPP/KMM targets (**Android**, **iOS**, **JVM**,
+  **JS**, **Linux**, **Windows/MinGW**, **macOS**, **watchOS**, **tvOS**).
 * Different usage styles:
   * Strict **Redux/MVI** (the highest correctness guarantees, but may be subjectively less readable and intuitive)
   * Simple and flexible **MVVM+**
     (see [contextual reduction](https://dev.to/feresr/a-case-against-the-mvi-architecture-pattern-1add),
-    [orbit-way](https://github.com/orbit-mvi/orbit-mvi#what-is-orbit), intuitively readable, may be easier to maintain,
-    support every feature and more :)
+    [orbit-way](https://github.com/orbit-mvi/orbit-mvi#what-is-orbit), intuitively readable, may be easier
+    to maintain, support every feature and more :)
   * Redux-style discrete Inputs with MVVM+ style reduction DSL (hybrid way)
   * _More is coming…_
 * **Side effects** support (sometimes called news or events).
@@ -54,17 +54,22 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super p
   * Side effects consumption guarantees with `GuaranteedEffect` (effect handled and exactly
     once) [[1](https://github.com/Kotlin/kotlinx.coroutines/issues/2886),
     [2](https://medium.com/androiddevelopers/livedata-with-snackbar-navigation-and-other-events-the-singleliveevent-case-ac2622673150)].
-* **Lifecycle-aware** with full control based on coroutine scopes.
+* **Lifecycle-awareness** with full control based on coroutine scopes.
 * Subscription lifecycle with convenience API (`repeatOnSubscription`).
-* Pluggable **input strategies**:
-  * _First In, First Out_ (Fifo). Default, best for background processing.
-  * _Last In, First Out_ (Lifo). Can optimize UI events processing.
-  * _Parallel_, no order guarantees.
-  * Create your own!
-* Bootstrap (initialization tasks), eager or lazy initialization.
+* Forceful customization:
+  * Pluggable **input strategies**:
+    * _First In, First Out_ (Fifo). Default, predictable and intuitive, good performance.
+    * _Last In, First Out_ (Lifo). Can improve responsiveness for e.g., UI events processing, but can lose some intents!
+    * _Parallel_. No processing order guarantees, can provide better performance comparing to _Fifo_.
+    * Create your own!
+  * Bootstrap (initialization tasks), eager or lazy initialization.
+  * Errors handling and on exception behavior control.
+  * Global default settings for easier setup of state stores swarm.
+    * Change settings once and for all at one place (`FluxoSettings.DEFAULT`).
+    * Provide prepared settings object for the group of your stores.
+    * Just configure each store individually.
 * Common data states in a [`fluxo-data`](fluxo-data) module *(Success, Failure, Loading, Cached, Empty, Not Loaded)*.
 * Side jobs for long-running tasks (MVVM+ DSL).
-* Errors handling and on exception behavior control.
 * Leak-free transfer, delivery
   guarantees [[1](https://github.com/Kotlin/kotlinx.coroutines/issues/1936), [2](https://gmk57.medium.com/unfortunately-events-may-be-dropped-if-channel-receiveasflow-cfe78ae29004)].
 * Strictly not recommended, but JVM `Closeable` resources partially supported as a state and side effects.

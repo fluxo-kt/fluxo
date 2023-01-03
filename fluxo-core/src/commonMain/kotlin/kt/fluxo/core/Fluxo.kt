@@ -26,14 +26,13 @@ import kotlin.jvm.JvmName
 @InlineOnly
 public inline fun <State> CoroutineScope.container(
     initialState: State,
-    @BuilderInference settings: FluxoSettings<FluxoIntent<State, Nothing>, State, Nothing>.() -> Unit = {},
+    settings: FluxoSettings<FluxoIntent<State, Nothing>, State, Nothing> = fluxoSettings(),
+    @BuilderInference setup: FluxoSettings<FluxoIntent<State, Nothing>, State, Nothing>.() -> Unit = {},
 ): Container<State, Nothing> {
-    contract {
-        callsInPlace(settings, InvocationKind.EXACTLY_ONCE)
-    }
-    return kt.fluxo.core.container(initialState, settings = {
+    contract { callsInPlace(setup, InvocationKind.EXACTLY_ONCE) }
+    return kt.fluxo.core.container(initialState, settings, setup = {
         eventLoopContext = coroutineContext
-        settings()
+        setup()
     })
 }
 
@@ -46,14 +45,13 @@ public inline fun <State> CoroutineScope.container(
 @JvmName("containerWithSideEffects")
 public inline fun <State, SideEffect : Any> CoroutineScope.container(
     initialState: State,
-    @BuilderInference settings: FluxoSettings<FluxoIntent<State, SideEffect>, State, SideEffect>.() -> Unit = {},
+    settings: FluxoSettings<FluxoIntent<State, SideEffect>, State, SideEffect> = fluxoSettings(),
+    @BuilderInference setup: FluxoSettings<FluxoIntent<State, SideEffect>, State, SideEffect>.() -> Unit = {},
 ): Container<State, SideEffect> {
-    contract {
-        callsInPlace(settings, InvocationKind.EXACTLY_ONCE)
-    }
-    return kt.fluxo.core.container<State, SideEffect>(initialState, settings = {
+    contract { callsInPlace(setup, InvocationKind.EXACTLY_ONCE) }
+    return kt.fluxo.core.container(initialState, settings, setup = {
         eventLoopContext = coroutineContext
-        settings()
+        setup()
     })
 }
 
@@ -66,12 +64,11 @@ public inline fun <State, SideEffect : Any> CoroutineScope.container(
 public inline fun <Intent, State> CoroutineScope.store(
     initialState: State,
     @BuilderInference noinline reducer: Reducer<Intent, State>,
-    @BuilderInference settings: FluxoSettings<Intent, State, Nothing>.() -> Unit = {},
+    settings: FluxoSettings<Intent, State, Nothing> = fluxoSettings(),
+    @BuilderInference setup: FluxoSettings<Intent, State, Nothing>.() -> Unit = {},
 ): Store<Intent, State, Nothing> {
-    contract {
-        callsInPlace(settings, InvocationKind.EXACTLY_ONCE)
-    }
-    return store(initialState, ReducerIntentHandler(reducer), settings)
+    contract { callsInPlace(setup, InvocationKind.EXACTLY_ONCE) }
+    return store(initialState, ReducerIntentHandler(reducer), settings, setup)
 }
 
 /**
@@ -83,14 +80,13 @@ public inline fun <Intent, State> CoroutineScope.store(
 public inline fun <Intent, State> CoroutineScope.store(
     initialState: State,
     @BuilderInference handler: IntentHandler<Intent, State, Nothing>,
-    @BuilderInference settings: FluxoSettings<Intent, State, Nothing>.() -> Unit = {},
+    settings: FluxoSettings<Intent, State, Nothing> = fluxoSettings(),
+    @BuilderInference setup: FluxoSettings<Intent, State, Nothing>.() -> Unit = {},
 ): Store<Intent, State, Nothing> {
-    contract {
-        callsInPlace(settings, InvocationKind.EXACTLY_ONCE)
-    }
-    return kt.fluxo.core.store(initialState, handler, settings = {
+    contract { callsInPlace(setup, InvocationKind.EXACTLY_ONCE) }
+    return kt.fluxo.core.store(initialState, handler, settings, setup = {
         eventLoopContext = coroutineContext
-        settings()
+        setup()
     })
 }
 
@@ -105,14 +101,13 @@ public inline fun <Intent, State> CoroutineScope.store(
 public inline fun <Intent, State, SideEffect : Any> CoroutineScope.store(
     initialState: State,
     @BuilderInference handler: IntentHandler<Intent, State, SideEffect>,
-    @BuilderInference settings: FluxoSettings<Intent, State, SideEffect>.() -> Unit = {},
+    settings: FluxoSettings<Intent, State, SideEffect> = fluxoSettings(),
+    @BuilderInference setup: FluxoSettings<Intent, State, SideEffect>.() -> Unit = {},
 ): Store<Intent, State, SideEffect> {
-    contract {
-        callsInPlace(settings, InvocationKind.EXACTLY_ONCE)
-    }
-    return kt.fluxo.core.store(initialState, handler, settings = {
+    contract { callsInPlace(setup, InvocationKind.EXACTLY_ONCE) }
+    return kt.fluxo.core.store(initialState, handler, settings, setup = {
         eventLoopContext = coroutineContext
-        settings()
+        setup()
     })
 }
 
@@ -127,14 +122,13 @@ public inline fun <Intent, State, SideEffect : Any> CoroutineScope.store(
 @InlineOnly
 public inline fun <State> container(
     initialState: State,
-    @BuilderInference settings: FluxoSettings<FluxoIntent<State, Nothing>, State, Nothing>.() -> Unit = {},
+    settings: FluxoSettings<FluxoIntent<State, Nothing>, State, Nothing> = fluxoSettings(),
+    @BuilderInference setup: FluxoSettings<FluxoIntent<State, Nothing>, State, Nothing>.() -> Unit = {},
 ): Container<State, Nothing> {
-    contract {
-        callsInPlace(settings, InvocationKind.EXACTLY_ONCE)
-    }
-    return container<State, Nothing>(initialState) {
+    contract { callsInPlace(setup, InvocationKind.EXACTLY_ONCE) }
+    return container<State, Nothing>(initialState, settings) {
         sideEffectsStrategy = SideEffectsStrategy.DISABLE
-        settings()
+        setup()
     }
 }
 
@@ -147,15 +141,15 @@ public inline fun <State> container(
 @JvmName("containerWithSideEffects")
 public inline fun <State, SideEffect : Any> container(
     initialState: State,
-    @BuilderInference settings: FluxoSettings<FluxoIntent<State, SideEffect>, State, SideEffect>.() -> Unit = {},
+    settings: FluxoSettings<FluxoIntent<State, SideEffect>, State, SideEffect> = fluxoSettings(),
+    @BuilderInference setup: FluxoSettings<FluxoIntent<State, SideEffect>, State, SideEffect>.() -> Unit = {},
 ): Container<State, SideEffect> {
-    contract {
-        callsInPlace(settings, InvocationKind.EXACTLY_ONCE)
-    }
+    contract { callsInPlace(setup, InvocationKind.EXACTLY_ONCE) }
     return store(
         initialState,
         @Suppress("UNCHECKED_CAST") (FluxoIntentHandler as IntentHandler<FluxoIntent<State, SideEffect>, State, SideEffect>),
         settings,
+        setup,
     )
 }
 
@@ -168,12 +162,11 @@ public inline fun <State, SideEffect : Any> container(
 public inline fun <Intent, State> store(
     initialState: State,
     @BuilderInference noinline reducer: Reducer<Intent, State>,
-    @BuilderInference settings: FluxoSettings<Intent, State, Nothing>.() -> Unit = {},
+    settings: FluxoSettings<Intent, State, Nothing> = fluxoSettings(),
+    @BuilderInference setup: FluxoSettings<Intent, State, Nothing>.() -> Unit = {},
 ): Store<Intent, State, Nothing> {
-    contract {
-        callsInPlace(settings, InvocationKind.EXACTLY_ONCE)
-    }
-    return store(initialState, ReducerIntentHandler(reducer), settings)
+    contract { callsInPlace(setup, InvocationKind.EXACTLY_ONCE) }
+    return store(initialState, ReducerIntentHandler(reducer), settings, setup)
 }
 
 /**
@@ -185,19 +178,14 @@ public inline fun <Intent, State> store(
 public inline fun <Intent, State> store(
     initialState: State,
     @BuilderInference handler: IntentHandler<Intent, State, Nothing>,
-    @BuilderInference settings: FluxoSettings<Intent, State, Nothing>.() -> Unit = {},
+    settings: FluxoSettings<Intent, State, Nothing> = fluxoSettings(),
+    @BuilderInference setup: FluxoSettings<Intent, State, Nothing>.() -> Unit = {},
 ): Store<Intent, State, Nothing> {
-    contract {
-        callsInPlace(settings, InvocationKind.EXACTLY_ONCE)
+    contract { callsInPlace(setup, InvocationKind.EXACTLY_ONCE) }
+    return store<Intent, State, Nothing>(initialState, handler, settings) {
+        sideEffectsStrategy = SideEffectsStrategy.DISABLE
+        setup()
     }
-    return FluxoStore(
-        initialState = initialState,
-        intentHandler = handler,
-        conf = FluxoSettings<Intent, State, Nothing>().apply {
-            sideEffectsStrategy = SideEffectsStrategy.DISABLE
-            settings()
-        },
-    )
 }
 
 /**
@@ -211,16 +199,27 @@ public inline fun <Intent, State> store(
 public inline fun <Intent, State, SideEffect : Any> store(
     initialState: State,
     @BuilderInference handler: IntentHandler<Intent, State, SideEffect>,
-    @BuilderInference settings: FluxoSettings<Intent, State, SideEffect>.() -> Unit = {},
+    settings: FluxoSettings<Intent, State, SideEffect> = fluxoSettings(),
+    @BuilderInference setup: FluxoSettings<Intent, State, SideEffect>.() -> Unit = {},
 ): Store<Intent, State, SideEffect> {
-    contract {
-        callsInPlace(settings, InvocationKind.EXACTLY_ONCE)
-    }
+    contract { callsInPlace(setup, InvocationKind.EXACTLY_ONCE) }
     return FluxoStore(
         initialState = initialState,
         intentHandler = handler,
-        conf = FluxoSettings<Intent, State, SideEffect>().apply(settings),
+        // Always do a copy as we don't want to modify original settings.
+        conf = settings.copy().apply(setup),
     )
+}
+
+
+/**
+ * This function helps to avoid unnecessary additional copy of the [FluxoSettings].
+ */
+@InlineOnly
+@PublishedApi
+internal inline fun <Intent, State, SideEffect : Any> fluxoSettings(): FluxoSettings<Intent, State, SideEffect> {
+    @Suppress("UNCHECKED_CAST")
+    return FluxoSettings.DEFAULT as FluxoSettings<Intent, State, SideEffect>
 }
 
 // endregion

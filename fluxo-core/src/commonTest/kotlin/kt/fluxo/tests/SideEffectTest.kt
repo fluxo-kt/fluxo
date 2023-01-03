@@ -177,7 +177,7 @@ internal class SideEffectTest {
     fun unconsumed_side_effects_will_be_closed__receive_strategy() = unconsumed_side_effects_will_be_closed(SideEffectsStrategy.RECEIVE)
 
     private fun unconsumed_side_effects_will_be_closed(strategy: SideEffectsStrategy) = runUnitTest {
-        val container = container<Unit, Any>(initialState = Unit, settings = {
+        val container = container<Unit, Any>(initialState = Unit, setup = {
             sideEffectsStrategy = strategy
             scope = CoroutineScope(SupervisorJob())
             debugChecks = false
@@ -216,7 +216,7 @@ internal class SideEffectTest {
     fun undelivered_side_effects__receive_strategy() = undelivered_side_effects(SideEffectsStrategy.RECEIVE)
 
     private fun undelivered_side_effects(strategy: SideEffectsStrategy) = runUnitTest {
-        val container = backgroundScope.container<Unit, Int>(initialState = Unit, settings = {
+        val container = backgroundScope.container<Unit, Int>(initialState = Unit, setup = {
             sideEffectsStrategy = strategy
             sideEffectBufferSize = Channel.CONFLATED
         })

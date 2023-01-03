@@ -19,7 +19,7 @@ class IntentFilterTest {
                 results.add(intent)
                 updateState { intent }
             },
-            settings = {
+            setup = {
                 intentFilter = { it % 2 == 0 }
             },
         )

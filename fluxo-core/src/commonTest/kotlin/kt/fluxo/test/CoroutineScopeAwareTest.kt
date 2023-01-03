@@ -6,12 +6,12 @@ import kotlinx.coroutines.cancel
 import kotlin.coroutines.CoroutineContext
 import kotlin.test.AfterTest
 
-internal open class CoroutineScopeAwareTest(
-    context: CoroutineContext = Job(),
-) {
+internal open class CoroutineScopeAwareTest(context: CoroutineContext) {
     internal companion object {
         internal const val INIT = "init"
     }
+
+    constructor() : this(Job())
 
     protected val scope = CoroutineScope(context)
 

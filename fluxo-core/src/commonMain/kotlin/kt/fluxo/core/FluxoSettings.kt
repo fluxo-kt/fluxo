@@ -17,11 +17,22 @@ import kt.fluxo.core.internal.InputStrategyGuardian
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.internal.InlineOnly
+import kotlin.js.JsName
+import kotlin.jvm.JvmField
 import kotlin.jvm.JvmName
+import kotlin.native.ObjCName
 
+/**
+ * Settings for the Fluxo store.
+ *
+ * * Change settings once and for all at one place with [FluxoSettings.DEFAULT].
+ * * Provide prepared settings object for the group of your stores (use [FluxoSettings()][FluxoSettings.invoke] and then the standard DSL).
+ * * Just configure each store individually with the standard DSL (see [container] and [store]).
+ */
 @FluxoDsl
 @NotThreadSafe
-public class FluxoSettings<Intent, State, SideEffect : Any> {
+public class FluxoSettings<Intent, State, SideEffect : Any> private constructor() {
+
     public var name: String? = null
 
     /**
@@ -186,6 +197,8 @@ public class FluxoSettings<Intent, State, SideEffect : Any> {
      * Consider [Parallel] or [Lifo] instead if you need more responsiveness.
      */
     @InlineOnly
+    @JsName("Fifo")
+    @ObjCName("Fifo")
     @get:JvmName("Fifo")
     public inline val Fifo: InputStrategy get() = InputStrategy.Fifo
 
@@ -198,6 +211,8 @@ public class FluxoSettings<Intent, State, SideEffect : Any> {
      * Consider [Parallel] if you steel need more responsiveness, but without dropping of any event.
      */
     @InlineOnly
+    @JsName("Lifo")
+    @ObjCName("Lifo")
     @get:JvmName("Lifo")
     public inline val Lifo: InputStrategy get() = InputStrategy.Lifo
 
@@ -207,6 +222,8 @@ public class FluxoSettings<Intent, State, SideEffect : Any> {
      * **IMPORTANT:** No guarantee that inputs will be processed in any given order!
      */
     @InlineOnly
+    @JsName("Parallel")
+    @ObjCName("Parallel")
     @get:JvmName("Parallel")
     public inline val Parallel: InputStrategy get() = InputStrategy.Parallel
 
@@ -227,4 +244,55 @@ public class FluxoSettings<Intent, State, SideEffect : Any> {
         inline set(@Suppress("UNUSED_PARAMETER") value) {}
 
     // endregion
+
+
+    public fun copy(): FluxoSettings<Intent, State, SideEffect> {
+        val s = FluxoSettings<Intent, State, SideEffect>()
+
+        // copy values in reverse order to mitigate setters logic
+
+        s.exceptionHandler = exceptionHandler
+
+        s.interceptorContext = interceptorContext
+        s.sideJobsContext = sideJobsContext
+        s.intentContext = intentContext
+        s.eventLoopContext = eventLoopContext
+        s.scope = scope
+
+        s.sideEffectsStrategy = sideEffectsStrategy
+        s.inputStrategy = inputStrategy
+        s.intentFilter = intentFilter
+        s.interceptors.addAll(interceptors)
+        s.bootstrapper = bootstrapper
+
+        s.sideEffectBufferSize = sideEffectBufferSize
+        s.debugChecks = debugChecks
+        s.closeOnExceptions = closeOnExceptions
+        s.lazy = lazy
+        s.name = name
+
+        return s
+    }
+
+    @NotThreadSafe
+    public companion object Factory {
+        /**
+         * Global default [FluxoSettings]. Not thread safe!
+         */
+        @JvmField
+        @JsName("DEFAULT")
+        @ObjCName("DEFAULT")
+        public val DEFAULT: FluxoSettings<out Any?, out Any?, out Any> = FluxoSettings()
+
+        /**
+         * Creates a new typed copy of [global default][DEFAULT] [FluxoSettings].
+         */
+        @JsName("create")
+        @JvmName("create")
+        @ObjCName("create")
+        public operator fun <Intent, State, SideEffect : Any> invoke(): FluxoSettings<Intent, State, SideEffect> {
+            @Suppress("UNCHECKED_CAST")
+            return DEFAULT.copy() as FluxoSettings<Intent, State, SideEffect>
+        }
+    }
 }

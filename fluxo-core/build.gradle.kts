@@ -43,6 +43,7 @@ kotlin {
         all {
             languageSettings {
                 optIn("kotlin.contracts.ExperimentalContracts")
+                optIn("kotlin.experimental.ExperimentalObjCName")
                 optIn("kotlin.experimental.ExperimentalTypeInference")
                 optIn("kotlinx.coroutines.ExperimentalCoroutinesApi")
                 optIn("kotlinx.coroutines.FlowPreview")
