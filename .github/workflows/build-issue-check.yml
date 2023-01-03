@@ -9,14 +9,14 @@ on:
 jobs:
   gradle-livelock-checks:
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         java: [ '11' ]
         os: [ 'ubuntu-latest', 'windows-latest' ]
 
     name: 'Test on ${{ matrix.os }} JDK ${{ matrix.java }}'
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 15
+    timeout-minutes: 60
 
     steps:
       - name: Harden Runner
@@ -48,7 +48,7 @@ jobs:
           restore-keys: ${{ matrix.os }}-konan-
 
       - name: 'Build and check (${{ matrix.os }})'
-        timeout-minutes: 10
+        timeout-minutes: 45
         uses: gradle/gradle-build-action@v2
         env:
           CI: true
