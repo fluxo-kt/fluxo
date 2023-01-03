@@ -1,10 +1,14 @@
 @file:Suppress("DSL_SCOPE_VIOLATION")
 
+import fluxo.setupJvmApp
+
 // TODO: Remove once KTIJ-19369 is fixed
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.jmh)
 }
+
+setupJvmApp()
 
 dependencies {
     jmh(libs.jmh.core)

@@ -6,6 +6,8 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
+private const val PLUGIN_ID = "org.jetbrains.kotlinx.binary-compatibility-validator"
+
 fun Project.setupBinaryCompatibilityValidator() {
     when {
         hasExtension<KotlinMultiplatformExtension>() -> setupBinaryCompatibilityValidatorMultiplatform()
@@ -15,7 +17,7 @@ fun Project.setupBinaryCompatibilityValidator() {
 }
 
 private fun Project.setupBinaryCompatibilityValidatorMultiplatform() {
-    plugins.apply("org.jetbrains.kotlinx.binary-compatibility-validator")
+    plugins.apply(PLUGIN_ID)
 
     afterEvaluate {
         tasks.withType<KotlinApiCompareTask> {
@@ -31,8 +33,8 @@ private fun Project.setupBinaryCompatibilityValidatorMultiplatform() {
 }
 
 private fun Project.setupBinaryCompatibilityValidatorAndroidLibrary() {
-    if (Compilations.isGenericEnabled) {
-        plugins.apply("org.jetbrains.kotlinx.binary-compatibility-validator")
+    if (isGenericCompilationEnabled) {
+        plugins.apply(PLUGIN_ID)
     }
 }
 
@@ -48,8 +50,8 @@ private fun getTargetForTaskName(taskName: String): ApiTarget? {
 
 private fun Project.isMultiplatformApiTargetAllowed(target: ApiTarget): Boolean =
     when (target) {
-        ApiTarget.ANDROID -> isMultiplatformTargetEnabled(Target.ANDROID) && Compilations.isGenericEnabledLivelockAware(this)
-        ApiTarget.JVM -> isMultiplatformTargetEnabled(Target.JVM) && Compilations.isGenericEnabledLivelockAware(this)
+        ApiTarget.ANDROID -> isMultiplatformTargetEnabled(Target.ANDROID) && isGenericCompilationEnabled
+        ApiTarget.JVM -> isMultiplatformTargetEnabled(Target.JVM) && isGenericCompilationEnabled
     }
 
 private enum class ApiTarget {

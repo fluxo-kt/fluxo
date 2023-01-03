@@ -17,7 +17,7 @@ internal object Compilations {
 
     // Try to overcome the Gradle livelock issue
     // https://github.com/gradle/gradle/issues/20455#issuecomment-1327259045
-    fun isGenericEnabledLivelockAware(project: Project): Boolean = when {
+    fun isGenericEnabledForProject(project: Project): Boolean = when {
         project.isCI().get() -> isDarwinEnabled
         else -> isGenericEnabled
     }
@@ -25,6 +25,9 @@ internal object Compilations {
     private fun isValidOs(predicate: (OperatingSystem) -> Boolean): Boolean =
         !EnvParams.splitTargets || predicate(OperatingSystem.current())
 }
+
+internal val Project.isGenericCompilationEnabled
+    inline get() = Compilations.isGenericEnabledForProject(this)
 
 internal fun KotlinProjectExtension.disableCompilationsOfNeeded() {
     targets.forEach {
@@ -41,7 +44,7 @@ private fun KotlinTarget.disableCompilationsOfNeeded() {
 
 private fun KotlinTarget.disableCompilations() {
     compilations.configureEach {
-        compileKotlinTask.enabled = false
+        compileTaskProvider.get().enabled = false
     }
 }
 
@@ -52,7 +55,7 @@ private fun KotlinTarget.isCompilationAllowed(): Boolean =
         KotlinPlatformType.jvm,
         KotlinPlatformType.js,
         KotlinPlatformType.androidJvm,
-        KotlinPlatformType.wasm -> Compilations.isGenericEnabledLivelockAware(project)
+        KotlinPlatformType.wasm -> project.isGenericCompilationEnabled
 
         KotlinPlatformType.native -> (this as KotlinNativeTarget).isCompilationAllowed()
     }
@@ -64,10 +67,12 @@ private fun KotlinNativeTarget.isCompilationAllowed(): Boolean =
         Family.TVOS,
         Family.WATCHOS -> Compilations.isDarwinEnabled
 
-        Family.LINUX,
+        Family.LINUX -> Compilations.isGenericEnabled
+
         Family.ANDROID,
-        Family.WASM -> Compilations.isGenericEnabled
+        Family.WASM -> project.isGenericCompilationEnabled
 
         Family.MINGW -> Compilations.isWindowsEnabled
+
         Family.ZEPHYR -> error("Unsupported family: $family")
     }

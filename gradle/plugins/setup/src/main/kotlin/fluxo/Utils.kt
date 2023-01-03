@@ -4,15 +4,22 @@ package fluxo
 
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
-import org.gradle.kotlin.dsl.findByType
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
+import kotlin.reflect.KClass
 
 internal val Project.multiplatformExtension: KotlinMultiplatformExtension
     get() = kotlinExtension as KotlinMultiplatformExtension
 
 internal inline fun <reified T : Any> Project.hasExtension(): Boolean =
-    extensions.findByType<T>() != null
+    extensions.findByType(T::class.java) != null
+
+internal inline fun Project.hasExtension(clazz: () -> KClass<*>): Boolean =
+    try {
+        extensions.findByType(clazz().java) != null
+    } catch (_: NoClassDefFoundError) {
+        false
+    }
 
 internal fun Project.checkIsRootProject() {
     require(rootProject == this) { "Must be called on a root project" }

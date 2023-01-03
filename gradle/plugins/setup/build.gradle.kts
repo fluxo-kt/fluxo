@@ -4,7 +4,7 @@ plugins {
 }
 
 // Originally based on awesome gradle-setup-plugin by arkivanov
-// https://github.com/arkivanov/gradle-setup-plugin/tree/master/src/main/java/com/arkivanov/gradle
+// https://github.com/arkivanov/gradle-setup-plugin/tree/1f7ac3c/src/main/java/com/arkivanov/gradle
 
 dependencies {
     compileOnly(libs.plugin.android)

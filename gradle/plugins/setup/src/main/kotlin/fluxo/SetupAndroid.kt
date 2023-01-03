@@ -34,8 +34,8 @@ fun Project.setupAndroidApp(
 private fun Project.setupAndroid(config: AndroidConfig) {
     setupAndroidCommon(config)
 
-    project.tasks.withType<KotlinCompile> {
-        enabled = Compilations.isGenericEnabled
+    tasks.withType<KotlinCompile> {
+        enabled = project.isGenericCompilationEnabled
     }
 }
 
@@ -70,10 +70,10 @@ internal fun Project.setupAndroidCommon(config: AndroidConfig) {
 
     val disableTests by disableTests()
     tasks.withType<AndroidLintTask> {
-        enabled = Compilations.isGenericEnabled && !disableTests
+        enabled = project.isGenericCompilationEnabled && !disableTests
     }
 
     tasks.withType<AndroidLintTextOutputTask> {
-        enabled = Compilations.isGenericEnabled && !disableTests
+        enabled = project.isGenericCompilationEnabled && !disableTests
     }
 }
