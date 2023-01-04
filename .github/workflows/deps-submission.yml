@@ -4,9 +4,12 @@ on:
   push:
     branches: [ main ]
     paths-ignore:
+      - '**-issue-check.yml'
+      - '**-validation.yml'
       - '**.*ignore'
       - '**.api'
       - '**.kt'
+      - '**.main.kts'
       - '**.md'
       - '**.pro'
       - '**.xml'

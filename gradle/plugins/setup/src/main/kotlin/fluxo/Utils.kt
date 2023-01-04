@@ -6,6 +6,7 @@ import org.gradle.api.Project
 import org.gradle.api.provider.Provider
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
+import java.util.regex.Pattern
 import kotlin.reflect.KClass
 
 internal val Project.multiplatformExtension: KotlinMultiplatformExtension
@@ -42,9 +43,11 @@ private fun Project.booleanProperty(name: String): Provider<Boolean> {
 
 private fun Project.stringProperty(name: String): Provider<String> {
     return provider {
-        var value = findProperty(name)?.toString()
+        // Exclude extensions, look only for simple props
+        val filter: (Any) -> Boolean = { it is CharSequence || it is Number }
+        var value = findProperty(name)?.takeIf(filter)?.toString()
         if (value.isNullOrEmpty() && '.' !in name) {
-            value = findProperty("org.gradle.project.$name")?.toString()
+            value = findProperty("org.gradle.project.$name")?.takeIf(filter)?.toString()
         }
         value
     }
@@ -64,11 +67,15 @@ private fun Project.envOrPropFlag(name: String): Provider<Boolean> {
     return provider { env.orNull != null || prop.orNull.tryAsBoolean() }
 }
 
-fun Project.envOrProp(name: String): Provider<String?> {
+private fun Project.envOrProp(name: String): Provider<String?> {
     val env = envVar(name)
     val prop = stringProperty(name)
     return provider { env.orNull?.takeIf { it.isNotEmpty() } ?: prop.orNull }
 }
+
+fun Project.envOrPropValue(name: String): String? = envOrProp(name).orNull?.takeIf { it.isNotEmpty() }
+fun Project.envOrPropInt(name: String): Int? = envOrPropValue(name)?.toIntOrNull()
+fun Project.envOrPropList(name: String): List<String> = envOrPropValue(name)?.split(Pattern.compile("\\s*,\\s*")).orEmpty()
 
 fun Project.isCI(): Provider<Boolean> = envOrPropFlag("CI")
 fun Project.isRelease(): Provider<Boolean> = envOrPropFlag("RELEASE")
@@ -87,7 +94,7 @@ fun Project.scmTag(): Provider<String?> {
     }
 }
 
-fun Project.signingKey(): String? = envOrProp("SIGNING_KEY").orNull?.replace("\\n", "\n")
+fun Project.signingKey(): String? = envOrPropValue("SIGNING_KEY")?.replace("\\n", "\n")
 
 
 fun Project.runCommand(command: String): String? {

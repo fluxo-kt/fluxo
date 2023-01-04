@@ -15,13 +15,13 @@ try {
         val counters = dom.select("report > counter").reversed()
         if (counters.isNotEmpty()) {
             println("#### Code metrics and coverage")
-            println("| Tracked  | Total | Covered | Missed |")
-            println("| -------  | ----- | ------- | ------ |")
+            println("| Tracked | Total | Covered | Missed |")
+            println("| ------- | ----- | ------- | ------ |")
 
             /**
-            | First Header  | Second Header |
-            | ------------- | ------------- |
-            | Content Cell  | Content Cell  |
+            | First Header | Second Header |
+            | ------------ | ------------- |
+            | Content Cell | Content Cell  |
 
             <details><summary>Title</summary>
             <p>Content</p>
@@ -57,6 +57,7 @@ try {
     }
 } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
     System.err.println("Kover report error: $e")
+    @Suppress("PrintStackTrace")
     e.printStackTrace(System.err)
 }
 
@@ -108,12 +109,14 @@ try {
             val failDetails = fail.wholeText().trim().takeIf { it.isNotEmpty() } ?: fail.attr("message")
 
             // ❌
-            println("<details><summary>&#10060; <i>$suiteName</i>.<b>$testName</b></summary><p><pre language=\"kotlin\">\n$failDetails</pre></p></details>")
+            println("<details><summary>&#10060; <i>$suiteName</i>.<b>$testName</b></summary><p><pre language=\"kotlin\">")
+            println("$failDetails</pre></p></details>")
         }
     } else {
         System.err.println("Tests report NOT found: $testsFile")
     }
 } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
     System.err.println("Tests report error: $e")
+    @Suppress("PrintStackTrace")
     e.printStackTrace(System.err)
 }

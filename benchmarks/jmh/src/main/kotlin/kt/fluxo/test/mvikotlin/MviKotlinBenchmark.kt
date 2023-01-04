@@ -7,9 +7,22 @@ import kotlinx.coroutines.runBlocking
 import kt.fluxo.test.CommonBenchmark.consumeCommon
 import kt.fluxo.test.CommonBenchmark.launchCommon
 import kt.fluxo.test.IntentIncrement
+import java.io.OutputStream
+import java.io.PrintStream
 
 internal object MviKotlinBenchmark {
     fun mviReducer(): Int {
+        // Override stderr to get rid of `[MVIKotlin]: Main thread ID is undefined, main thread assert is disabled`.
+        val stderr = System.err
+        try {
+            System.setErr(PrintStream(OutputStream.nullOutputStream()))
+            return mviReducer0()
+        } finally {
+            System.setErr(stderr)
+        }
+    }
+
+    private fun mviReducer0(): Int {
         val store = DefaultStoreFactory().create<IntentIncrement, Int>(name = "CounterStore", initialState = 0) {
             when (it) {
                 IntentIncrement.Increment -> this + 1

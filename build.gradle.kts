@@ -3,7 +3,7 @@
 import fluxo.AndroidConfig
 import fluxo.PublicationConfig
 import fluxo.ensureUnreachableTasksDisabled
-import fluxo.envOrProp
+import fluxo.envOrPropValue
 import fluxo.getValue
 import fluxo.iosCompat
 import fluxo.isCI
@@ -118,9 +118,9 @@ setupDefaults(
             developerName = "Artyom Shendrik",
             developerEmail = "artyom.shendrik@gmail.com",
             signingKey = signingKey(),
-            signingPassword = envOrProp("SIGNING_PASSWORD").orNull,
-            repositoryUserName = envOrProp("OSSRH_USER").orNull,
-            repositoryPassword = envOrProp("OSSRH_PASSWORD").orNull,
+            signingPassword = envOrPropValue("SIGNING_PASSWORD"),
+            repositoryUserName = envOrPropValue("OSSRH_USER"),
+            repositoryPassword = envOrPropValue("OSSRH_PASSWORD"),
         )
     },
 )

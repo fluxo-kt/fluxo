@@ -1,5 +1,8 @@
 @file:Suppress("DSL_SCOPE_VIOLATION")
 
+import fluxo.envOrPropInt
+import fluxo.envOrPropList
+import fluxo.envOrPropValue
 import fluxo.setupJvmApp
 
 // TODO: Remove once KTIJ-19369 is fixed
@@ -67,20 +70,21 @@ jmh {
     // https://github.com/melix/jmh-gradle-plugin#configuration-options
 
     // One! pattern (regular expression) for benchmarks to be executed
-    includes.addAll()
-    excludes.addAll()
+    includes.addAll(listOfNotNull(envOrPropValue("jmh")))
+    excludes.addAll(listOfNotNull(envOrPropValue("jmh_e")))
 
     // Warmup benchmarks to include in the run with already selected.
-    warmupBenchmarks.addAll(".*Warmup")
+    warmupBenchmarks.addAll(envOrPropValue("jmh_wmb") ?: ".*Warmup")
 
-    warmupIterations.set(2)
-    iterations.set(3)
-    fork.set(2)
+    warmupIterations.set(envOrPropInt("jmh_wi") ?: 3)
+    iterations.set(envOrPropInt("jmh_i") ?: 6)
+    fork.set(envOrPropInt("jmh_f") ?: 3)
 
     // Benchmark mode. Available modes are: [Throughput/thrpt, AverageTime/avgt, SampleTime/sample, SingleShotTime/ss, All/all]
-    benchmarkMode.set(listOf("thrpt", "avgt", "ss"))
+    benchmarkMode.set(envOrPropList("jmh_bm").ifEmpty { listOf("thrpt", "avgt", "ss") })
+
     // Output time unit. Available time units are: [m, s, ms, us, ns].
-    timeUnit.set("ms")
+    timeUnit.set(envOrPropValue("jmh_tu") ?: "ms")
 
     jmhVersion.set(libs.versions.jmh)
 }
