@@ -1,15 +1,8 @@
 name: Benchmark
 
 on:
-  push:
-    paths-ignore:
-      - '**-check.yml'
-      - '**-submission.yml'
-      - '**-validation.yml'
-      - '**.*ignore'
-      - '**.md'
-      - '**build.yml'
-      - '**dependabot.yml'
+  schedule:
+    - cron: '0 10 * * 2'
 
 jobs:
   os-checks:
