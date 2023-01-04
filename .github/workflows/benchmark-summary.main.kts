@@ -3,6 +3,7 @@
 import java.io.File
 import java.math.BigDecimal
 import java.util.Locale
+import java.util.regex.Pattern
 
 // JMH results summary
 try {
@@ -22,12 +23,10 @@ try {
             val units: String,
         ) {
             val asRawArray
-                get() = arrayOf(
-                    "${clazz}.$name", mode, cnt, score, error?.let { "± $it" } ?: "", units,
-                )
+                get() = arrayOf(name, mode, cnt, score, error?.let { "± $it" } ?: "", units)
         }
 
-        val splitRegex = Regex("(?i)(?<![±�])\\s+")
+        val splitRegex = Pattern.compile("(?i)(?<![±�])\\s+", Pattern.UNICODE_CHARACTER_CLASS or Pattern.UNICODE_CASE).toRegex()
         var total = 0
         val resultsByClass = text.lineSequence().drop(1).mapNotNull l@{ line ->
             val l = line.trim()
@@ -43,8 +42,16 @@ try {
             val mode = parts[i++].lowercase(Locale.US)
             val cnt = if (parts.size >= 5) parts[i++].toIntOrNull() ?: 1 else 1
             val score = parts[i++].toBigDecimal()
-            val error = if (parts.size >= 6) parts[i++].trimStart('±', '�').trimStart().toBigDecimalOrNull() else null
-            val units = parts[i++]
+            var error = if (parts.size >= 6) parts[i++].trimStart('±', '�').trimStart().toBigDecimalOrNull() else null
+            var units = parts[i++]
+
+            // Workaround for Win problems:
+            // https://github.com/fluxo-kt/fluxo-mvi/actions/runs/3840763260#summary-10443174139
+            if (error == null && splitRegex in units) {
+                val u = units.split(splitRegex, 2)
+                error = u[0].toBigDecimalOrNull()
+                units = u[1]
+            }
 
             val clazz: String
             val name: String
@@ -69,27 +76,61 @@ try {
             }.values.flatten()
         }
 
-        println("#### JMH Benchmark results ($total total)")
+        println("### JMH Benchmark results ($total total)")
+        val isCI = System.getenv("CI")?.lowercase(Locale.US) in arrayOf("1", "true")
+        if (!isCI) {
+            println()
+            println()
+        }
 
-        val titles = arrayOf("Benchmark", "Mode", "Cnt", "Score", "Error", "Units")
+        val errTitle = "Error"
+        val bdTwo = BigDecimal.valueOf(2)
+        val titles = arrayOf("Benchmark", "Mode", "Cnt", "Score", errTitle, "Units")
+        val errIndex = titles.indexOf(errTitle)
+        val mdTitles = titles.filter { it != errTitle }.toTypedArray()
         for ((clazz, results) in resultsByClass) {
-            println("##### ${clazz.ifEmpty { "<not set>" }}")
+            println("#### ${clazz.ifEmpty { "<not set>" }} (${results.size} total)")
 
             // Table header
-            println(titles.joinToString(" | ", "| ", " |"))
-            println(titles.joinToString(" | ", "| ", " |") { "-".repeat(it.length) })
+            if (isCI) {
+                println(mdTitles.joinToString(" | ", "| ", " |"))
+                println(mdTitles.mapIndexed { i, s ->
+                    val dashes = "-".repeat(s.length)
+                    // GFM Markdown sort cols to the right for 2nd+ columns
+                    if (i == 0) "-$dashes-" else "-$dashes:"
+                }.joinToString("|", "|", "|"))
+            } else {
+                println()
+            }
 
             val maxLengths = IntArray(titles.size) { titles[it].length }
-            val bdTwo = BigDecimal.valueOf(2)
+            var prevMode = results[0].mode
             for (r in results) {
-                val score = r.score
-                // ±; ❌ Mark huge error
-                val error = r.error?.let { if (it != null && it >= score / bdTwo) "&#10060; &#177; $it" else "&#177; $it" } ?: ""
+                if (isCI) {
+                    val template = "| %s | %s | %s | %s | %s |"
+                    if (r.mode != prevMode) {
+                        prevMode = r.mode
+                        println(template.format("", "", "", "", ""))
+                    }
 
-                println(
-                    "| %s | %s | %s | %s | %s | %s |"
-                        .format(r.name, r.mode, r.cnt, score, error, r.units)
-                )
+                    val score = r.score
+                    val scoreWithError = r.error?.let {
+                        // ±
+                        val error = "<b>$score</b><sub><i> &#177; $it</i></sub>"
+                        // ❌ Mark huge error
+                        if (it >= score / bdTwo) "&#10060; $error" else error
+                    } ?: "<b>$score</b>"
+
+                    println(
+                        template.format(
+                            r.name,
+                            "<sub>${r.mode}</sub>",
+                            "<sub>${r.cnt}</sub>",
+                            scoreWithError,
+                            "<sub>${r.units}</sub>",
+                        )
+                    )
+                }
 
                 // max length calculation for each field
                 r.asRawArray.forEachIndexed { i, v ->
@@ -101,20 +142,43 @@ try {
             }
 
             // Raw results
-            println("<details><summary><i>Raw results</i></summary><p><pre language=\"txt\">")
-            println(titles.mapIndexed { i, s ->
-                val spaces = " ".repeat(maxLengths[i] - s.length)
-                if (i == 0) "$s$spaces" else "$spaces$s"
-            }.joinToString(" "))
-            for (r in results) {
-                println(r.asRawArray.mapIndexed { i, v ->
-                    val s = v.toString()
-                    val spaces = " ".repeat(maxLengths[i] - s.length)
-                    val fs = if (i == 4) s.replace("±", "&#177;") else s
-                    if (i == 0) "$fs$spaces" else "$spaces$fs"
-                }.joinToString(" "))
+            if (isCI) {
+                println("<details><summary><i>Raw results</i></summary><p><pre language=\"jmh\">")
             }
-            println("</pre></p></details>")
+            fun Int.f(v: Any, entity: Boolean = false): String {
+                val s = v.toString()
+                val spaces = " ".repeat(maxLengths[this] - s.length)
+                val fs = if (entity && this == errIndex && isCI) s.replace("±", "&#177;") else s
+                return when (this) {
+                    0 -> "$fs$spaces"
+                    errIndex -> "$spaces$fs"
+                    else -> " $spaces$fs"
+                }
+            }
+            println(titles.mapIndexed { i, s -> i.f(s) }.joinToString(" "))
+            prevMode = results[0].mode
+            for (r in results) {
+                if (r.mode != prevMode) {
+                    prevMode = r.mode
+                    println()
+                }
+
+                // ❌ Mark huge error
+                val errorMark = r.error.let {
+                    if (it == null || it < r.score / bdTwo) "" else when {
+                        isCI -> " &#10060;"
+                        else -> " ❌"
+                    }
+                }
+
+                println(r.asRawArray.mapIndexed { i, v -> i.f(v, entity = true) }.joinToString(" ", postfix = errorMark))
+            }
+            if (isCI) {
+                println("</pre></p></details>")
+            } else {
+                println()
+                println()
+            }
         }
     } else {
         System.err.println("JMH results NOT found: $koverFile")
