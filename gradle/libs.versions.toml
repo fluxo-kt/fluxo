@@ -140,9 +140,9 @@ jmh-generator-annprocess = { module = "org.openjdk.jmh:jmh-generator-annprocess"
 
 plugin-binCompatValidator = { module = "org.jetbrains.kotlinx:binary-compatibility-validator", version.ref = "bin-compat-validator" }
 
-# The idiomatic way to use atomic operations in Kotlin
+# AtomicFU: The idiomatic way to use atomic operations in Kotlin
 # https://github.com/Kotlin/kotlinx-atomicfu/releases
-plugin-kotlinx-atomicfu = { module = "org.jetbrains.kotlinx:atomicfu-gradle-plugin", version = "0.18.5" }
+plugin-kotlinx-atomicfu = { module = "org.jetbrains.kotlinx:atomicfu-gradle-plugin", version = "0.19.0" }
 kotlin-gradle-api = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin-api", version.ref = "kotlin" }
 
 plugin-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
