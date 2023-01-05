@@ -1,11 +1,11 @@
-package kt.fluxo.test.orbit
+package kt.fluxo.test.compare.orbit
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
-import kt.fluxo.test.CommonBenchmark.consumeCommon
-import kt.fluxo.test.CommonBenchmark.launchCommon
+import kt.fluxo.test.compare.CommonBenchmark.consumeCommon
+import kt.fluxo.test.compare.CommonBenchmark.launchCommon
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.container
 import org.orbitmvi.orbit.syntax.simple.SimpleSyntax

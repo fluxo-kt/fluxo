@@ -1,11 +1,11 @@
 package kt.fluxo.jmh
 
-import kt.fluxo.test.ballast.BallastBenchmark
-import kt.fluxo.test.fluxo.FluxoBenchmark
-import kt.fluxo.test.mvicore.MviCoreBenchmark
-import kt.fluxo.test.mvikotlin.MviKotlinBenchmark
-import kt.fluxo.test.naive.NaiveBenchmark
-import kt.fluxo.test.orbit.OrbitBenchmark
+import kt.fluxo.test.compare.ballast.BallastBenchmark
+import kt.fluxo.test.compare.fluxo.FluxoBenchmark
+import kt.fluxo.test.compare.mvicore.MviCoreBenchmark
+import kt.fluxo.test.compare.mvikotlin.MviKotlinBenchmark
+import kt.fluxo.test.compare.naive.NaiveBenchmark
+import kt.fluxo.test.compare.orbit.OrbitBenchmark
 import org.openjdk.jmh.annotations.Benchmark
 import org.openjdk.jmh.annotations.Scope
 import org.openjdk.jmh.annotations.State

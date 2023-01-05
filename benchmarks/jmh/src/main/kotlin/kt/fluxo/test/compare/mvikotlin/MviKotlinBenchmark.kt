@@ -1,12 +1,12 @@
-package kt.fluxo.test.mvikotlin
+package kt.fluxo.test.compare.mvikotlin
 
 import com.arkivanov.mvikotlin.core.store.create
 import com.arkivanov.mvikotlin.extensions.coroutines.states
 import com.arkivanov.mvikotlin.main.store.DefaultStoreFactory
 import kotlinx.coroutines.runBlocking
-import kt.fluxo.test.CommonBenchmark.consumeCommon
-import kt.fluxo.test.CommonBenchmark.launchCommon
-import kt.fluxo.test.IntentIncrement
+import kt.fluxo.test.compare.CommonBenchmark.consumeCommon
+import kt.fluxo.test.compare.CommonBenchmark.launchCommon
+import kt.fluxo.test.compare.IntentIncrement
 import java.io.OutputStream
 import java.io.PrintStream
 

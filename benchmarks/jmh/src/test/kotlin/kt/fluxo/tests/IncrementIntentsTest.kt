@@ -1,13 +1,13 @@
 package kt.fluxo.tests
 
 import kotlinx.coroutines.test.runTest
-import kt.fluxo.test.BENCHMARK_REPETITIONS
-import kt.fluxo.test.ballast.BallastBenchmark
-import kt.fluxo.test.fluxo.FluxoBenchmark
-import kt.fluxo.test.mvicore.MviCoreBenchmark
-import kt.fluxo.test.mvikotlin.MviKotlinBenchmark
-import kt.fluxo.test.naive.NaiveBenchmark
-import kt.fluxo.test.orbit.OrbitBenchmark
+import kt.fluxo.test.compare.BENCHMARK_REPETITIONS
+import kt.fluxo.test.compare.ballast.BallastBenchmark
+import kt.fluxo.test.compare.fluxo.FluxoBenchmark
+import kt.fluxo.test.compare.mvicore.MviCoreBenchmark
+import kt.fluxo.test.compare.mvikotlin.MviKotlinBenchmark
+import kt.fluxo.test.compare.naive.NaiveBenchmark
+import kt.fluxo.test.compare.orbit.OrbitBenchmark
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

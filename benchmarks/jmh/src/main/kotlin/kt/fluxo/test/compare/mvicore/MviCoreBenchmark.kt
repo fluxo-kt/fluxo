@@ -1,12 +1,12 @@
-package kt.fluxo.test.mvicore
+package kt.fluxo.test.compare.mvicore
 
 import com.badoo.mvicore.feature.ReducerFeature
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
 import kotlinx.coroutines.runBlocking
-import kt.fluxo.test.BENCHMARK_REPETITIONS
-import kt.fluxo.test.CommonBenchmark.launchCommon
-import kt.fluxo.test.IntentIncrement
+import kt.fluxo.test.compare.BENCHMARK_REPETITIONS
+import kt.fluxo.test.compare.CommonBenchmark.launchCommon
+import kt.fluxo.test.compare.IntentIncrement
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 

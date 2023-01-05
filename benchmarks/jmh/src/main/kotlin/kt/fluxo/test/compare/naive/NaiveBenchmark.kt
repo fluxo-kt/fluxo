@@ -1,9 +1,9 @@
-package kt.fluxo.test.naive
+package kt.fluxo.test.compare.naive
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.runBlocking
-import kt.fluxo.test.CommonBenchmark.consumeCommon
-import kt.fluxo.test.CommonBenchmark.launchCommon
+import kt.fluxo.test.compare.CommonBenchmark.consumeCommon
+import kt.fluxo.test.compare.CommonBenchmark.launchCommon
 
 internal object NaiveBenchmark {
     fun stateFlow(): Int {

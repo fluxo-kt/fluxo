@@ -1,4 +1,4 @@
-package kt.fluxo.test.fluxo
+package kt.fluxo.test.compare.fluxo
 
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
@@ -9,14 +9,14 @@ import kt.fluxo.core.container
 import kt.fluxo.core.dsl.StoreScope
 import kt.fluxo.core.internal.Closeable
 import kt.fluxo.core.store
-import kt.fluxo.test.CommonBenchmark.consumeCommon
-import kt.fluxo.test.CommonBenchmark.launchCommon
-import kt.fluxo.test.IntentIncrement
+import kt.fluxo.test.compare.CommonBenchmark.consumeCommon
+import kt.fluxo.test.compare.CommonBenchmark.launchCommon
+import kt.fluxo.test.compare.IntentIncrement
 
 internal object FluxoBenchmark {
 
     fun mvvmIntent(): Int {
-        val dispatcher = newSingleThreadContext(::mvvmIntent.name)
+        val dispatcher = newSingleThreadContext(FluxoBenchmark::mvvmIntent.name)
         val container = container(0) {
             eventLoopContext = dispatcher
             debugChecks = false
@@ -27,7 +27,7 @@ internal object FluxoBenchmark {
     }
 
     fun mviReducer(): Int {
-        val dispatcher = newSingleThreadContext(::mviReducer.name)
+        val dispatcher = newSingleThreadContext(FluxoBenchmark::mviReducer.name)
         val store = store<IntentIncrement, Int>(
             initialState = 0,
             reducer = {
@@ -44,7 +44,7 @@ internal object FluxoBenchmark {
     }
 
     fun mviHandler(): Int {
-        val dispatcher = newSingleThreadContext(::mviHandler.name)
+        val dispatcher = newSingleThreadContext(FluxoBenchmark::mviHandler.name)
         val store = store<IntentIncrement, Int>(
             initialState = 0,
             handler = { intent ->

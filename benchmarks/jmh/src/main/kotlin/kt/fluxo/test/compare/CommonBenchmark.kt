@@ -1,4 +1,4 @@
-package kt.fluxo.test
+package kt.fluxo.test.compare
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job

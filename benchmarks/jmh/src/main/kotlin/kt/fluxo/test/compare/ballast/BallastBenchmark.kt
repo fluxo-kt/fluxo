@@ -1,4 +1,4 @@
-package kt.fluxo.test.ballast
+package kt.fluxo.test.compare.ballast
 
 import com.copperleaf.ballast.BallastViewModelConfiguration
 import com.copperleaf.ballast.EventHandler
@@ -12,13 +12,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
-import kt.fluxo.test.CommonBenchmark.consumeCommon
-import kt.fluxo.test.CommonBenchmark.launchCommon
-import kt.fluxo.test.IntentIncrement
+import kt.fluxo.test.compare.CommonBenchmark.consumeCommon
+import kt.fluxo.test.compare.CommonBenchmark.launchCommon
+import kt.fluxo.test.compare.IntentIncrement
 
 internal object BallastBenchmark {
     fun mviHandler(): Int {
-        val dispatcher = newSingleThreadContext(::mviHandler.name)
+        val dispatcher = newSingleThreadContext(BallastBenchmark::mviHandler.name)
         val job = SupervisorJob()
         val vm = object : BasicViewModel<IntentIncrement, Nothing, Int>(
             coroutineScope = CoroutineScope(dispatcher + job),
