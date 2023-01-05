@@ -111,6 +111,7 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super p
 * [ ] Unit test library
   * [ ] Espresso idling resource support
 * [ ] DI support tests, examples and docs
+* [ ] JS/TS usage examples and NPM publication
 * [ ] [State graph tools](https://github.com/Kontur-Mobile/VisualFSM#tools-of-visualfsm)
   * [ ] Get unreachable states, build an Edge List, build states Adjacency Map.
   * [ ] App containers aggregation for graph tools
