@@ -23,7 +23,14 @@ try {
             val units: String,
         ) {
             val asRawArray
-                get() = arrayOf(name, mode, cnt, score, error?.let { "± $it" } ?: "", units)
+                get() = arrayOf(
+                    name,
+                    mode,
+                    cnt.let { if (it == 1) "" else "$it" },
+                    score,
+                    error ?: "",
+                    units,
+                )
         }
 
         val splitRegex = Pattern.compile("(?i)(?<![±�])\\s+", Pattern.UNICODE_CHARACTER_CLASS or Pattern.UNICODE_CASE).toRegex()
@@ -76,25 +83,39 @@ try {
             }.values.flatten()
         }
 
-        println("### JMH Benchmark results ($total total)")
+        println("### JMH Benchmark results ($total ${total.enPlural("test", "tests")} total)")
         val isCI = System.getenv("CI")?.lowercase(Locale.US) in arrayOf("1", "true")
         if (!isCI) {
             println()
             println()
         }
 
+        val cntTitle = "Cnt"
         val errTitle = "Error"
         val bdTwo = BigDecimal.valueOf(2)
-        val titles = arrayOf("Benchmark", "Mode", "Cnt", "Score", errTitle, "Units")
+        val titles = arrayOf("Benchmark", "Mode", cntTitle, "Score", errTitle, "Units")
         val errIndex = titles.indexOf(errTitle)
         val mdTitles = titles.filter { it != errTitle }.toTypedArray()
         for ((clazz, results) in resultsByClass) {
-            println("#### ${clazz.ifEmpty { "<not set>" }} (${results.size} total)")
+            val modes = results.distinctBy { it.mode }.size
+            val modesInfo = " in " + modes.enPlural("<u>one<u> mode", "<u>%d<u> modes")
+
+            val iterInfo = results.distinctBy { it.cnt }.let {
+                if (it.size == 1) {
+                    " with " + it[0].cnt.enPlural("<u>one<u> iteration", "<u>%d<u> iterations")
+                } else ""
+            }
+            val skipCnt = iterInfo.isNotEmpty()
+
+            val testsInfo = (results.size / modes).enPlural("<u>%d<u> test", "<u>%d<u> tests")
+            println("#### ${clazz.ifEmpty { "<not set>" }} ($testsInfo$modesInfo$iterInfo)")
 
             // Table header
+            val mdTitles0 = if (skipCnt) mdTitles.filter { it != cntTitle }.toTypedArray() else mdTitles
+
             if (isCI) {
-                println(mdTitles.joinToString(" | ", "| ", " |"))
-                println(mdTitles.mapIndexed { i, s ->
+                println(mdTitles0.joinToString(" | ", "| ", " |"))
+                println(mdTitles0.mapIndexed { i, s ->
                     val dashes = "-".repeat(s.length)
                     // GFM Markdown sort cols to the right for 2nd+ columns
                     if (i == 0) "-$dashes-" else "-$dashes:"
@@ -107,10 +128,11 @@ try {
             var prevMode = results[0].mode
             for (r in results) {
                 if (isCI) {
-                    val template = "| %s | %s | %s | %s | %s |"
+                    val template = "| %s ".repeat(mdTitles0.size) + '|'
                     if (r.mode != prevMode) {
                         prevMode = r.mode
-                        println(template.format("", "", "", "", ""))
+                        @Suppress("SpreadOperator")
+                        println(template.format(*Array(mdTitles0.size) { "" }))
                     }
 
                     val score = r.score
@@ -121,15 +143,16 @@ try {
                         if (it >= score / bdTwo) "&#10060; $error" else error
                     } ?: "<b>$score</b>"
 
-                    println(
-                        template.format(
-                            r.name,
-                            "<sub>${r.mode}</sub>",
-                            "<sub>${r.cnt}</sub>",
-                            scoreWithError,
-                            "<sub>${r.units}</sub>",
-                        )
-                    )
+                    val values = listOfNotNull(
+                        r.name,
+                        "<sub>${r.mode}</sub>",
+                        if (!skipCnt) "<sub>${r.cnt}</sub>" else null,
+                        scoreWithError,
+                        "<sub>${r.units}</sub>",
+                    ).toTypedArray()
+
+                    @Suppress("SpreadOperator")
+                    println(template.format(*values))
                 }
 
                 // max length calculation for each field
@@ -143,24 +166,29 @@ try {
 
             // Raw results
             if (isCI) {
-                println("<details><summary><i>Raw results</i></summary><p><pre language=\"jmh\">")
+                print("<details><summary><i>Raw results</i></summary><p><pre language=\"jmh\">\n")
             }
             fun Int.f(v: Any, entity: Boolean = false): String {
                 val s = v.toString()
                 val spaces = " ".repeat(maxLengths[this] - s.length)
-                val fs = if (entity && this == errIndex && isCI) s.replace("±", "&#177;") else s
+                val e = when {
+                    this != errIndex -> ""
+                    !entity || s.isEmpty() -> " "
+                    isCI -> "&#177;"
+                    else -> "±"
+                }
                 return when (this) {
-                    0 -> "$fs$spaces"
-                    errIndex -> "$spaces$fs"
-                    else -> " $spaces$fs"
+                    0 -> "$s$spaces"
+                    errIndex -> "$e$spaces$s"
+                    else -> " $spaces$s"
                 }
             }
-            println(titles.mapIndexed { i, s -> i.f(s) }.joinToString(" "))
+            print(titles.mapIndexed { i, s -> i.f(s) }.joinToString(" ") + '\n')
             prevMode = results[0].mode
             for (r in results) {
                 if (r.mode != prevMode) {
                     prevMode = r.mode
-                    println()
+                    print("\n")
                 }
 
                 // ❌ Mark huge error
@@ -171,13 +199,14 @@ try {
                     }
                 }
 
-                println(r.asRawArray.mapIndexed { i, v -> i.f(v, entity = true) }.joinToString(" ", postfix = errorMark))
+                print(r.asRawArray
+                    .mapIndexed { i, v -> i.f(v, entity = true) }
+                    .joinToString(" ", postfix = errorMark + '\n'))
             }
             if (isCI) {
-                println("</pre></p></details>")
+                print("</pre></p></details>\n")
             } else {
-                println()
-                println()
+                print("\n\n")
             }
         }
     } else {
@@ -187,4 +216,9 @@ try {
     System.err.println("JMH results error: $e")
     @Suppress("PrintStackTrace")
     e.printStackTrace(System.err)
+}
+
+
+fun Int.enPlural(one: String, other: String): String {
+    return (if (this == 1) one else other).format(this)
 }

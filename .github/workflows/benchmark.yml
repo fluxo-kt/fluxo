@@ -32,10 +32,11 @@ jobs:
           distribution: 'temurin'
           java-version: '${{ matrix.java }}'
 
-      - name: 'Build and check on macOS (complete)'
+      - name: 'Benchmark on ${{ matrix.os }}'
         uses: gradle/gradle-build-action@v2
         env:
           CI: true
+          jmh: 'IncrementIntent.*'
           jmh_wi: 3
           jmh_i: 6
           jmh_f: 3
