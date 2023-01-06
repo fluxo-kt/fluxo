@@ -1,3 +1,5 @@
+@file:Suppress("MatchingDeclarationName")
+
 package kt.fluxo.test
 
 @Suppress("NO_ACTUAL_FOR_EXPECT")

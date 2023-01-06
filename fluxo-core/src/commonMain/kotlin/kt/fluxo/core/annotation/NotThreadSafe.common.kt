@@ -1,3 +1,5 @@
+@file:Suppress("MatchingDeclarationName")
+
 package kt.fluxo.core.annotation
 
 /**
@@ -13,6 +15,6 @@ package kt.fluxo.core.annotation
 @OptionalExpectation
 @OptIn(ExperimentalMultiplatform::class)
 @Retention(AnnotationRetention.BINARY)
-@Suppress("KDocUnresolvedReference")
 @Target(AnnotationTarget.CLASS)
+@Suppress("KDocUnresolvedReference", "GrazieInspection")
 public expect annotation class NotThreadSafe()

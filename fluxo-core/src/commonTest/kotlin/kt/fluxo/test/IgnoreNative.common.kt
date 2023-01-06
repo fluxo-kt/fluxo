@@ -1,9 +1,11 @@
+@file:Suppress("MatchingDeclarationName")
+
 package kt.fluxo.test
 
 /**
- * Marks test or suite as ignored for Native and JS platforms.
+ * Marks test or suite as ignored for Native platforms.
  */
 @OptionalExpectation
 @OptIn(ExperimentalMultiplatform::class)
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
-expect annotation class IgnoreNativeAndJs()
+expect annotation class IgnoreNative()

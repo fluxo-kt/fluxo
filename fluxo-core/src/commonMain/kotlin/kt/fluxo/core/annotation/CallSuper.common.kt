@@ -1,3 +1,5 @@
+@file:Suppress("MatchingDeclarationName")
+
 package kt.fluxo.core.annotation
 
 /**
