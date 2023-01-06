@@ -24,6 +24,9 @@ kotlinLangVersion = "1.7"
 # https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-gradle-plugin
 kotlin = "1.8.0"
 
+# https://github.com/arkivanov/Essenty/releases
+essenty = "0.8.0"
+
 # https://github.com/google/ksp/releases
 ksp = "1.8.0-1.0.8"
 
@@ -111,6 +114,9 @@ androidx-annotation = { module = "androidx.annotation:annotation", version.ref =
 # JSR 305: Annotations for Software Defect Detection
 # https://mvnrepository.com/artifact/com.google.code.findbugs/jsr305
 jsr305 = { module = "com.google.code.findbugs:jsr305", version = "3.0.2" }
+
+essenty-instance-keeper = { module = "com.arkivanov.essenty:instance-keeper", version.ref = "essenty" }
+essenty-lifecycle = { module = "com.arkivanov.essenty:lifecycle", version.ref = "essenty" }
 
 arrow-bom = { module = "io.arrow-kt:arrow-stack", version.ref = "arrow" }
 arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
