@@ -48,6 +48,7 @@ jobs:
           node-version: 18
 
       - name: Cache kotlin konan
+        timeout-minutes: 4
         uses: actions/cache@v3
         with:
           path: ~/.konan
