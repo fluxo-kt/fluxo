@@ -10,7 +10,6 @@ import kt.fluxo.test.compare.IntentIncrement
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-
 internal object MviCoreBenchmark {
     fun mviReducer(): Int {
         val feature = ReducerFeature<IntentIncrement, Int, Nothing>(
