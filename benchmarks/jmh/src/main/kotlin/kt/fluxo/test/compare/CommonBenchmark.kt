@@ -4,6 +4,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
@@ -30,4 +31,15 @@ internal object CommonBenchmark {
         dispatcher?.close()
         return state
     }
+
+    internal fun MutableStateFlow<Int>.getAndAdd(delta: Int): Int {
+        while (true) {
+            val value = value
+            if (compareAndSet(value, value + delta)) {
+                return value
+            }
+        }
+    }
+
+    internal fun MutableStateFlow<Int>.addAndGet(delta: Int): Int = getAndAdd(delta) + delta
 }
