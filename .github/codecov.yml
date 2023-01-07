@@ -3,7 +3,8 @@ coverage:
     project:
       default:
         target: auto
-        threshold: 3%
+        # Fail the status if coverage drops by >= 1%
+        threshold: 1%
     patch:
       default:
         target: auto

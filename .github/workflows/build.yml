@@ -2,6 +2,8 @@ name: Build
 
 on:
   pull_request:
+    branches:
+      - '**'
     paths-ignore:
       - '**.md'
   push:
@@ -24,6 +26,7 @@ jobs:
     name: 'Test on ${{ matrix.os }} JDK ${{ matrix.java }}'
     timeout-minutes: 45
     runs-on: ${{ matrix.os }}
+    if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
 
     steps:
       - name: Harden Runner
@@ -66,7 +69,8 @@ jobs:
           arguments: build assemble check --stacktrace --continue --scan
 
       - name: 'Publish SNAPSHOT'
-        if: success() && matrix.os == 'macos-latest' && github.ref == 'refs/heads/main' && github.repository == 'fluxo-kt/fluxo-mvi' && github.event_name == 'push'
+        if: success() && matrix.os == 'macos-latest' && github.event_name == 'push'
+          && github.ref == 'refs/heads/main' && github.repository == 'fluxo-kt/fluxo-mvi'
         continue-on-error: true
         env:
           CI: true
@@ -93,7 +97,7 @@ jobs:
         shell: bash
 
       - name: Upload code coverage
-        if: success() || failure()
+        if: (success() || failure()) && !contains(github.event.head_commit.message, 'coverage skip')
         uses: codecov/codecov-action@v3
         env:
           OS: ${{ matrix.os }}

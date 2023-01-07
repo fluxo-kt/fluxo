@@ -14,12 +14,14 @@ on:
       - '**.pro'
       - '**.xml'
 
-permissions: read-all
+permissions:
+  contents: read
 
 jobs:
   submit:
     name: Dependencies
     runs-on: ubuntu-latest
+    if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
     permissions: # The Dependency Submission API requires write permission
       contents: write
     steps:
@@ -27,7 +29,15 @@ jobs:
         uses: step-security/harden-runner@266a5d6a507c6927766a67b8380f323eacd977a2
         with:
           disable-sudo: true
-          egress-policy: audit
+          egress-policy: block
+          allowed-endpoints: >
+            api.github.com:443
+            dl.google.com:443
+            download-cdn.jetbrains.com:443
+            download.jetbrains.com:443
+            github.com:443
+            jcenter.bintray.com:443
+            plugins.gradle.org:443
 
       - name: Checkout
         uses: actions/checkout@v3
