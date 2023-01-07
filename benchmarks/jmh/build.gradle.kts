@@ -80,9 +80,10 @@ jmh {
     // Warmup benchmarks to include in the run with already selected.
     warmupBenchmarks.addAll(envOrPropValue("jmh_wmb") ?: ".*Warmup")
 
-    warmupIterations.set(envOrPropInt("jmh_wi") ?: 3)
-    iterations.set(envOrPropInt("jmh_i") ?: 6)
-    fork.set(envOrPropInt("jmh_f") ?: 3)
+    warmupIterations.set(envOrPropInt("jmh_wi") ?: 2)
+    iterations.set(envOrPropInt("jmh_i") ?: 4)
+    threads.set(envOrPropInt("jmh_t") ?: 4)
+    fork.set(envOrPropInt("jmh_f") ?: 2)
 
     // Benchmark mode. Available modes are: [Throughput/thrpt, AverageTime/avgt, SampleTime/sample, SingleShotTime/ss, All/all]
     benchmarkMode.set(envOrPropList("jmh_bm").ifEmpty { listOf("thrpt", "avgt", "ss") })
