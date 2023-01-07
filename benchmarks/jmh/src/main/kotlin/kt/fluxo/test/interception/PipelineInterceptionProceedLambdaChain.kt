@@ -1,13 +1,18 @@
 package kt.fluxo.test.interception
 
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.runBlocking
-import kt.fluxo.test.compare.BENCHMARK_REPETITIONS
 import kt.fluxo.test.compare.CommonBenchmark.addAndGet
 import kt.fluxo.test.compare.CommonBenchmark.getAndAdd
 import kt.fluxo.test.interception.PipelineInterceptionProceedLambdaChain.Interceptor
 
-object PipelineInterceptionProceedLambdaChain {
+/**
+ * Pipeline interception multiple intercepted actions support, based on lambdas proceed
+ *
+ * * Doesn't require multiple implementaions for each action as simple interception chain
+ * * Usage code is harder to read and maintain
+ * * Basically 1.5-2x slower than simple interception chain.
+ */
+object PipelineInterceptionProceedLambdaChain : InterceptionBase() {
 
     private fun interface Interceptor<R> {
 
@@ -21,8 +26,8 @@ object PipelineInterceptionProceedLambdaChain {
         private val call: suspend Interceptor<R>.(R, proceed: suspend (R) -> Unit) -> Unit,
         private val finish: suspend (finalValue: R) -> Unit,
     ) {
-        private val index = MutableStateFlow(0)
-        private val value = MutableStateFlow(value)
+        val index = MutableStateFlow(0)
+        val value = MutableStateFlow(value)
 
         suspend fun proceed() {
             val i = index.value
@@ -40,25 +45,31 @@ object PipelineInterceptionProceedLambdaChain {
         }
     }
 
-    private suspend fun getResponseWithInterceptorChain(state: MutableStateFlow<Int>) {
+
+    override suspend fun test(interceptions: Int, interceptors: Int, state: MutableStateFlow<Int>) {
         val interceptor = Interceptor<Int> { request, proceed ->
             proceed(request + state.addAndGet(1))
         }
+
+        // Build a full stack of interceptors
+        val interceptorsArray = Array(interceptors) { interceptor }
+
         val originalRequest = 0
-        val interceptors = Array(INTERCEPTIONS_COUNT) { interceptor }
-        InterceptorChain(
-            originalRequest, interceptors,
+        val chain = InterceptorChain(
+            originalRequest, interceptorsArray,
             { value, proceed -> intent(value, proceed) },
-        ) { state.addAndGet(1) }.proceed()
-    }
+        ) { state.addAndGet(1) }
 
+        chain.proceed()
+        var expected = interceptors + 1
+        check(state.value == expected) { "state.value=${state.value}, expected=$expected" }
 
-    fun test() = runBlocking {
-        val state = MutableStateFlow(0)
-        repeat(BENCHMARK_REPETITIONS) {
-            state.value = 0
-            getResponseWithInterceptorChain(state)
-            check(state.value == INTERCEPTIONS_COUNT + 1) { "state.value=${state.value}, expected=${INTERCEPTIONS_COUNT + 1}" }
+        repeat(interceptions - 1) {
+            chain.index.value = 0
+            chain.value.value = originalRequest
+            chain.proceed()
         }
+        expected *= interceptions
+        check(state.value == expected) { "state.value=${state.value}, expected=$expected" }
     }
 }

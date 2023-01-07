@@ -72,7 +72,9 @@ jmh {
     // https://github.com/melix/jmh-gradle-plugin#configuration-options
 
     // One! pattern (regular expression) for benchmarks to be executed
-    includes.addAll(listOfNotNull(envOrPropValue("jmh")))
+    includes.addAll(listOfNotNull(envOrPropValue("jmh")?.also {
+        logger.lifecycle("JMH include='$it'")
+    }))
     excludes.addAll(listOfNotNull(envOrPropValue("jmh_e")))
 
     // Warmup benchmarks to include in the run with already selected.
