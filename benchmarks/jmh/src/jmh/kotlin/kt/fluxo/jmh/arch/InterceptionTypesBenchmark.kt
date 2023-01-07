@@ -1,6 +1,7 @@
 package kt.fluxo.jmh.arch
 
 import kt.fluxo.test.interception.PipelineInterceptionChain
+import kt.fluxo.test.interception.PipelineInterceptionProceedLambdaChain
 import org.openjdk.jmh.annotations.Scope
 import org.openjdk.jmh.annotations.State
 import org.openjdk.jmh.infra.Blackhole
@@ -19,16 +20,24 @@ class InterceptionTypesBenchmark {
     /**
      * **Complete pipeline interception, proceed with lambdas**
      *
-     * Complicated code, not easy to maintain and read.
+     * * Code is harder to maintain and read.
      */
-    fun pipeline_interception_lambda() {
+    fun pipeline_interception_lambdas(bh: Blackhole) = bh.consume(PipelineInterceptionProceedLambdaChain.test())
+
+    /**
+     * **Netty-like pipeline**
+     */
+    private fun netty_pipeline() {
+        // https://netty.io/4.0/api/io/netty/channel/ChannelPipeline.html
+        // https://netty.io/4.0/api/io/netty/channel/ChannelHandler.html
+        // https://netty.io/4.0/api/io/netty/channel/ChannelHandlerContext.html
         TODO()
     }
 
     /**
      * **Store decorator as in MVIKotlin (via factory) or in Orbit (via internal decorator).**
      */
-    fun decorator() {
+    private fun decorator() {
         TODO()
     }
 
@@ -38,7 +47,7 @@ class InterceptionTypesBenchmark {
      * Allows to observe, but not directly intercept.
      * Requires additional reactive machinery.
      */
-    fun event_stream() {
+    private fun event_stream() {
         TODO()
     }
 }

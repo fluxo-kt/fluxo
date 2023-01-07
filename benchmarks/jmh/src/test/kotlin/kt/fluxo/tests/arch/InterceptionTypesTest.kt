@@ -1,7 +1,9 @@
 package kt.fluxo.tests.arch
 
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import kt.fluxo.test.interception.PipelineInterceptionChain
+import kt.fluxo.test.interception.PipelineInterceptionProceedLambdaChain
 import org.junit.Test
 import kotlin.test.assertEquals
 
@@ -9,10 +11,16 @@ import kotlin.test.assertEquals
 class InterceptionTypesTest {
 
     @Test
-    fun pipeline_interception_simple() = test(PipelineInterceptionChain.test())
+    fun pipeline_interception_simple() = testResult { PipelineInterceptionChain.test() }
 
-    private fun test(result: Int) = runTest(dispatchTimeoutMs = 1_000) {
-        assertEquals(EXPECTED_RESULT, result)
+    @Test
+    fun pipeline_interception_proceed_lambda() = test { PipelineInterceptionProceedLambdaChain.test() }
+
+
+    private fun test(testBody: suspend TestScope.() -> Unit) = runTest(dispatchTimeoutMs = 1_000, testBody = testBody)
+
+    private fun testResult(testBody: suspend TestScope.() -> Int) = runTest(dispatchTimeoutMs = 1_000) {
+        assertEquals(EXPECTED_RESULT, testBody())
     }
 
     private companion object {
