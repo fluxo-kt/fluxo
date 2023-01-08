@@ -5,6 +5,7 @@ package kt.fluxo.core
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -99,8 +100,13 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
 
     /** [bootstrapper] convenience method when you need only a [sideJob][kt.fluxo.core.dsl.StoreScope.sideJob] */
     @JsName("bootstrapperJob")
-    public fun bootstrapperJob(key: String = BOOTSTRAPPER_SIDE_JOB, block: SideJob<Intent, State, SideEffect>) {
-        this.bootstrapper = { sideJob(key, block) }
+    public fun bootstrapperJob(
+        key: String = BOOTSTRAPPER_SIDE_JOB,
+        context: CoroutineContext = EmptyCoroutineContext,
+        start: CoroutineStart = CoroutineStart.DEFAULT,
+        block: SideJob<Intent, State, SideEffect>,
+    ) {
+        this.bootstrapper = { sideJob(key, context, start, block) }
     }
 
 

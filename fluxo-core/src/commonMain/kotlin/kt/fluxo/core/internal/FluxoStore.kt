@@ -554,9 +554,10 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
             request = request,
             job = sideJobScope.launch(
                 context = when {
-                    !debugChecks -> EmptyCoroutineContext
-                    else -> CoroutineName("$F[$name SideJob $key <= Intent ${request.parent}]")
+                    !debugChecks -> request.context
+                    else -> CoroutineName("$F[$name SideJob $key <= Intent ${request.parent}]") + request.context
                 },
+                start = request.start,
             ) {
                 try {
                     val sideJobScope = SideJobScopeImpl(
@@ -644,7 +645,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         // Close and clear state & side effects machinery.
         // FIXME: Test case when interceptorScope is already closed here
         @OptIn(ExperimentalCoroutinesApi::class)
-        interceptorScope.launch(Dispatchers.Unconfined + Job(), CoroutineStart.UNDISPATCHED) {
+        interceptorScope.launch(Dispatchers.Unconfined + Job(), start = CoroutineStart.UNDISPATCHED) {
             mutableState.value.closeSafely(ceCause)
             (sideEffectFlowField as? MutableSharedFlow)?.apply {
                 val replayCache = replayCache

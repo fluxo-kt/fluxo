@@ -3,6 +3,7 @@
 package kt.fluxo.core.dsl
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -10,6 +11,8 @@ import kt.fluxo.core.SideJob
 import kt.fluxo.core.Store
 import kt.fluxo.core.annotation.FluxoDsl
 import kt.fluxo.core.annotation.InternalFluxoApi
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.internal.InlineOnly
 import kotlin.js.JsName
 
@@ -55,7 +58,12 @@ public interface StoreScope<in Intent, State, in SideEffect : Any> : CoroutineSc
      * @see kotlinx.coroutines.launch
      */
     @JsName("sideJob")
-    public suspend fun sideJob(key: String = DEFAULT_SIDE_JOB, block: suspend SideJobScope<Intent, State, SideEffect>.() -> Unit)
+    public suspend fun sideJob(
+        key: String = DEFAULT_SIDE_JOB,
+        context: CoroutineContext = EmptyCoroutineContext,
+        start: CoroutineStart = CoroutineStart.DEFAULT,
+        block: SideJob<Intent, State, SideEffect>,
+    )
 
     public fun noOp()
 
