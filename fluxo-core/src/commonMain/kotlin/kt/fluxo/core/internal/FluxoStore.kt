@@ -12,6 +12,7 @@ import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
@@ -641,8 +642,8 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         sideJobsMap.clear()
 
         // Close and clear state & side effects machinery.
-        @OptIn(ExperimentalCoroutinesApi::class)
         // FIXME: Test case when interceptorScope is already closed here
+        @OptIn(ExperimentalCoroutinesApi::class)
         interceptorScope.launch(Dispatchers.Unconfined + Job(), CoroutineStart.UNDISPATCHED) {
             mutableState.value.closeSafely(ceCause)
             (sideEffectFlowField as? MutableSharedFlow)?.apply {
@@ -665,6 +666,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         // Cancel it with a delay.
         val interceptorScope = interceptorScope
         if (interceptorScope !== scope && interceptorScope.isActive) {
+            @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
             interceptorScope.launch(start = CoroutineStart.UNDISPATCHED) {
                 val events = events
                 val noSubscriptions = events.subscriptionCount.filter { it <= 0 }.produceIn(this)
