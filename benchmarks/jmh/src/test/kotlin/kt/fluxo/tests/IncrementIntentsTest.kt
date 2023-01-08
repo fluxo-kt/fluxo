@@ -43,7 +43,7 @@ class IncrementIntentsTest {
     fun naive__state_flow() = test(NaiveBenchmark.stateFlow())
 
 
-    private fun test(result: Int) = runTest(dispatchTimeoutMs = 1_000) {
+    private fun test(result: Int) = runTest {
         assertEquals(BENCHMARK_REPETITIONS, result)
     }
 }

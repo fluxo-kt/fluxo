@@ -2,10 +2,13 @@
 <SmellBaseline>
   <ManuallySuppressedIssues/>
   <CurrentIssues>
+    <ID>ForbiddenComment:ChannelBasedInputStrategy.kt$ChannelBasedInputStrategy$// TODO: Test cancellation of suspended queuing if deferred was cancelled</ID>
+    <ID>ForbiddenComment:ChannelLifoInputStrategy.kt$ChannelLifoInputStrategy.ChannelLifo$// TODO: Check the spill state slots here (see emitAll for details)</ID>
     <ID>ForbiddenComment:Debug.kt$// TODO: Split debug and release version</ID>
     <ID>ForbiddenComment:DebugIntentWrapper.kt$// TODO: No AccessibleObject.canAccess method on Android, but should we use it for Java 9+?</ID>
     <ID>ForbiddenComment:DebugIntentWrapper.kt$// TODO: Only for test/debug variants?</ID>
     <ID>ForbiddenComment:FluxoDsl.kt$// TODO: Optimize logic for performance and less allocations, benchmark</ID>
+    <ID>ForbiddenComment:FluxoStore.kt$FluxoStore$// TODO: Allow to avoid this launch completely with info from inputStrategy (benchmark)?</ID>
     <ID>ForbiddenComment:FluxoStore.kt$FluxoStore$// TODO: Can we awoid lambda creation?</ID>
     <ID>ForbiddenComment:FluxoStore.kt$FluxoStore$// TODO: Generate a name from Store host with reflection in debug mode?</ID>
     <ID>ForbiddenComment:FluxoStore.kt$FluxoStore$// TODO: Move the intent filter before queing or completely replace with decorators?</ID>

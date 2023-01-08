@@ -1,5 +1,7 @@
 package kt.fluxo.test.compare.fluxo
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExecutorCoroutineDispatcher
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
 import kt.fluxo.core.FluxoIntentS
@@ -7,28 +9,30 @@ import kt.fluxo.core.Store
 import kt.fluxo.core.annotation.ExperimentalFluxoApi
 import kt.fluxo.core.closeAndWait
 import kt.fluxo.core.container
+import kt.fluxo.core.input.InputStrategy
 import kt.fluxo.core.internal.Closeable
 import kt.fluxo.core.store
 import kt.fluxo.core.updateState
 import kt.fluxo.test.compare.CommonBenchmark.consumeCommon
 import kt.fluxo.test.compare.CommonBenchmark.launchCommon
 import kt.fluxo.test.compare.IntentIncrement
+import kotlin.coroutines.CoroutineContext
 
+@Suppress("InjectDispatcher")
 internal object FluxoBenchmark {
 
     fun mvvmIntent(): Int {
-        val dispatcher = newSingleThreadContext(FluxoBenchmark::mvvmIntent.name)
         val container = container(0) {
-            coroutineContext = dispatcher
+            coroutineContext = Dispatchers.Unconfined
             debugChecks = false
             lazy = false
         }
         val intent: FluxoIntentS<Int> = { updateState { it + 1 } }
-        return container.consumeFluxo(intent, dispatcher)
+        return container.consumeFluxo(intent)
     }
 
-    fun mviReducer(): Int {
-        val dispatcher = newSingleThreadContext(FluxoBenchmark::mviReducer.name)
+    fun mviReducer(dispatcher: CoroutineContext? = null, strategy: InputStrategy.Factory? = null): Int {
+        var closeable: ExecutorCoroutineDispatcher? = null
         val store = store<IntentIncrement, Int>(
             initialState = 0,
             reducer = {
@@ -37,15 +41,21 @@ internal object FluxoBenchmark {
                 }
             },
         ) {
-            coroutineContext = dispatcher
+            coroutineContext = dispatcher ?: run {
+                val context = newSingleThreadContext(FluxoBenchmark::mviReducer.name)
+                closeable = context
+                context
+            }
+            if (strategy != null) {
+                inputStrategy = strategy
+            }
             debugChecks = false
             lazy = false
         }
-        return store.consumeFluxo(IntentIncrement.Increment, dispatcher)
+        return store.consumeFluxo(IntentIncrement.Increment, closeable)
     }
 
     fun mviHandler(): Int {
-        val dispatcher = newSingleThreadContext(FluxoBenchmark::mviHandler.name)
         val store = store<IntentIncrement, Int>(
             initialState = 0,
             handler = { intent ->
@@ -54,11 +64,11 @@ internal object FluxoBenchmark {
                 }
             },
         ) {
-            coroutineContext = dispatcher
+            coroutineContext = Dispatchers.Unconfined
             debugChecks = false
             lazy = false
         }
-        return store.consumeFluxo(IntentIncrement.Increment, dispatcher)
+        return store.consumeFluxo(IntentIncrement.Increment)
     }
 
 

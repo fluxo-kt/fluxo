@@ -69,7 +69,7 @@ class JobTest {
     fun job_completion_with_children() = runUnitTest {
         val job = Job()
         val childJob = launch(Dispatchers.Default + job) {
-            // NOTE: delay is safe bacause of Dispatcher
+            // NOTE: delay is safe because of Dispatcher
             delay(Long.MAX_VALUE)
         }
         assertTrue(childJob.isActive, "childJob.isActive 1")
@@ -137,7 +137,7 @@ class JobTest {
     fun job_cancellation_with_children() = runUnitTest {
         val job = Job()
         val childJob = CoroutineScope(job).launch(Dispatchers.Default) {
-            // NOTE: delay is safe bacause of Dispatcher
+            // NOTE: delay is safe because of Dispatcher
             delay(Long.MAX_VALUE)
         }
         assertTrue(childJob.isActive, "childJob.isActive 1")

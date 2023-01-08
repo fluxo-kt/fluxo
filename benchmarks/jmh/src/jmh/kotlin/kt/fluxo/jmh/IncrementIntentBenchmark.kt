@@ -16,33 +16,33 @@ import org.openjdk.jmh.infra.Blackhole
  *
  * _Example results:_
  * ```
- * Benchmark                Mode  Cnt   Score   Error   Units
- * naive__state_flow       thrpt   24  17.524 ± 0.196  ops/ms
- * mvicore__mvi_reducer    thrpt   24   3.221 ± 0.035  ops/ms
- * mvikotlin__mvi_reducer  thrpt   24   1.923 ± 0.051  ops/ms
- * ballast__mvi_handler    thrpt   24   0.391 ± 0.003  ops/ms
- * fluxo__mvvm_intent      thrpt   24   0.283 ± 0.003  ops/ms
- * fluxo__mvi_handler      thrpt   24   0.276 ± 0.005  ops/ms
- * fluxo__mvi_reducer      thrpt   24   0.270 ± 0.005  ops/ms
- * orbit__mvvm_intent      thrpt   24   0.190 ± 0.002  ops/ms
+ * Benchmark                Mode  Cnt   Score   Error   Units  Percent
+ * naive__state_flow       thrpt  150  42.678 ± 0.316  ops/ms   431.2%
+ * mvicore__mvi_reducer    thrpt  150   8.034 ± 0.217  ops/ms     0.0%
+ * mvikotlin__mvi_reducer  thrpt  150   4.567 ± 0.565  ops/ms   -43.2%
+ * fluxo__mvi_reducer      thrpt  150   0.779 ± 0.017  ops/ms   -90.3%
+ * ballast__mvi_handler    thrpt  150   0.695 ± 0.005  ops/ms   -91.3%
+ * fluxo__mvvm_intent      thrpt  150   0.673 ± 0.006  ops/ms   -91.6%
+ * fluxo__mvi_handler      thrpt  150   0.669 ± 0.010  ops/ms   -91.7%
+ * orbit__mvvm_intent      thrpt  150   0.250 ± 0.001  ops/ms   -96.9%
  *
- * naive__state_flow        avgt   24   0.060 ± 0.002   ms/op
- * mvicore__mvi_reducer     avgt   24   0.303 ± 0.005   ms/op
- * mvikotlin__mvi_reducer   avgt   24   0.526 ± 0.017   ms/op
- * ballast__mvi_handler     avgt   24   2.672 ± 0.085   ms/op
- * fluxo__mvi_handler       avgt   24   3.683 ± 0.042   ms/op
- * fluxo__mvvm_intent       avgt   24   3.746 ± 0.081   ms/op
- * fluxo__mvi_reducer       avgt   24   3.751 ± 0.054   ms/op
- * orbit__mvvm_intent       avgt   24   5.037 ± 0.095   ms/op
+ * naive__state_flow        avgt  150   0.141 ± 0.001   ms/op   -81.0%
+ * mvicore__mvi_reducer     avgt  150   0.742 ± 0.022   ms/op     0.0%
+ * mvikotlin__mvi_reducer   avgt  150   2.192 ± 0.069   ms/op   195.4%
+ * fluxo__mvi_reducer       avgt  150   7.708 ± 0.198   ms/op   938.8%
+ * fluxo__mvi_handler       avgt  150   8.774 ± 0.059   ms/op  1082.5%
+ * fluxo__mvvm_intent       avgt  150   8.860 ± 0.115   ms/op  1094.1%
+ * ballast__mvi_handler     avgt  150   9.092 ± 0.107   ms/op  1125.3%
+ * orbit__mvvm_intent       avgt  150  24.336 ± 0.216   ms/op  3179.8%
  *
- * naive__state_flow          ss   24   0.675 ± 0.168   ms/op
- * mvicore__mvi_reducer       ss   24   3.398 ± 0.688   ms/op
- * mvikotlin__mvi_reducer     ss   24   4.358 ± 1.297   ms/op
- * ballast__mvi_handler       ss   24  14.208 ± 1.191   ms/op
- * fluxo__mvi_handler         ss   24  14.824 ± 2.344   ms/op
- * fluxo__mvi_reducer         ss   24  15.361 ± 1.911   ms/op
- * fluxo__mvvm_intent         ss   24  16.988 ± 2.267   ms/op
- * orbit__mvvm_intent         ss   24  19.059 ± 2.714   ms/op
+ * naive__state_flow          ss  150   0.440 ± 0.173   ms/op   -81.3%
+ * mvicore__mvi_reducer       ss  150   2.353 ± 0.319   ms/op     0.0%
+ * mvikotlin__mvi_reducer     ss  150   2.777 ± 0.145   ms/op    18.0%
+ * fluxo__mvi_reducer         ss  150  11.307 ± 0.759   ms/op   380.5%
+ * fluxo__mvvm_intent         ss  150  11.351 ± 0.568   ms/op   382.4%
+ * fluxo__mvi_handler         ss  150  11.649 ± 0.839   ms/op   395.1%
+ * ballast__mvi_handler       ss  150  14.384 ± 1.338   ms/op   511.3%
+ * orbit__mvvm_intent         ss  150  35.009 ± 3.054   ms/op  1387.8%
  * ```
  */
 @State(Scope.Benchmark)

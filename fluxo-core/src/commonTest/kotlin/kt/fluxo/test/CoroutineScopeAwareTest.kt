@@ -1,9 +1,9 @@
 package kt.fluxo.test
 
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.AfterTest
 
 internal open class CoroutineScopeAwareTest(context: CoroutineContext) {
@@ -11,7 +11,7 @@ internal open class CoroutineScopeAwareTest(context: CoroutineContext) {
         internal const val INIT = "init"
     }
 
-    constructor() : this(Job())
+    constructor() : this(EmptyCoroutineContext)
 
     protected val scope = CoroutineScope(context)
 

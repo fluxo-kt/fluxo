@@ -13,6 +13,7 @@ import kt.fluxo.core.annotation.ExperimentalFluxoApi
 import kt.fluxo.core.annotation.FluxoDsl
 import kt.fluxo.core.annotation.NotThreadSafe
 import kt.fluxo.core.debug.DEBUG
+import kt.fluxo.core.input.InputStrategy
 import kt.fluxo.core.internal.InputStrategyGuardian
 import kt.fluxo.core.internal.RunningSideJob.Companion.BOOTSTRAPPER_SIDE_JOB
 import kotlin.coroutines.CoroutineContext
@@ -119,11 +120,13 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
 
     /**
      * Take full control of the intent processing pipeline.
+     * By default, intent is processed directly in the caller thread,
+     * but any suspention will be dispatched in the [coroutineContext].
      *
      * Select from [Fifo], [Lifo], and [Parallel] strategies,
      * or create your own if you need.
      */
-    public var inputStrategy: InputStrategy = Fifo
+    public var inputStrategy: InputStrategy.Factory = Direct
 
     /**
      * A strategy for sharing side effects.
@@ -222,12 +225,13 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
      *
      * @see Parallel
      * @see Lifo
+     * @see ChannelLifo
      */
     @InlineOnly
     @JsName("Fifo")
     @ObjCName("Fifo")
     @get:JvmName("Fifo")
-    public inline val Fifo: InputStrategy get() = InputStrategy.Fifo
+    public inline val Fifo: InputStrategy.Factory get() = InputStrategy.Fifo
 
     /**
      * **Lifo**, `last-in, first-out` strategy.
@@ -241,14 +245,19 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
      *
      * Consider [Parallel] if you need more responsiveness, but without dropping out anything.
      *
+     * See [ChannelLifo] for [Channel]-based implementation of the same strategy,
+     * which waits for the last intent to complete after canceling it,
+     * before processing a new one, making the strategy strictly ordered.
+     *
      * @see Parallel
+     * @see ChannelLifo
      * @see Fifo
      */
     @InlineOnly
     @JsName("Lifo")
     @ObjCName("Lifo")
     @get:JvmName("Lifo")
-    public inline val Lifo: InputStrategy get() = InputStrategy.Lifo
+    public inline val Lifo: InputStrategy.Factory get() = InputStrategy.Lifo
 
     /**
      * Strategy with parallel processing of intents.
@@ -260,12 +269,59 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
      *
      * @see Fifo
      * @see Lifo
+     * @see ChannelLifo
      */
     @InlineOnly
     @JsName("Parallel")
     @ObjCName("Parallel")
     @get:JvmName("Parallel")
-    public inline val Parallel: InputStrategy get() = InputStrategy.Parallel
+    public inline val Parallel: InputStrategy.Factory get() = InputStrategy.Parallel
+
+    /**
+     * [Parallel] strategy that will immediately execute intent until its first suspension point in the current thread
+     * similarly to the coroutine being started using [Dispatchers.Unconfined].
+     * However, when the coroutine is resumed from suspension it is dispatched
+     * according to the [CoroutineDispatcher] in its context.
+     *
+     * @see CoroutineStart.UNDISPATCHED
+     * @see Parallel
+     */
+    @InlineOnly
+    @ExperimentalFluxoApi
+    @JsName("Direct")
+    @ObjCName("Direct")
+    @get:JvmName("Direct")
+    public inline val Direct: InputStrategy.Factory get() = InputStrategy.Direct
+
+    /**
+     * [Channel]-based implementation for the **[Lifo]**, `Last-in, first-out` strategy.
+     * Optimized for a stream of events (e.g., user actions) in which new ones make previous ones obsolete.
+     * Provides more responsiveness than [Fifo], but at the cost of possibly losing some intents!
+     *
+     * **IMPORTANT:** Cancels earlier unfinished intent when receives a new one!
+     *
+     * **IMPORTANT:** No guarantee that inputs processed in any given order!
+     *
+     * Consider [Parallel] if you need more responsiveness, but without dropping out any intents.
+     *
+     * Consider simple non-[channel][Channel]-based [Lifo] if you don't need [strict order guarantee][ordered].
+     *
+     * @param ordered if `true`, the strategy will wait for the last intent to complete
+     *  after canceling before processing a new one. This makes the strategy strictly ordered,
+     *  without any moments of potentially parallel processing. As a consequence,
+     *  it will allow the previous intent to block the next one, e.g. with busy-waiting.
+     *
+     * @see Parallel
+     * @see Lifo
+     * @see Fifo
+     */
+    @InlineOnly
+    @ExperimentalFluxoApi
+    @Suppress("FunctionName")
+    @JsName("ChannelLifo")
+    @ObjCName("ChannelLifo")
+    @JvmName("ChannelLifo")
+    internal inline fun ChannelLifo(ordered: Boolean = true): InputStrategy.Factory = InputStrategy.ChannelLifo(ordered)
 
     // endregion
 

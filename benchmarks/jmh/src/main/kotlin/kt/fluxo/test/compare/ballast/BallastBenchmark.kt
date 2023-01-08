@@ -9,8 +9,8 @@ import com.copperleaf.ballast.build
 import com.copperleaf.ballast.core.BasicViewModel
 import com.copperleaf.ballast.core.FifoInputStrategy
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
 import kt.fluxo.test.compare.CommonBenchmark.consumeCommon
 import kt.fluxo.test.compare.CommonBenchmark.launchCommon
@@ -19,7 +19,7 @@ import kt.fluxo.test.compare.IntentIncrement
 @Suppress("InjectDispatcher")
 internal object BallastBenchmark {
     fun mviHandler(): Int {
-        val dispatcher = newSingleThreadContext(BallastBenchmark::mviHandler.name)
+        val dispatcher = Dispatchers.Unconfined
         val job = SupervisorJob()
         val vm = object : BasicViewModel<IntentIncrement, Nothing, Int>(
             coroutineScope = CoroutineScope(dispatcher + job),
@@ -47,7 +47,7 @@ internal object BallastBenchmark {
 
         return runBlocking {
             val launchDef = launchCommon(IntentIncrement.Increment) { vm.send(it) }
-            vm.observeStates().consumeCommon(launchDef, job, dispatcher)
+            vm.observeStates().consumeCommon(launchDef, job)
         }
     }
 }

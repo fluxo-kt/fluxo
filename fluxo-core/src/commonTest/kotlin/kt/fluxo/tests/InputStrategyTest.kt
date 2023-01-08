@@ -2,34 +2,40 @@ package kt.fluxo.tests
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Dispatchers.Unconfined
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.plus
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.TestScope
 import kt.fluxo.core.FluxoIntent
 import kt.fluxo.core.FluxoRuntimeException
-import kt.fluxo.core.InputStrategy
-import kt.fluxo.core.InputStrategy.InBox.Fifo
-import kt.fluxo.core.InputStrategy.InBox.Lifo
-import kt.fluxo.core.InputStrategy.InBox.Parallel
 import kt.fluxo.core.closeAndWait
 import kt.fluxo.core.container
-import kt.fluxo.core.dsl.InputStrategyScope
+import kt.fluxo.core.input.ChannelBasedInputStrategy
+import kt.fluxo.core.input.InputStrategy
+import kt.fluxo.core.input.InputStrategy.InBox.ChannelLifo
+import kt.fluxo.core.input.InputStrategy.InBox.Direct
+import kt.fluxo.core.input.InputStrategy.InBox.Fifo
+import kt.fluxo.core.input.InputStrategy.InBox.Lifo
+import kt.fluxo.core.input.InputStrategy.InBox.Parallel
+import kt.fluxo.core.input.InputStrategyScope
 import kt.fluxo.core.intent
 import kt.fluxo.core.store
 import kt.fluxo.core.updateState
 import kt.fluxo.test.CoroutineScopeAwareTest
 import kt.fluxo.test.DEFAULT_TEST_TIMEOUT_MS
+import kt.fluxo.test.IgnoreJs
 import kt.fluxo.test.IgnoreNativeAndJs
 import kt.fluxo.test.KMM_PLATFORM
-import kt.fluxo.test.Platform
+import kt.fluxo.test.Platform.LINUX
 import kt.fluxo.test.TestLoggingStoreFactory
 import kt.fluxo.test.runUnitTest
 import kt.fluxo.test.testLog
@@ -48,6 +54,18 @@ internal class InputStrategyTest : CoroutineScopeAwareTest() {
         private const val DBG = 0
 
         private const val NUMBER_OF_ITEMS = 1000
+
+        internal val ALL_STRATEGIES = arrayOf(
+            Parallel,
+            Direct,
+            Fifo,
+            Lifo,
+            ChannelLifo(ordered = true),
+            ChannelLifo(ordered = false),
+            CustomStrategy, // Lifo-like custom strategy
+        )
+
+        internal val NonParallelDispatcher = Default.limitedParallelism(1)
     }
 
     /**
@@ -55,7 +73,7 @@ internal class InputStrategyTest : CoroutineScopeAwareTest() {
      */
     @Suppress("CyclomaticComplexMethod")
     private suspend fun CoroutineScope.input_strategy_test(
-        strategy: InputStrategy,
+        strategy: InputStrategy.Factory,
         equal: Boolean = false,
         nonOrderedEqual: Boolean = false,
         generic: Boolean = false,
@@ -137,7 +155,25 @@ internal class InputStrategyTest : CoroutineScopeAwareTest() {
     fun fifo_background_scope() = t { backgroundScope.fifo_test() }
 
     @Test
-    @IgnoreNativeAndJs
+    fun fifo_test_scope_plus_default_dispatcher() = t { (this + Default).fifo_test() }
+
+    @Test
+    fun fifo_background_scope_plus_default_dispatcher() = t { (backgroundScope + Default).fifo_test() }
+
+    @Test
+    fun fifo_test_scope_plus_unconfined_dispatcher() = t { (this + Unconfined).fifo_test() }
+
+    @Test
+    fun fifo_background_scope_plus_unconfined_dispatcher() = t { (backgroundScope + Unconfined).fifo_test() }
+
+    @Test
+    fun fifo_test_scope_plus_non_parallel_dispatcher() = t { (this + NonParallelDispatcher).fifo_test() }
+
+    @Test
+    fun fifo_background_scope_plus_non_parallel_dispatcher() = t { (backgroundScope + NonParallelDispatcher).fifo_test() }
+
+    @Test
+    @IgnoreNativeAndJs // test can freeze on Native and JS targets
     fun fifo_generic_scope() = t(timeoutMs = 20_000) { scope.fifo_test() }
 
     private suspend fun CoroutineScope.fifo_test() = input_strategy_test(strategy = Fifo, equal = true)
@@ -154,17 +190,108 @@ internal class InputStrategyTest : CoroutineScopeAwareTest() {
     fun lifo_background_scope() = t { backgroundScope.lifo_test() }
 
     @Test
+    fun lifo_test_scope_plus_default_dispatcher() = t { (this + Default).lifo_test() }
+
+    @Test
+    fun lifo_background_scope_plus_default_dispatcher() = t { (backgroundScope + Default).lifo_test() }
+
+    @Test
+    fun lifo_test_scope_plus_unconfined_dispatcher() = t { (this + Unconfined).lifo_test() }
+
+    @Test
+    fun lifo_background_scope_plus_unconfined_dispatcher() = t { (backgroundScope + Unconfined).lifo_test() }
+
+    @Test
+    fun lifo_test_scope_plus_non_parallel_dispatcher() = t { (this + NonParallelDispatcher).lifo_test() }
+
+    @Test
+    fun lifo_background_scope_plus_non_parallel_dispatcher() = t { (backgroundScope + NonParallelDispatcher).lifo_test() }
+
+    @Test
     fun lifo_generic_scope() = t { scope.lifo_test() }
 
-    private suspend fun CoroutineScope.lifo_test(strategy: InputStrategy = Lifo) {
+    private suspend fun CoroutineScope.lifo_test() = lifo_test(strategy = Lifo)
+
+    private suspend fun CoroutineScope.lifo_test(strategy: InputStrategy.Factory) {
         @OptIn(ExperimentalStdlibApi::class)
         val isUnconfined = coroutineContext[CoroutineDispatcher] == Unconfined
         val results = input_strategy_test(strategy = strategy, equal = isUnconfined)
         assertEquals(NUMBER_OF_ITEMS - 1, results.last(), "Last result should be presented")
-        if (!isUnconfined && KMM_PLATFORM != Platform.LINUX) {
+        if (!isUnconfined && KMM_PLATFORM != LINUX) {
             assertTrue(results.size < NUMBER_OF_ITEMS, "Expected to have cancelled intents with $strategy strategy")
         }
     }
+
+    // endregion
+
+
+    // region ChannelLifo(ordered = true)
+
+    @Test
+    fun ordered_lifo_test_scope() = t { ordered_lifo_test() }
+
+    @Test
+    fun ordered_lifo_background_scope() = t { backgroundScope.ordered_lifo_test() }
+
+    @Test
+    @IgnoreJs // TODO: Can we fix it for JS?
+    fun ordered_lifo_test_scope_plus_default_dispatcher() = t { (this + Default).ordered_lifo_test() }
+
+    @Test
+    @IgnoreJs // TODO: Can we fix it for JS?
+    fun ordered_lifo_background_scope_plus_default_dispatcher() = t { (backgroundScope + Default).ordered_lifo_test() }
+
+    @Test
+    fun ordered_lifo_test_scope_plus_unconfined_dispatcher() = t { (this + Unconfined).ordered_lifo_test() }
+
+    @Test
+    fun ordered_lifo_background_scope_plus_unconfined_dispatcher() = t { (backgroundScope + Unconfined).ordered_lifo_test() }
+
+    @Test
+    fun ordered_lifo_test_scope_plus_non_parallel_dispatcher() = t { (this + NonParallelDispatcher).ordered_lifo_test() }
+
+    @Test
+    fun ordered_lifo_background_scope_plus_non_parallel_dispatcher() = t { (backgroundScope + NonParallelDispatcher).ordered_lifo_test() }
+
+    @Test
+    fun ordered_lifo_generic_scope() = t { scope.ordered_lifo_test() }
+
+    private suspend fun CoroutineScope.ordered_lifo_test() = lifo_test(strategy = ChannelLifo(ordered = true))
+
+    // endregion
+
+
+    // region ChannelLifo(ordered = false)
+
+    @Test
+    fun channel_lifo_test_scope() = t { channel_lifo_test() }
+
+    @Test
+    fun channel_lifo_background_scope() = t { backgroundScope.channel_lifo_test() }
+
+    @Test
+    fun channel_lifo_test_scope_plus_default_dispatcher() = t { (this + Default).channel_lifo_test() }
+
+    @Test
+    fun channel_lifo_background_scope_plus_default_dispatcher() = t { (backgroundScope + Default).channel_lifo_test() }
+
+    @Test
+    @IgnoreJs // TODO: Can we fix it for JS?
+    fun channel_lifo_test_scope_plus_unconfined_dispatcher() = t { (this + Unconfined).channel_lifo_test() }
+
+    @Test
+    fun channel_lifo_background_scope_plus_unconfined_dispatcher() = t { (backgroundScope + Unconfined).channel_lifo_test() }
+
+    @Test
+    fun channel_lifo_test_scope_plus_non_parallel_dispatcher() = t { (this + NonParallelDispatcher).channel_lifo_test() }
+
+    @Test
+    fun channel_lifo_background_scope_plus_non_parallel_dispatcher() = t { (backgroundScope + NonParallelDispatcher).channel_lifo_test() }
+
+    @Test
+    fun channel_lifo_generic_scope() = t { scope.channel_lifo_test() }
+
+    private suspend fun CoroutineScope.channel_lifo_test() = lifo_test(strategy = ChannelLifo(ordered = false))
 
     // endregion
 
@@ -176,6 +303,24 @@ internal class InputStrategyTest : CoroutineScopeAwareTest() {
 
     @Test
     fun parallel_background_scope() = t { backgroundScope.parallel_test() }
+
+    @Test
+    fun parallel_test_scope_plus_default_dispatcher() = t { (this + Default).parallel_test() }
+
+    @Test
+    fun parallel_background_scope_plus_default_dispatcher() = t { (backgroundScope + Default).parallel_test() }
+
+    @Test
+    fun parallel_test_scope_plus_unconfined_dispatcher() = t { (this + Unconfined).parallel_test() }
+
+    @Test
+    fun parallel_background_scope_plus_unconfined_dispatcher() = t { (backgroundScope + Unconfined).parallel_test() }
+
+    @Test
+    fun parallel_test_scope_plus_non_parallel_dispatcher() = t { (this + NonParallelDispatcher).parallel_test() }
+
+    @Test
+    fun parallel_background_scope_plus_non_parallel_dispatcher() = t { (backgroundScope + NonParallelDispatcher).parallel_test() }
 
     @Test
     fun parallel_generic_scope() = t {
@@ -191,6 +336,40 @@ internal class InputStrategyTest : CoroutineScopeAwareTest() {
     // endregion
 
 
+    // region Direct
+
+    @Test
+    fun direct_test_scope() = t { direct_test() }
+
+    @Test
+    fun direct_background_scope() = t { backgroundScope.direct_test() }
+
+    @Test
+    fun direct_test_scope_plus_default_dispatcher() = t { (this + Default).direct_test() }
+
+    @Test
+    fun direct_background_scope_plus_default_dispatcher() = t { (backgroundScope + Default).direct_test() }
+
+    @Test
+    fun direct_test_scope_plus_unconfined_dispatcher() = t { (this + Unconfined).direct_test() }
+
+    @Test
+    fun direct_background_scope_plus_unconfined_dispatcher() = t { (backgroundScope + Unconfined).direct_test() }
+
+    @Test
+    fun direct_test_scope_plus_non_parallel_dispatcher() = t { (this + NonParallelDispatcher).direct_test() }
+
+    @Test
+    fun direct_background_scope_plus_non_parallel_dispatcher() = t { (backgroundScope + NonParallelDispatcher).direct_test() }
+
+    @Test
+    fun direct_generic_scope() = t { scope.direct_test() }
+
+    private suspend fun CoroutineScope.direct_test() = input_strategy_test(strategy = Direct, equal = true)
+
+    // endregion
+
+
     // region Custom input strategy
     // TODO: Test CustomFifoStrategy Fifo with resending and BufferOverflow.DROP_LATEST
 
@@ -201,21 +380,44 @@ internal class InputStrategyTest : CoroutineScopeAwareTest() {
     fun custom_background_scope() = t { backgroundScope.custom_test() }
 
     @Test
+    fun custom_test_scope_plus_default_dispatcher() = t { (this + Default).custom_test() }
+
+    @Test
+    fun custom_background_scope_plus_default_dispatcher() = t { (backgroundScope + Default).custom_test() }
+
+    @Test
+    fun custom_test_scope_plus_unconfined_dispatcher() = t { (this + Unconfined).custom_test() }
+
+    @Test
+    fun custom_background_scope_plus_unconfined_dispatcher() = t { (backgroundScope + Unconfined).custom_test() }
+
+    @Test
+    fun custom_test_scope_plus_non_parallel_dispatcher() = t { (this + NonParallelDispatcher).custom_test() }
+
+    @Test
+    fun custom_background_scope_plus_non_parallel_dispatcher() = t { (backgroundScope + NonParallelDispatcher).custom_test() }
+
+    @Test
     fun custom_generic_scope() = t { scope.custom_test() }
 
-    private suspend fun CoroutineScope.custom_test() = lifo_test(strategy = CustomInputStrategy())
+    private suspend fun CoroutineScope.custom_test() = lifo_test(strategy = CustomStrategy)
 
     /** Custom strategy for testing customization mechanics. Works like 'Lifo'. */
-    private class CustomInputStrategy : InputStrategy() {
+    private object CustomStrategy : InputStrategy.Factory {
         override fun toString() = "Custom"
 
-        override val resendUndelivered: Boolean get() = false
+        override fun <Intent, State> invoke(scope: InputStrategyScope<Intent, State>): InputStrategy<Intent, State> =
+            CustomInputStrategy(scope)
 
-        override fun <Request> createQueue(onUndeliveredElement: ((Request) -> Unit)?): Channel<Request> =
-            Channel(capacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST, onUndeliveredElement = onUndeliveredElement)
+        @Suppress("JS_FAKE_NAME_CLASH")
+        private class CustomInputStrategy<Intent, State>(handler: InputStrategyScope<Intent, State>) :
+            ChannelBasedInputStrategy<Intent, State>(handler, resendUndelivered = false) {
+            override fun <Request> createQueue(onUndeliveredElement: ((Request) -> Unit)?): Channel<Request> =
+                Channel(capacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST, onUndeliveredElement = onUndeliveredElement)
 
-        override suspend fun <Request> (InputStrategyScope<Request>).processRequests(queue: Flow<Request>) {
-            queue.collectLatest(this)
+            override suspend fun launch() {
+                requestsChannel.consumeAsFlow().collectLatest(::emit)
+            }
         }
     }
 

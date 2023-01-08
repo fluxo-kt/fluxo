@@ -3,11 +3,11 @@ package kt.fluxo.tests
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kt.fluxo.core.FluxoSettings
-import kt.fluxo.core.InputStrategy.InBox.Fifo
-import kt.fluxo.core.InputStrategy.InBox.Lifo
 import kt.fluxo.core.SideEffectsStrategy
 import kt.fluxo.core.container
 import kt.fluxo.core.debug.DEBUG
+import kt.fluxo.core.input.InputStrategy.InBox.Direct
+import kt.fluxo.core.input.InputStrategy.InBox.Lifo
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -75,7 +75,7 @@ class FluxoSettingsTest {
         assertNull(s.scope)
 
         assertEquals(SideEffectsStrategy.RECEIVE, s.sideEffectsStrategy)
-        assertEquals(Fifo, s.inputStrategy)
+        assertEquals(Direct, s.inputStrategy)
         assertNull(s.intentFilter)
         assertNull(s.bootstrapper)
 

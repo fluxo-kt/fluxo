@@ -136,6 +136,7 @@ internal class SideJobTest {
             sideJob { wasRestarted ->
                 assertFalse(wasRestarted)
                 withContext(Dispatchers.Default) {
+                    // NOTE: delay is safe because of Dispatcher
                     delay(timeMillis = 1_000)
                 }
                 updateState { "a" }

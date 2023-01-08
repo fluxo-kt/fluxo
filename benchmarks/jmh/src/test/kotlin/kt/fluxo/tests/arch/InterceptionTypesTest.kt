@@ -20,5 +20,5 @@ class InterceptionTypesTest {
     fun decorator_interception() = test { DecoratorInterception.test() }
 
 
-    private fun test(testBody: suspend TestScope.() -> Unit) = runTest(dispatchTimeoutMs = 1_000, testBody = testBody)
+    private fun test(testBody: suspend TestScope.() -> Unit) = runTest(testBody = testBody)
 }

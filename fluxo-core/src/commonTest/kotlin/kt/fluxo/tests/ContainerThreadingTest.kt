@@ -27,7 +27,7 @@ internal class ContainerThreadingTest : CoroutineScopeAwareTest() {
             delay(Long.MAX_VALUE)
         }
         container.send {
-            updateState { newState }
+            value = newState
         }
 
         observer.awaitCount(2)

@@ -24,7 +24,7 @@ public final class kt/fluxo/core/FluxoSettings {
 	public final fun getCoroutineContext ()Lkotlin/coroutines/CoroutineContext;
 	public final fun getDebugChecks ()Z
 	public final fun getExceptionHandler ()Lkotlinx/coroutines/CoroutineExceptionHandler;
-	public final fun getInputStrategy ()Lkt/fluxo/core/InputStrategy;
+	public final fun getInputStrategy ()Lkt/fluxo/core/input/InputStrategy$Factory;
 	public final fun getIntentFilter ()Lkotlin/jvm/functions/Function2;
 	public final fun getName ()Ljava/lang/String;
 	public final fun getScope ()Lkotlinx/coroutines/CoroutineScope;
@@ -39,7 +39,7 @@ public final class kt/fluxo/core/FluxoSettings {
 	public final fun setCoroutineContext (Lkotlin/coroutines/CoroutineContext;)V
 	public final fun setDebugChecks (Z)V
 	public final fun setExceptionHandler (Lkotlinx/coroutines/CoroutineExceptionHandler;)V
-	public final fun setInputStrategy (Lkt/fluxo/core/InputStrategy;)V
+	public final fun setInputStrategy (Lkt/fluxo/core/input/InputStrategy$Factory;)V
 	public final fun setIntentFilter (Lkotlin/jvm/functions/Function2;)V
 	public final fun setLazy (Z)V
 	public final fun setName (Ljava/lang/String;)V
@@ -52,22 +52,6 @@ public final class kt/fluxo/core/FluxoSettings {
 
 public final class kt/fluxo/core/FluxoSettings$Factory {
 	public final fun create ()Lkt/fluxo/core/FluxoSettings;
-}
-
-public abstract class kt/fluxo/core/InputStrategy {
-	public static final field InBox Lkt/fluxo/core/InputStrategy$InBox;
-	public fun <init> ()V
-	public fun createQueue (Lkotlin/jvm/functions/Function1;)Lkotlinx/coroutines/channels/Channel;
-	public fun getParallelProcessing ()Z
-	public fun getResendUndelivered ()Z
-	public fun getRollbackOnCancellation ()Z
-	public abstract fun processRequests (Lkotlin/jvm/functions/Function2;Lkotlinx/coroutines/flow/Flow;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-}
-
-public final class kt/fluxo/core/InputStrategy$InBox {
-	public final fun Fifo ()Lkt/fluxo/core/InputStrategy;
-	public final fun Lifo ()Lkt/fluxo/core/InputStrategy;
-	public final fun Parallel ()Lkt/fluxo/core/InputStrategy;
 }
 
 public abstract interface class kt/fluxo/core/IntentHandler {
@@ -208,21 +192,36 @@ public abstract class kt/fluxo/core/factory/StoreFactory {
 	public final fun createWithNoSideEffects (Ljava/lang/Object;Lkt/fluxo/core/IntentHandler;Lkt/fluxo/core/FluxoSettings;)Lkt/fluxo/core/Store;
 }
 
-public abstract interface class kt/fluxo/core/intercept/StoreRequest {
+public abstract class kt/fluxo/core/input/InputStrategy : java/io/Closeable {
+	public static final field InBox Lkt/fluxo/core/input/InputStrategy$InBox;
+	protected final field handler Lkt/fluxo/core/input/InputStrategyScope;
+	public fun <init> (Lkt/fluxo/core/input/InputStrategyScope;)V
+	public fun close ()V
+	protected final fun executeIntent (Lkotlinx/coroutines/CoroutineScope;Ljava/lang/Object;Lkotlinx/coroutines/CompletableDeferred;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun getParallelProcessing ()Z
+	protected fun getRollbackOnCancellation ()Z
+	public fun launch (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun queueIntent (Ljava/lang/Object;)Lkotlinx/coroutines/Job;
+	public fun queueIntentSuspend (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public final class kt/fluxo/core/intercept/StoreRequest$HandleIntent : kt/fluxo/core/intercept/StoreRequest {
-	public fun <init> (Ljava/lang/Object;Lkotlinx/coroutines/CompletableDeferred;)V
-	public synthetic fun <init> (Ljava/lang/Object;Lkotlinx/coroutines/CompletableDeferred;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun getDeferred ()Lkotlinx/coroutines/CompletableDeferred;
-	public final fun getIntent ()Ljava/lang/Object;
+public abstract interface class kt/fluxo/core/input/InputStrategy$Factory {
+	public abstract fun invoke (Lkt/fluxo/core/input/InputStrategyScope;)Lkt/fluxo/core/input/InputStrategy;
 }
 
-public final class kt/fluxo/core/intercept/StoreRequest$RestoreState : kt/fluxo/core/intercept/StoreRequest {
-	public fun <init> (Ljava/lang/Object;Lkotlinx/coroutines/CompletableDeferred;)V
-	public synthetic fun <init> (Ljava/lang/Object;Lkotlinx/coroutines/CompletableDeferred;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun getDeferred ()Lkotlinx/coroutines/CompletableDeferred;
-	public final fun getState ()Ljava/lang/Object;
+public final class kt/fluxo/core/input/InputStrategy$InBox {
+	public final fun Direct ()Lkt/fluxo/core/input/InputStrategy$Factory;
+	public final fun Fifo ()Lkt/fluxo/core/input/InputStrategy$Factory;
+	public final fun Lifo ()Lkt/fluxo/core/input/InputStrategy$Factory;
+	public final fun Parallel ()Lkt/fluxo/core/input/InputStrategy$Factory;
+}
+
+public abstract interface class kt/fluxo/core/input/InputStrategyScope : kotlinx/coroutines/CoroutineScope {
+	public abstract fun executeIntent (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getValue ()Ljava/lang/Object;
+	public abstract fun handleException (Lkotlin/coroutines/CoroutineContext;Ljava/lang/Throwable;)V
+	public abstract fun setValue (Ljava/lang/Object;)V
+	public abstract fun undeliveredIntent (Ljava/lang/Object;Z)V
 }
 
 public final class kt/fluxo/core/internal/FluxoIntentHandler {

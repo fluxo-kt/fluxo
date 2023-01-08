@@ -92,9 +92,11 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super p
 * Subscription lifecycle with convenience API (`repeatOnSubscription`). Do something in store when subscriber connects or disconnects.
 * Forceful customization:
   * Pluggable **intent (input) strategies**:
-    * _First In, First Out_ (Fifo). Default, predictable, and intuitive, good performance.
-    * _Last In, First Out_ (Lifo). Can improve responsiveness for e.g., UI events processing, but can lose some intents!
-    * _Parallel_. No processing order guarantees, can provide better performance comparing to _Fifo_.
+    * _First In, First Out_ (Fifo). Default, predictable, and intuitive, ordered processing with good performance.
+    * _Last In, First Out_ (Lifo). Can improve responsiveness, e.g. UI events processing, but may lose some intents!
+    * _Parallel_. No processing order guarantees, can provide better performance and responsiveness compared to _Fifo_.
+    * _Direct_. No pipeline. Immediately executes every intent until the first suspension point in the current thread.
+    * _ChannelLifo_. Special `Channel`-based Lifo implementation that provides extra customization compared to _Lifo_.
     * Create your own!
   * Eager or lazy initialization of the store.
   * Error handling and exception behavior control.

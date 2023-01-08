@@ -63,7 +63,7 @@ public interface StoreDecorator<Intent, State, SideEffect : Any> : StoreScope<In
 
     /**
      *
-     * @return `true` if error was handled
+     * @return `true` if handled the [error].
      */
     @CallSuper
     @JsName("onUnhandledError")

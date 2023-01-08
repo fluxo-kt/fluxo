@@ -297,9 +297,7 @@ public inline fun <State, SE : Any> ContainerHost<State, SE>.intent(noinline int
  */
 @FluxoDsl
 @InlineOnly
-public inline fun <State, SE : Any> ContainerHost<State, SE>.send(noinline intent: FluxoIntent<State, SE>): Job {
-    return container.send(intent)
-}
+public inline fun <State, SE : Any> ContainerHost<State, SE>.send(noinline intent: FluxoIntent<State, SE>): Job = container.send(intent)
 
 /**
  * Build and execute a functional [intent][FluxoIntent] on [Store].

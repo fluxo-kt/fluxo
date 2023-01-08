@@ -4,7 +4,6 @@ package kt.fluxo.core.internal
 
 import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
@@ -40,10 +39,10 @@ import kt.fluxo.core.SideEffectsStrategy
 import kt.fluxo.core.SideJob
 import kt.fluxo.core.annotation.InternalFluxoApi
 import kt.fluxo.core.data.GuaranteedEffect
-import kt.fluxo.core.dsl.InputStrategyScope
 import kt.fluxo.core.dsl.StoreScope
 import kt.fluxo.core.factory.StoreDecorator
-import kt.fluxo.core.intercept.StoreRequest
+import kt.fluxo.core.input.InputStrategy
+import kt.fluxo.core.input.InputStrategyScope
 import kt.fluxo.core.updateState
 import kotlin.coroutines.AbstractCoroutineContextElement
 import kotlin.coroutines.CoroutineContext
@@ -56,7 +55,8 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
     private val intentHandler: IntentHandler<Intent, State, SideEffect>,
     conf: FluxoSettings<Intent, State, SideEffect>,
 ) : AbstractCoroutineContextElement(CoroutineExceptionHandler), CoroutineExceptionHandler,
-    StoreDecorator<Intent, State, SideEffect> {
+    StoreDecorator<Intent, State, SideEffect>,
+    InputStrategyScope<Intent, State> {
 
     // region Fields, initialization
 
@@ -67,8 +67,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
     override val subscriptionCount: StateFlow<Int>
     override val coroutineContext: CoroutineContext
 
-    private val inputStrategy = conf.inputStrategy
-    private val requestsChannel: Channel<StoreRequest<Intent, State>>
+    private val inputStrategy: InputStrategy<Intent, State>
     private val intentFilter = conf.intentFilter
 
     private val sideEffectChannel: Channel<SideEffect>?
@@ -120,47 +119,8 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
             scope
         }
 
-        // Leak-free transfer via channel
-        // https://github.com/Kotlin/kotlinx.coroutines/issues/1936
-        // See "Undelivered elements" section in Channel documentation for details.
-        //
-        // Handled cases:
-        // — sending operation cancelled before it had a chance to actually send the element.
-        // — receiving operation retrieved the element from the channel cancelled
-        //   when trying to return it the caller.
-        // — channel cancelled, in which case onUndeliveredElement called
-        //   on every remaining element in the channel's buffer.
-        val intentResendLock = if (inputStrategy.resendUndelivered) Mutex() else null
-        requestsChannel = inputStrategy.createQueue {
-            scope.launch(start = CoroutineStart.UNDISPATCHED) {
-                when (it) {
-                    is StoreRequest.HandleIntent -> {
-                        // Only one resending per moment to protect from the recursion.
-                        var resent = false
-                        if (isActive && intentResendLock != null && intentResendLock.tryLock()) {
-                            try {
-                                @Suppress("UNINITIALIZED_VARIABLE")
-                                resent = requestsChannel.trySend(it).isSuccess
-                            } catch (_: Throwable) {
-                            } finally {
-                                intentResendLock.unlock()
-                            }
-                        }
-                        if (!resent) {
-                            it.intent.closeSafely()
-                            it.deferred.cancel()
-                        }
-                        undeliveredIntent(it.intent, resent)
-                    }
-
-                    is StoreRequest.RestoreState -> try {
-                        value = it.state
-                    } finally {
-                        it.deferred.complete(Unit)
-                    }
-                }
-            }
-        }
+        // Input handling
+        inputStrategy = conf.inputStrategy(scope = this)
 
         // region Prepare side effects handling, considering all possible strategies
         var subscriptionCount = mutableState.subscriptionCount
@@ -272,32 +232,24 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
     }
 
     override suspend fun onStart(bootstrapper: Bootstrapper<Intent, State, SideEffect>?) {
+        // TODO: Allow to avoid this launch completely with info from inputStrategy (benchmark)?
         // Observe and process intents
-        // Use store scope to not block the startJob completion.
-        val requestsFlow = requestsChannel.receiveAsFlow()
+        // - Use store scope to not block the startJob completion.
+        // - Re-save input strategy to avoid the whole store captured in the launched lambda.
         val inputStrategy = inputStrategy
-        val inputStrategyScope: InputStrategyScope<StoreRequest<Intent, State>> = {
-            when (it) {
-                is StoreRequest.HandleIntent -> {
-                    if (debugChecks) {
-                        withContext(CoroutineName("$F[$name <= Intent ${it.intent}]")) {
-                            executeIntent(it.intent, it.deferred)
-                        }
-                    } else {
-                        executeIntent(it.intent, it.deferred)
-                    }
+        val storeJob = checkNotNull(coroutineContext[Job])
+        (this as CoroutineScope).launch(
+            context = if (!debugChecks) EmptyCoroutineContext else CoroutineName("$F[$name:inputStrategy]"),
+            start = CoroutineStart.UNDISPATCHED,
+        ) {
+            try {
+                // Can suspend until the store closed!
+                inputStrategy.launch()
+            } catch (ce: CancellationException) {
+                if (storeJob.isActive) {
+                    // We don't expect cancellation here!
+                    throw IllegalStateException("Input strategy shouldn't be cancelled", ce.cause ?: ce)
                 }
-
-                is StoreRequest.RestoreState -> try {
-                    value = it.state
-                } finally {
-                    it.deferred.complete(Unit)
-                }
-            }
-        }
-        (this as CoroutineScope).launch(start = CoroutineStart.UNDISPATCHED) {
-            with(inputStrategy) {
-                inputStrategyScope.processRequests(requestsFlow)
             }
         }
 
@@ -342,30 +294,22 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
 
     override suspend fun emit(value: Intent) {
         start()
-        requestsChannel.send(StoreRequest.HandleIntent(value))
+        inputStrategy.queueIntentSuspend(value)
     }
 
     override fun send(intent: Intent): Job {
         start()
-        val request = StoreRequest.HandleIntent<Intent, State>(intent)
-        // Don't pay for dispatch here, it is never necessary
-        (this as CoroutineScope).launch(start = CoroutineStart.UNDISPATCHED) {
-            requestsChannel.send(request)
-        }
-        return request.deferred
+        return inputStrategy.queueIntent(intent)
     }
 
-    private suspend fun executeIntent(intent: Intent, deferred: CompletableDeferred<Unit>?) {
-        try {
+    override suspend fun executeIntent(intent: Intent) {
+        val decorator = decorator
+        if (!debugChecks) {
             decorator.onIntent(intent)
-        } catch (ce: CancellationException) {
-            if (closeOnExceptions) {
-                handleException(currentCoroutineContext(), ce)
+        } else {
+            withContext(CoroutineName("$F[$name <= Intent $intent]")) {
+                decorator.onIntent(intent)
             }
-        } catch (e: Throwable) {
-            handleException(currentCoroutineContext(), e)
-        } finally {
-            deferred?.complete(Unit)
         }
     }
 
@@ -402,7 +346,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         guardedScope?.close()
     }
 
-    private fun undeliveredIntent(intent: Intent, wasResent: Boolean) {
+    override fun undeliveredIntent(intent: Intent, wasResent: Boolean) {
         if (!wasResent) {
             intent.closeSafely()
         }
@@ -496,13 +440,14 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         checkNotNull(sideJobsMutex).withLock(if (debugChecks) key else null) {
             val prevSj = map[key]
 
-            // Cancel already running sideJob
+            // Cancel if we have a sideJob already running
             prevSj?.run {
                 job?.cancel()
                 job = null
             }
 
-            // Go through and remove any completed sideJobs (either cancelled or finished)
+            // Go through and remove any sideJobs that have completed (either by
+            // cancellation or because they finished on their own)
             val iterator = map.values.iterator()
             for (sj in iterator) {
                 if (sj.job?.isActive != true) {
@@ -515,7 +460,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
             //   2) errors caught for crash reporting.
             //   3) has a supervisor job, to cancel the sideJob without cancelling whole store scope.
             //
-            // Consumers of this sideJob can launch many jobs, and all cancelled together when the
+            // Consumers of this sideJob can launch many jobs, and all will be cancelled together when the
             // sideJob restarted, or the store scope cancelled.
             val wasRestarted = prevSj != null
             val coroutineContext = when {
@@ -604,16 +549,15 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
             clear()
         }
 
+        // Cancel and clear input strategy
+        inputStrategy.closeSafely()
+
         // Close and clear state & side effects machinery.
         value.closeSafely(cause)
         (sideEffectFlowField as? MutableSharedFlow)?.apply {
             val replayCache = replayCache
-            try {
-                @OptIn(ExperimentalCoroutinesApi::class)
-                resetReplayCache()
-            } catch (_: Throwable) {
-                // For the case of experimental API unexpected change
-            }
+            @OptIn(ExperimentalCoroutinesApi::class)
+            resetReplayCache()
             replayCache.forEach { it.closeSafely(cause) }
         }
         sideEffectChannel?.apply {

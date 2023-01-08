@@ -63,7 +63,7 @@ fun runUnitTest(
             if (KMM_PLATFORM != Platform.JS) {
                 val s = this
                 job = backgroundScope.launch(Dispatchers.Default) {
-                    // NOTE: delay is safe bacause of Dispatcher
+                    // NOTE: delay is safe because of Dispatcher
                     // Extra 500 ms to not conflict with regular runTest timeout, but back him up.
                     val delayMs = timeoutMs + 500L
                     delay(delayMs)

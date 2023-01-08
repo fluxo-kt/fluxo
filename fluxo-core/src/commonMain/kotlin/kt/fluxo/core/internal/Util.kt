@@ -69,7 +69,6 @@ private class CombinedFlowCounter(
     }
 }
 
-
 internal class SubscriptionCountFlow<T>(
     private val subscriptionCount: MutableStateFlow<Int>,
     private val delegate: Flow<T>,

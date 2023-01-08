@@ -5,7 +5,7 @@ import kt.fluxo.test.compare.CommonBenchmark.addAndGet
 
 /**
  * Decorator interception like in MVIKotlin (via factory) or in Orbit (via ContainerDecorator).
- * Tests both decorations for outbound calls and inbound calls to the decoration chain.
+ * We test both decorations for outbound calls and inbound calls to the decoration chain.
  */
 object DecoratorInterception : InterceptionBase() {
 
