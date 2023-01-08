@@ -78,12 +78,10 @@ open class InterceptionTypesBenchmark {
      * * Less convenient configuration
      */
     @Benchmark
-    fun decorator_interception(bh: Blackhole) =
-        bh.consume(DecoratorInterception.test(creations = 10, interceptions = 3000))
+    fun decorator_interception(bh: Blackhole) = bh.consume(DecoratorInterception.test(creations = 10, interceptions = 3000))
 
     @Benchmark
-    fun decorator_interception__creations(bh: Blackhole) =
-        bh.consume(DecoratorInterception.test(creations = 3000, interceptions = 10))
+    fun decorator_interception__creations(bh: Blackhole) = bh.consume(DecoratorInterception.test(creations = 3000, interceptions = 10))
 
 
     /**
