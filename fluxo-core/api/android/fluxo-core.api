@@ -183,7 +183,6 @@ public final class kt/fluxo/core/dsl/SideJobScope$RestartState : java/lang/Enum 
 }
 
 public abstract interface class kt/fluxo/core/dsl/StoreScope : kotlinx/coroutines/CoroutineScope {
-	public static final field Companion Lkt/fluxo/core/dsl/StoreScope$Companion;
 	public fun async (Ljava/lang/String;Lkotlin/jvm/functions/Function2;)V
 	public static synthetic fun async$default (Lkt/fluxo/core/dsl/StoreScope;Ljava/lang/String;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)V
 	public abstract fun getState ()Ljava/lang/Object;
@@ -197,9 +196,6 @@ public abstract interface class kt/fluxo/core/dsl/StoreScope : kotlinx/coroutine
 	public abstract fun sideJob (Ljava/lang/String;Lkotlin/coroutines/CoroutineContext;Lkotlinx/coroutines/CoroutineStart;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun sideJob$default (Lkt/fluxo/core/dsl/StoreScope;Ljava/lang/String;Lkotlin/coroutines/CoroutineContext;Lkotlinx/coroutines/CoroutineStart;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public abstract fun updateState (Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-}
-
-public final class kt/fluxo/core/dsl/StoreScope$Companion {
 }
 
 public abstract class kt/fluxo/core/intercept/FluxoEvent {
