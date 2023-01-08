@@ -33,7 +33,8 @@ public typealias FluxoSettingsS<Intent, State> = FluxoSettings<Intent, State, No
  * Settings for the Fluxo store.
  *
  * * Change settings once and for all at one place with [FluxoSettings.DEFAULT].
- * * Provide prepared settings object for the group of your stores (use [FluxoSettings()][FluxoSettings.invoke] and then the standard DSL).
+ * * Provide the prepared settings object for the group of your stores
+ *   (use [FluxoSettings()][FluxoSettings.invoke] and then the standard DSL).
  * * Just configure each store individually with the standard DSL (see [container] and [store]).
  */
 @FluxoDsl
@@ -182,6 +183,12 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
     public var interceptorContext: CoroutineContext = EmptyCoroutineContext
 
     /**
+     * If true the [Store] will offload everything possible to the provided [scope] and contexts, not trying to optimize performance.
+     */
+    @get:JvmName("isOffloadAllToScope")
+    public var offloadAllToScope: Boolean = false
+
+    /**
      * [CoroutineExceptionHandler] to receive exception happened in processing.
      *
      * **NOTE:** Disables [closeOnExceptions] when set to non-null value!
@@ -239,7 +246,8 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
     public inline val Lifo: InputStrategy get() = InputStrategy.Lifo
 
     /**
-     * Parallel processing of all intents, can provide better responsiveness comparing to [Fifo].
+     * Parallel processing of all intents.
+     * Can provide better responsiveness comparing to [Fifo].
      *
      * **IMPORTANT:** No guarantee that inputs will be processed in any given order!
      */
@@ -271,9 +279,11 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
     public fun copy(): FluxoSettings<Intent, State, SideEffect> {
         val s = FluxoSettings<Intent, State, SideEffect>()
 
-        // copy values in reverse order to mitigate setters logic
+        // copy values in reverse order to mitigate logic in setters
 
         s.exceptionHandler = exceptionHandler
+
+        s.offloadAllToScope = offloadAllToScope
 
         s.interceptorContext = interceptorContext
         s.sideJobsContext = sideJobsContext

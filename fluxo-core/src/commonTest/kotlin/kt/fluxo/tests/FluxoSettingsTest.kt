@@ -63,6 +63,7 @@ class FluxoSettingsTest {
     fun settings_copy() {
         val s = FluxoSettings.DEFAULT.copy()
 
+        assertFalse(s.offloadAllToScope)
         assertNull(s.exceptionHandler)
 
         assertEquals(EmptyCoroutineContext, s.interceptorContext)

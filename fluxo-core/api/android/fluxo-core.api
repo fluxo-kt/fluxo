@@ -49,6 +49,7 @@ public final class kt/fluxo/core/FluxoSettings {
 	public final fun getSideJobsContext ()Lkotlin/coroutines/CoroutineContext;
 	public final fun isCloseOnExceptions ()Z
 	public final fun isLazy ()Z
+	public final fun isOffloadAllToScope ()Z
 	public final fun setBootstrapper (Lkotlin/jvm/functions/Function2;)V
 	public final fun setCloseOnExceptions (Z)V
 	public final fun setDebugChecks (Z)V
@@ -60,6 +61,7 @@ public final class kt/fluxo/core/FluxoSettings {
 	public final fun setInterceptorContext (Lkotlin/coroutines/CoroutineContext;)V
 	public final fun setLazy (Z)V
 	public final fun setName (Ljava/lang/String;)V
+	public final fun setOffloadAllToScope (Z)V
 	public final fun setScope (Lkotlinx/coroutines/CoroutineScope;)V
 	public final fun setSideEffectBufferSize (I)V
 	public final fun setSideEffectsStrategy (Lkt/fluxo/core/SideEffectsStrategy;)V

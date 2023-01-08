@@ -111,6 +111,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
     private val interceptors = conf.interceptors.toTypedArray()
     private val bootstrapper = conf.bootstrapper
     private val intentFilter = conf.intentFilter
+    private val coroutineStart = if (conf.offloadAllToScope) CoroutineStart.DEFAULT else CoroutineStart.UNDISPATCHED
 
     @OptIn(InternalCoroutinesApi::class)
     private val cancellationCause get() = scope.coroutineContext[Job]?.getCancellationException()
@@ -273,6 +274,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
                     !debugChecks -> EmptyCoroutineContext
                     else -> CoroutineName("$F[$name:lazyStart]")
                 },
+                start = coroutineStart,
             ) {
                 // start on the first subscriber.
                 subscriptions.first { it > 0 }
@@ -414,6 +416,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
             !debugChecks -> EmptyCoroutineContext
             else -> CoroutineName("$F[$name:launch]")
         },
+        start = coroutineStart,
     ) {
         // observe and process intents
         val requestsFlow = requestsChannel.receiveAsFlow()
@@ -433,7 +436,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
                 is StoreRequest.RestoreState -> updateState(request)
             }
         }
-        scope.launch(intentContext, start = CoroutineStart.UNDISPATCHED) {
+        scope.launch(intentContext, start = coroutineStart) {
             with(inputStrategy) {
                 inputStrategyScope.processRequests(requestsFlow)
             }

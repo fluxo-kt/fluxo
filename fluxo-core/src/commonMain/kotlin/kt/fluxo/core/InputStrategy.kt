@@ -64,7 +64,8 @@ public abstract class InputStrategy {
         public val Lifo: InputStrategy get() = LifoInputStrategy
 
         /**
-         * Parallel processing of all intents, can provide better responsiveness comparing to [Fifo].
+         * Parallel processing of all intents.
+         * Can provide better responsiveness comparing to [Fifo].
          *
          * **IMPORTANT:** No guarantee that inputs will be processed in any given order!
          */
