@@ -61,16 +61,16 @@ internal object FluxoBenchmark {
     }
 
 
-    private fun <I> Store<I, Int, *>.consumeFluxo(intent: I, dispatcher: Closeable): Int {
+    private fun <I> Store<I, Int, *>.consumeFluxo(intent: I, closeable: Closeable? = null): Int {
         runBlocking {
             val launchDef = launchCommon(intent) { send(it) }
 
-            consumeCommon(stateFlow, launchDef)
+            consumeCommon(launchDef)
 
             @OptIn(ExperimentalFluxoApi::class)
             closeAndWait()
         }
-        dispatcher.close()
-        return state
+        closeable?.close()
+        return value
     }
 }

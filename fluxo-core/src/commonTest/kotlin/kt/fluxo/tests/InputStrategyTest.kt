@@ -170,7 +170,7 @@ internal class InputStrategyTest : CoroutineScopeAwareTest() {
             lazy = true
         }
         container.intent(intent)
-        container.stateFlow.first { it == 2 }
+        container.first { it == 2 }
         container.closeAndWait()
     }
 }

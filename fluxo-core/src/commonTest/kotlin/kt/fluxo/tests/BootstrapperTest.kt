@@ -87,7 +87,7 @@ internal class BootstrapperTest : CoroutineScopeAwareTest() {
             debugChecks = true
             @Suppress("DEPRECATION")
             onCreate {
-                postIntent {
+                send {
                     hadIntent = true
                 }.join()
             }
@@ -106,7 +106,7 @@ internal class BootstrapperTest : CoroutineScopeAwareTest() {
             }
         }
         assertNotNull(store.start(), "Expected Job for explicit lazy start").join()
-        assertEquals("$INIT.update", store.state)
+        assertEquals("$INIT.update", store.value)
     }
 
     @Test
@@ -127,12 +127,12 @@ internal class BootstrapperTest : CoroutineScopeAwareTest() {
             bootstrapperJob {
                 assertEquals(INIT, currentStateWhenStarted)
                 assertEquals(RestartState.Initial, restartState)
-                postIntent {
+                emit {
                     updateState { "$it.sideJob" }
                 }
             }
         }
-        assertEquals("$INIT.sideJob", store.stateFlow.first { it != INIT })
+        assertEquals("$INIT.sideJob", store.first { it != INIT })
         store.closeAndWait()
     }
 
@@ -164,8 +164,8 @@ internal class BootstrapperTest : CoroutineScopeAwareTest() {
                 }
             }
         }
-        assertContentEquals(listOf(INIT, "update0"), store.stateFlow.take(2).toList())
-        assertContentEquals(listOf("update0", "update1"), store.stateFlow.take(2).toList())
+        assertContentEquals(listOf(INIT, "update0"), store.take(2).toList())
+        assertContentEquals(listOf("update0", "update1"), store.take(2).toList())
         store.closeAndWait()
     }
 }

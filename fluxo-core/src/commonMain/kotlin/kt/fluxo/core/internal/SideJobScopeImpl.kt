@@ -6,9 +6,11 @@ import kt.fluxo.core.annotation.InternalFluxoApi
 import kt.fluxo.core.dsl.SideJobScope
 
 @InternalFluxoApi
+@Suppress("LongParameterList")
 internal class SideJobScopeImpl<in Intent, State, in SideEffect : Any>(
     private val updateStateAndGet: suspend ((State) -> State) -> State,
-    private val sendIntent: suspend (Intent) -> Job,
+    private val emitIntent: suspend (Intent) -> Unit,
+    private val sendIntent: (Intent) -> Job,
     private val sendSideEffect: suspend (SideEffect) -> Unit,
     override val currentStateWhenStarted: State,
     override val restartState: SideJobScope.RestartState,
@@ -17,7 +19,9 @@ internal class SideJobScopeImpl<in Intent, State, in SideEffect : Any>(
 
     override suspend fun updateState(function: (State) -> State) = updateStateAndGet(function)
 
-    override suspend fun postIntent(intent: Intent) = sendIntent(intent)
+    override suspend fun emit(value: Intent) = emitIntent(value)
+
+    override fun send(intent: Intent): Job = sendIntent(intent)
 
     override suspend fun postSideEffect(sideEffect: SideEffect) = sendSideEffect(sideEffect)
 }

@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kt.fluxo.core.SideJob
 import kt.fluxo.core.Store
+import kt.fluxo.core.annotation.CallSuper
 import kt.fluxo.core.annotation.FluxoDsl
 import kt.fluxo.core.internal.SideJobRequest.Companion.DEFAULT_SIDE_JOB
 import kotlin.coroutines.CoroutineContext
@@ -37,9 +38,11 @@ public interface StoreScope<in Intent, State, in SideEffect : Any> : CoroutineSc
      *
      * @see MutableStateFlow.update
      */
+    @CallSuper
     @JsName("updateState")
     public suspend fun updateState(function: (State) -> State): State
 
+    @CallSuper
     @JsName("postSideEffect")
     public suspend fun postSideEffect(sideEffect: SideEffect)
 
@@ -49,6 +52,7 @@ public interface StoreScope<in Intent, State, in SideEffect : Any> : CoroutineSc
      *
      * @see kotlinx.coroutines.launch
      */
+    @CallSuper
     @JsName("sideJob")
     public suspend fun sideJob(
         key: String = DEFAULT_SIDE_JOB,

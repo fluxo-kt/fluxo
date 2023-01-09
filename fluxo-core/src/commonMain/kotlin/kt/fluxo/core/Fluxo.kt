@@ -3,6 +3,7 @@
 package kt.fluxo.core
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kt.fluxo.core.annotation.FluxoDsl
 import kt.fluxo.core.dsl.ContainerHost
 import kt.fluxo.core.internal.FluxoIntentHandler
@@ -228,17 +229,32 @@ public inline fun <Intent, State, SideEffect : Any> store(
 
 /**
  * Build and execute a functional [intent][FluxoIntent] on [Store].
+ *
+ * Use [send] if you need an intent [Job].
  */
 @FluxoDsl
 @InlineOnly
-public inline fun <S, SE : Any> ContainerHost<S, SE>.intent(noinline intent: FluxoIntent<S, SE>): Unit = container.send(intent)
+public inline fun <State, SE : Any> ContainerHost<State, SE>.intent(noinline intent: FluxoIntent<State, SE>) {
+    container.send(intent)
+}
+
+/**
+ * Build and execute a functional [intent][FluxoIntent] on [Store], returning a [Job].
+ */
+@FluxoDsl
+@InlineOnly
+public inline fun <State, SE : Any> ContainerHost<State, SE>.send(noinline intent: FluxoIntent<State, SE>): Job = container.send(intent)
 
 /**
  * Build and execute a functional [intent][FluxoIntent] on [Store].
+ *
+ * Use [send] if you need an intent [Job].
  */
 @FluxoDsl
 @InlineOnly
-public inline fun <S, SE : Any> Container<S, SE>.intent(noinline intent: FluxoIntent<S, SE>): Unit = send(intent)
+public inline fun <State, SE : Any> Container<State, SE>.intent(noinline intent: FluxoIntent<State, SE>) {
+    send(intent)
+}
 
 // endregion
 

@@ -19,7 +19,7 @@ internal class ContainerThreadingTest : CoroutineScopeAwareTest() {
         val container = scope.container<Int, Nothing>(Random.nextInt()) {
             inputStrategy = Parallel
         }
-        val observer = container.stateFlow.test()
+        val observer = container.test()
         val newState = Random.nextInt()
 
         container.send {
@@ -30,14 +30,14 @@ internal class ContainerThreadingTest : CoroutineScopeAwareTest() {
         }
 
         observer.awaitCount(2)
-        assertEquals(newState, container.state)
+        assertEquals(newState, container.value)
     }
 
     @Test
     fun reductions_applied_in_order_if_called_from_single_thread() = runTest {
         // This scenario meant to simulate calling only reducers from the UI thread.
         val container = scope.container<TestState, Nothing>(TestState())
-        val testStateObserver = container.stateFlow.test()
+        val testStateObserver = container.test()
         val expectedStates = mutableListOf(
             TestState(
                 emptyList()
@@ -69,7 +69,7 @@ internal class ContainerThreadingTest : CoroutineScopeAwareTest() {
             inputStrategy = Parallel
             debugChecks = false
         }
-        val testStateObserver = container.stateFlow.test()
+        val testStateObserver = container.test()
         val expectedStates = mutableListOf(
             TestState(
                 emptyList()

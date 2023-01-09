@@ -16,6 +16,7 @@ import kt.fluxo.test.compare.CommonBenchmark.consumeCommon
 import kt.fluxo.test.compare.CommonBenchmark.launchCommon
 import kt.fluxo.test.compare.IntentIncrement
 
+@Suppress("InjectDispatcher")
 internal object BallastBenchmark {
     fun mviHandler(): Int {
         val dispatcher = newSingleThreadContext(BallastBenchmark::mviHandler.name)
@@ -46,7 +47,7 @@ internal object BallastBenchmark {
 
         return runBlocking {
             val launchDef = launchCommon(IntentIncrement.Increment) { vm.send(it) }
-            consumeCommon(vm.observeStates(), launchDef, job, dispatcher)
+            vm.observeStates().consumeCommon(launchDef, job, dispatcher)
         }
     }
 }

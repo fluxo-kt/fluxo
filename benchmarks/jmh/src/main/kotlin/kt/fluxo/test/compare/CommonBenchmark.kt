@@ -22,13 +22,13 @@ internal object CommonBenchmark {
         }
     }
 
-    internal suspend fun consumeCommon(stateFlow: Flow<Int>, launchDef: Job, parentJob: Job? = null, dispatcher: Closeable? = null): Int {
-        val state = stateFlow.first { it >= BENCHMARK_REPETITIONS }
+    internal suspend fun Flow<Int>.consumeCommon(launchDef: Job, parentJob: Job? = null, closeable: Closeable? = null): Int {
+        val state = first { it >= BENCHMARK_REPETITIONS }
 
         launchDef.join()
         parentJob?.cancelAndJoin()
         @Suppress("BlockingMethodInNonBlockingContext")
-        dispatcher?.close()
+        closeable?.close()
         return state
     }
 

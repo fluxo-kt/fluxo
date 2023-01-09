@@ -6,15 +6,17 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.StateFlow
+import kt.fluxo.core.annotation.CallSuper
 import kt.fluxo.core.annotation.ExperimentalFluxoApi
 import kt.fluxo.core.annotation.ThreadSafe
 import kt.fluxo.core.intercept.FluxoEvent
 import kt.fluxo.core.internal.Closeable
 import kt.fluxo.core.internal.SideJobRequest.Companion.DEFAULT_SIDE_JOB
-import kotlin.coroutines.cancellation.CancellationException
 import kotlin.internal.InlineOnly
 import kotlin.js.JsName
+import kotlin.jvm.JvmSynthetic
 
 
 /**
@@ -34,38 +36,34 @@ public typealias StoreS<Intent, State> = Store<Intent, State, Nothing>
 
 
 /**
- * Fluxo state store.
+ * The core of the Fluxo MVI.
+ * Represents a state store with its input and outputs.
  *
- * Tip: Use [isActive][kotlinx.coroutines.isActive] to check if store is active.
+ * [Store] implements [StateFlow] and [FlowCollector] interfaces.
+ * It allows you to easily combine different [Store]s with each other.
+ * Also [Store] is a [CoroutineScope], so you can integrate it with any existing coroutine workflow.
+ * Finally, [Store] is a [Closeable] as it can help to consume it in JVM environment.
+ *
+ * Tip: Use [isActive][kotlinx.coroutines.isActive] to check if store is active (not closed).
+ *
+ * @param Intent Intent type for this [Store]. See [Container] for MVVM+ [Store].
+ * @param State State type for this [Store].
+ * @param SideEffect Side effects type posted by this container. Can be [Nothing] if this
+ * container never posts side effects.
+ *
+ * @see Container for the state store with side effects
  */
 @ThreadSafe
-public interface Store<Intent, State, SideEffect : Any> : CoroutineScope, Closeable {
+// @SubclassOptInRequired(ExperimentalFluxoApi::class) // TODO: Kotlin API version 1.8
+public interface Store<Intent, State, SideEffect : Any> : StateFlow<State>, FlowCollector<Intent>, CoroutineScope, Closeable {
 
     /**
      * [Store] name. Auto-generated or specified via [FluxoSettings.name].
-     *
-     * @see state
      */
     public val name: String
 
-
     /**
-     * Reactive access to the [State].
-     *
-     * @see state
-     */
-    public val stateFlow: StateFlow<State>
-
-    /**
-     * Current [State]. Shortcut for a `stateFlow.value`.
-     *
-     * @see stateFlow
-     */
-    public val state: State get() = stateFlow.value
-
-
-    /**
-     * A _hot_ [Flow] that shares emitted [SideEffect]s among its collectors.
+     * _Hot_ [Flow] that shares emitted [SideEffect]s among its collectors.
      *
      * Behavior of this flow can be configured with [FluxoSettings.sideEffectsStrategy].
      *
@@ -93,25 +91,26 @@ public interface Store<Intent, State, SideEffect : Any> : CoroutineScope, Closea
 
     /**
      * Queues an [intent] for processing.
+     * Prefer to use [emit] if possible – it avoids the new [CoroutineScope] creation as it's a `suspend` function.
      *
-     * @return a [Job] that can be [joined][Job.join] to await for processing completion
-     *
-     * @throws FluxoClosedException
+     * @TODO Lint/Detekt rules with recommendation to use [emit] over [send]/intent when called in suspend environment
+     *   and returned value is not used.
+     *   Also, returned Job usage can be checked in production code and discouraged.
      */
+    @CallSuper
     @JsName("send")
     @Throws(FluxoClosedException::class)
-    public fun send(intent: Intent)
+    public fun send(intent: Intent): Job
 
     /**
-     * Queues an [intent] for processing.
+     * Queues an [intent][value] for processing.
      *
-     * @return a [Job] that can be [joined][Job.join] to await for processing completion
+     * This method provides compatibility with [FlowCollector], allowing the store to be connected to any flow of intents.
      *
      * @throws FluxoClosedException
      */
-    @JsName("sendAsync")
-    @Throws(FluxoClosedException::class, CancellationException::class)
-    public suspend fun sendAsync(intent: Intent): Job
+    @CallSuper
+    public override suspend fun emit(value: Intent)
 
 
     /**
@@ -119,20 +118,54 @@ public interface Store<Intent, State, SideEffect : Any> : CoroutineScope, Closea
      *
      * @throws FluxoClosedException
      */
+    @CallSuper
     @JsName("start")
     public fun start(): Job?
 
     /**
-     * Cancels this store completely
+     * Closes this [Store], cancelling its [Job] and all its children.
      *
      * @see kotlinx.coroutines.cancel
      */
-    public override fun close() {
-        cancel()
-    }
+    @CallSuper
+    public override fun close(): Unit = cancel()
 
 
-    // region Convenience helpers
+    // region Migration helpers
+
+    /**
+     * Reactive access to the [State].
+     *
+     * @see state
+     */
+    @InlineOnly
+    @get:JvmSynthetic
+    @Deprecated("Use store itself", ReplaceWith("this"), level = DeprecationLevel.ERROR)
+    public val stateFlow: StateFlow<State> get() = this
+
+    /**
+     * Current [State]. Shortcut for a `stateFlow.value`.
+     *
+     * @see value
+     * @see stateFlow
+     */
+    @InlineOnly
+    @get:JvmSynthetic
+    @Deprecated("Use value directly", ReplaceWith("value"), level = DeprecationLevel.ERROR)
+    public val state: State get() = value
+
+    /**
+     * Old Fluxo API migration
+     *
+     * @hide
+     * @TODO Remove
+     */
+    @InlineOnly
+    @JvmSynthetic
+    @JsName("postIntent")
+    @Deprecated("Use send", replaceWith = ReplaceWith("send(intent)"), level = DeprecationLevel.HIDDEN)
+    public fun postIntent(intent: Intent): Job = send(intent)
+
 
     @InlineOnly
     @JsName("launch")

@@ -116,20 +116,19 @@ public final class kt/fluxo/core/SideEffectsStrategy$SHARE : kt/fluxo/core/SideE
 	public fun toString ()Ljava/lang/String;
 }
 
-public abstract interface class kt/fluxo/core/Store : java/io/Closeable, kotlinx/coroutines/CoroutineScope {
+public abstract interface class kt/fluxo/core/Store : java/io/Closeable, kotlinx/coroutines/CoroutineScope, kotlinx/coroutines/flow/FlowCollector, kotlinx/coroutines/flow/StateFlow {
 	public fun async (Ljava/lang/String;Lkotlin/jvm/functions/Function2;)V
 	public static synthetic fun async$default (Lkt/fluxo/core/Store;Ljava/lang/String;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)V
 	public fun close ()V
+	public abstract fun emit (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun getEventsFlow ()Lkotlinx/coroutines/flow/Flow;
 	public abstract fun getName ()Ljava/lang/String;
 	public abstract fun getSideEffectFlow ()Lkotlinx/coroutines/flow/Flow;
-	public fun getState ()Ljava/lang/Object;
-	public abstract fun getStateFlow ()Lkotlinx/coroutines/flow/StateFlow;
 	public abstract fun getSubscriptionCount ()Lkotlinx/coroutines/flow/StateFlow;
 	public fun launch (Ljava/lang/String;Lkotlin/jvm/functions/Function2;)V
 	public static synthetic fun launch$default (Lkt/fluxo/core/Store;Ljava/lang/String;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)V
-	public abstract fun send (Ljava/lang/Object;)V
-	public abstract fun sendAsync (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public synthetic fun postIntent (Ljava/lang/Object;)Lkotlinx/coroutines/Job;
+	public abstract fun send (Ljava/lang/Object;)Lkotlinx/coroutines/Job;
 	public abstract fun start ()Lkotlinx/coroutines/Job;
 }
 
@@ -152,7 +151,8 @@ public class kt/fluxo/core/data/GuaranteedEffect : java/io/Closeable {
 }
 
 public abstract interface class kt/fluxo/core/dsl/BootstrapperScope : kt/fluxo/core/dsl/StoreScope {
-	public abstract fun postIntent (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun emit (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun send (Ljava/lang/Object;)Lkotlinx/coroutines/Job;
 }
 
 public abstract interface class kt/fluxo/core/dsl/ContainerHost {
@@ -165,10 +165,11 @@ public abstract interface class kt/fluxo/core/dsl/InterceptorScope : kotlinx/cor
 }
 
 public abstract interface class kt/fluxo/core/dsl/SideJobScope : kotlinx/coroutines/CoroutineScope {
+	public abstract fun emit (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun getCurrentStateWhenStarted ()Ljava/lang/Object;
 	public abstract fun getRestartState ()Lkt/fluxo/core/dsl/SideJobScope$RestartState;
-	public abstract fun postIntent (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun postSideEffect (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun send (Ljava/lang/Object;)Lkotlinx/coroutines/Job;
 	public abstract fun updateState (Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
@@ -366,14 +367,17 @@ public final class kt/fluxo/core/internal/FluxoIntentHandler : kt/fluxo/core/Int
 
 public final class kt/fluxo/core/internal/FluxoStore : kt/fluxo/core/Store {
 	public fun <init> (Ljava/lang/Object;Lkt/fluxo/core/IntentHandler;Lkt/fluxo/core/FluxoSettings;)V
+	public synthetic fun collect (Lkotlinx/coroutines/flow/FlowCollector;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun emit (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun getCoroutineContext ()Lkotlin/coroutines/CoroutineContext;
 	public fun getEventsFlow ()Lkotlinx/coroutines/flow/Flow;
 	public fun getName ()Ljava/lang/String;
+	public synthetic fun getReplayCache ()Ljava/util/List;
 	public fun getSideEffectFlow ()Lkotlinx/coroutines/flow/Flow;
-	public fun getStateFlow ()Lkotlinx/coroutines/flow/StateFlow;
 	public fun getSubscriptionCount ()Lkotlinx/coroutines/flow/StateFlow;
-	public fun send (Ljava/lang/Object;)V
-	public fun sendAsync (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun getValue ()Ljava/lang/Object;
+	public fun send (Ljava/lang/Object;)Lkotlinx/coroutines/Job;
+	public fun setValue (Ljava/lang/Object;)V
 	public fun start ()Lkotlinx/coroutines/Job;
 	public fun toString ()Ljava/lang/String;
 }

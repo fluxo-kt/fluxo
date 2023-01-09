@@ -25,7 +25,7 @@ class IntentFilterTest {
             },
         )
         repeat(1000, store::send)
-        store.stateFlow.first { it == 998 }
+        store.first { it == 998 }
         assertEquals(500, results.size)
         assertContentEquals(Array(1000) { it }.filter(filter), results)
         store.closeAndWait()

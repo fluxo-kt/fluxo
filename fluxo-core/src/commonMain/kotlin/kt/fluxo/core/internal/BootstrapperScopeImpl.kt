@@ -2,7 +2,6 @@
 
 package kt.fluxo.core.internal
 
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.StateFlow
 import kt.fluxo.core.dsl.BootstrapperScope
@@ -13,7 +12,8 @@ internal class BootstrapperScopeImpl<in Intent, State, SideEffect : Any>(
     guardian: InputStrategyGuardian?,
     getState: () -> State,
     updateStateAndGet: suspend ((State) -> State) -> State,
-    private val sendIntent: suspend (Intent) -> Deferred<Unit>,
+    private val emitIntent: suspend (Intent) -> Unit,
+    private val sendIntent: (Intent) -> Job,
     sendSideEffect: suspend (SideEffect) -> Unit,
     sendSideJob: suspend (SideJobRequest<Intent, State, SideEffect>) -> Unit,
     subscriptionCount: StateFlow<Int>,
@@ -29,7 +29,12 @@ internal class BootstrapperScopeImpl<in Intent, State, SideEffect : Any>(
     coroutineContext = coroutineContext,
 ), BootstrapperScope<Intent, State, SideEffect> {
 
-    override suspend fun postIntent(intent: Intent): Job {
+    override suspend fun emit(value: Intent) {
+        guardian?.checkPostIntent()
+        return emitIntent(value)
+    }
+
+    override fun send(intent: Intent): Job {
         guardian?.checkPostIntent()
         return sendIntent(intent)
     }

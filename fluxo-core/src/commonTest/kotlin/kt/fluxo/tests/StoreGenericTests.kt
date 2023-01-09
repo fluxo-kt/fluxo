@@ -29,7 +29,7 @@ internal class StoreGenericTests {
     fun state_val_returns_initial_state_WHEN_created() {
         val initial = "initial"
         val store = store(initialState = initial)
-        assertEquals(initial, store.state)
+        assertEquals(initial, store.value)
     }
 
     @Test

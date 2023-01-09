@@ -25,8 +25,11 @@ public interface SideJobScope<in Intent, State, in SideEffect : Any> : Coroutine
     @JsName("updateState")
     public suspend fun updateState(function: (State) -> State): State
 
-    @JsName("postIntent")
-    public suspend fun postIntent(intent: Intent): Job
+    @JsName("emit")
+    public suspend fun emit(value: Intent)
+
+    @JsName("send")
+    public fun send(intent: Intent): Job
 
     @JsName("postSideEffect")
     public suspend fun postSideEffect(sideEffect: SideEffect)

@@ -21,7 +21,7 @@ public inline val <S, SE : Any> ContainerHost<S, SE>.store get() = container
     replaceWith = ReplaceWith("send(intent)"),
     level = DeprecationLevel.ERROR,
 )
-public suspend inline fun <S, SE : Any> Container<S, SE>.orbit(noinline intent: FluxoIntent<S, SE>) = sendAsync(intent)
+public suspend inline fun <S, SE : Any> Container<S, SE>.orbit(noinline intent: FluxoIntent<S, SE>) = emit(intent)
 
 @InlineOnly
 @Deprecated(
@@ -36,7 +36,7 @@ public inline fun <I, S, SE : Any> Store<I, S, SE>.accept(intent: I) = send(inte
 @Deprecated(message = "Please use intentContext instead", replaceWith = ReplaceWith("intentContext"))
 @OptIn(ExperimentalStdlibApi::class)
 public inline var <I, S, SE : Any> FluxoSettings<I, S, SE>.intentDispatcher: CoroutineDispatcher
-    get() = intentContext[CoroutineDispatcher] ?: Dispatchers.Default
+    get() = coroutineContext[CoroutineDispatcher] ?: scope?.coroutineContext?.get(CoroutineDispatcher) ?: Dispatchers.Default
     set(value) {
-        intentContext = value
+        coroutineContext = value
     }

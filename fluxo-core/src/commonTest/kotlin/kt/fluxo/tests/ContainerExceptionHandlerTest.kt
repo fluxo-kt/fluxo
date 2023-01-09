@@ -54,7 +54,7 @@ class ContainerExceptionHandlerTest {
 
         assertEquals(false, container.isActive, "Container is active but shouldn't.")
         assertEquals(false, job.isActive, "Job is active but shouldn't.")
-        assertEquals(initState, container.stateFlow.first())
+        assertEquals(initState, container.first())
 
         assertIs<IllegalStateException>(completionException, "completionException was not caught.")
     }
@@ -75,13 +75,13 @@ class ContainerExceptionHandlerTest {
                 throw IllegalStateException()
             }
         }
-        container.sendAsync {
+        container.send {
             updateState {
                 newState
             }
         }.join()
 
-        assertEquals(newState, container.state)
+        assertEquals(newState, container.value)
         assertEquals(1, exceptions.size)
         assertIs<IllegalStateException>(exceptions.first(), "completionException was not caught.")
 
