@@ -92,4 +92,6 @@ jmh {
     timeUnit.set(envOrPropValue("jmh_tu") ?: "ms")
 
     jmhVersion.set(libs.versions.jmh)
+
+    jvmArgsAppend.add("-Dkotlinx.coroutines.debug=off")
 }
