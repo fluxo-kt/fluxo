@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.stateIn
 internal fun Throwable?.toCancellationException() = when (this) {
     null -> null
     is CancellationException -> this
-    else -> CancellationException("", cause = this)
+    else -> CancellationException("Exception: $this", cause = this)
 }
 
 
@@ -52,7 +52,7 @@ internal class SubscriptionCountFlow<T>(
 internal fun MutableStateFlow<Int>.getAndAdd(delta: Int): Int {
     while (true) {
         val value = value
-        if (compareAndSet(value, value + delta)) {
+        if (compareAndSet(expect = value, update = value + delta)) {
             return value
         }
     }
