@@ -55,6 +55,14 @@ public suspend fun <I, S, SE : Any> StoreScope<I, S, SE>.repeatOnSubscription(
     block: SideJob<I, S, SE>,
 ) {
     sideJob(key = key, context = context, start = start) { wasRestarted ->
+        /**
+         * @see kotlinx.coroutines.flow.map
+         * @see kotlinx.coroutines.flow.mapLatest
+         * @see kotlinx.coroutines.flow.distinctUntilChanged
+         * @see kotlinx.coroutines.flow.DistinctFlowImpl
+         * @see kotlinx.coroutines.flow.collectLatest
+         */
+        // TODO: Optimize logic for performance and less allocations, benchmark
         val upstream = this@repeatOnSubscription.subscriptionCount
         if (stopTimeout > 0L) {
             upstream.mapLatest {

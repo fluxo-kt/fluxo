@@ -5,6 +5,7 @@
     <ID>ForbiddenComment:Debug.kt$// TODO: Split debug and release version</ID>
     <ID>ForbiddenComment:DebugIntentWrapper.kt$// TODO: No AccessibleObject.canAccess method on Android, but should we use it for Java 9+?</ID>
     <ID>ForbiddenComment:DebugIntentWrapper.kt$// TODO: Only for test/debug variants?</ID>
+    <ID>ForbiddenComment:FluxoDsl.kt$// TODO: Optimize logic for performance and less allocations, benchmark</ID>
     <ID>ForbiddenComment:FluxoStore.kt$FluxoStore$// TODO: Can we awoid lambda creation?</ID>
     <ID>ForbiddenComment:FluxoStore.kt$FluxoStore$// TODO: Cancel the collecting Job if the store closed during the collection.</ID>
     <ID>ForbiddenComment:FluxoStore.kt$FluxoStore$// TODO: Generate a name from Store host with reflection in debug mode?</ID>

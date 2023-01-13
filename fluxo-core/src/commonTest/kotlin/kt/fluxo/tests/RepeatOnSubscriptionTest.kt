@@ -3,6 +3,10 @@ package kt.fluxo.tests
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.yield
+import kt.fluxo.core.Container
+import kt.fluxo.core.SideEffectsStrategy
 import kt.fluxo.core.closeAndWait
 import kt.fluxo.core.container
 import kt.fluxo.core.dsl.ContainerHostS
@@ -15,7 +19,9 @@ import kt.fluxo.test.runUnitTest
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
+import kotlin.test.fail
 
 internal class RepeatOnSubscriptionTest : CoroutineScopeAwareTest() {
 
@@ -23,29 +29,75 @@ internal class RepeatOnSubscriptionTest : CoroutineScopeAwareTest() {
 
     @Test
     fun repeatOnSubscription_mechanics() = runUnitTest {
-        // TestScope will disable actual delay waiting
-        for (stopTimeout in longArrayOf(0, 1000)) {
+        val sideEffectsStrategies = arrayOf(
+            SideEffectsStrategy.RECEIVE,
+            SideEffectsStrategy.CONSUME,
+            SideEffectsStrategy.SHARE(),
+            SideEffectsStrategy.DISABLE,
+        )
+
+        /** [TestScope] disables actual delay waiting */
+        for (stopTimeout in longArrayOf(0, 5000)) {
             for (scope in arrayOf(this, backgroundScope)) {
-                val container = scope.container(initialState) {
-                    onStart {
-                        repeatOnSubscription(stopTimeout = stopTimeout) {
-                            updateState { it.copy(count = it.count + 1) }
+                sideEffectsStrategies.forEach { seStrategy ->
+                    val container = scope.container<State, Int>(initialState) {
+                        onStart {
+                            repeatOnSubscription(stopTimeout = stopTimeout) {
+                                updateState { it.copy(count = it.count + 1) }
+                                if (seStrategy != SideEffectsStrategy.DISABLE) {
+                                    postSideEffect(value.count)
+                                }
+                            }
                         }
+                        sideEffectsStrategy = seStrategy
                     }
+                    repeatOnSubscription_mechanics0(container, seStrategy, stopTimeout)
                 }
-
-                assertEquals(initialState, container.value)
-
-                val states = container.take(2).toList()
-                assertContentEquals(listOf(initialState, State(1)), states)
-
-                delay(stopTimeout)
-                val states2 = container.take(2).toList()
-                assertContentEquals(listOf(State(1), State(2)), states2)
-
-                container.closeAndWait()
             }
         }
+    }
+
+    private suspend fun repeatOnSubscription_mechanics0(store: Container<State, Int>, strategy: SideEffectsStrategy, timeout: Long) {
+        assertEquals(initialState, store.value)
+
+        val states = store.take(2).toList()
+        assertContentEquals(listOf(initialState, State(1)), states)
+
+        // NOTE: time-skipping delay here!
+        delay(timeout)
+        yield()
+        assertEquals(State(1), store.value)
+
+        val states2 = store.take(2).toList()
+        assertContentEquals(listOf(State(1), State(2)), states2)
+
+        // NOTE: time-skipping delay here!
+        delay(timeout)
+        yield()
+        assertEquals(State(2), store.value)
+
+        when (strategy) {
+            SideEffectsStrategy.RECEIVE, SideEffectsStrategy.CONSUME -> {
+                val effects = store.sideEffectFlow.take(3).toList()
+                assertContentEquals(listOf(1, 2, 3), effects, "SideEffectsStrategy: $strategy")
+                assertEquals(State(3), store.value)
+            }
+
+            is SideEffectsStrategy.SHARE -> {
+                val effects = store.sideEffectFlow.take(1).toList()
+                assertContentEquals(listOf(3), effects, "SideEffectsStrategy: $strategy")
+                assertEquals(State(3), store.value)
+            }
+
+            SideEffectsStrategy.DISABLE -> {
+                // side effects turned off
+                assertFailsWith<IllegalStateException> { store.sideEffectFlow }
+            }
+
+            else -> fail("Unexpected SideEffectsStrategy: $strategy")
+        }
+
+        store.closeAndWait()
     }
 
 
@@ -73,7 +125,7 @@ internal class RepeatOnSubscriptionTest : CoroutineScopeAwareTest() {
             repeatOnSubscription { wasRestarted ->
                 assertFalse(wasRestarted)
                 val result = externalCall()
-                updateState { State(result) }
+                value = State(result)
             }
         }
     }
