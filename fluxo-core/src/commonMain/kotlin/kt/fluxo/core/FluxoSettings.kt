@@ -154,6 +154,11 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
      * [CoroutineDispatcher] or any [CoroutineContext] to run the main [Store] event loop.
      */
     public var coroutineContext: CoroutineContext = Dispatchers.Default
+
+    /**
+     * [CoroutineDispatcher] or any [CoroutineContext] to run the [Store] side jobs (long-running tasks).
+     * By default, it uses the main [coroutineContext].
+     */
     public var sideJobsContext: CoroutineContext = EmptyCoroutineContext
 
     /**
@@ -173,17 +178,28 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
     public var exceptionHandler: CoroutineExceptionHandler? = null
         set(value) {
             field = value
-            closeOnExceptions = value == null
+            if (value != null) {
+                closeOnExceptions = false
+            }
         }
 
-    /** [exceptionHandler] convenience method */
+    /**
+     * [exceptionHandler] convenience method
+     *
+     * **NOTE:** Disables [closeOnExceptions] when set!
+     */
     @InlineOnly
     @JsName("setExceptionHandler")
+    @JvmName("setExceptionHandler")
     public inline fun exceptionHandler(crossinline handler: (CoroutineContext, Throwable) -> Unit) {
         exceptionHandler = CoroutineExceptionHandler(handler)
     }
 
-    /** [exceptionHandler] convenience method */
+    /**
+     * [exceptionHandler] convenience method
+     *
+     * **NOTE:** Disables [closeOnExceptions] when set!
+     */
     @InlineOnly
     @JsName("onError")
     public inline fun onError(crossinline handler: CoroutineContext.(Throwable) -> Unit) {
@@ -196,10 +212,16 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
     // region Accessors for in-box input strategies
 
     /**
-     * `First-in, first-out` – ordered processing strategy.
+     * **Fifo**, `first-in, first-out` – ordered processing strategy.
      * Predictable and intuitive, default choice.
+     * Based on [Channel] to keep the order of processing.
+     *
+     * **IMPORTANT:** The new intent starts execution only after all earlier intents finish!
      *
      * Consider [Parallel] or [Lifo] instead if you need more responsiveness.
+     *
+     * @see Parallel
+     * @see Lifo
      */
     @InlineOnly
     @JsName("Fifo")
@@ -208,12 +230,19 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
     public inline val Fifo: InputStrategy get() = InputStrategy.Fifo
 
     /**
-     * `Last-in, first-out` – strategy optimized for lots of events (e.g. user actions).
-     * Provides more responsiveness comparing to [Fifo], but can lose some intents!
+     * **Lifo**, `last-in, first-out` strategy.
+     * Optimized for lots of events (for example, user actions) when new ones
+     * make earlier ones obsolete.
+     * Provides more responsiveness than [Fifo], but can lose some intents!
      *
-     * **IMPORTANT:** Cancels previous unfinished intents when receives new one!
+     * **IMPORTANT:** Cancels earlier unfinished intent when receives a new one!
      *
-     * Consider [Parallel] if you steel need more responsiveness, but without dropping of any event.
+     * **IMPORTANT:** No guarantee that inputs processed in any given order!
+     *
+     * Consider [Parallel] if you need more responsiveness, but without dropping out anything.
+     *
+     * @see Parallel
+     * @see Fifo
      */
     @InlineOnly
     @JsName("Lifo")
@@ -222,10 +251,15 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
     public inline val Lifo: InputStrategy get() = InputStrategy.Lifo
 
     /**
-     * Parallel processing of all intents.
+     * Strategy with parallel processing of intents.
      * Can provide better responsiveness comparing to [Fifo].
      *
+     * Use [CoroutineDispatcher.limitedParallelism] on [coroutineContext] or [scope] to limit parallelism to some value.
+     *
      * **IMPORTANT:** No guarantee that inputs processed in any given order!
+     *
+     * @see Fifo
+     * @see Lifo
      */
     @InlineOnly
     @JsName("Parallel")
@@ -260,7 +294,6 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
         s.exceptionHandler = exceptionHandler
 
         s.optimized = optimized
-
         s.sideJobsContext = sideJobsContext
         s.coroutineContext = coroutineContext
         s.scope = scope

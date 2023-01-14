@@ -32,9 +32,9 @@ suspend fun <T> inScope(
     }
     return try {
         withContext(scope.coroutineContext, block = block)
-    } catch (e: CancellationException) {
+    } catch (ce: CancellationException) {
         if (propagateCancellation) {
-            throw e
+            throw ce
         }
         null
     }

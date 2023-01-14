@@ -41,6 +41,10 @@ class FluxoSettingsTest {
         val container = container(Unit) {
             closeOnExceptions = false
             exceptionHandler = null
+            assertFalse(closeOnExceptions)
+
+            closeOnExceptions = true
+            exceptionHandler = null
             assertTrue(closeOnExceptions)
 
             onError {}

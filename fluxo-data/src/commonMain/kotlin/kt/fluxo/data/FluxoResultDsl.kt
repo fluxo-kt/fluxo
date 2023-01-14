@@ -25,10 +25,10 @@ import kotlin.js.JsExport
 public inline fun <R> resultOf(block: () -> R): FluxoResult<R?> {
     return try {
         FluxoResult.success(block())
-    } catch (e: CancellationException) {
+    } catch (ce: CancellationException) {
         // Don't break cooperative concurrency
         // https://github.com/Kotlin/kotlinx.coroutines/issues/1814
-        throw e
+        throw ce
     } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
         FluxoResult.failure(e)
     }
@@ -45,10 +45,10 @@ public inline fun <R> resultOf(block: () -> R): FluxoResult<R?> {
 public inline fun <T, R> T.resultOf(block: T.() -> R): FluxoResult<R?> {
     return try {
         FluxoResult.success(block())
-    } catch (e: CancellationException) {
+    } catch (ce: CancellationException) {
         // Don't break cooperative concurrency
         // https://github.com/Kotlin/kotlinx.coroutines/issues/1814
-        throw e
+        throw ce
     } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
         (this as? FluxoResult<*>)?.error?.let { e.addSuppressed(it) }
         FluxoResult.failure(e)
@@ -198,10 +198,10 @@ public inline fun <R, T : R> FluxoResult<T>.mapCatching(transform: (value: T) ->
     }
     return try {
         map(transform)
-    } catch (e: CancellationException) {
+    } catch (ce: CancellationException) {
         // Don't break cooperative concurrency
         // https://github.com/Kotlin/kotlinx.coroutines/issues/1814
-        throw e
+        throw ce
     } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
         error?.let { e.addSuppressed(it) }
         FluxoResult.failure(e)
@@ -244,10 +244,10 @@ public inline fun <R, T : R> FluxoResult<T>.recoverCatching(transform: (exceptio
     }
     return try {
         recover(transform)
-    } catch (e: CancellationException) {
+    } catch (ce: CancellationException) {
         // Don't break cooperative concurrency
         // https://github.com/Kotlin/kotlinx.coroutines/issues/1814
-        throw e
+        throw ce
     } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
         error?.let { e.addSuppressed(it) }
         FluxoResult.failure(e)
