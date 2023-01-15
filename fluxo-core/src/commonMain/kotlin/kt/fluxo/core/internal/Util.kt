@@ -3,6 +3,9 @@
 package kt.fluxo.core.internal
 
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.DisposableHandle
+import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,6 +17,33 @@ internal fun Throwable?.toCancellationException() = when (this) {
     null -> null
     is CancellationException -> this
     else -> CancellationException("Exception: $this", cause = this)
+}
+
+
+/**
+ * Cancel the [Job] on [another job][job] [completion][Job.invokeOnCompletion].
+ *
+ * @receiver [Job] that cancels after completion of [job]
+ * @param job that triggers cancellation
+ *
+ * @see Job.invokeOnCompletion
+ */
+internal fun Job.dependOn(job: Job?): DisposableHandle? {
+    job ?: return null
+
+    // Fail-fast
+    if (!job.isActive) {
+        @OptIn(InternalCoroutinesApi::class)
+        throw job.getCancellationException()
+    }
+
+    // Cancel the job on another Job cancellation
+    return job.invokeOnCompletion {
+        val current = this
+        if (current.isActive) {
+            current.cancel(it.toCancellationException())
+        }
+    }
 }
 
 
@@ -60,7 +90,7 @@ internal class SubscriptionCountFlow<T>(
  * Atomically adds the given [delta] to the current [value][StateFlow.value].
  *
  * @param delta the value to add
- * @return the previous value
+ * @return the earlier value
  *
  * @see MutableStateFlow.compareAndSet
  * @see java.util.concurrent.atomic.AtomicInteger.getAndAdd

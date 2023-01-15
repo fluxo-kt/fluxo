@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
 import kt.fluxo.core.FluxoClosedException
@@ -35,7 +36,7 @@ class ContainerExceptionHandlerTest {
         var completionException by MutableStateFlow<Throwable?>(null)
         val job = Job()
         val container = container(initState) {
-            // Override job to disable error propagation in TestScope
+            /** Override the scope job to turn off error propagation in [TestScope] */
             scope = CoroutineScope(job)
             onError { completionException = it }
             closeOnExceptions = true
@@ -54,7 +55,9 @@ class ContainerExceptionHandlerTest {
         }
 
         assertEquals(initState, container.value)
-        assertEquals(initState, container.first())
+        assertFailsWith<CancellationException> {
+            assertEquals(initState, container.first())
+        }
 
         yield() // yield so cancellation could propagate in any cases
         assertEquals(false, job.isActive, "Job is active but shouldn't.")

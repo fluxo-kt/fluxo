@@ -643,9 +643,17 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
     @get:JvmSynthetic
     override val replayCache: List<State> get() = mutableState.replayCache
 
-    // TODO: Cancel the collecting Job if the store closed during the collection.
     @JvmSynthetic
-    override suspend fun collect(collector: FlowCollector<State>) = mutableState.collect(collector)
+    override suspend fun collect(collector: FlowCollector<State>): Nothing {
+        // Cancel the collecting Job if the store closed during the collection.
+        val handle = currentCoroutineContext()[Job]?.dependOn(coroutineContext[Job])
+        try {
+            mutableState.collect(collector)
+        } finally {
+            // Always dispose the completion handle in the end
+            handle?.dispose()
+        }
+    }
 
     // endregion
 }
