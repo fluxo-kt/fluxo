@@ -38,6 +38,9 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
  * - https://dev.to/kotlin/how-to-build-and-publish-a-kotlin-multiplatform-library-going-public-4a8k
  */
 
+// TODO: Set RC/alpha/beta releases status to Ivy's: milestone/integration when it will be possible
+//  https://github.com/gradle/gradle/issues/12600
+//  https://github.com/gradle/gradle/issues/20016
 
 fun Project.setupPublication() {
     val config = requireDefaults<PublicationConfig>()
