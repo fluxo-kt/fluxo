@@ -1,4 +1,4 @@
 package kt.fluxo.test
 
-// no native implementation right now
+// no threads in JS
 internal actual fun threadInfo(): String? = null
