@@ -52,7 +52,7 @@ setupDefaults(
         js(IR) {
             compilations.all {
                 kotlinOptions {
-                    moduleKind = "umd"
+                    // moduleKind = "es"
                     sourceMap = true
                     metaInfo = true
                 }
