@@ -46,7 +46,7 @@ gradle-embedded-kotlin = "3.2.6"
 bin-compat-validator = "0.12.1"
 
 # https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google
-android-gradle-plugin = "7.4.0-beta02"
+android-gradle-plugin = "7.4.0"
 
 # Λrrow - Functional companion to Kotlin's Standard Library
 # https://mvnrepository.com/artifact/io.arrow-kt/arrow-core
