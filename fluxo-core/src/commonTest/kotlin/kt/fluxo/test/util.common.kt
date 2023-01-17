@@ -18,11 +18,12 @@ fun testLog(message: Any?) {
     }
     val m = time.minute.toString().atLeast(2)
     val s = time.second.toString().atLeast(2)
-    val ms = time.nanosecond / 1_000_000
+    val ms = (time.nanosecond / 1_000_000).toString().atLeast(3)
     println("$m:$s.$ms$thread $message")
 }
 
-private const val MAX_THREAD_INFO_LEN = 52
+@Suppress("PrivatePropertyName")
+private val MAX_THREAD_INFO_LEN = if (KMM_PLATFORM == Platform.JVM) 52 else 4
 
 @Suppress("PrivatePropertyName")
 private val TIME_ZONE: TimeZone = TimeZone.currentSystemDefault()
