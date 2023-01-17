@@ -65,9 +65,15 @@ kotlin {
 
         java.main.dependencies {
             compileOnly(libs.androidx.annotation)
+            compileOnly(libs.jetbrains.annotation)
             compileOnly(libs.jsr305)
         }
     }
+}
+
+// Overcome versions conflict
+dependencies.constraints {
+    implementation(libs.jetbrains.annotation)
 }
 
 android.namespace = "kt.fluxo.core"

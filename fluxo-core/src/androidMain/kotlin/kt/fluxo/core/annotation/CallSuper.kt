@@ -1,5 +1,3 @@
-@file:Suppress("MatchingDeclarationName")
-
 package kt.fluxo.core.annotation
 
 /**
@@ -16,14 +14,4 @@ package kt.fluxo.core.annotation
  * @see androidx.annotation.CallSuper
  * @see org.jetbrains.annotations.MustBeInvokedByOverriders
  */
-@MustBeDocumented
-@OptionalExpectation
-@OptIn(ExperimentalMultiplatform::class)
-@Retention(AnnotationRetention.BINARY)
-@Suppress("KDocUnresolvedReference")
-@Target(
-    AnnotationTarget.FUNCTION,
-    AnnotationTarget.PROPERTY_GETTER,
-    AnnotationTarget.PROPERTY_SETTER,
-)
-public expect annotation class CallSuper()
+public actual typealias CallSuper = androidx.annotation.CallSuper

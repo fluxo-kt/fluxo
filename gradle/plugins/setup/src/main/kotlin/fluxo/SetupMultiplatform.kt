@@ -74,8 +74,10 @@ interface MultiplatformSourceSets : NamedDomainObjectContainer<KotlinSourceSet> 
     val common: SourceSetBundle
     val allSet: Set<SourceSetBundle>
     val javaSet: Set<SourceSetBundle>
+    val androidSet: Set<SourceSetBundle>
     val nativeSet: Set<SourceSetBundle>
     val linuxSet: Set<SourceSetBundle>
+    val androidNativeSet: Set<SourceSetBundle>
     val mingwSet: Set<SourceSetBundle>
     val darwinSet: Set<SourceSetBundle>
     val iosSet: Set<SourceSetBundle>
@@ -94,14 +96,19 @@ private class DefaultMultiplatformSourceSets(
     override val allSet: Set<SourceSetBundle> =
         targets.toSourceSetBundles()
 
-    override val javaSet: Set<SourceSetBundle> =
-        targets
-            .filter { it.platformType in setOf(KotlinPlatformType.androidJvm, KotlinPlatformType.jvm) }
-            .toSourceSetBundles()
+    override val javaSet: Set<SourceSetBundle> = targets
+        .filter { it.platformType in setOf(KotlinPlatformType.androidJvm, KotlinPlatformType.jvm) }
+        .toSourceSetBundles()
+
+    override val androidSet: Set<SourceSetBundle> = targets
+        .filter { it.platformType in setOf(KotlinPlatformType.androidJvm) }
+        .toSourceSetBundles()
 
     override val nativeSet: Set<SourceSetBundle> = nativeSourceSets()
     override val linuxSet: Set<SourceSetBundle> = nativeSourceSets(Family.LINUX)
+    override val androidNativeSet: Set<SourceSetBundle> = nativeSourceSets(Family.ANDROID)
     override val mingwSet: Set<SourceSetBundle> = nativeSourceSets(Family.MINGW)
+
     override val darwinSet: Set<SourceSetBundle> = nativeSourceSets(Family.IOS, Family.OSX, Family.WATCHOS, Family.TVOS)
     override val iosSet: Set<SourceSetBundle> = nativeSourceSets(Family.IOS)
     override val watchosSet: Set<SourceSetBundle> = nativeSourceSets(Family.WATCHOS)
