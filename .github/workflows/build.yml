@@ -60,7 +60,7 @@ jobs:
 
       - name: 'Build and check on macOS (complete)'
         if: matrix.os == 'macos-latest'
-        timeout-minutes: 35
+        timeout-minutes: 45
         uses: gradle/gradle-build-action@v2
         env:
           CI: true
