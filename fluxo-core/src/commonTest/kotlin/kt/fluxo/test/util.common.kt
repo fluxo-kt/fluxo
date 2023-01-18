@@ -19,7 +19,7 @@ fun testLog(message: Any?) {
     val m = time.minute.toString().atLeast(2)
     val s = time.second.toString().atLeast(2)
     val ms = (time.nanosecond / 1_000_000).toString().atLeast(3)
-    println("$m:$s.$ms$thread $message")
+    printErr("$m:$s.$ms$thread $message")
 }
 
 @Suppress("PrivatePropertyName")
@@ -34,6 +34,9 @@ private fun String.atLeast(size: Int, placeholder: Char = '0'): String {
 }
 
 internal expect fun threadInfo(): String?
+
+/** Prints the given [message] and the line separator to the standard error stream (if possiblem stdout otherwise). */
+internal expect fun printErr(message: Any?)
 
 
 operator fun <T> StateFlow<T>.getValue(thisRef: Any?, property: Any?): T = value
