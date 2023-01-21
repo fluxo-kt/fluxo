@@ -5,6 +5,7 @@ fun Project.setupDefaults(
     multiplatformConfigurator: MultiplatformConfigurator? = null,
     androidConfig: AndroidConfigSetup? = null,
     kotlinConfig: KotlinConfigSetup? = null,
+    binaryCompatibilityValidatorConfig: BinaryCompatibilityValidatorConfig? = null,
     publicationConfig: PublicationConfig? = null,
 ) {
     extra.set(
@@ -13,6 +14,7 @@ fun Project.setupDefaults(
             multiplatformConfigurator,
             androidConfig,
             kotlinConfig,
+            binaryCompatibilityValidatorConfig,
             publicationConfig,
         )
     )
