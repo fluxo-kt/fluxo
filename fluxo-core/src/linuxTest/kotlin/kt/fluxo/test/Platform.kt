@@ -1,3 +1,3 @@
 package kt.fluxo.test
 
-internal actual inline val KMM_PLATFORM: String get() = Platform.LINUX
+internal actual const val KMM_PLATFORM = Platform.LINUX
