@@ -13,6 +13,7 @@ class IntentFilterTest {
     @Test
     fun filtration_should_work() = runUnitTest {
         val results = ArrayList<Int>()
+        val filter: (Int) -> Boolean = { it % 2 == 0 }
         val store = store(
             initialState = 0,
             handler = { intent: Int ->
@@ -20,13 +21,13 @@ class IntentFilterTest {
                 updateState { intent }
             },
             setup = {
-                intentFilter = { it % 2 == 0 }
+                intentFilter = { filter(it) }
             },
         )
         repeat(1000, store::send)
         store.stateFlow.first { it == 998 }
         assertEquals(500, results.size)
-        assertContentEquals(Array(1000) { it }.filter { it % 2 == 0 }, results)
+        assertContentEquals(Array(1000) { it }.filter(filter), results)
         store.closeAndWait()
     }
 }
