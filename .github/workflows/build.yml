@@ -24,7 +24,7 @@ jobs:
         os: [ 'macos-latest', 'windows-latest', 'ubuntu-latest' ]
 
     name: 'Test on ${{ matrix.os }} JDK ${{ matrix.java }}'
-    timeout-minutes: 45
+    timeout-minutes: 55
     runs-on: ${{ matrix.os }}
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
 
@@ -51,7 +51,7 @@ jobs:
           node-version: 18
 
       - name: Cache kotlin konan
-        timeout-minutes: 4
+        timeout-minutes: 5
         uses: actions/cache@v3
         with:
           path: ~/.konan
@@ -60,7 +60,7 @@ jobs:
 
       - name: 'Build and check on macOS (complete)'
         if: matrix.os == 'macos-latest'
-        timeout-minutes: 45
+        timeout-minutes: 50
         uses: gradle/gradle-build-action@v2
         env:
           CI: true
@@ -82,7 +82,7 @@ jobs:
 
       - name: 'Build and check on ${{ matrix.os }} (split_targets, macOS ignored)'
         if: matrix.os != 'macos-latest'
-        timeout-minutes: 25
+        timeout-minutes: 40
         uses: gradle/gradle-build-action@v2
         env:
           CI: true
