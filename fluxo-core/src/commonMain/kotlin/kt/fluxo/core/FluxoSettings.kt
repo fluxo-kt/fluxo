@@ -8,6 +8,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kt.fluxo.core.annotation.ExperimentalFluxoApi
 import kt.fluxo.core.annotation.FluxoDsl
 import kt.fluxo.core.annotation.NotThreadSafe
 import kt.fluxo.core.debug.DEBUG
@@ -116,9 +117,11 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
 
     /**
      * If you need to filter out some [Intent]s.
+     * Can be removed or behavior can be changed in future versions!
      *
      * (`true` to accept intent, `false` otherwise)
      */
+    @ExperimentalFluxoApi
     public var intentFilter: IntentFilter<in Intent, State>? = null
 
     /**
