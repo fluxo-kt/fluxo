@@ -2,6 +2,7 @@
 
 import java.io.File
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.util.Locale
 import java.util.regex.Pattern
 
@@ -22,6 +23,9 @@ try {
             val error: BigDecimal?,
             val units: String,
         ) {
+            var percent: BigDecimal = BigDecimal.ZERO
+                get() = field.setScale(1, RoundingMode.HALF_DOWN)
+
             val asRawArray
                 get() = arrayOf(
                     name,
@@ -30,10 +34,13 @@ try {
                     score,
                     error ?: "",
                     units,
+                    "$percent%",
                 )
         }
 
-        val splitRegex = Pattern.compile("(?i)(?<![±�])\\s+", Pattern.UNICODE_CHARACTER_CLASS or Pattern.UNICODE_CASE).toRegex()
+        val splitRegex =
+            Pattern.compile("(?i)(?<![±�])\\s+", Pattern.UNICODE_CHARACTER_CLASS or Pattern.UNICODE_CASE).toRegex()
+        val bd100 = BigDecimal(100)
         var total = 0
         val resultsByClass = text.lineSequence().drop(1).mapNotNull l@{ line ->
             val l = line.trim()
@@ -76,10 +83,17 @@ try {
             JmhResult(clazz, name, mode, cnt, score, error, units)
         }.groupBy { it.clazz }.mapValues { byClass ->
             byClass.value.groupBy { it.mode }.mapValues { byMode ->
-                when (byMode.key) {
-                    "thrpt" -> byMode.value.sortedByDescending { it.score }
+                val isReverse = byMode.key == "thrpt"
+                val results = when {
+                    isReverse -> byMode.value.sortedByDescending { it.score }
                     else -> byMode.value.sortedBy { it.score }
                 }
+                val best = (results.firstOrNull { !it.name.contains("naive", ignoreCase = true) }
+                    ?: results.first()).score
+                for (r in results) {
+                    r.percent = r.score / best * bd100 - bd100
+                }
+                results
             }.values.flatten()
         }
 
@@ -93,21 +107,30 @@ try {
         val cntTitle = "Cnt"
         val errTitle = "Error"
         val bdTwo = BigDecimal.valueOf(2)
-        val titles = arrayOf("Benchmark", "Mode", cntTitle, "Score", errTitle, "Units")
+        val titles = arrayOf("Benchmark", "Mode", cntTitle, "Score", errTitle, "Units", "Percent")
         val errIndex = titles.indexOf(errTitle)
         val mdTitles = titles.filter { it != errTitle }.toTypedArray()
         for ((clazz, results) in resultsByClass) {
             val modes = results.distinctBy { it.mode }.size
-            val modesInfo = " in " + modes.enPlural("<u>one<u> mode", "<u>%d<u> modes")
+            val modesInfo = " in " + modes.enPlural(
+                if (isCI) "<u>one<u> mode" else "one mode",
+                if (isCI) "<u>%d<u> modes" else "%d modes",
+            )
 
             val iterInfo = results.distinctBy { it.cnt }.let {
                 if (it.size == 1) {
-                    " with " + it[0].cnt.enPlural("<u>one<u> iteration", "<u>%d<u> iterations")
+                    " with " + it[0].cnt.enPlural(
+                        if (isCI) "<u>one<u> iteration" else "one iteration",
+                        if (isCI) "<u>%d<u> iterations" else "%d iterations",
+                    )
                 } else ""
             }
             val skipCnt = iterInfo.isNotEmpty()
 
-            val testsInfo = (results.size / modes).enPlural("<u>%d<u> test", "<u>%d<u> tests")
+            val testsInfo = (results.size / modes).enPlural(
+                if (isCI) "<u>%d<u> test" else "%d test",
+                if (isCI) "<u>%d<u> tests" else "%d tests",
+            )
             println("#### ${clazz.ifEmpty { "<not set>" }} ($testsInfo$modesInfo$iterInfo)")
 
             // Table header
@@ -149,6 +172,7 @@ try {
                         if (!skipCnt) "<sub>${r.cnt}</sub>" else null,
                         scoreWithError,
                         "<sub>${r.units}</sub>",
+                        "<sub><i>${r.percent}%</i></sub>",
                     ).toTypedArray()
 
                     @Suppress("SpreadOperator")
@@ -173,9 +197,9 @@ try {
                 val spaces = " ".repeat(maxLengths[this] - s.length)
                 val e = when {
                     this != errIndex -> ""
-                    !entity || s.isEmpty() -> " "
-                    isCI -> "&#177;"
-                    else -> "±"
+                    !entity || s.isEmpty() -> "  "
+                    isCI -> "&#177; "
+                    else -> "± "
                 }
                 return when (this) {
                     0 -> "$s$spaces"
@@ -186,7 +210,7 @@ try {
             print(titles.mapIndexed { i, s -> i.f(s) }.joinToString(" ") + '\n')
             prevMode = results[0].mode
             for (r in results) {
-                if (r.mode != prevMode) {
+                if (!isCI && r.mode != prevMode) {
                     prevMode = r.mode
                     print("\n")
                 }
