@@ -86,21 +86,27 @@ public abstract interface class kt/fluxo/core/SideEffectsStrategy {
 
 public final class kt/fluxo/core/SideEffectsStrategy$CONSUME : kt/fluxo/core/SideEffectsStrategy {
 	public static final field INSTANCE Lkt/fluxo/core/SideEffectsStrategy$CONSUME;
+	public fun toString ()Ljava/lang/String;
 }
 
 public final class kt/fluxo/core/SideEffectsStrategy$DISABLE : kt/fluxo/core/SideEffectsStrategy {
 	public static final field INSTANCE Lkt/fluxo/core/SideEffectsStrategy$DISABLE;
+	public fun toString ()Ljava/lang/String;
 }
 
 public final class kt/fluxo/core/SideEffectsStrategy$RECEIVE : kt/fluxo/core/SideEffectsStrategy {
 	public static final field INSTANCE Lkt/fluxo/core/SideEffectsStrategy$RECEIVE;
+	public fun toString ()Ljava/lang/String;
 }
 
 public final class kt/fluxo/core/SideEffectsStrategy$SHARE : kt/fluxo/core/SideEffectsStrategy {
 	public fun <init> ()V
 	public fun <init> (I)V
 	public synthetic fun <init> (IILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun equals (Ljava/lang/Object;)Z
 	public final fun getReplay ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
 }
 
 public abstract interface class kt/fluxo/core/Store : java/io/Closeable {

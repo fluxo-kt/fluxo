@@ -22,7 +22,9 @@ public sealed interface SideEffectsStrategy {
      * @see SHARE
      * @see CONSUME
      */
-    public object RECEIVE : SideEffectsStrategy
+    public object RECEIVE : SideEffectsStrategy {
+        override fun toString(): String = "RECEIVE"
+    }
 
     /**
      * [Channel]-based strategy with sharing through the [consumeAsFlow].
@@ -39,7 +41,9 @@ public sealed interface SideEffectsStrategy {
      * @see RECEIVE
      * @see SHARE
      */
-    public object CONSUME : SideEffectsStrategy
+    public object CONSUME : SideEffectsStrategy {
+        override fun toString(): String = "CONSUME"
+    }
 
     /**
      * [MutableSharedFlow]-based strategy. Shares emitted side effects among all subscribers in a broadcast fashion,
@@ -48,15 +52,21 @@ public sealed interface SideEffectsStrategy {
      * Keeps a [specified number][replay] of the most recent values in its replay cache. Every new subscriber first gets
      * the values from the replay cache and then gets new emitted values.
      *
-     * @param replay number of side effects replayed to new subscribers (cannot be negative, defaults to zero).
+     * @param replay the number of side effects replayed to new subscribers (cannot be negative, defaults to zero).
      *
      * @see kotlinx.coroutines.flow.MutableSharedFlow
      */
-    public class SHARE(public val replay: Int = 0) : SideEffectsStrategy
+    public class SHARE(public val replay: Int = 0) : SideEffectsStrategy {
+        override fun toString(): String = "SHARE(replay=$replay)"
+        override fun equals(other: Any?): Boolean = this === other || other is SHARE && replay == other.replay
+        override fun hashCode(): Int = replay
+    }
 
     /**
-     * Side effects completely disabled.
-     * Saves a bit of app memory and sometimes your brain cells.
+     * Side effects are completely disabled.
+     * Saves a bit of app memory, and sometimes your brain cells (as a purer way is to use only state+intent).
      */
-    public object DISABLE : SideEffectsStrategy
+    public object DISABLE : SideEffectsStrategy {
+        override fun toString(): String = "DISABLE"
+    }
 }

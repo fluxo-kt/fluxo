@@ -25,12 +25,42 @@ import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertNotEquals
+import kotlin.test.assertNotSame
+import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
 internal class SideEffectTest {
     private companion object {
         private val BASIC_STRATEGIES = arrayOf(SideEffectsStrategy.RECEIVE, SideEffectsStrategy.CONSUME)
     }
+
+    @Test
+    fun side_effects_strategies_api() {
+        assertEquals("RECEIVE", SideEffectsStrategy.RECEIVE.toString())
+        assertEquals("CONSUME", SideEffectsStrategy.CONSUME.toString())
+        assertEquals("DISABLE", SideEffectsStrategy.DISABLE.toString())
+        assertEquals("SHARE(replay=0)", SideEffectsStrategy.SHARE().toString())
+
+        for (s in arrayOf(
+            SideEffectsStrategy.RECEIVE,
+            SideEffectsStrategy.CONSUME,
+            SideEffectsStrategy.DISABLE,
+            SideEffectsStrategy.SHARE(),
+        )) {
+            assertEquals(s, s)
+            assertEquals(s.hashCode(), s.hashCode())
+            assertEquals(s.toString(), s.toString())
+            assertSame(s, s)
+        }
+
+        assertEquals(SideEffectsStrategy.SHARE(), SideEffectsStrategy.SHARE())
+        assertNotSame(SideEffectsStrategy.SHARE(), SideEffectsStrategy.SHARE())
+        assertNotEquals(SideEffectsStrategy.SHARE(1), SideEffectsStrategy.SHARE())
+        @Suppress("RemoveExplicitTypeArguments")
+        assertNotEquals<SideEffectsStrategy>(SideEffectsStrategy.RECEIVE, SideEffectsStrategy.SHARE())
+    }
+
 
     @Test
     @IgnoreJs
