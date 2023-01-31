@@ -15,6 +15,9 @@ on:
       - '**.md'
       - '**dependabot.yml'
 
+env:
+  GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx6g -Dorg.gradle.daemon=false -Dkotlin.incremental=false"
+
 jobs:
   os-checks:
     strategy:
