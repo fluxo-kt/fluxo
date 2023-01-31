@@ -54,4 +54,4 @@ jobs:
           CI: true
         with:
           gradle-home-cache-cleanup: true
-          arguments: build assemble check -d --stacktrace --continue --scan
+          arguments: build assemble check -d --stacktrace --continue --scan --no-configuration-cache

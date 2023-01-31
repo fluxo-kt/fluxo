@@ -69,7 +69,7 @@ jobs:
           CI: true
         with:
           gradle-home-cache-cleanup: true
-          arguments: build assemble check --stacktrace --continue --scan
+          arguments: build assemble check --stacktrace --continue --scan --no-configuration-cache
 
       - name: 'Publish SNAPSHOT'
         if: success() && matrix.os == 'macos-latest' && github.event_name == 'push'
@@ -81,7 +81,7 @@ jobs:
           OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
-        run: ./gradlew publish --stacktrace --scan
+        run: ./gradlew publish --stacktrace --scan --no-configuration-cache
 
       - name: 'Build and check on ${{ matrix.os }} (split_targets, macOS ignored)'
         if: matrix.os != 'macos-latest'
@@ -91,7 +91,7 @@ jobs:
           CI: true
         with:
           gradle-home-cache-cleanup: true
-          arguments: build assemble check -Dsplit_targets --stacktrace --continue --scan
+          arguments: build assemble check -Dsplit_targets --stacktrace --continue --scan --no-configuration-cache
 
       - name: Summary
         if: success() || failure()
