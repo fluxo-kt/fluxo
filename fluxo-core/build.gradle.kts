@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.android.lib)
     alias(libs.plugins.kotlinx.kover)
     alias(libs.plugins.kotlin.dokka)
+    alias(libs.plugins.deps.guard)
     id("fluxo-setup")
 }
 apply<kotlinx.atomicfu.plugin.gradle.AtomicFUGradlePlugin>()
@@ -74,6 +75,15 @@ kotlin {
 // Overcome versions conflict
 dependencies.constraints {
     implementation(libs.jetbrains.annotation)
+}
+
+dependencyGuard {
+    configuration("androidDebugRuntimeClasspath")
+    configuration("androidReleaseRuntimeClasspath")
+    configuration("debugRuntimeClasspath")
+    configuration("jsRuntimeClasspath")
+    configuration("jvmRuntimeClasspath")
+    configuration("releaseRuntimeClasspath")
 }
 
 android.namespace = "kt.fluxo.core"

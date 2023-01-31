@@ -202,6 +202,10 @@ deps-versions = { id = "com.github.ben-manes.versions", version = "0.44.0" }
 # https://github.com/autonomousapps/dependency-analysis-android-gradle-plugin/tags
 deps-analysis = { id = "com.autonomousapps.dependency-analysis", version = "1.18.0" }
 
+# Plugin that guards against unintentional dependency changes
+# https://github.com/dropbox/dependency-guard/releases
+deps-guard = { id = "com.dropbox.dependency-guard", version = "0.4.1" }
+
 # 'taskTree' task that prints task dependency tree
 # https://github.com/dorongold/gradle-task-tree
 task-tree = { id = "com.dorongold.task-tree", version = "2.1.1" }

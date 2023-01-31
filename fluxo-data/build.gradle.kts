@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.android.lib)
     alias(libs.plugins.kotlinx.kover)
     alias(libs.plugins.kotlin.dokka)
+    alias(libs.plugins.deps.guard)
     id("fluxo-setup")
 }
 
@@ -32,6 +33,15 @@ kotlin {
             implementation(libs.kotlinx.coroutines.test)
         }
     }
+}
+
+dependencyGuard {
+    configuration("androidDebugRuntimeClasspath")
+    configuration("androidReleaseRuntimeClasspath")
+    configuration("debugRuntimeClasspath")
+    configuration("jsRuntimeClasspath")
+    configuration("jvmRuntimeClasspath")
+    configuration("releaseRuntimeClasspath")
 }
 
 android.namespace = "kt.fluxo.data"

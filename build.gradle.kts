@@ -41,6 +41,7 @@ plugins {
     alias(libs.plugins.kotlinx.binCompatValidator) apply false
     alias(libs.plugins.kotlinx.kover)
     alias(libs.plugins.deps.analysis)
+    alias(libs.plugins.deps.guard)
     alias(libs.plugins.deps.versions)
     alias(libs.plugins.task.tree)
 }
@@ -166,6 +167,11 @@ dependencyAnalysis {
     }
 }
 
+// TODO: Configure universally via convenience plugin
+dependencyGuard {
+    configuration("classpath")
+}
+
 koverMerged {
     enable()
 
@@ -255,6 +261,7 @@ tasks.register<Task>(name = "resolveDependencies") {
 }
 
 val pinnedDeps = arrayOf(
+    // security recommendations
     libs.jackson.databind,
     libs.woodstox.core,
     libs.jsoup,
@@ -268,7 +275,7 @@ allprojects {
                 for (d in pinnedDeps) {
                     if (d.module == module) {
                         useVersion(d.versionConstraint.toString())
-                        because("security recommendations")
+                        because("security recommendations or other considerations")
                     }
                 }
             }
