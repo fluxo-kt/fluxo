@@ -14,7 +14,7 @@ fluxo = "0.1.0-SNAPSHOT"
 androidMinSdk = "15"
 androidTargetSdk = "33"
 androidCompileSdk = "33"
-androidBuildTools = "33.0.0"
+androidBuildTools = "33.0.1"
 
 # Java/Kotlin compatibility
 javaToolchain = "11"
@@ -98,6 +98,7 @@ kotlin-atomicfu = { module = "org.jetbrains.kotlin:atomicfu", version.ref = "kot
 kotlin-parcelize-runtime = { module = "org.jetbrains.kotlin:kotlin-parcelize-runtime", version.ref = "kotlin" }
 
 # Framework for testing concurrent data structures
+# https://kotlinlang.org/docs/lincheck-guide.html
 # https://github.com/Kotlin/kotlinx-lincheck/releases
 kotlinx-lincheck = { module = "org.jetbrains.kotlinx:lincheck", version = "2.16" }
 
@@ -112,6 +113,7 @@ kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-t
 
 # https://mvnrepository.com/artifact/org.jetbrains/annotations
 jetbrains-annotation = { module = "org.jetbrains:annotations", version.strictly = "24.0.0" }
+
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
 
 # JSR 305: Annotations for Software Defect Detection
