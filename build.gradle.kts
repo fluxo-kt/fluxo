@@ -219,6 +219,10 @@ koverMerged {
             excludes += listOf(
                 // Coverage not detected properly for inline methods (still everything covered!)
                 "kotlin.internal.InlineOnly",
+                // JvmSynthetic used as a marker for migration helpers and inline-only DSL hidden from non-kotlin usage
+                "kotlin.jvm.JvmSynthetic",
+                // No need for a deprecated methods coverage
+                "kotlin.Deprecated",
             )
         }
         projects {
