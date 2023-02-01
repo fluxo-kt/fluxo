@@ -28,7 +28,7 @@ kotlin = "1.8.0"
 essenty = "1.0.0"
 
 # https://github.com/google/ksp/releases
-ksp = "1.8.0-1.0.8"
+ksp = "1.8.0-1.0.9"
 
 # Dokka is a documentation engine for Kotlin/Java
 # https://github.com/Kotlin/dokka/releases
