@@ -24,5 +24,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "plugins"
 
-include("release-dependencies-diff")
 include("setup")

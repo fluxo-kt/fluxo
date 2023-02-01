@@ -31,8 +31,6 @@ buildscript {
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
     id("fluxo-setup")
-    id("release-dependencies-diff-compare")
-    id("release-dependencies-diff-create") apply false
     alias(libs.plugins.android.lib) apply false
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.kotlin.dokka) apply false
@@ -375,6 +373,4 @@ subprojects {
     // Use `buildEnvironment` task for the report about plugins
     // https://docs.gradle.org/current/userguide/viewing_debugging_dependencies.html
     tasks.register<DependencyReportTask>("allDeps")
-
-    plugins.apply("release-dependencies-diff-create")
 }
