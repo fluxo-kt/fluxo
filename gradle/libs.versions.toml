@@ -10,8 +10,8 @@
 
 fluxo = "0.1.0-SNAPSHOT"
 
-# 21 is default for new projects per May 2021, required for Compose
-androidMinSdk = "15"
+# 21 is default for new projects per May 2021, required for Compose, but we don't need it for core modules
+androidMinSdk = "9"
 androidTargetSdk = "33"
 androidCompileSdk = "33"
 androidBuildTools = "33.0.1"
