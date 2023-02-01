@@ -2,7 +2,7 @@
 
 # https://github.com/CircleCI-Public/cimg-android
 # https://hub.docker.com/r/cimg/android/tags
-FROM cimg/android:2022.10-browsers
+FROM cimg/android:2022.12-browsers
 LABEL maintainer="Artyom Shendrik <artyom.shendrik@gmail.com>"
 LABEL name=fluxo-test
 

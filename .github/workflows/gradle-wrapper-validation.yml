@@ -3,11 +3,13 @@ name: "Validate Gradle Wrapper"
 on:
   pull_request:
     paths:
+      - '**/gradle/wrapper/'
       - '**/gradle-wrapper.jar'
       - '**/gradle*.properties'
       - '**/gradlew*'
   push:
     paths:
+      - '**/gradle/wrapper/'
       - '**/gradle-wrapper.jar'
       - '**/gradle*.properties'
       - '**/gradlew*'
