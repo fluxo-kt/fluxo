@@ -156,10 +156,10 @@ public inline fun <State, SideEffect : Any> container(
 ): Container<State, SideEffect> {
     contract { callsInPlace(setup, InvocationKind.EXACTLY_ONCE) }
     return store(
-        initialState,
-        @Suppress("UNCHECKED_CAST") (FluxoIntentHandler as IntentHandler<FluxoIntent<State, SideEffect>, State, SideEffect>),
-        settings,
-        setup,
+        initialState = initialState,
+        handler = FluxoIntentHandler(),
+        settings = settings,
+        setup = setup,
     )
 }
 

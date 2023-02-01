@@ -186,10 +186,8 @@ public final class kt/fluxo/core/intercept/StoreRequest$RestoreState : kt/fluxo/
 	public final fun getState ()Ljava/lang/Object;
 }
 
-public final class kt/fluxo/core/internal/FluxoIntentHandler : kt/fluxo/core/IntentHandler {
-	public static final field INSTANCE Lkt/fluxo/core/internal/FluxoIntentHandler;
-	public synthetic fun handleIntent (Lkt/fluxo/core/dsl/StoreScope;Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public fun handleIntent (Lkt/fluxo/core/dsl/StoreScope;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+public final class kt/fluxo/core/internal/FluxoIntentHandler {
+	public static final fun create ()Lkt/fluxo/core/IntentHandler;
 }
 
 public final class kt/fluxo/core/internal/FluxoStore : kotlin/coroutines/AbstractCoroutineContextElement, kotlinx/coroutines/CoroutineExceptionHandler, kt/fluxo/core/StoreSE {
