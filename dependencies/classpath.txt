@@ -57,8 +57,8 @@ com.fasterxml.jackson.module:jackson-module-kotlin:2.12.7
 com.fasterxml.jackson:jackson-bom:2.12.7
 com.fasterxml.woodstox:woodstox-core:6.2.4
 com.github.ben-manes.caffeine:caffeine:3.1.0
-com.github.ben-manes.versions:com.github.ben-manes.versions.gradle.plugin:0.44.0
-com.github.ben-manes:gradle-versions-plugin:0.44.0
+com.github.ben-manes.versions:com.github.ben-manes.versions.gradle.plugin:0.45.0
+com.github.ben-manes:gradle-versions-plugin:0.45.0
 com.google.android:annotations:4.1.1.4
 com.google.api.grpc:proto-google-common-protos:2.0.1
 com.google.auto.value:auto-value-annotations:1.6.2
