@@ -18,7 +18,7 @@ subprojects {
         }
 
         tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile>().configureEach {
-            kotlinOptions.jvmTarget = JavaVersion.VERSION_11.name
+            kotlinOptions.jvmTarget = "11"
         }
 
         extensions.configure<io.gitlab.arturbosch.detekt.extensions.DetektExtension>("detekt") {
