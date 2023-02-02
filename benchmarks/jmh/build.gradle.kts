@@ -1,4 +1,4 @@
-@file:Suppress("DSL_SCOPE_VIOLATION")
+@file:Suppress("DSL_SCOPE_VIOLATION", "TrailingCommaOnCallSite")
 
 import fluxo.envOrPropInt
 import fluxo.envOrPropList
@@ -45,9 +45,8 @@ dependencies {
     implementation("org.orbit-mvi:orbit-core:" + libs.versions.orbit.get())
 }
 
+java.toolchain.languageVersion.set(JavaLanguageVersion.of(11))
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-    java.toolchain.languageVersion.set(JavaLanguageVersion.of(11))
-
     compilerOptions {
         jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
         org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_1_9.let {
