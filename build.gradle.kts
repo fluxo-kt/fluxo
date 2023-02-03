@@ -1,12 +1,14 @@
 @file:Suppress("SuspiciousCollectionReassignment")
 
 import fluxo.AndroidConfig
+import fluxo.Compilations
 import fluxo.PublicationConfig
 import fluxo.ensureUnreachableTasksDisabled
 import fluxo.envOrPropValue
 import fluxo.getValue
 import fluxo.iosCompat
 import fluxo.isCI
+import fluxo.isGenericCompilationEnabled
 import fluxo.isRelease
 import fluxo.macosCompat
 import fluxo.scmTag
@@ -49,23 +51,32 @@ setupDefaults(
 
         android()
         jvm()
-        js(IR) {
-            compilations.all {
-                kotlinOptions {
-                    // moduleKind = "es"
-                    sourceMap = true
-                    metaInfo = true
+        if (project.isGenericCompilationEnabled) {
+            js(IR) {
+                compilations.all {
+                    kotlinOptions {
+                        // moduleKind = "es"
+                        sourceMap = true
+                        metaInfo = true
+                    }
                 }
+                nodejs()
+                browser()
             }
-            nodejs()
-            browser()
         }
-        linuxX64()
-        mingwX64()
-        iosCompat()
-        watchosCompat()
-        tvosCompat()
-        macosCompat()
+
+        if (Compilations.isGenericEnabled) {
+            linuxX64()
+        }
+        if (Compilations.isWindowsEnabled) {
+            mingwX64()
+        }
+        if (Compilations.isDarwinEnabled) {
+            iosCompat()
+            watchosCompat()
+            tvosCompat()
+            macosCompat()
+        }
 
         targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithTests<*>>().all {
             binaries {

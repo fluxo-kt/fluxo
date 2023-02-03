@@ -68,12 +68,8 @@ internal fun Project.setupAndroidCommon(config: AndroidConfig) {
         config.configurator?.invoke(this)
     }
 
-    val disableTests by disableTests()
-    tasks.withType<AndroidLintTask> {
-        enabled = project.isGenericCompilationEnabled && !disableTests
-    }
-
-    tasks.withType<AndroidLintTextOutputTask> {
-        enabled = project.isGenericCompilationEnabled && !disableTests
+    if (!project.isGenericCompilationEnabled || disableTests().get()) {
+        tasks.withType<AndroidLintTask> { enabled = false }
+        tasks.withType<AndroidLintTextOutputTask> { enabled = false }
     }
 }

@@ -11,6 +11,6 @@ fun Project.setupJsApp() {
             binaries.executable()
         }
 
-        disableCompilationsOfNeeded()
+        disableCompilationsOfNeeded(project)
     }
 }

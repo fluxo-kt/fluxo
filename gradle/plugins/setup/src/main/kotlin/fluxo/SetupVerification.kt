@@ -129,28 +129,30 @@ fun Project.setupVerification() {
     setupTestsReport()
 }
 
-private fun Project.setupLint(mergeLint: TaskProvider<ReportMergeTask>) {
+private fun Project.setupLint(mergeLint: TaskProvider<ReportMergeTask>?) {
+    val disableLint = !isGenericCompilationEnabled || disableTests().get()
     extensions.configure<CommonExtension<*, *, *, *>>("android") {
         lint {
-            sarifReport = true
-            htmlReport = true
+            sarifReport = !disableLint
+            htmlReport = !disableLint
             textReport = false
             xmlReport = false
 
             baseline = file("lint-baseline.xml")
             // absolutePaths = true
-            warningsAsErrors = true
-            checkAllWarnings = true
+            warningsAsErrors = !disableLint
+            checkAllWarnings = !disableLint
             abortOnError = false
-            checkDependencies = true
+            checkDependencies = !disableLint
+
+            checkReleaseBuilds = !disableLint
         }
     }
 
-    val disableTests by disableTests()
+    if (disableLint || mergeLint == null) {
+        return
+    }
     tasks.withType<AndroidLintTask> {
-        if (disableTests) {
-            enabled = false
-        }
         val lintTask = this
         if (name.startsWith("lintReport")) {
             mergeLint.configure {

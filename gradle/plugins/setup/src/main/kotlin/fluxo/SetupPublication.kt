@@ -134,6 +134,10 @@ private fun Project.setupPublicationGradlePlugin(config: PublicationConfig) {
 }
 
 private fun Project.setupPublicationKotlinJvm(config: PublicationConfig) {
+    if (!isGenericCompilationEnabled) {
+        return
+    }
+
     applyMavenPublishPlugin()
 
     group = config.group
@@ -151,6 +155,10 @@ private fun Project.setupPublicationKotlinJvm(config: PublicationConfig) {
 }
 
 private fun Project.setupPublicationJava(config: PublicationConfig) {
+    if (!isGenericCompilationEnabled) {
+        return
+    }
+
     applyMavenPublishPlugin()
 
     group = config.group

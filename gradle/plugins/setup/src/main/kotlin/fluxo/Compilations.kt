@@ -3,6 +3,7 @@ package fluxo
 import org.gradle.api.Project
 import org.gradle.api.tasks.testing.AbstractTestTask
 import org.gradle.internal.os.OperatingSystem
+import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
@@ -12,7 +13,7 @@ import org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest
 import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest
 import org.jetbrains.kotlin.konan.target.Family
 
-internal object Compilations {
+object Compilations {
 
     val isGenericEnabled: Boolean get() = isValidOs { it.isLinux }
     val isDarwinEnabled: Boolean get() = isValidOs { it.isMacOsX }
@@ -29,12 +30,39 @@ internal object Compilations {
         !EnvParams.splitTargets || predicate(OperatingSystem.current())
 }
 
-internal val Project.isGenericCompilationEnabled
+val Project.isGenericCompilationEnabled
     inline get() = Compilations.isGenericEnabledForProject(this)
 
-internal fun KotlinProjectExtension.disableCompilationsOfNeeded() {
+internal fun KotlinProjectExtension.disableCompilationsOfNeeded(project: Project) {
+    if (!EnvParams.splitTargets) {
+        return
+    }
+
     targets.forEach {
         it.disableCompilationsOfNeeded()
+    }
+
+    project.afterEvaluate {
+        project.tasks.withType<org.gradle.jvm.tasks.Jar> {
+            if (!isTaskAllowedBasedByName()) {
+                logger.info("$project, $this, jar disabled")
+                enabled = false
+            }
+        }
+
+        if (!project.isGenericCompilationEnabled) {
+            arrayOf(
+                org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsSetupTask::class.java,
+                org.jetbrains.kotlin.gradle.targets.js.npm.PublicPackageJsonTask::class.java,
+                org.jetbrains.kotlin.gradle.targets.js.npm.tasks.KotlinNpmInstallTask::class.java,
+                org.jetbrains.kotlin.gradle.targets.js.yarn.YarnLockStoreTask::class.java,
+            ).forEach { type ->
+                project.tasks.withType(type) {
+                    logger.info("$project, $this, task disabled")
+                    enabled = false
+                }
+            }
+        }
     }
 }
 
@@ -85,15 +113,14 @@ internal fun AbstractTestTask.isTestTaskAllowed(): Boolean {
     return when (this) {
         is KotlinJsTest -> project.isGenericCompilationEnabled
 
-        is KotlinNativeTest -> {
-            val platform = name.splitCamelCase(limit = 2).firstOrNull()
-            nativeFamilyFromString(platform).isCompilationAllowed(project)
-        }
+        is KotlinNativeTest -> nativeFamilyFromString(platformFromTaskName(name)).isCompilationAllowed(project)
 
         // JVM/Android tests
         else -> project.isGenericCompilationEnabled
     }
 }
+
+private fun platformFromTaskName(name: String): String? = name.splitCamelCase(limit = 2).firstOrNull()
 
 @Suppress("CyclomaticComplexMethod")
 private fun nativeFamilyFromString(platform: String?): Family = when {

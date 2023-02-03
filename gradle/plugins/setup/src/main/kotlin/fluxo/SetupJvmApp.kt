@@ -6,7 +6,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 
 fun Project.setupJvmApp(action: KotlinJvmProjectExtension.() -> Unit = {}) {
     extensions.configure<KotlinJvmProjectExtension> {
-        disableCompilationsOfNeeded()
+        disableCompilationsOfNeeded(project)
         action()
     }
 }

@@ -14,9 +14,7 @@ import org.jetbrains.kotlin.konan.target.Family
 import kotlin.properties.PropertyDelegateProvider
 import kotlin.properties.ReadOnlyProperty
 
-fun Project.setupMultiplatform(
-    targets: MultiplatformConfigurator = requireDefaults(),
-) {
+fun Project.setupMultiplatform(targets: MultiplatformConfigurator = requireDefaults()) {
     libsCatalog.findVersion("javaToolchain").map { version ->
         extensions.configure<JavaPluginExtension>("java") {
             toolchain {
@@ -38,7 +36,7 @@ fun Project.setupMultiplatform(
             }
         }
 
-        disableCompilationsOfNeeded()
+        disableCompilationsOfNeeded(project)
     }
 
     if (isMultiplatformTargetEnabled(Target.ANDROID)) {
@@ -59,17 +57,17 @@ internal enum class Target {
     JVM,
 }
 
-internal fun Project.isMultiplatformTargetEnabled(target: Target): Boolean =
-    multiplatformExtension.targets.any {
-        when (it.platformType) {
-            KotlinPlatformType.androidJvm -> target == Target.ANDROID
-            KotlinPlatformType.jvm -> target == Target.JVM
-            KotlinPlatformType.common,
-            KotlinPlatformType.js,
-            KotlinPlatformType.native,
-            KotlinPlatformType.wasm -> false
-        }
+internal fun Project.isMultiplatformTargetEnabled(target: Target): Boolean = multiplatformExtension.targets.any {
+    when (it.platformType) {
+        KotlinPlatformType.androidJvm -> target == Target.ANDROID
+        KotlinPlatformType.jvm -> target == Target.JVM
+        KotlinPlatformType.common,
+        KotlinPlatformType.js,
+        KotlinPlatformType.native,
+        KotlinPlatformType.wasm,
+        -> false
     }
+}
 
 interface MultiplatformSourceSets : NamedDomainObjectContainer<KotlinSourceSet> {
 
@@ -110,26 +108,25 @@ private class DefaultMultiplatformSourceSets(
     override val tvosSet: Set<SourceSetBundle> = nativeSourceSets(Family.TVOS)
     override val macosSet: Set<SourceSetBundle> = nativeSourceSets(Family.OSX)
 
-    private fun nativeSourceSets(vararg families: Family = Family.values()): Set<SourceSetBundle> =
-        targets
-            .filterIsInstance<KotlinNativeTarget>()
-            .filter { it.konanTarget.family in families }
-            .toSourceSetBundles()
+    private fun nativeSourceSets(vararg families: Family = Family.values()): Set<SourceSetBundle> = targets
+        .filterIsInstance<KotlinNativeTarget>()
+        .filter { it.konanTarget.family in families }
+        .toSourceSetBundles()
 
-    private fun Iterable<KotlinTarget>.toSourceSetBundles(): Set<SourceSetBundle> =
-        filter { it.platformType != KotlinPlatformType.common }
+    private fun Iterable<KotlinTarget>.toSourceSetBundles(): Set<SourceSetBundle> {
+        return filter { it.platformType != KotlinPlatformType.common }
             .map { it.getSourceSetBundle() }
             .toSet()
+    }
 
-    private fun KotlinTarget.getSourceSetBundle(): SourceSetBundle =
-        if (compilations.isEmpty()) {
-            bundle(name)
-        } else {
-            SourceSetBundle(
-                main = compilations.getByName("main").defaultSourceSet,
-                test = compilations.getByName("test").defaultSourceSet,
-            )
-        }
+    private fun KotlinTarget.getSourceSetBundle(): SourceSetBundle = if (compilations.isEmpty()) {
+        bundle(name)
+    } else {
+        SourceSetBundle(
+            main = compilations.getByName("main").defaultSourceSet,
+            test = compilations.getByName("test").defaultSourceSet,
+        )
+    }
 }
 
 fun NamedDomainObjectContainer<out KotlinSourceSet>.bundle(name: String): SourceSetBundle {
@@ -152,11 +149,9 @@ data class SourceSetBundle(
     val test: KotlinSourceSet,
 )
 
-operator fun SourceSetBundle.plus(other: SourceSetBundle): Set<SourceSetBundle> =
-    this + setOf(other)
+operator fun SourceSetBundle.plus(other: SourceSetBundle): Set<SourceSetBundle> = this + setOf(other)
 
-operator fun SourceSetBundle.plus(other: Set<SourceSetBundle>): Set<SourceSetBundle> =
-    setOf(this) + other
+operator fun SourceSetBundle.plus(other: Set<SourceSetBundle>): Set<SourceSetBundle> = setOf(this) + other
 
 infix fun SourceSetBundle.dependsOn(other: SourceSetBundle) {
     main.dependsOn(other.main)
@@ -186,7 +181,11 @@ fun KotlinMultiplatformExtension.iosCompat(
 ) {
     enableTarget(name = x64, enableDefault = { iosX64() }, enableNamed = { iosX64(it) })
     enableTarget(name = arm64, enableDefault = { iosArm64() }, enableNamed = { iosArm64(it) })
-    enableTarget(name = simulatorArm64, enableDefault = { iosSimulatorArm64() }, enableNamed = { iosSimulatorArm64(it) })
+    enableTarget(
+        name = simulatorArm64,
+        enableDefault = { iosSimulatorArm64() },
+        enableNamed = { iosSimulatorArm64(it) },
+    )
 }
 
 fun KotlinMultiplatformExtension.watchosCompat(
@@ -198,7 +197,11 @@ fun KotlinMultiplatformExtension.watchosCompat(
     enableTarget(name = x64, enableDefault = { watchosX64() }, enableNamed = { watchosX64(it) })
     enableTarget(name = arm32, enableDefault = { watchosArm32() }, enableNamed = { watchosArm32(it) })
     enableTarget(name = arm64, enableDefault = { watchosArm64() }, enableNamed = { watchosArm64(it) })
-    enableTarget(name = simulatorArm64, enableDefault = { watchosSimulatorArm64() }, enableNamed = { watchosSimulatorArm64(it) })
+    enableTarget(
+        name = simulatorArm64,
+        enableDefault = { watchosSimulatorArm64() },
+        enableNamed = { watchosSimulatorArm64(it) },
+    )
 }
 
 fun KotlinMultiplatformExtension.tvosCompat(
@@ -208,13 +211,14 @@ fun KotlinMultiplatformExtension.tvosCompat(
 ) {
     enableTarget(name = x64, enableDefault = { tvosX64() }, enableNamed = { tvosX64(it) })
     enableTarget(name = arm64, enableDefault = { tvosArm64() }, enableNamed = { tvosArm64(it) })
-    enableTarget(name = simulatorArm64, enableDefault = { tvosSimulatorArm64() }, enableNamed = { tvosSimulatorArm64(it) })
+    enableTarget(
+        name = simulatorArm64,
+        enableDefault = { tvosSimulatorArm64() },
+        enableNamed = { tvosSimulatorArm64(it) },
+    )
 }
 
-fun KotlinMultiplatformExtension.macosCompat(
-    x64: String? = DEFAULT_TARGET_NAME,
-    arm64: String? = DEFAULT_TARGET_NAME,
-) {
+fun KotlinMultiplatformExtension.macosCompat(x64: String? = DEFAULT_TARGET_NAME, arm64: String? = DEFAULT_TARGET_NAME) {
     enableTarget(name = x64, enableDefault = { macosX64() }, enableNamed = { macosX64(it) })
     enableTarget(name = arm64, enableDefault = { macosArm64() }, enableNamed = { macosArm64(it) })
 }

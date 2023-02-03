@@ -21,15 +21,15 @@ fun Project.setupDefaults(
 internal inline fun <reified T : Any> Project.requireDefaults(): T =
     requireNotNull(getDefaults()) { "Defaults not found for type ${T::class}" }
 
-internal inline fun <reified T : Any> Project.getDefaults(): T? =
-    getDefaults { it as? T }
+internal inline fun <reified T : Any> Project.getDefaults(): T? = getDefaults { it as? T }
 
-private fun <T : Any> Project.getDefaults(mapper: (Any) -> T?): T? =
-    getDefaultsList()?.asSequence()?.mapNotNull(mapper)?.firstOrNull()
-        ?: parent?.getDefaults(mapper)
+private fun <T : Any> Project.getDefaults(mapper: (Any) -> T?): T? {
+    return getDefaultsList()?.asSequence()?.mapNotNull(mapper)?.firstOrNull() ?: parent?.getDefaults(mapper)
+}
 
-@Suppress("UNCHECKED_CAST")
-private fun Project.getDefaultsList(): MutableList<Any>? =
-    extra.takeIf { it.has(DEFAULTS_KEY) }?.get(DEFAULTS_KEY) as ArrayList<Any>?
+@Suppress("UNCHECKED_CAST", "IdentifierGrammar")
+private fun Project.getDefaultsList(): MutableList<Any>? {
+    return extra.takeIf { it.has(DEFAULTS_KEY) }?.get(DEFAULTS_KEY) as ArrayList<Any>?
+}
 
 private const val DEFAULTS_KEY = "fluxo.defaults"
