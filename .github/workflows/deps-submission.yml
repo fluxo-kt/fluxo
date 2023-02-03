@@ -29,15 +29,7 @@ jobs:
         uses: step-security/harden-runner@8f144f8401c4e3693085dff03603f617f566ec6b
         with:
           disable-sudo: true
-          egress-policy: block
-          allowed-endpoints: >
-            api.github.com:443
-            dl.google.com:443
-            download-cdn.jetbrains.com:443
-            download.jetbrains.com:443
-            github.com:443
-            jcenter.bintray.com:443
-            plugins.gradle.org:443
+          egress-policy: audit
 
       - name: Checkout
         uses: actions/checkout@v3
