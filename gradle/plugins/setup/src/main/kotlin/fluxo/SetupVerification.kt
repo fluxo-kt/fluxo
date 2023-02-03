@@ -87,7 +87,7 @@ fun Project.setupVerification() {
 
         val disableTests by disableTests()
         val detektTasks = tasks.withType<Detekt> {
-            if (disableTests) {
+            if (disableTests || !isDetektTaskAllowed()) {
                 enabled = false
             }
             reports {

@@ -30,6 +30,8 @@ formatting:
     active: true
   DiscouragedCommentLocation:
     active: true
+  Indentation:
+    active: false
   FunKeywordSpacing:
     active: true
   FunctionReturnTypeSpacing:

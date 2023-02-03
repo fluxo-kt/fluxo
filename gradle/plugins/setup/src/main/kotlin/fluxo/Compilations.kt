@@ -55,24 +55,27 @@ private fun KotlinTarget.isCompilationAllowed(): Boolean =
         KotlinPlatformType.jvm,
         KotlinPlatformType.js,
         KotlinPlatformType.androidJvm,
-        KotlinPlatformType.wasm -> project.isGenericCompilationEnabled
+        KotlinPlatformType.wasm,
+        -> project.isGenericCompilationEnabled
 
-        KotlinPlatformType.native -> (this as KotlinNativeTarget).isCompilationAllowed()
+        KotlinPlatformType.native -> (this as KotlinNativeTarget).konanTarget.family.isCompilationAllowed(project)
     }
 
-private fun KotlinNativeTarget.isCompilationAllowed(): Boolean =
-    when (val family = konanTarget.family) {
+private fun Family.isCompilationAllowed(project: Project): Boolean =
+    when (this) {
         Family.OSX,
         Family.IOS,
         Family.TVOS,
-        Family.WATCHOS -> Compilations.isDarwinEnabled
+        Family.WATCHOS,
+        -> Compilations.isDarwinEnabled
 
         Family.LINUX -> Compilations.isGenericEnabled
 
         Family.ANDROID,
-        Family.WASM -> project.isGenericCompilationEnabled
+        Family.WASM,
+        -> project.isGenericCompilationEnabled
 
         Family.MINGW -> Compilations.isWindowsEnabled
 
-        Family.ZEPHYR -> error("Unsupported family: $family")
+        Family.ZEPHYR -> error("Unsupported family: $this")
     }
