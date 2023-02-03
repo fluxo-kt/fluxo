@@ -52,7 +52,7 @@ fun Project.setupTestsReport() {
         }
 
         tasks.withType<AbstractTestTask> configuration@{
-            if (disableTests) {
+            if (disableTests || !isTestTaskAllowed()) {
                 enabled = false
                 return@configuration
             }

@@ -56,8 +56,7 @@ formatting:
   ParameterListWrapping:
     maxLineLength: 140
   TrailingCommaOnCallSite:
-    active: true
-    autoCorrect: false
+    active: false
   TrailingCommaOnDeclarationSite:
     active: true
     autoCorrect: false

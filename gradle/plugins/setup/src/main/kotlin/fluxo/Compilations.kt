@@ -1,12 +1,15 @@
 package fluxo
 
 import org.gradle.api.Project
+import org.gradle.api.tasks.testing.AbstractTestTask
 import org.gradle.internal.os.OperatingSystem
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.targets
+import org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest
+import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest
 import org.jetbrains.kotlin.konan.target.Family
 
 internal object Compilations {
@@ -48,34 +51,70 @@ private fun KotlinTarget.disableCompilations() {
     }
 }
 
-private fun KotlinTarget.isCompilationAllowed(): Boolean =
-    when (platformType) {
-        KotlinPlatformType.common -> true
+private fun KotlinTarget.isCompilationAllowed(): Boolean = when (platformType) {
+    KotlinPlatformType.common -> true
 
-        KotlinPlatformType.jvm,
-        KotlinPlatformType.js,
-        KotlinPlatformType.androidJvm,
-        KotlinPlatformType.wasm,
-        -> project.isGenericCompilationEnabled
+    KotlinPlatformType.jvm,
+    KotlinPlatformType.js,
+    KotlinPlatformType.androidJvm,
+    KotlinPlatformType.wasm,
+    -> project.isGenericCompilationEnabled
 
-        KotlinPlatformType.native -> (this as KotlinNativeTarget).konanTarget.family.isCompilationAllowed(project)
+    KotlinPlatformType.native -> (this as KotlinNativeTarget).konanTarget.family.isCompilationAllowed(project)
+}
+
+private fun Family.isCompilationAllowed(project: Project): Boolean = when (this) {
+    Family.OSX,
+    Family.IOS,
+    Family.TVOS,
+    Family.WATCHOS,
+    -> Compilations.isDarwinEnabled
+
+    Family.LINUX -> Compilations.isGenericEnabled
+
+    Family.ANDROID,
+    Family.WASM,
+    -> project.isGenericCompilationEnabled
+
+    Family.MINGW -> Compilations.isWindowsEnabled
+
+    Family.ZEPHYR -> error("Unsupported family: $this")
+}
+
+internal fun AbstractTestTask.isTestTaskAllowed(): Boolean {
+    return when (this) {
+        is KotlinJsTest -> project.isGenericCompilationEnabled
+
+        is KotlinNativeTest -> {
+            val platform = name.splitCamelCase(limit = 2).firstOrNull()
+            nativeFamilyFromString(platform).isCompilationAllowed(project)
+        }
+
+        // JVM/Android tests
+        else -> project.isGenericCompilationEnabled
     }
+}
 
-private fun Family.isCompilationAllowed(project: Project): Boolean =
-    when (this) {
-        Family.OSX,
-        Family.IOS,
-        Family.TVOS,
-        Family.WATCHOS,
-        -> Compilations.isDarwinEnabled
+@Suppress("CyclomaticComplexMethod")
+private fun nativeFamilyFromString(platform: String?): Family = when {
+    platform.equals("watchos", ignoreCase = true) -> Family.WATCHOS
+    platform.equals("tvos", ignoreCase = true) -> Family.TVOS
+    platform.equals("ios", ignoreCase = true) -> Family.IOS
 
-        Family.LINUX -> Compilations.isGenericEnabled
+    platform.equals("darwin", ignoreCase = true) ||
+            platform.equals("macos", ignoreCase = true)
+    -> Family.OSX
 
-        Family.ANDROID,
-        Family.WASM,
-        -> project.isGenericCompilationEnabled
+    platform.equals("android", ignoreCase = true) -> Family.ANDROID
+    platform.equals("linux", ignoreCase = true) -> Family.LINUX
+    platform.equals("wasm", ignoreCase = true) -> Family.WASM
 
-        Family.MINGW -> Compilations.isWindowsEnabled
+    platform.equals("mingw", ignoreCase = true) ||
+            platform.equals("win", ignoreCase = true) ||
+            platform.equals("windows", ignoreCase = true)
+    -> Family.MINGW
 
-        Family.ZEPHYR -> error("Unsupported family: $this")
-    }
+    platform.equals("wasm", ignoreCase = true) -> Family.WASM
+
+    else -> throw IllegalArgumentException("Unsupported family: $platform")
+}

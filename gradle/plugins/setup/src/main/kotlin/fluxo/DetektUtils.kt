@@ -42,7 +42,7 @@ internal fun Detekt.isDetektTaskAllowed(): Boolean = when (getDetektTaskDetails(
 }
 
 private fun getDetektTaskDetails(name: String): DetektTaskDetails {
-    val parts = name.split(CAMEL_CASE_REGEX)
+    val parts = name.splitCamelCase()
     check(parts.isNotEmpty() && parts[0] == DetektPlugin.DETEKT_TASK_NAME) { "Unexpected detect task name: $name" }
 
     var list = parts.drop(1)
@@ -71,7 +71,7 @@ private fun getDetektTaskDetails(name: String): DetektTaskDetails {
 }
 
 @Suppress("CyclomaticComplexMethod")
-private fun detektPlatformFromString(platform: String?) = when {
+private fun detektPlatformFromString(platform: String?): DetektPlatform? = when {
     platform.isNullOrEmpty() ||
             platform.equals("Common", ignoreCase = true) ||
             platform.equals("Native", ignoreCase = true)
@@ -101,6 +101,8 @@ private fun detektPlatformFromString(platform: String?) = when {
 
     else -> DetektPlatform.UNKNOWN
 }
+
+internal fun String.splitCamelCase(limit: Int = 0): List<String> = split(CAMEL_CASE_REGEX, limit)
 
 @Suppress("PrivatePropertyName")
 private val CAMEL_CASE_REGEX = Regex("(?<![A-Z])\\B(?=[A-Z])")
