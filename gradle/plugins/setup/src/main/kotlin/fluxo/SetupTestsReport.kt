@@ -1,3 +1,5 @@
+@file:Suppress("ArgumentListWrapping")
+
 package fluxo
 
 import groovy.time.TimeCategory
@@ -18,7 +20,7 @@ import org.gradle.work.DisableCachingByDefault
 import org.jetbrains.kotlin.gradle.tasks.KotlinTest
 import java.io.FileOutputStream
 import java.lang.System.currentTimeMillis
-import java.util.Date
+import java.util.*
 import java.util.concurrent.ConcurrentLinkedQueue
 import javax.xml.stream.XMLOutputFactory
 
@@ -40,7 +42,11 @@ fun Project.setupTestsReport() {
 
     allprojects {
         if (!disableTests) {
-            tasks.matching { it.name == "check" || it.name == "allTests" }.configureEach {
+            val targetNames = hashSetOf(
+                "check", "test", "allTests", "assemble", "build",
+                "jvmTest", "jsTest", "jsNodeTest", "jsBrowserTest", "mingwX64Test",
+            )
+            tasks.matching { it.name in targetNames }.configureEach {
                 finalizedBy(mergedReport)
             }
         }
@@ -61,7 +67,12 @@ fun Project.setupTestsReport() {
             }
 
             testLogging {
-                events = setOf(TestLogEvent.FAILED, TestLogEvent.SKIPPED, TestLogEvent.STANDARD_OUT, TestLogEvent.STANDARD_ERROR)
+                events = setOf(
+                    TestLogEvent.FAILED,
+                    TestLogEvent.SKIPPED,
+                    TestLogEvent.STANDARD_OUT,
+                    TestLogEvent.STANDARD_ERROR,
+                )
                 exceptionFormat = TestExceptionFormat.FULL
                 showExceptions = true
                 showCauses = true
@@ -222,15 +233,15 @@ private abstract class TestsReportsMergeTask : DefaultTask() {
         val totalSuccesses = totalTests - totalFailures - totalSkipped
         val status = if (totalFailures > 0) "FAILED" else if (totalSuccesses > 0) "SUCCESS" else "SKIPPED"
         val summary = "Overall tests result: $status (" +
-            "$totalTests tests, " +
-            "$totalSuccesses successes, " +
-            "$totalFailures failures, " +
-            "$totalSkipped skipped, " +
-            "${kmpTargets.size} KMP targets" +
-            ") " +
-            "in ${TimeCategory.minus(Date(now), Date(now - totalTimeMillis))}" +
-            "\n" +
-            "Merged XML tests report to $outputFile"
+                "$totalTests tests, " +
+                "$totalSuccesses successes, " +
+                "$totalFailures failures, " +
+                "$totalSkipped skipped, " +
+                "${kmpTargets.size} KMP targets" +
+                ") " +
+                "in ${TimeCategory.minus(Date(now), Date(now - totalTimeMillis))}" +
+                "\n" +
+                "Merged XML tests report to $outputFile"
 
         logger.lifecycle(formatSummary(summary, fails))
         testResults.clear()
