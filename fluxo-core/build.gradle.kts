@@ -1,5 +1,6 @@
 import fluxo.bundle
 import fluxo.dependsOn
+import fluxo.isGenericCompilationEnabled
 import fluxo.setupBinaryCompatibilityValidator
 import fluxo.setupMultiplatform
 import fluxo.setupPublication
@@ -81,9 +82,11 @@ dependencyGuard {
     configuration("androidDebugRuntimeClasspath")
     configuration("androidReleaseRuntimeClasspath")
     configuration("debugRuntimeClasspath")
-    configuration("jsRuntimeClasspath")
     configuration("jvmRuntimeClasspath")
     configuration("releaseRuntimeClasspath")
+    if (project.isGenericCompilationEnabled) {
+        configuration("jsRuntimeClasspath")
+    }
 }
 
 android.namespace = "kt.fluxo.core"
