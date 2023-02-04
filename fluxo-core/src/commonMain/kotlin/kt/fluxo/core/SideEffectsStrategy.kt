@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kt.fluxo.core.SideEffectsStrategy.RECEIVE
 import kt.fluxo.core.annotation.InternalFluxoApi
+import kotlin.jvm.JvmField
 
 /**
  * Available strategies for how side effects sharing can be handled in the [Store].
@@ -61,7 +62,12 @@ public sealed interface SideEffectsStrategy {
      *
      * @see kotlinx.coroutines.flow.MutableSharedFlow
      */
-    public class SHARE(public val replay: Int = 0) : SideEffectsStrategy {
+    public class SHARE(
+        @JvmField
+        public val replay: Int,
+    ) : SideEffectsStrategy {
+        public constructor() : this(replay = 0)
+
         /** @hide */
         @InternalFluxoApi
         override fun toString(): String = "SHARE(replay=$replay)"
