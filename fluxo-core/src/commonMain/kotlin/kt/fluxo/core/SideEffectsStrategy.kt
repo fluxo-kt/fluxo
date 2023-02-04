@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kt.fluxo.core.SideEffectsStrategy.RECEIVE
+import kt.fluxo.core.annotation.InternalFluxoApi
 
 /**
  * Available strategies for how side effects sharing can be handled in the [Store].
@@ -23,6 +24,8 @@ public sealed interface SideEffectsStrategy {
      * @see CONSUME
      */
     public object RECEIVE : SideEffectsStrategy {
+        /** @hide */
+        @InternalFluxoApi
         override fun toString(): String = "RECEIVE"
     }
 
@@ -42,6 +45,8 @@ public sealed interface SideEffectsStrategy {
      * @see SHARE
      */
     public object CONSUME : SideEffectsStrategy {
+        /** @hide */
+        @InternalFluxoApi
         override fun toString(): String = "CONSUME"
     }
 
@@ -57,8 +62,16 @@ public sealed interface SideEffectsStrategy {
      * @see kotlinx.coroutines.flow.MutableSharedFlow
      */
     public class SHARE(public val replay: Int = 0) : SideEffectsStrategy {
+        /** @hide */
+        @InternalFluxoApi
         override fun toString(): String = "SHARE(replay=$replay)"
+
+        /** @hide */
+        @InternalFluxoApi
         override fun equals(other: Any?): Boolean = this === other || other is SHARE && replay == other.replay
+
+        /** @hide */
+        @InternalFluxoApi
         override fun hashCode(): Int = replay
     }
 
@@ -67,6 +80,8 @@ public sealed interface SideEffectsStrategy {
      * Saves a bit of app memory, and sometimes your brain cells (as a purer way is to use only state+intent).
      */
     public object DISABLE : SideEffectsStrategy {
+        /** @hide */
+        @InternalFluxoApi
         override fun toString(): String = "DISABLE"
     }
 }
