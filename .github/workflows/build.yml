@@ -123,7 +123,7 @@ jobs:
             !**/build/reports/dependency-analysis/
 
       - name: Upload merged sarif (Lint)
-        if: (success() || failure()) && matrix.os != 'windows-latest'
+        if: (success() || failure()) && matrix.os == 'macos-latest'
         uses: github/codeql-action/upload-sarif@v2
         continue-on-error: true
         with:
@@ -131,7 +131,7 @@ jobs:
           category: lint
 
       - name: Upload merged sarif (Detekt)
-        if: success() || failure()
+        if: (success() || failure()) && matrix.os == 'macos-latest'
         uses: github/codeql-action/upload-sarif@v2
         continue-on-error: true
         with:
@@ -139,7 +139,7 @@ jobs:
           category: detekt
 
       - name: Publish JUnit test results as a pull request check
-        if: github.repository == 'fluxo-kt/fluxo-mvi' && github.ref == 'refs/heads/main'
+        if: github.repository == 'fluxo-kt/fluxo-mvi' && github.ref == 'refs/heads/main' && matrix.os == 'macos-latest'
         uses: mikepenz/action-junit-report@v3
         with:
           report_paths: '**/build/test-results/*/TEST-*.xml'
