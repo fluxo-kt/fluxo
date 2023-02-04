@@ -3,6 +3,11 @@ name: Benchmark
 on:
   schedule:
     - cron: '0 10 * * 2'
+  push:
+    paths:
+      - '**/**Benchmark.kt'
+      - '**/benchmark-summary.main.kts'
+      - '**/benchmark.yml'
 
 jobs:
   os-checks:
