@@ -13,6 +13,7 @@ import kotlin.internal.InlineOnly
 import kotlin.internal.LowPriorityInOverloadResolution
 import kotlin.js.JsName
 import kotlin.jvm.JvmName
+import kotlin.native.ObjCName
 
 
 // Convenience DSL for Fluxo usage (inline)
@@ -43,6 +44,7 @@ public inline fun <State> CoroutineScope.container(
 @LowPriorityInOverloadResolution
 @JsName("scopedContainerWithSideEffects")
 @JvmName("containerWithSideEffects")
+@ObjCName("containerWithSideEffects")
 public inline fun <State, SideEffect : Any> CoroutineScope.container(
     initialState: State,
     settings: FluxoSettings<FluxoIntent<State, SideEffect>, State, SideEffect> = fluxoSettings(),
@@ -98,6 +100,7 @@ public inline fun <Intent, State> CoroutineScope.store(
 @InlineOnly
 @JsName("scopedStoreWithSideEffects")
 @JvmName("storeWithSideEffects")
+@ObjCName("storeWithSideEffects")
 public inline fun <Intent, State, SideEffect : Any> CoroutineScope.store(
     initialState: State,
     @BuilderInference handler: IntentHandler<Intent, State, SideEffect>,
@@ -139,6 +142,7 @@ public inline fun <State> container(
 @LowPriorityInOverloadResolution
 @JsName("containerWithSideEffects")
 @JvmName("containerWithSideEffects")
+@ObjCName("containerWithSideEffects")
 public inline fun <State, SideEffect : Any> container(
     initialState: State,
     settings: FluxoSettings<FluxoIntent<State, SideEffect>, State, SideEffect> = fluxoSettings(),
@@ -196,6 +200,7 @@ public inline fun <Intent, State> store(
 @InlineOnly
 @JsName("storeWithSideEffects")
 @JvmName("storeWithSideEffects")
+@ObjCName("storeWithSideEffects")
 public inline fun <Intent, State, SideEffect : Any> store(
     initialState: State,
     @BuilderInference handler: IntentHandler<Intent, State, SideEffect>,

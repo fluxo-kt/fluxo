@@ -5,10 +5,10 @@ public abstract interface class kt/fluxo/core/ContainerHost {
 public final class kt/fluxo/core/FluxoClosedException : java/lang/IllegalStateException, kt/fluxo/core/FluxoException {
 }
 
-public final class kt/fluxo/core/FluxoDslKt {
-	public static final fun closeAndWait (Lkt/fluxo/core/Store;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static final fun repeatOnSubscription (Lkt/fluxo/core/dsl/StoreScope;Ljava/lang/String;JLkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun repeatOnSubscription$default (Lkt/fluxo/core/dsl/StoreScope;Ljava/lang/String;JLkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+public final class kt/fluxo/core/FluxoDsl {
+	public static final fun closeStoreAndWait (Lkt/fluxo/core/Store;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static final fun repeatOnSubscriptionIn (Lkt/fluxo/core/dsl/StoreScope;Ljava/lang/String;JLkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun repeatOnSubscriptionIn$default (Lkt/fluxo/core/dsl/StoreScope;Ljava/lang/String;JLkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 }
 
 public abstract interface class kt/fluxo/core/FluxoException {
