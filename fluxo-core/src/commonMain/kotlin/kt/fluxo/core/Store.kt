@@ -58,14 +58,14 @@ public interface Store<Intent, State, SideEffect : Any> : Closeable {
 
     /**
      *
-     * @throws StoreClosedException
+     * @throws FluxoClosedException
      */
     @JsName("send")
     public fun send(intent: Intent)
 
     /**
      *
-     * @throws StoreClosedException
+     * @throws FluxoClosedException
      */
     @JsName("sendAsync")
     public suspend fun sendAsync(intent: Intent): Job
@@ -74,7 +74,7 @@ public interface Store<Intent, State, SideEffect : Any> : Closeable {
     /**
      * Starts [Store] processing if not started already.
      *
-     * @throws StoreClosedException
+     * @throws FluxoClosedException
      */
     @JsName("start")
     public fun start(): Job?

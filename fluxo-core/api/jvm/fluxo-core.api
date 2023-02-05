@@ -2,10 +2,16 @@ public abstract interface class kt/fluxo/core/ContainerHost {
 	public abstract fun getContainer ()Lkt/fluxo/core/Store;
 }
 
+public final class kt/fluxo/core/FluxoClosedException : java/lang/IllegalStateException, kt/fluxo/core/FluxoException {
+}
+
 public final class kt/fluxo/core/FluxoDslKt {
 	public static final fun closeAndWait (Lkt/fluxo/core/Store;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static final fun repeatOnSubscription (Lkt/fluxo/core/dsl/StoreScope;Ljava/lang/String;JLkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun repeatOnSubscription$default (Lkt/fluxo/core/dsl/StoreScope;Ljava/lang/String;JLkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+}
+
+public abstract interface class kt/fluxo/core/FluxoException {
 }
 
 public abstract interface class kt/fluxo/core/FluxoInterceptor {
@@ -16,6 +22,9 @@ public abstract interface class kt/fluxo/core/FluxoInterceptor {
 
 public final class kt/fluxo/core/FluxoInterceptorKt {
 	public static final fun create (Lkotlin/jvm/functions/Function1;)Lkt/fluxo/core/FluxoInterceptor;
+}
+
+public class kt/fluxo/core/FluxoRuntimeException : java/lang/RuntimeException, kt/fluxo/core/FluxoException {
 }
 
 public final class kt/fluxo/core/FluxoSettings {
@@ -121,17 +130,8 @@ public abstract interface class kt/fluxo/core/Store : java/io/Closeable {
 	public abstract fun start ()Lkotlinx/coroutines/Job;
 }
 
-public final class kt/fluxo/core/StoreClosedException : java/lang/IllegalStateException, kt/fluxo/core/StoreException {
-}
-
-public abstract interface class kt/fluxo/core/StoreException {
-}
-
 public abstract interface class kt/fluxo/core/StoreHost {
 	public abstract fun getStore ()Lkt/fluxo/core/Store;
-}
-
-public class kt/fluxo/core/StoreRuntimeException : java/lang/RuntimeException, kt/fluxo/core/StoreException {
 }
 
 public abstract interface annotation class kt/fluxo/core/annotation/ExperimentalFluxoApi : java/lang/annotation/Annotation {

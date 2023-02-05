@@ -39,11 +39,11 @@ import kotlinx.coroutines.selects.select
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
 import kt.fluxo.core.Bootstrapper
+import kt.fluxo.core.FluxoClosedException
 import kt.fluxo.core.FluxoSettings
 import kt.fluxo.core.IntentHandler
 import kt.fluxo.core.SideEffectsStrategy
 import kt.fluxo.core.Store
-import kt.fluxo.core.StoreClosedException
 import kt.fluxo.core.annotation.InternalFluxoApi
 import kt.fluxo.core.data.GuaranteedEffect
 import kt.fluxo.core.debug.DEBUG
@@ -286,7 +286,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
 
     override fun start(): Job? {
         if (!isActive) {
-            throw StoreClosedException(
+            throw FluxoClosedException(
                 "Store is closed, it cannot be restarted",
                 cancellationCause?.let { it.cause ?: it },
             )
