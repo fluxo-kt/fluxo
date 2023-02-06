@@ -24,6 +24,10 @@ import kotlin.jvm.JvmField
 import kotlin.jvm.JvmName
 import kotlin.native.ObjCName
 
+
+public typealias FluxoSettingsS<Intent, State> = FluxoSettings<Intent, State, Nothing>
+
+
 /**
  * Settings for the Fluxo store.
  *

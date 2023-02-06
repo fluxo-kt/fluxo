@@ -9,12 +9,28 @@ import kt.fluxo.core.intercept.FluxoEvent
 import kt.fluxo.core.internal.Closeable
 import kotlin.js.JsName
 
+
 /**
  * Convenience typealias for an MVVM+ Fluxo [Store] setup.
  */
 public typealias Container<State, SideEffect> = Store<FluxoIntent<State, SideEffect>, State, SideEffect>
 
+/**
+ * Convenience typealias for an MVVM+ Fluxo [Store] setup with side effects disabled.
+ */
+public typealias ContainerS<State> = Container<State, Nothing>
 
+/**
+ * Convenience typealias for a Fluxo [Store] setup with side effects disabled.
+ */
+public typealias StoreS<Intent, State> = Store<Intent, State, Nothing>
+
+
+/**
+ * Fluxo state store.
+ *
+ * Tip: Use [isActive][kotlinx.coroutines.isActive] to check if store is active.
+ */
 @ThreadSafe
 public interface Store<Intent, State, SideEffect : Any> : Closeable {
 
