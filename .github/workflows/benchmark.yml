@@ -9,6 +9,9 @@ on:
       - '**/benchmark-summary.main.kts'
       - '**/benchmark.yml'
 
+env:
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.unsafe.configuration-cache=false -Dorg.gradle.vfs.watch=false"
+
 jobs:
   os-checks:
     strategy:

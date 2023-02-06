@@ -5,6 +5,16 @@ name: CI livelock check (fail expected)
 on:
   schedule:
     - cron: '0 10 * * 1,5'
+  push:
+    paths:
+      - '**/build-issue-check.yml'
+
+env:
+  GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx6g -Dorg.gradle.daemon=false -Dkotlin.incremental=false \
+  -Dorg.gradle.configureondemand=false \
+  -Dorg.gradle.unsafe.configuration-cache=false \
+  -Dorg.gradle.vfs.watch=false \
+  "
 
 jobs:
   gradle-livelock-checks:
@@ -54,4 +64,4 @@ jobs:
           CI: true
         with:
           gradle-home-cache-cleanup: true
-          arguments: build assemble check -d --stacktrace --continue --scan --no-configuration-cache
+          arguments: build assemble check -d --stacktrace --continue --scan
