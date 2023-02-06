@@ -7,6 +7,7 @@ import kt.fluxo.core.annotation.ExperimentalFluxoApi
 import kt.fluxo.core.annotation.ThreadSafe
 import kt.fluxo.core.intercept.FluxoEvent
 import kt.fluxo.core.internal.Closeable
+import kotlin.coroutines.cancellation.CancellationException
 import kotlin.js.JsName
 
 
@@ -41,6 +42,7 @@ public interface Store<Intent, State, SideEffect : Any> : Closeable {
      */
     public val name: String
 
+
     /**
      * Reactive access to the [State].
      *
@@ -54,6 +56,7 @@ public interface Store<Intent, State, SideEffect : Any> : Closeable {
      * @see stateFlow
      */
     public val state: State get() = stateFlow.value
+
 
     /**
      * A _hot_ [Flow] that shares emitted [SideEffect]s among its collectors.
@@ -74,17 +77,25 @@ public interface Store<Intent, State, SideEffect : Any> : Closeable {
 
 
     /**
+     * Queues an [intent] for processing.
+     *
+     * @return a [Job] that can be [joined][Job.join] to await for processing completion
      *
      * @throws FluxoClosedException
      */
     @JsName("send")
+    @Throws(FluxoClosedException::class)
     public fun send(intent: Intent)
 
     /**
+     * Queues an [intent] for processing.
+     *
+     * @return a [Job] that can be [joined][Job.join] to await for processing completion
      *
      * @throws FluxoClosedException
      */
     @JsName("sendAsync")
+    @Throws(FluxoClosedException::class, CancellationException::class)
     public suspend fun sendAsync(intent: Intent): Job
 
 

@@ -2,7 +2,8 @@ public abstract interface class kt/fluxo/core/ContainerHost {
 	public abstract fun getContainer ()Lkt/fluxo/core/Store;
 }
 
-public final class kt/fluxo/core/FluxoClosedException : java/lang/IllegalStateException, kt/fluxo/core/FluxoException {
+public final class kt/fluxo/core/FluxoClosedException : java/util/concurrent/CancellationException, kt/fluxo/core/FluxoException {
+	public synthetic fun getCause ()Ljava/lang/Throwable;
 }
 
 public final class kt/fluxo/core/FluxoDsl {
