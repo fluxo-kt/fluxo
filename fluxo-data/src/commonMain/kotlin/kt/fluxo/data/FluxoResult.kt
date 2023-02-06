@@ -3,10 +3,12 @@
 package kt.fluxo.data
 
 import kotlin.internal.InlineOnly
+import kotlin.js.JsExport
+import kotlin.js.JsName
 
 /**
  * A wrapper type designed to represent the result of data fetching from any source or some calculations.
- * When data is refreshed, the previous values can be kept around for a nicer end-user experience.
+ * When the data refreshed, the previous values can be kept around for a nicer end-user experience.
  *
  * [FluxoResult] can represent state in a mixed condition, like *"cached empty value"* or *"loading with some default data"*, etc.
  *
@@ -19,6 +21,7 @@ import kotlin.internal.InlineOnly
  * @see io.uniflow.core.flow.data.UIState
  * @see com.seanghay.resultof.ResultOf
  */
+@JsExport
 @Suppress("SerialVersionUIDInSerializableClass", "KDocUnresolvedReference", "MemberVisibilityCanBePrivate")
 public data class FluxoResult<out T> internal constructor(
     public val value: T,
@@ -45,6 +48,7 @@ public data class FluxoResult<out T> internal constructor(
         /**
          * Not loaded data state with default [value].
          */
+        @JsName("notLoadedWithValue")
         public fun <T> notLoaded(value: T): FluxoResult<T> = FluxoResult(value, error = null, flags = FLAG_NOT_LOADED or isEmpty(value))
 
 
@@ -63,6 +67,7 @@ public data class FluxoResult<out T> internal constructor(
         /**
          * Loading data state with previous [value]. Considers as successful if [value] is not empty!
          */
+        @JsName("loadingWithValue")
         public fun <T> loading(value: T): FluxoResult<T> {
             val e = isEmpty(value)
             val s = if (e.hasFlag(FLAG_EMPTY)) 0 else FLAG_SUCCESS
@@ -78,6 +83,7 @@ public data class FluxoResult<out T> internal constructor(
         /**
          * Successful, but empty data state. [value] set explicitly.
          */
+        @JsName("emptyWithValue")
         public fun <T> empty(value: T): FluxoResult<T> = FluxoResult(value, error = null, flags = FLAG_SUCCESS or FLAG_EMPTY)
 
 
@@ -95,6 +101,7 @@ public data class FluxoResult<out T> internal constructor(
         /**
          * Failure state with [value] set explicitly.
          */
+        @JsName("failureWithValue")
         public fun <T> failure(error: Throwable?, value: T): FluxoResult<T> =
             FluxoResult(value, error, flags = FLAG_FAILED or isEmpty(value))
 

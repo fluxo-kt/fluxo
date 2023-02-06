@@ -53,6 +53,10 @@ setupDefaults(
         jvm()
         if (project.isGenericCompilationEnabled) {
             js(IR) {
+                // Required for generation of TypeScript declaration files
+                // https://kotlinlang.org/docs/js-ir-compiler.html#preview-generation-of-typescript-declaration-files-d-ts
+                binaries.executable()
+
                 compilations.all {
                     kotlinOptions {
                         // moduleKind = "es"
@@ -83,6 +87,7 @@ setupDefaults(
             languageSettings {
                 optIn("kotlin.contracts.ExperimentalContracts")
                 optIn("kotlin.experimental.ExperimentalObjCName")
+                optIn("kotlin.js.ExperimentalJsExport")
             }
         }
 
@@ -328,12 +333,13 @@ allprojects {
         val enableK2 by useK2()
         val useKotlinDebug by useKotlinDebug()
         tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask<*>>().configureEach {
+            val isJsTask = "Js" in name
             val isTestTask = "Test" in name
             val isDebugTask = "Debug" in name
             val isReleaseTask = "Release" in name
             val releaseSettings = isCi || isRelease || isReleaseTask
             compilerOptions {
-                val noWarningsAllowed = !isTestTask && (isCi || isRelease)
+                val noWarningsAllowed = !isJsTask && !isTestTask && (isCi || isRelease)
                 if (noWarningsAllowed) {
                     allWarningsAsErrors.set(true)
                 }
@@ -377,6 +383,7 @@ allprojects {
                     "-opt-in=kotlin.RequiresOptIn",
                     "-opt-in=kotlin.contracts.ExperimentalContracts",
                     "-opt-in=kotlin.experimental.ExperimentalObjCName",
+                    "-opt-in=kotlin.js.ExperimentalJsExport",
                     // w: '-progressive' is meaningful only for the latest language version (1.8)
                     //"-progressive",
                 )

@@ -14,6 +14,7 @@ import kotlin.js.JsName
  */
 public typealias Container<State, SideEffect> = Store<FluxoIntent<State, SideEffect>, State, SideEffect>
 
+
 @ThreadSafe
 public interface Store<Intent, State, SideEffect : Any> : Closeable {
 

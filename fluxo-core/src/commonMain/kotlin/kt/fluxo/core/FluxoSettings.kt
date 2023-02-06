@@ -18,6 +18,7 @@ import kt.fluxo.core.internal.InputStrategyGuardian
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.internal.InlineOnly
+import kotlin.js.JsExport
 import kotlin.js.JsName
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmName
@@ -31,6 +32,7 @@ import kotlin.native.ObjCName
  * * Just configure each store individually with the standard DSL (see [container] and [store]).
  */
 @FluxoDsl
+@JsExport
 @NotThreadSafe
 public class FluxoSettings<Intent, State, SideEffect : Any> private constructor() {
 
