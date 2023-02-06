@@ -120,15 +120,18 @@ public final class kt/fluxo/core/SideEffectsStrategy$SHARE : kt/fluxo/core/SideE
 	public fun toString ()Ljava/lang/String;
 }
 
-public abstract interface class kt/fluxo/core/Store : java/io/Closeable {
-	public abstract fun close ()V
+public abstract interface class kt/fluxo/core/Store : java/io/Closeable, kotlinx/coroutines/CoroutineScope {
+	public fun async (Ljava/lang/String;Lkotlin/jvm/functions/Function2;)V
+	public static synthetic fun async$default (Lkt/fluxo/core/Store;Ljava/lang/String;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)V
+	public fun close ()V
 	public abstract fun getEventsFlow ()Lkotlinx/coroutines/flow/Flow;
 	public abstract fun getName ()Ljava/lang/String;
 	public abstract fun getSideEffectFlow ()Lkotlinx/coroutines/flow/Flow;
 	public fun getState ()Ljava/lang/Object;
 	public abstract fun getStateFlow ()Lkotlinx/coroutines/flow/StateFlow;
 	public abstract fun getSubscriptionCount ()Lkotlinx/coroutines/flow/StateFlow;
-	public abstract fun isActive ()Z
+	public fun launch (Ljava/lang/String;Lkotlin/jvm/functions/Function2;)V
+	public static synthetic fun launch$default (Lkt/fluxo/core/Store;Ljava/lang/String;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)V
 	public abstract fun send (Ljava/lang/Object;)V
 	public abstract fun sendAsync (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun start ()Lkotlinx/coroutines/Job;
@@ -371,13 +374,12 @@ public final class kt/fluxo/core/internal/FluxoIntentHandler : kt/fluxo/core/Int
 
 public final class kt/fluxo/core/internal/FluxoStore : kt/fluxo/core/Store {
 	public fun <init> (Ljava/lang/Object;Lkt/fluxo/core/IntentHandler;Lkt/fluxo/core/FluxoSettings;)V
-	public fun close ()V
+	public fun getCoroutineContext ()Lkotlin/coroutines/CoroutineContext;
 	public fun getEventsFlow ()Lkotlinx/coroutines/flow/Flow;
 	public fun getName ()Ljava/lang/String;
 	public fun getSideEffectFlow ()Lkotlinx/coroutines/flow/Flow;
 	public fun getStateFlow ()Lkotlinx/coroutines/flow/StateFlow;
 	public fun getSubscriptionCount ()Lkotlinx/coroutines/flow/StateFlow;
-	public fun isActive ()Z
 	public fun send (Ljava/lang/Object;)V
 	public fun sendAsync (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun start ()Lkotlinx/coroutines/Job;

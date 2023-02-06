@@ -1,13 +1,19 @@
+@file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
+
 package kt.fluxo.core
 
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kt.fluxo.core.annotation.ExperimentalFluxoApi
 import kt.fluxo.core.annotation.ThreadSafe
 import kt.fluxo.core.intercept.FluxoEvent
 import kt.fluxo.core.internal.Closeable
+import kt.fluxo.core.internal.SideJobRequest.Companion.DEFAULT_SIDE_JOB
 import kotlin.coroutines.cancellation.CancellationException
+import kotlin.internal.InlineOnly
 import kotlin.js.JsName
 
 
@@ -33,7 +39,7 @@ public typealias StoreS<Intent, State> = Store<Intent, State, Nothing>
  * Tip: Use [isActive][kotlinx.coroutines.isActive] to check if store is active.
  */
 @ThreadSafe
-public interface Store<Intent, State, SideEffect : Any> : Closeable {
+public interface Store<Intent, State, SideEffect : Any> : CoroutineScope, Closeable {
 
     /**
      * [Store] name. Auto-generated or specified via [FluxoSettings.name].
@@ -84,8 +90,6 @@ public interface Store<Intent, State, SideEffect : Any> : Closeable {
     @ExperimentalFluxoApi
     public val eventsFlow: Flow<FluxoEvent<Intent, State, SideEffect>>
 
-    public val isActive: Boolean
-
 
     /**
      * Queues an [intent] for processing.
@@ -118,5 +122,35 @@ public interface Store<Intent, State, SideEffect : Any> : Closeable {
     @JsName("start")
     public fun start(): Job?
 
-    public override fun close()
+    /**
+     * Cancels this store completely
+     *
+     * @see kotlinx.coroutines.cancel
+     */
+    public override fun close() {
+        cancel()
+    }
+
+
+    // region Convenience helpers
+
+    @InlineOnly
+    @JsName("launch")
+    @Deprecated(
+        message = "Please use the sideJob function to launch long running jobs in Fluxo",
+        replaceWith = ReplaceWith("sideJob(key, block)"),
+        level = DeprecationLevel.ERROR,
+    )
+    public fun launch(key: String = DEFAULT_SIDE_JOB, block: SideJob<Intent, *, *>): Unit = throw NotImplementedError()
+
+    @InlineOnly
+    @JsName("async")
+    @Deprecated(
+        message = "Please use the sideJob function to launch long running jobs in Fluxo",
+        replaceWith = ReplaceWith("sideJob(key, block)"),
+        level = DeprecationLevel.ERROR,
+    )
+    public fun async(key: String = DEFAULT_SIDE_JOB, block: SideJob<Intent, *, *>): Unit = throw NotImplementedError()
+
+    // endregion
 }
