@@ -98,7 +98,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
     private val events = MutableSharedFlow<FluxoEvent<Intent, State, SideEffect>>(extraBufferCapacity = 256)
     override val eventsFlow: Flow<FluxoEvent<Intent, State, SideEffect>> get() = events
 
-    private val subscriptionCount: StateFlow<Int>
+    override val subscriptionCount: StateFlow<Int>
 
     override val isActive: Boolean
         get() = scope.isActive

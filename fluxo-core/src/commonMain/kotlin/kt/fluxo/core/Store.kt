@@ -70,6 +70,17 @@ public interface Store<Intent, State, SideEffect : Any> : Closeable {
      */
     public val sideEffectFlow: Flow<SideEffect>
 
+
+    /**
+     * [StateFlow] with the number of subscribers (active collectors) for the current [Store].
+     * Never negative and starts with zero. Can be used to react to changes in the number of subscriptions to this [Store].
+     *
+     * @see kt.fluxo.core.repeatOnSubscription
+     * @see kotlinx.coroutines.flow.MutableSharedFlow.subscriptionCount
+     */
+    @ExperimentalFluxoApi
+    public val subscriptionCount: StateFlow<Int>
+
     @ExperimentalFluxoApi
     public val eventsFlow: Flow<FluxoEvent<Intent, State, SideEffect>>
 
