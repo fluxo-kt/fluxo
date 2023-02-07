@@ -12,6 +12,7 @@ on:
 env:
   GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx6g -Dorg.gradle.daemon=false -Dkotlin.incremental=false \
   -Dorg.gradle.configureondemand=false \
+  -Dorg.gradle.parallel=false \
   -Dorg.gradle.unsafe.configuration-cache=false \
   -Dorg.gradle.vfs.watch=false \
   "
