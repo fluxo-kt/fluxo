@@ -137,10 +137,6 @@ public abstract interface class kt/fluxo/core/Store : java/io/Closeable, kotlinx
 	public abstract fun start ()Lkotlinx/coroutines/Job;
 }
 
-public abstract interface class kt/fluxo/core/StoreHost {
-	public abstract fun getStore ()Lkt/fluxo/core/Store;
-}
-
 public abstract interface annotation class kt/fluxo/core/annotation/ExperimentalFluxoApi : java/lang/annotation/Annotation {
 }
 

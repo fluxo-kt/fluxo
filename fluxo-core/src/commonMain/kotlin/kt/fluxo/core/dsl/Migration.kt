@@ -9,7 +9,6 @@ import kt.fluxo.core.ContainerHost
 import kt.fluxo.core.FluxoIntent
 import kt.fluxo.core.FluxoSettings
 import kt.fluxo.core.Store
-import kt.fluxo.core.StoreHost
 import kt.fluxo.core.annotation.ExperimentalFluxoApi
 import kotlin.internal.InlineOnly
 import kotlin.jvm.JvmSynthetic
@@ -17,10 +16,6 @@ import kotlin.jvm.JvmSynthetic
 @InlineOnly
 @Deprecated(message = "Please use the container instead", replaceWith = ReplaceWith("container"))
 public inline val <S, SE : Any> ContainerHost<S, SE>.store get() = container
-
-@InlineOnly
-@Deprecated(message = "Please use the store instead", replaceWith = ReplaceWith("store"))
-public inline val <I, S, SE : Any> StoreHost<I, S, SE>.container get() = store
 
 
 @InlineOnly
