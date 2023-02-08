@@ -3,9 +3,9 @@ package kt.fluxo.tests
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
-import kt.fluxo.core.ContainerHost
 import kt.fluxo.core.closeAndWait
 import kt.fluxo.core.container
+import kt.fluxo.core.dsl.ContainerHost
 import kt.fluxo.core.dsl.SideJobScope
 import kt.fluxo.core.intent
 import kt.fluxo.core.repeatOnSubscription

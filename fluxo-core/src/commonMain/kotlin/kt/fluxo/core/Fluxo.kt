@@ -4,6 +4,7 @@ package kt.fluxo.core
 
 import kotlinx.coroutines.CoroutineScope
 import kt.fluxo.core.annotation.FluxoDsl
+import kt.fluxo.core.dsl.ContainerHost
 import kt.fluxo.core.internal.FluxoIntentHandler
 import kt.fluxo.core.internal.FluxoStore
 import kt.fluxo.core.internal.ReducerIntentHandler

@@ -1,5 +1,6 @@
-package kt.fluxo.core
+package kt.fluxo.core.dsl
 
+import kt.fluxo.core.Container
 import kotlin.js.JsExport
 
 /**

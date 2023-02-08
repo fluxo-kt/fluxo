@@ -5,7 +5,6 @@ package kt.fluxo.core.dsl
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kt.fluxo.core.Container
-import kt.fluxo.core.ContainerHost
 import kt.fluxo.core.FluxoIntent
 import kt.fluxo.core.FluxoSettings
 import kt.fluxo.core.Store

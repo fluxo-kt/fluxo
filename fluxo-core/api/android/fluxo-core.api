@@ -1,7 +1,3 @@
-public abstract interface class kt/fluxo/core/ContainerHost {
-	public abstract fun getContainer ()Lkt/fluxo/core/Store;
-}
-
 public final class kt/fluxo/core/FluxoClosedException : java/util/concurrent/CancellationException, kt/fluxo/core/FluxoException {
 	public synthetic fun getCause ()Ljava/lang/Throwable;
 }
@@ -157,6 +153,10 @@ public class kt/fluxo/core/data/GuaranteedEffect : java/io/Closeable {
 
 public abstract interface class kt/fluxo/core/dsl/BootstrapperScope : kt/fluxo/core/dsl/StoreScope {
 	public abstract fun postIntent (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public abstract interface class kt/fluxo/core/dsl/ContainerHost {
+	public abstract fun getContainer ()Lkt/fluxo/core/Store;
 }
 
 public abstract interface class kt/fluxo/core/dsl/InterceptorScope : kotlinx/coroutines/CoroutineScope {
