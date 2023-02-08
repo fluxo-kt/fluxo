@@ -39,7 +39,6 @@ plugins {
     alias(libs.plugins.kotlin.multiplatform) apply false
     alias(libs.plugins.kotlinx.binCompatValidator) apply false
     alias(libs.plugins.kotlinx.kover)
-    alias(libs.plugins.deps.analysis)
     alias(libs.plugins.deps.guard)
     alias(libs.plugins.deps.versions)
     alias(libs.plugins.task.tree)
@@ -159,25 +158,6 @@ setupDefaults(
 setupVerification()
 
 ensureUnreachableTasksDisabled()
-
-dependencyAnalysis {
-    // https://github.com/autonomousapps/dependency-analysis-android-gradle-plugin/wiki/Customizing-plugin-behavior
-    dependencies {
-        bundle("kotlin-stdlib") {
-            includeGroup("org.jetbrains.kotlin")
-        }
-    }
-    issues {
-        all {
-            onIncorrectConfiguration {
-                severity("fail")
-            }
-            onUnusedDependencies {
-                severity("fail")
-            }
-        }
-    }
-}
 
 // TODO: Configure universally via convenience plugin
 dependencyGuard {
