@@ -164,10 +164,6 @@ public abstract interface class kt/fluxo/core/dsl/InterceptorScope : kotlinx/cor
 	public abstract fun postRequest (Lkt/fluxo/core/intercept/StoreRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public final class kt/fluxo/core/dsl/MigrationKt {
-	public static final synthetic fun orbit (Lkt/fluxo/core/Store;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-}
-
 public abstract interface class kt/fluxo/core/dsl/SideJobScope : kotlinx/coroutines/CoroutineScope {
 	public abstract fun getCurrentStateWhenStarted ()Ljava/lang/Object;
 	public abstract fun getRestartState ()Lkt/fluxo/core/dsl/SideJobScope$RestartState;
