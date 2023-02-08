@@ -107,7 +107,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
     private val interceptors = conf.interceptors.toTypedArray()
     private val bootstrapper = conf.bootstrapper
     private val intentFilter = conf.intentFilter
-    private val coroutineStart = if (conf.offloadAllToScope) CoroutineStart.DEFAULT else CoroutineStart.UNDISPATCHED
+    private val coroutineStart = if (!conf.optimized) CoroutineStart.DEFAULT else CoroutineStart.UNDISPATCHED
 
     @OptIn(InternalCoroutinesApi::class)
     private val cancellationCause get() = coroutineContext[Job]?.getCancellationException()

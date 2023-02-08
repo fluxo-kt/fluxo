@@ -166,7 +166,7 @@ internal class InputStrategyTest : CoroutineScopeAwareTest() {
             inputStrategy = Parallel
             debugChecks = true
             bootstrapper = intent
-            offloadAllToScope = true
+            optimized = false
             lazy = true
         }
         container.intent(intent)

@@ -33,7 +33,7 @@ public typealias FluxoSettingsS<Intent, State> = FluxoSettings<Intent, State, No
  * Settings for the Fluxo store.
  *
  * * Change settings once and for all at one place with [FluxoSettings.DEFAULT].
- * * Provide the prepared settings object for the group of your stores
+ * * Provide a prepared settings object for the group of your stores
  *   (use [FluxoSettings()][FluxoSettings.invoke] and then the standard DSL).
  * * Just configure each store individually with the standard DSL (see [container] and [store]).
  */
@@ -183,10 +183,11 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
     public var interceptorContext: CoroutineContext = EmptyCoroutineContext
 
     /**
-     * If true the [Store] will offload everything possible to the provided [scope] and contexts, not trying to optimize performance.
+     * If false the [Store] will offload everything possible to the provided [scope],
+     * not trying to optimize performance.
      */
-    @get:JvmName("isOffloadAllToScope")
-    public var offloadAllToScope: Boolean = false
+    @get:JvmName("isOptimized")
+    public var optimized: Boolean = true
 
     /**
      * [CoroutineExceptionHandler] to receive exception happened in processing.
@@ -283,7 +284,7 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
 
         s.exceptionHandler = exceptionHandler
 
-        s.offloadAllToScope = offloadAllToScope
+        s.optimized = optimized
 
         s.interceptorContext = interceptorContext
         s.sideJobsContext = sideJobsContext
