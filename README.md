@@ -106,6 +106,8 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super p
 
 ### Roadmap
 
+* Support new Kotlin 1.8.20 `AutoCloseable`
+  * https://kotlinlang.org/docs/whatsnew-eap.html#experimental-support-for-autocloseable-interface-in-standard-library
 * [ ] Complete pipeline interception (as with OkHttp, etc.)
 * [ ] sideJob helpers for logic called on a specific state or side effect (see _Kotlin-Bloc_).
 * [ ] [SAM: State-Action-Model](https://sam.js.org/), composable

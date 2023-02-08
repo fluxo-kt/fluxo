@@ -49,7 +49,7 @@ java.toolchain.languageVersion.set(JavaLanguageVersion.of(11))
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
     compilerOptions {
         jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
-        org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_1_9.let {
+        org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0.let {
             languageVersion.set(it)
             apiVersion.set(it)
         }
@@ -61,8 +61,6 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
             "-opt-in=kt.fluxo.core.annotation.ExperimentalFluxoApi",
             "-progressive",
         )
-
-        useK2.set(true)
     }
 }
 

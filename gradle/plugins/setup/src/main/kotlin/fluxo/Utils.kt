@@ -79,7 +79,6 @@ fun Project.envOrPropList(name: String): List<String> = envOrPropValue(name)?.sp
 
 fun Project.isCI(): Provider<Boolean> = envOrPropFlag("CI")
 fun Project.isRelease(): Provider<Boolean> = envOrPropFlag("RELEASE")
-fun Project.useK2(): Provider<Boolean> = envOrPropFlag("USE_KOTLIN_K2")
 fun Project.useKotlinDebug(): Provider<Boolean> = envOrPropFlag("USE_KOTLIN_DEBUG")
 fun Project.disableTests(): Provider<Boolean> = envOrPropFlag("DISABLE_TESTS")
 fun Project.scmTag(): Provider<String?> {

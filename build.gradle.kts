@@ -16,7 +16,6 @@ import fluxo.setupDefaults
 import fluxo.setupVerification
 import fluxo.signingKey
 import fluxo.tvosCompat
-import fluxo.useK2
 import fluxo.useKotlinDebug
 import fluxo.watchosCompat
 import java.net.URL
@@ -310,7 +309,6 @@ allprojects {
 
         val isCi by isCI()
         val isRelease by isRelease()
-        val enableK2 by useK2()
         val useKotlinDebug by useKotlinDebug()
         tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask<*>>().configureEach {
             val isJsTask = "Js" in name
@@ -371,10 +369,6 @@ allprojects {
                 // https://kotlinlang.org/docs/whatsnew18.html#a-new-compiler-option-for-disabling-optimizations
                 if (!releaseSettings && useKotlinDebug) {
                     freeCompilerArgs.add("-Xdebug")
-                }
-
-                if (enableK2) {
-                    useK2.set(true)
                 }
             }
         }
