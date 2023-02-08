@@ -18,7 +18,7 @@ internal object FluxoBenchmark {
     fun mvvmIntent(): Int {
         val dispatcher = newSingleThreadContext(FluxoBenchmark::mvvmIntent.name)
         val container = container(0) {
-            eventLoopContext = dispatcher
+            coroutineContext = dispatcher
             debugChecks = false
             lazy = false
         }
@@ -36,7 +36,7 @@ internal object FluxoBenchmark {
                 }
             },
         ) {
-            eventLoopContext = dispatcher
+            coroutineContext = dispatcher
             debugChecks = false
             lazy = false
         }
@@ -53,7 +53,7 @@ internal object FluxoBenchmark {
                 }
             },
         ) {
-            eventLoopContext = dispatcher
+            coroutineContext = dispatcher
             debugChecks = false
             lazy = false
         }

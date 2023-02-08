@@ -113,7 +113,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
     private val cancellationCause get() = coroutineContext[Job]?.getCancellationException()
 
     init {
-        val ctx = conf.eventLoopContext + (conf.scope?.coroutineContext ?: EmptyCoroutineContext) + when {
+        val ctx = conf.coroutineContext + (conf.scope?.coroutineContext ?: EmptyCoroutineContext) + when {
             !debugChecks -> EmptyCoroutineContext
             else -> CoroutineName(toString())
         }

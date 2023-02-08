@@ -170,14 +170,14 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
     // region Coroutines control
 
     /**
-     * Additional 'parent' [CoroutineScope] for running store. It will be added to [eventLoopContext].
+     * Additional 'parent' [CoroutineScope] for running store. It will be added to [coroutineContext].
      */
     public var scope: CoroutineScope? = null
 
     /**
-     * [CoroutineDispatcher] or any [CoroutineContext] to run the [Store] event loop.
+     * [CoroutineDispatcher] or any [CoroutineContext] to run the main [Store] event loop.
      */
-    public var eventLoopContext: CoroutineContext = Dispatchers.Default
+    public var coroutineContext: CoroutineContext = Dispatchers.Default
     public var intentContext: CoroutineContext = EmptyCoroutineContext
     public var sideJobsContext: CoroutineContext = EmptyCoroutineContext
     public var interceptorContext: CoroutineContext = EmptyCoroutineContext
@@ -289,7 +289,7 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
         s.interceptorContext = interceptorContext
         s.sideJobsContext = sideJobsContext
         s.intentContext = intentContext
-        s.eventLoopContext = eventLoopContext
+        s.coroutineContext = coroutineContext
         s.scope = scope
 
         s.sideEffectsStrategy = sideEffectsStrategy

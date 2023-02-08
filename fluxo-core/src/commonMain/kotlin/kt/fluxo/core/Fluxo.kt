@@ -31,8 +31,9 @@ public inline fun <State> CoroutineScope.container(
     @BuilderInference setup: FluxoSettings<FluxoIntentS<State>, State, Nothing>.() -> Unit = {},
 ): ContainerS<State> {
     contract { callsInPlace(setup, InvocationKind.EXACTLY_ONCE) }
+    val context = coroutineContext
     return kt.fluxo.core.container(initialState, settings, setup = {
-        eventLoopContext = coroutineContext
+        coroutineContext = context
         setup()
     })
 }
@@ -51,8 +52,9 @@ public inline fun <State, SideEffect : Any> CoroutineScope.container(
     @BuilderInference setup: FluxoSettings<FluxoIntent<State, SideEffect>, State, SideEffect>.() -> Unit = {},
 ): Container<State, SideEffect> {
     contract { callsInPlace(setup, InvocationKind.EXACTLY_ONCE) }
+    val context = coroutineContext
     return kt.fluxo.core.container(initialState, settings, setup = {
-        eventLoopContext = coroutineContext
+        coroutineContext = context
         setup()
     })
 }
@@ -86,8 +88,9 @@ public inline fun <Intent, State> CoroutineScope.store(
     @BuilderInference setup: FluxoSettings<Intent, State, Nothing>.() -> Unit = {},
 ): StoreS<Intent, State> {
     contract { callsInPlace(setup, InvocationKind.EXACTLY_ONCE) }
+    val context = coroutineContext
     return kt.fluxo.core.store(initialState, handler, settings, setup = {
-        eventLoopContext = coroutineContext
+        coroutineContext = context
         setup()
     })
 }
@@ -108,8 +111,9 @@ public inline fun <Intent, State, SideEffect : Any> CoroutineScope.store(
     @BuilderInference setup: FluxoSettings<Intent, State, SideEffect>.() -> Unit = {},
 ): Store<Intent, State, SideEffect> {
     contract { callsInPlace(setup, InvocationKind.EXACTLY_ONCE) }
+    val context = coroutineContext
     return kt.fluxo.core.store(initialState, handler, settings, setup = {
-        eventLoopContext = coroutineContext
+        coroutineContext = context
         setup()
     })
 }

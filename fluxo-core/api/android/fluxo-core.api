@@ -35,8 +35,8 @@ public final class kt/fluxo/core/FluxoSettings {
 	public static synthetic fun bootstrapperJob$default (Lkt/fluxo/core/FluxoSettings;Ljava/lang/String;Lkotlin/coroutines/CoroutineContext;Lkotlinx/coroutines/CoroutineStart;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)V
 	public final fun copy ()Lkt/fluxo/core/FluxoSettings;
 	public final fun getBootstrapper ()Lkotlin/jvm/functions/Function2;
+	public final fun getCoroutineContext ()Lkotlin/coroutines/CoroutineContext;
 	public final fun getDebugChecks ()Z
-	public final fun getEventLoopContext ()Lkotlin/coroutines/CoroutineContext;
 	public final fun getExceptionHandler ()Lkotlinx/coroutines/CoroutineExceptionHandler;
 	public final fun getInputStrategy ()Lkt/fluxo/core/InputStrategy;
 	public final fun getIntentContext ()Lkotlin/coroutines/CoroutineContext;
@@ -53,8 +53,8 @@ public final class kt/fluxo/core/FluxoSettings {
 	public final fun isOptimized ()Z
 	public final fun setBootstrapper (Lkotlin/jvm/functions/Function2;)V
 	public final fun setCloseOnExceptions (Z)V
+	public final fun setCoroutineContext (Lkotlin/coroutines/CoroutineContext;)V
 	public final fun setDebugChecks (Z)V
-	public final fun setEventLoopContext (Lkotlin/coroutines/CoroutineContext;)V
 	public final fun setExceptionHandler (Lkotlinx/coroutines/CoroutineExceptionHandler;)V
 	public final fun setInputStrategy (Lkt/fluxo/core/InputStrategy;)V
 	public final fun setIntentContext (Lkotlin/coroutines/CoroutineContext;)V
