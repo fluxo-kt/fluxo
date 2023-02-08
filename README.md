@@ -1,5 +1,6 @@
 # Fluxo MVI / MVVM+ Multiplatform
 
+![Stability: Alpha](https://kotl.in/badges/alpha.svg)
 [![Snapshot Version](https://img.shields.io/nexus/s/https/s01.oss.sonatype.org/io.github.fluxo-kt/fluxo-core.svg)](https://s01.oss.sonatype.org/content/repositories/snapshots/io/github/fluxo-kt/)
 [![Build](../../actions/workflows/build.yml/badge.svg)](../../actions/workflows/build.yml)
 [![codecov](https://codecov.io/gh/fluxo-kt/fluxo-mvi/branch/main/graph/badge.svg?token=LKCNVWR8QC)](https://codecov.io/gh/fluxo-kt/fluxo-mvi)
