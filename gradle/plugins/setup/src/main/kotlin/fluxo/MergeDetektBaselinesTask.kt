@@ -71,7 +71,7 @@ internal abstract class MergeDetektBaselinesTask : DefaultTask() {
         }
         val merged = baselineFiles
             .map {
-                logger.info("merge $it")
+                logger.info("merge {}", it)
                 bp.read(it.toPath())
             }
             .reduce { acc, baseline ->

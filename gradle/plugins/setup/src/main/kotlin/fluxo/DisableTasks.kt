@@ -76,7 +76,7 @@ private class DisableTasks(
             val isPathExists = (it != task) && isPathExists(source = it, destination = task)
 
             if (isPathExists) {
-                logger.info("Task $task accessible from $it")
+                logger.info("Task {} accessible from {}", task, it)
             }
 
             isPathExists
@@ -86,11 +86,11 @@ private class DisableTasks(
         results.getOrPut(source to destination) {
             when {
                 !source.enabled -> false
-                source == destination -> true.also { logger.info("Task reached: $destination") }
+                source == destination -> true.also { logger.info("Task reached: {}", destination) }
 
                 else -> graph.getDependencies(source).any { isPathExists(source = it, destination = destination) }.also {
                     if (it) {
-                        logger.info("Task path found from $source to $destination")
+                        logger.info("Task path found from {} to {}", source, destination)
                     }
                 }
             }

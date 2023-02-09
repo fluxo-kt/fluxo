@@ -102,9 +102,9 @@ private abstract class TestsReportsMergeTask : DefaultTask() {
     @TaskAction
     fun merge() {
         logger.info("Input")
-        logger.info("${testResults.size} tests")
+        logger.info("{} tests", testResults.size)
         val outputFile = output.get().asFile.absoluteFile
-        logger.info("Output = $outputFile")
+        logger.info("Output = {}", outputFile)
 
         var totalTests = 0L
         var totalSkipped = 0L
