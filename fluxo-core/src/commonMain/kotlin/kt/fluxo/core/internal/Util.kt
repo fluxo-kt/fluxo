@@ -3,14 +3,12 @@
 package kt.fluxo.core.internal
 
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
+import kt.fluxo.core.annotation.ExperimentalFluxoApi
 
 internal fun Throwable?.toCancellationException() = when (this) {
     null -> null
@@ -19,9 +17,26 @@ internal fun Throwable?.toCancellationException() = when (this) {
 }
 
 
-internal fun StateFlow<Int>.plusIn(scope: CoroutineScope, other: StateFlow<Int>): StateFlow<Int> {
-    return combine(other) { a, b -> a + b }
-        .stateIn(scope, SharingStarted.Eagerly, initialValue = value + other.value)
+@ExperimentalFluxoApi
+internal operator fun StateFlow<Int>.plus(other: StateFlow<Int>): StateFlow<Int> = CombinedFlowCounter(this, other)
+
+@ExperimentalFluxoApi
+private class CombinedFlowCounter(
+    private val a: StateFlow<Int>,
+    private val b: StateFlow<Int>,
+) : StateFlow<Int> {
+
+    private val flow = a.combine(b) { a, b -> a + b }
+
+    override val value: Int get() = a.value + b.value
+
+    /** @see kotlinx.coroutines.flow.StateFlowImpl.replayCache */
+    override val replayCache: List<Int> get() = listOf(value)
+
+    override suspend fun collect(collector: FlowCollector<Int>): Nothing {
+        @Suppress("CAST_NEVER_SUCCEEDS")
+        flow.collect(collector) as Nothing
+    }
 }
 
 
@@ -39,6 +54,7 @@ internal class SubscriptionCountFlow<T>(
         }
     }
 }
+
 
 /**
  * Atomically adds the given [delta] to the current [value][StateFlow.value].

@@ -244,7 +244,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
             sideEffectFlowField = SubscriptionCountFlow(sideEffectsSubscriptionCount, flow)
         }
         if (sideEffectsSubscriptionCount != null) {
-            subscriptionCount = subscriptionCount.plusIn(interceptorScope, sideEffectsSubscriptionCount)
+            subscriptionCount += sideEffectsSubscriptionCount
         }
         this.subscriptionCount = subscriptionCount
 
