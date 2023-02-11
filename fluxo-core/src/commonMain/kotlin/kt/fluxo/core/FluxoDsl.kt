@@ -28,7 +28,7 @@ import kotlin.jvm.JvmName
 @ExperimentalFluxoApi
 @JsName("closeStoreAndWait")
 @JvmName("closeStoreAndWait")
-public suspend fun Store<*, *, *>.closeAndWait() {
+public suspend fun Store<*, *>.closeAndWait() {
     close()
     coroutineContext[Job]?.join()
 }

@@ -4,6 +4,7 @@ package kt.fluxo.core.dsl
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kt.fluxo.core.Container
 import kt.fluxo.core.FluxoIntent
 import kt.fluxo.core.FluxoSettings
@@ -21,7 +22,7 @@ public inline val <S, SE : Any> ContainerHost<S, SE>.store get() = container
     replaceWith = ReplaceWith("send(intent)"),
     level = DeprecationLevel.ERROR,
 )
-public suspend inline fun <S, SE : Any> Container<S, SE>.orbit(noinline intent: FluxoIntent<S, SE>) = emit(intent)
+public suspend inline fun <S, SE : Any> Container<S, SE>.orbit(noinline intent: FluxoIntent<S, SE>): Unit = emit(intent)
 
 @InlineOnly
 @Deprecated(
@@ -29,13 +30,13 @@ public suspend inline fun <S, SE : Any> Container<S, SE>.orbit(noinline intent: 
     replaceWith = ReplaceWith("send(intent)"),
     level = DeprecationLevel.WARNING,
 )
-public inline fun <I, S, SE : Any> Store<I, S, SE>.accept(intent: I) = send(intent)
+public inline fun <I> Store<I, *>.accept(intent: I): Job = send(intent)
 
 
 @InlineOnly
 @Deprecated(message = "Please use intentContext instead", replaceWith = ReplaceWith("intentContext"))
 @OptIn(ExperimentalStdlibApi::class)
-public inline var <I, S, SE : Any> FluxoSettings<I, S, SE>.intentDispatcher: CoroutineDispatcher
+public inline var FluxoSettings<*, *, *>.intentDispatcher: CoroutineDispatcher
     get() = coroutineContext[CoroutineDispatcher] ?: scope?.coroutineContext?.get(CoroutineDispatcher) ?: Dispatchers.Default
     set(value) {
         coroutineContext = value

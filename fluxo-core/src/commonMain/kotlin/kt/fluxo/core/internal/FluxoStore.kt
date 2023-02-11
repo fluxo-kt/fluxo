@@ -38,7 +38,7 @@ import kt.fluxo.core.FluxoClosedException
 import kt.fluxo.core.FluxoSettings
 import kt.fluxo.core.IntentHandler
 import kt.fluxo.core.SideEffectsStrategy
-import kt.fluxo.core.Store
+import kt.fluxo.core.StoreSE
 import kt.fluxo.core.annotation.InternalFluxoApi
 import kt.fluxo.core.data.GuaranteedEffect
 import kt.fluxo.core.debug.DEBUG
@@ -56,7 +56,9 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
     initialState: State,
     private val intentHandler: IntentHandler<Intent, State, SideEffect>,
     conf: FluxoSettings<Intent, State, SideEffect>,
-) : Store<Intent, State, SideEffect> {
+) : StoreSE<Intent, State, SideEffect> {
+
+    // region Fields, initialization
 
     private val mutableState = MutableStateFlow(initialState)
 
@@ -256,6 +258,8 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         }
         return null
     }
+
+    // endregion
 
 
     // region Intents machinery

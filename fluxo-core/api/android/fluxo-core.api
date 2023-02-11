@@ -111,12 +111,15 @@ public abstract interface class kt/fluxo/core/Store : java/io/Closeable, kotlinx
 	public fun close ()V
 	public abstract fun emit (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun getName ()Ljava/lang/String;
-	public abstract fun getSideEffectFlow ()Lkotlinx/coroutines/flow/Flow;
 	public abstract fun getSubscriptionCount ()Lkotlinx/coroutines/flow/StateFlow;
 	public fun launch (Ljava/lang/String;Lkotlin/jvm/functions/Function2;)V
 	public static synthetic fun launch$default (Lkt/fluxo/core/Store;Ljava/lang/String;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)V
 	public abstract fun send (Ljava/lang/Object;)Lkotlinx/coroutines/Job;
 	public abstract fun start ()Lkotlinx/coroutines/Job;
+}
+
+public abstract interface class kt/fluxo/core/StoreSE : kt/fluxo/core/Store {
+	public abstract fun getSideEffectFlow ()Lkotlinx/coroutines/flow/Flow;
 }
 
 public abstract interface annotation class kt/fluxo/core/annotation/ExperimentalFluxoApi : java/lang/annotation/Annotation {
@@ -143,7 +146,7 @@ public abstract interface class kt/fluxo/core/dsl/BootstrapperScope : kt/fluxo/c
 }
 
 public abstract interface class kt/fluxo/core/dsl/ContainerHost {
-	public abstract fun getContainer ()Lkt/fluxo/core/Store;
+	public abstract fun getContainer ()Lkt/fluxo/core/StoreSE;
 }
 
 public abstract interface class kt/fluxo/core/dsl/InterceptorScope : kotlinx/coroutines/CoroutineScope {
@@ -206,7 +209,7 @@ public final class kt/fluxo/core/internal/FluxoIntentHandler : kt/fluxo/core/Int
 	public fun handleIntent (Lkt/fluxo/core/dsl/StoreScope;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public final class kt/fluxo/core/internal/FluxoStore : kt/fluxo/core/Store {
+public final class kt/fluxo/core/internal/FluxoStore : kt/fluxo/core/StoreSE {
 	public fun <init> (Ljava/lang/Object;Lkt/fluxo/core/IntentHandler;Lkt/fluxo/core/FluxoSettings;)V
 	public synthetic fun collect (Lkotlinx/coroutines/flow/FlowCollector;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun emit (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;

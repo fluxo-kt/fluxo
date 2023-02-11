@@ -72,7 +72,7 @@ public inline fun <Intent, State> CoroutineScope.store(
     @BuilderInference noinline reducer: Reducer<Intent, State>,
     settings: FluxoSettings<Intent, State, Nothing>? = null,
     @BuilderInference setup: FluxoSettings<Intent, State, Nothing>.() -> Unit = {},
-): StoreS<Intent, State> {
+): Store<Intent, State> {
     contract { callsInPlace(setup, InvocationKind.EXACTLY_ONCE) }
     return store(initialState, ReducerIntentHandler(reducer), settings, setup)
 }
@@ -88,7 +88,7 @@ public inline fun <Intent, State> CoroutineScope.store(
     @BuilderInference handler: IntentHandler<Intent, State, Nothing>,
     settings: FluxoSettings<Intent, State, Nothing>? = null,
     @BuilderInference setup: FluxoSettings<Intent, State, Nothing>.() -> Unit = {},
-): StoreS<Intent, State> {
+): Store<Intent, State> {
     contract { callsInPlace(setup, InvocationKind.EXACTLY_ONCE) }
     val context = coroutineContext
     return kt.fluxo.core.store(initialState, handler, settings, setup = {
@@ -111,7 +111,7 @@ public inline fun <Intent, State, SideEffect : Any> CoroutineScope.store(
     @BuilderInference handler: IntentHandler<Intent, State, SideEffect>,
     settings: FluxoSettings<Intent, State, SideEffect>? = null,
     @BuilderInference setup: FluxoSettings<Intent, State, SideEffect>.() -> Unit = {},
-): Store<Intent, State, SideEffect> {
+): StoreSE<Intent, State, SideEffect> {
     contract { callsInPlace(setup, InvocationKind.EXACTLY_ONCE) }
     val context = coroutineContext
     return kt.fluxo.core.store(initialState, handler, settings, setup = {
@@ -174,7 +174,7 @@ public inline fun <Intent, State> store(
     @BuilderInference noinline reducer: Reducer<Intent, State>,
     settings: FluxoSettings<Intent, State, Nothing>? = null,
     @BuilderInference setup: FluxoSettings<Intent, State, Nothing>.() -> Unit = {},
-): StoreS<Intent, State> {
+): Store<Intent, State> {
     contract { callsInPlace(setup, InvocationKind.EXACTLY_ONCE) }
     return store(initialState, ReducerIntentHandler(reducer), settings, setup)
 }
@@ -190,7 +190,7 @@ public inline fun <Intent, State> store(
     @BuilderInference handler: IntentHandler<Intent, State, Nothing>,
     settings: FluxoSettings<Intent, State, Nothing>? = null,
     @BuilderInference setup: FluxoSettings<Intent, State, Nothing>.() -> Unit = {},
-): StoreS<Intent, State> {
+): Store<Intent, State> {
     contract { callsInPlace(setup, InvocationKind.EXACTLY_ONCE) }
     return store<Intent, State, Nothing>(initialState, handler, settings) {
         sideEffectsStrategy = SideEffectsStrategy.DISABLE
@@ -212,7 +212,7 @@ public inline fun <Intent, State, SideEffect : Any> store(
     @BuilderInference handler: IntentHandler<Intent, State, SideEffect>,
     settings: FluxoSettings<Intent, State, SideEffect>? = null,
     @BuilderInference setup: FluxoSettings<Intent, State, SideEffect>.() -> Unit = {},
-): Store<Intent, State, SideEffect> {
+): StoreSE<Intent, State, SideEffect> {
     contract { callsInPlace(setup, InvocationKind.EXACTLY_ONCE) }
     return FluxoStore(
         initialState = initialState,

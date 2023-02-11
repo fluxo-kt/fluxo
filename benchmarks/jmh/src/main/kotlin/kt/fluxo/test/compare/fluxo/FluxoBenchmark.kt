@@ -2,11 +2,11 @@ package kt.fluxo.test.compare.fluxo
 
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
+import kt.fluxo.core.FluxoIntentS
 import kt.fluxo.core.Store
 import kt.fluxo.core.annotation.ExperimentalFluxoApi
 import kt.fluxo.core.closeAndWait
 import kt.fluxo.core.container
-import kt.fluxo.core.dsl.StoreScope
 import kt.fluxo.core.internal.Closeable
 import kt.fluxo.core.store
 import kt.fluxo.test.compare.CommonBenchmark.consumeCommon
@@ -22,7 +22,7 @@ internal object FluxoBenchmark {
             debugChecks = false
             lazy = false
         }
-        val intent: suspend StoreScope<Nothing, Int, Nothing>.() -> Unit = { updateState { it + 1 } }
+        val intent: FluxoIntentS<Int> = { updateState { it + 1 } }
         return container.consumeFluxo(intent, dispatcher)
     }
 
@@ -61,7 +61,7 @@ internal object FluxoBenchmark {
     }
 
 
-    private fun <I> Store<I, Int, *>.consumeFluxo(intent: I, closeable: Closeable? = null): Int {
+    private fun <I> Store<I, Int>.consumeFluxo(intent: I, closeable: Closeable? = null): Int {
         runBlocking {
             val launchDef = launchCommon(intent) { send(it) }
 
