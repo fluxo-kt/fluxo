@@ -127,7 +127,6 @@ public abstract interface class kt/fluxo/core/Store : java/io/Closeable, kotlinx
 	public abstract fun getSubscriptionCount ()Lkotlinx/coroutines/flow/StateFlow;
 	public fun launch (Ljava/lang/String;Lkotlin/jvm/functions/Function2;)V
 	public static synthetic fun launch$default (Lkt/fluxo/core/Store;Ljava/lang/String;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)V
-	public synthetic fun postIntent (Ljava/lang/Object;)Lkotlinx/coroutines/Job;
 	public abstract fun send (Ljava/lang/Object;)Lkotlinx/coroutines/Job;
 	public abstract fun start ()Lkotlinx/coroutines/Job;
 }

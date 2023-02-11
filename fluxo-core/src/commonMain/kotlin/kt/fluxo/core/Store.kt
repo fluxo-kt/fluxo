@@ -154,18 +154,6 @@ public interface Store<Intent, State, SideEffect : Any> : StateFlow<State>, Flow
     @Deprecated("Use value directly", ReplaceWith("value"), level = DeprecationLevel.ERROR)
     public val state: State get() = value
 
-    /**
-     * Old Fluxo API migration
-     *
-     * @hide
-     * @TODO Remove
-     */
-    @InlineOnly
-    @JvmSynthetic
-    @JsName("postIntent")
-    @Deprecated("Use send", replaceWith = ReplaceWith("send(intent)"), level = DeprecationLevel.HIDDEN)
-    public fun postIntent(intent: Intent): Job = send(intent)
-
 
     @InlineOnly
     @JsName("launch")
