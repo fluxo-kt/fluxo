@@ -15,12 +15,12 @@ import kt.fluxo.core.SideEffectsStrategy
 import kt.fluxo.core.closeAndWait
 import kt.fluxo.core.container
 import kt.fluxo.core.debug.debugClassName
-import kt.fluxo.core.intercept.FluxoEvent
 import kt.fluxo.core.internal.Closeable
 import kt.fluxo.test.IgnoreJs
 import kt.fluxo.test.getValue
 import kt.fluxo.test.runUnitTest
 import kt.fluxo.test.setValue
+import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -240,9 +240,11 @@ internal class SideEffectTest {
 
 
     @Test
+    @Ignore // TODO: Should be returned after `fluxo-event-stream` will be added
     fun undelivered_side_effects__consume_strategy() = undelivered_side_effects(SideEffectsStrategy.CONSUME)
 
     @Test
+    @Ignore // TODO: Should be returned after `fluxo-event-stream` will be added
     fun undelivered_side_effects__receive_strategy() = undelivered_side_effects(SideEffectsStrategy.RECEIVE)
 
     private fun undelivered_side_effects(strategy: SideEffectsStrategy) = runUnitTest {
@@ -252,8 +254,9 @@ internal class SideEffectTest {
         })
         var hasUndelivered by MutableStateFlow(false)
         val intercept = backgroundScope.launch {
-            container.eventsFlow.first { it is FluxoEvent.SideEffectUndelivered }
-            hasUndelivered = true
+            // FIXME:
+            // container.eventsFlow.first { it is FluxoEvent.SideEffectUndelivered }
+            // hasUndelivered = true
         }
         launch {
             val effects = container.sideEffectFlow.take(16).toList()

@@ -1,4 +1,4 @@
-@file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE", "PropertyName", "VariableNaming")
+@file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE", "NON_EXPORTABLE_TYPE", "PropertyName", "VariableNaming")
 
 package kt.fluxo.core
 
@@ -13,7 +13,6 @@ import kt.fluxo.core.annotation.ExperimentalFluxoApi
 import kt.fluxo.core.annotation.FluxoDsl
 import kt.fluxo.core.annotation.NotThreadSafe
 import kt.fluxo.core.debug.DEBUG
-import kt.fluxo.core.intercept.FluxoEvent
 import kt.fluxo.core.internal.InputStrategyGuardian
 import kt.fluxo.core.internal.SideJobRequest.Companion.BOOTSTRAPPER_SIDE_JOB
 import kotlin.coroutines.CoroutineContext
@@ -110,28 +109,6 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
         this.bootstrapper = { sideJob(key, context, start, block) }
     }
 
-
-    /**
-     * [Interceptors][FluxoInterceptor] for the [Store] events.
-     * Attach loggers, time-travelling, analytics, everything you want.
-     *
-     * @see FluxoInterceptor
-     */
-    public val interceptors: MutableList<FluxoInterceptor<Intent, State, SideEffect>> = mutableListOf()
-
-    /** [interceptors] convenience method */
-    @InlineOnly
-    @JsName("interceptor")
-    public inline fun interceptor(crossinline onEvent: (event: FluxoEvent<Intent, State, SideEffect>) -> Unit) {
-        interceptors.add(FluxoInterceptor(onEvent))
-    }
-
-    /** [interceptors] convenience method */
-    @InlineOnly
-    @JsName("onEvent")
-    public inline fun onEvent(crossinline onEvent: (event: FluxoEvent<Intent, State, SideEffect>) -> Unit) {
-        interceptor(onEvent)
-    }
 
     /**
      * If you need to filter out some [Intent]s.
@@ -295,7 +272,6 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
         s.sideEffectsStrategy = sideEffectsStrategy
         s.inputStrategy = inputStrategy
         s.intentFilter = intentFilter
-        s.interceptors.addAll(interceptors)
         s.bootstrapper = bootstrapper
 
         s.sideEffectBufferSize = sideEffectBufferSize

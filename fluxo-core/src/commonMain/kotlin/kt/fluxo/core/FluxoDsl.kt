@@ -12,27 +12,25 @@ import kotlinx.coroutines.flow.mapLatest
 import kt.fluxo.core.annotation.ExperimentalFluxoApi
 import kt.fluxo.core.annotation.FluxoDsl
 import kt.fluxo.core.dsl.StoreScope
-import kt.fluxo.core.internal.FluxoStore
 import kt.fluxo.core.internal.SideJobRequest.Companion.DEFAULT_REPEAT_ON_SUBSCRIPTION_JOB
 import kotlin.js.JsName
 import kotlin.jvm.JvmName
+
 
 // Convenience DSL for Fluxo usage (non-inline)
 
 
 /**
+ * Closes the [Store] and suspends the invoking coroutine until the [Store] is completely finished.
  *
- *
- * NOTE: Works only for the standart implementation of Fluxo [Store] ([FluxoStore]).
+ * @see kotlinx.coroutines.cancelAndJoin
  */
 @ExperimentalFluxoApi
 @JsName("closeStoreAndWait")
 @JvmName("closeStoreAndWait")
 public suspend fun Store<*, *, *>.closeAndWait() {
     close()
-    val store = this as FluxoStore
-    store.interceptorScope.coroutineContext[Job]!!.join()
-    store.intentContext[Job]!!.join()
+    coroutineContext[Job]?.join()
 }
 
 /**

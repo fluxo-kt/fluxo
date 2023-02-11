@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kt.fluxo.core.annotation.CallSuper
 import kt.fluxo.core.annotation.ExperimentalFluxoApi
 import kt.fluxo.core.annotation.ThreadSafe
-import kt.fluxo.core.intercept.FluxoEvent
 import kt.fluxo.core.internal.Closeable
 import kt.fluxo.core.internal.SideJobRequest.Companion.DEFAULT_SIDE_JOB
 import kotlin.internal.InlineOnly
@@ -84,9 +83,6 @@ public interface Store<Intent, State, SideEffect : Any> : StateFlow<State>, Flow
      */
     @ExperimentalFluxoApi
     public val subscriptionCount: StateFlow<Int>
-
-    @ExperimentalFluxoApi
-    public val eventsFlow: Flow<FluxoEvent<Intent, State, SideEffect>>
 
 
     /**

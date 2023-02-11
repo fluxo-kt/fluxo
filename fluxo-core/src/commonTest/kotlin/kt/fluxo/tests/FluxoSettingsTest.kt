@@ -10,7 +10,6 @@ import kt.fluxo.core.container
 import kt.fluxo.core.debug.DEBUG
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.Test
-import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
@@ -19,7 +18,8 @@ import kotlin.test.assertTrue
 class FluxoSettingsTest {
     @Test
     fun repeatOnSubscribedStopTimeout() {
-        val container = container(Unit) @Suppress("DEPRECATION") {
+        @Suppress("DEPRECATION")
+        val container = container(Unit) {
             repeatOnSubscribedStopTimeout = 0L
             assertEquals(0L, repeatOnSubscribedStopTimeout)
         }
@@ -75,7 +75,6 @@ class FluxoSettingsTest {
         assertEquals(SideEffectsStrategy.RECEIVE, s.sideEffectsStrategy)
         assertEquals(Fifo, s.inputStrategy)
         assertNull(s.intentFilter)
-        assertContentEquals(listOf(), s.interceptors)
         assertNull(s.bootstrapper)
 
         assertEquals(Channel.BUFFERED, s.sideEffectBufferSize)

@@ -1,8 +1,6 @@
 package kt.fluxo.tests
 
-import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.InternalCoroutinesApi
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
@@ -11,17 +9,16 @@ import kotlinx.coroutines.sync.Mutex
 import kt.fluxo.core.closeAndWait
 import kt.fluxo.core.container
 import kt.fluxo.core.dsl.SideJobScope.RestartState
-import kt.fluxo.core.intercept.FluxoEvent
 import kt.fluxo.core.repeatOnSubscription
 import kt.fluxo.test.CoroutineScopeAwareTest
 import kt.fluxo.test.IgnoreJs
 import kt.fluxo.test.runBlocking
 import kt.fluxo.test.runUnitTest
+import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
-import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
@@ -137,20 +134,21 @@ internal class BootstrapperTest : CoroutineScopeAwareTest() {
     }
 
     @Test
+    @Ignore // TODO: Should be returned after `fluxo-event-stream` will be added
     fun b_cancellation() = runUnitTest {
-        val def = CompletableDeferred<FluxoEvent<*, *, *>>()
-        scope.container(INIT) {
-            debugChecks = false
-            bootstrapper = {
-                cancel()
-            }
-            onEvent {
-                if (it is FluxoEvent.BootstrapperCancelled) {
-                    def.complete(it)
-                }
-            }
-        }.start()
-        assertIs<FluxoEvent.BootstrapperCancelled<*, *, *>>(def.await())
+//        val def = CompletableDeferred<FluxoEvent<*, *, *>>()
+//        scope.container(INIT) {
+//            debugChecks = false
+//            bootstrapper = {
+//                cancel()
+//            }
+//            onEvent {
+//                if (it is FluxoEvent.BootstrapperCancelled) {
+//                    def.complete(it)
+//                }
+//            }
+//        }.start()
+//        assertIs<FluxoEvent.BootstrapperCancelled<*, *, *>>(def.await())
     }
 
     @Test

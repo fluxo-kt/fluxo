@@ -8,10 +8,9 @@ import kt.fluxo.core.container
 import kt.fluxo.core.dsl.SideJobScope.RestartState
 import kt.fluxo.core.dsl.accept
 import kt.fluxo.core.intent
-import kt.fluxo.core.intercept.FluxoEvent
-import kt.fluxo.core.internal.SideJobRequest.Companion.DEFAULT_SIDE_JOB
 import kt.fluxo.core.store
 import kt.fluxo.test.runUnitTest
+import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -99,6 +98,7 @@ internal class SideJobTest {
     }
 
     @Test
+    @Ignore // TODO: Should be returned after `fluxo-event-stream` will be added
     fun sj_error() = runUnitTest {
         var caught: Throwable? = null
         val store = backgroundScope.container<String, String>("init") {
@@ -109,18 +109,19 @@ internal class SideJobTest {
                 throw UnsupportedOperationException()
             }
         }
-        store.eventsFlow.test {
-            while (true) {
-                val event = awaitItem()
-                if (event is FluxoEvent.SideJobError) {
-                    assertEquals(RestartState.Initial, event.restartState)
-                    assertEquals(DEFAULT_SIDE_JOB, event.key)
-                    assertIs<UnsupportedOperationException>(event.e)
-                    cancelAndIgnoreRemainingEvents()
-                    break
-                }
-            }
-        }
+        // FIXME:
+//        store.eventsFlow.test {
+//            while (true) {
+//                val event = awaitItem()
+//                if (event is FluxoEvent.SideJobError) {
+//                    assertEquals(RestartState.Initial, event.restartState)
+//                    assertEquals(DEFAULT_SIDE_JOB, event.key)
+//                    assertIs<UnsupportedOperationException>(event.e)
+//                    cancelAndIgnoreRemainingEvents()
+//                    break
+//                }
+//            }
+//        }
         assertIs<UnsupportedOperationException>(caught)
         assertTrue(store.isActive, "Store is closed. Expected to be active")
         store.closeAndWait()
