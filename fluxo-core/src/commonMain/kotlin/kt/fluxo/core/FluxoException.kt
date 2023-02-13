@@ -8,7 +8,7 @@ import kotlin.jvm.JvmSynthetic
 public sealed interface FluxoException
 
 /**
- * Thrown if operation is called on closed [Store].
+ * Thrown when using a closed [Store].
  */
 @JsExport
 public class FluxoClosedException

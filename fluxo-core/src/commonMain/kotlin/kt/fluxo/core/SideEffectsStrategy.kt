@@ -11,14 +11,16 @@ import kt.fluxo.core.annotation.InternalFluxoApi
 import kotlin.jvm.JvmField
 
 /**
- * Available strategies for how side effects sharing can be handled in the [Store].
- * When in doubt, use the [default][RECEIVE] one, and change if you have issues.
+ * Strategies for side effects sharing from the [Store].
+ * When in doubt, use the [default][RECEIVE] one.
  */
 public sealed interface SideEffectsStrategy {
 
     /**
      * [Channel]-based strategy with sharing through the [receiveAsFlow].
-     * Multiple subscribers allowed. One side effect will be emitted to one subscriber only and **the order of subscribers unspecified**.
+     * Default choice.
+     * Supports multiple subscribers.
+     * One side effect emitted to one subscriber only and **the order of subscribers unspecified**.
      *
      * @see kotlinx.coroutines.flow.receiveAsFlow
      * @see SHARE
@@ -34,10 +36,10 @@ public sealed interface SideEffectsStrategy {
      * [Channel]-based strategy with sharing through the [consumeAsFlow].
      *
      * **Restricts the count of subscribers to 1**. Consumes the underlying [Channel] completely on the first subscription from the flow!
-     * The resulting flow can be collected just once and throws [IllegalStateException] when trying to collect it more than once.
+     * The resulting flow can be collected only once and throws [IllegalStateException] when trying to collect it more than once.
      *
-     * Attempting to subscribe or resubscribe to side effects from a [Store] already subscribed will result in an exception.
-     * In other words, you will be required to create a new [Store] for each subscriber!
+     * Attempting to subscribe or resubscribe to side effects from an already subscribed [Store] result in an exception.
+     * Requires creating of a new [Store] for each subscriber!
      *
      * **In the most cases you need [RECEIVE] or [SHARE] strategies instead of this one!**
      *
@@ -58,7 +60,7 @@ public sealed interface SideEffectsStrategy {
      * Keeps a [specified number][replay] of the most recent values in its replay cache. Every new subscriber first gets
      * the values from the replay cache and then gets new emitted values.
      *
-     * @param replay the number of side effects replayed to new subscribers (cannot be negative, defaults to zero).
+     * @param replay the number of side effects replayed to new subscribers (can't be negative, defaults to zero).
      *
      * @see kotlinx.coroutines.flow.MutableSharedFlow
      */
@@ -82,8 +84,8 @@ public sealed interface SideEffectsStrategy {
     }
 
     /**
-     * Side effects are completely disabled.
-     * Saves a bit of app memory, and sometimes your brain cells (as a purer way is to use only state+intent).
+     * Completely turns off side effects.
+     * Saves a bit of app memory, and sometimes brain cells (as a purer way is to use only state & intents).
      */
     public object DISABLE : SideEffectsStrategy {
         /** @hide */

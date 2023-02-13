@@ -8,6 +8,6 @@ import kt.fluxo.core.dsl.StoreScope
 public typealias FluxoIntent<S, SE> = suspend StoreScope<Nothing, S, SE>.() -> Unit
 
 /**
- * Convenience typealias for a Fluxo [FluxoIntent] with side effects disabled.
+ * Convenience typealias for a Fluxo [FluxoIntent] with side effects turned off.
  */
 public typealias FluxoIntentS<S> = FluxoIntent<S, Nothing>

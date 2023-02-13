@@ -5,7 +5,8 @@ import kt.fluxo.core.InputStrategy
 import kt.fluxo.core.dsl.InputStrategyScope
 
 /**
- * `First-in, first-out` - ordered processing strategy. Predictable and intuitive, default choice.
+ * `First-in, first-out` – ordered processing strategy.
+ * Predictable and intuitive, default choice.
  *
  * Consider [Parallel][ParallelInputStrategy] or [Lifo][LifoInputStrategy] instead if you need more responsiveness.
  */

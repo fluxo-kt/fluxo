@@ -10,7 +10,7 @@ import kt.fluxo.core.dsl.InputStrategyScope
  * Parallel processing of all intents.
  * Can provide better responsiveness comparing to [Fifo][FifoInputStrategy].
  *
- * **IMPORTANT:** No guarantee that inputs will be processed in any given order!
+ * **IMPORTANT:** No guarantee that inputs processed in any given order!
  *
  * @TODO: Allow to limit parallelism?
  */

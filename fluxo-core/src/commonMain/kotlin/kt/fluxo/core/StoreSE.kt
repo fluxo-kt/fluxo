@@ -41,7 +41,7 @@ public interface StoreSE<in Intent, out State, out SideEffect : Any> : Store<Int
      * @see FluxoSettings.sideEffectsStrategy
      * @see SideEffectsStrategy
      *
-     * @throws IllegalStateException if [SideEffect]s where disabled for this [Store].
+     * @throws IllegalStateException if [SideEffect]s are off for this [Store].
      */
     public val sideEffectFlow: Flow<SideEffect>
 }

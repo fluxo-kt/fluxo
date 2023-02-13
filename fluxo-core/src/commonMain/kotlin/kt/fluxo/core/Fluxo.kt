@@ -217,7 +217,7 @@ public inline fun <Intent, State, SideEffect : Any> store(
     return FluxoStore(
         initialState = initialState,
         intentHandler = handler,
-        // Always do a copy as we don't want to modify original settings.
+        // Always do a copy to not change the original settings.
         conf = (settings ?: fluxoSettings()).copy().apply(setup),
     )
 }

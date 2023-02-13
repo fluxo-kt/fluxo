@@ -34,7 +34,7 @@ public typealias FluxoSettingsS<Intent, State> = FluxoSettings<Intent, State, No
  * * Change settings once and for all at one place with [FluxoSettings.DEFAULT].
  * * Provide a prepared settings object for the group of your stores
  *   (use [FluxoSettings()][FluxoSettings.invoke] and then the standard DSL).
- * * Just configure each store individually with the standard DSL (see [container] and [store]).
+ * * Configure each [store] individually with the standard DSL (see [container] and [store]).
  */
 @FluxoDsl
 @JsExport
@@ -44,7 +44,7 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
     public var name: String? = null
 
     /**
-     * If true the [Store] will be started only on first subscriber.
+     * If true the [Store] started only on first subscriber.
      */
     @get:JvmName("isLazy")
     public var lazy: Boolean = true
@@ -112,8 +112,6 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
 
     /**
      * If you need to filter out some [Intent]s.
-     * Can be removed or behavior can be changed in future versions!
-     *
      * (`true` to accept intent, `false` otherwise)
      */
     @ExperimentalFluxoApi
@@ -121,13 +119,14 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
 
     /**
      * Take full control of the intent processing pipeline.
-     * [Fifo], [Lifo], and [Parallel] strategies available out of the box.
-     * Or you can create your own if you need.
+     *
+     * Select from [Fifo], [Lifo], and [Parallel] strategies,
+     * or create your own if you need.
      */
     public var inputStrategy: InputStrategy = Fifo
 
     /**
-     * A strategy to be applied when sharing side effects.
+     * A strategy for sharing side effects.
      * [sideEffectBufferSize] defaults to `0` when [SideEffectsStrategy.SHARE] used.
      *
      * @see SideEffectsStrategy
@@ -147,7 +146,7 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
     // region Coroutines control
 
     /**
-     * Additional 'parent' [CoroutineScope] for running store. It will be added to [coroutineContext].
+     * Extra 'parent' [CoroutineScope] for running store. Added to [coroutineContext].
      */
     public var scope: CoroutineScope? = null
 
@@ -160,7 +159,7 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
     public var interceptorContext: CoroutineContext = EmptyCoroutineContext
 
     /**
-     * If false the [Store] will offload everything possible to the provided [scope],
+     * If false, the [Store] offload everything possible to the provided [scope],
      * not trying to optimize performance.
      */
     @get:JvmName("isOptimized")
@@ -199,7 +198,8 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
     // region Accessors for in-box input strategies
 
     /**
-     * `First-in, first-out` - ordered processing strategy. Predictable and intuitive, default choice.
+     * `First-in, first-out` – ordered processing strategy.
+     * Predictable and intuitive, default choice.
      *
      * Consider [Parallel] or [Lifo] instead if you need more responsiveness.
      */
@@ -210,7 +210,7 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
     public inline val Fifo: InputStrategy get() = InputStrategy.Fifo
 
     /**
-     * `Last-in, first-out` - strategy optimized for lots of events (e.g. user actions).
+     * `Last-in, first-out` – strategy optimized for lots of events (e.g. user actions).
      * Provides more responsiveness comparing to [Fifo], but can lose some intents!
      *
      * **IMPORTANT:** Cancels previous unfinished intents when receives new one!
@@ -227,7 +227,7 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
      * Parallel processing of all intents.
      * Can provide better responsiveness comparing to [Fifo].
      *
-     * **IMPORTANT:** No guarantee that inputs will be processed in any given order!
+     * **IMPORTANT:** No guarantee that inputs processed in any given order!
      */
     @InlineOnly
     @JsName("Parallel")
