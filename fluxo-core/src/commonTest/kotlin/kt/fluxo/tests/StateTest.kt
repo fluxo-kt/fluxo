@@ -5,7 +5,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.test.runTest
 import kt.fluxo.core.container
-import kt.fluxo.core.dsl.ContainerHost
+import kt.fluxo.core.dsl.ContainerHostS
 import kt.fluxo.core.intent
 import kt.fluxo.test.CoroutineScopeAwareTest
 import kt.fluxo.test.runUnitTest
@@ -90,7 +90,7 @@ internal class StateTest : CoroutineScopeAwareTest() {
         initialState: TestState,
         scope: CoroutineScope = this.scope,
 //        onEvent: ((event: FluxoEvent<*, TestState, *>) -> Unit)? = null,
-    ) : ContainerHost<TestState, Nothing> {
+    ) : ContainerHostS<TestState> {
         override val container = scope.container(initialState) {
             debugChecks = true
             // TODO: Should be returned after `fluxo-event-stream` will be added

@@ -29,8 +29,8 @@ import kotlin.native.ObjCName
 @InlineOnly
 public inline fun <State> CoroutineScope.container(
     initialState: State,
-    settings: FluxoSettings<FluxoIntentS<State>, State, Nothing>? = null,
-    @BuilderInference setup: FluxoSettings<FluxoIntentS<State>, State, Nothing>.() -> Unit = {},
+    settings: FluxoSettingsS<FluxoIntentS<State>, State>? = null,
+    @BuilderInference setup: FluxoSettingsS<FluxoIntentS<State>, State>.() -> Unit = {},
 ): ContainerS<State> {
     contract { callsInPlace(setup, InvocationKind.EXACTLY_ONCE) }
     val context = coroutineContext
@@ -70,8 +70,8 @@ public inline fun <State, SideEffect : Any> CoroutineScope.container(
 public inline fun <Intent, State> CoroutineScope.store(
     initialState: State,
     @BuilderInference noinline reducer: Reducer<Intent, State>,
-    settings: FluxoSettings<Intent, State, Nothing>? = null,
-    @BuilderInference setup: FluxoSettings<Intent, State, Nothing>.() -> Unit = {},
+    settings: FluxoSettingsS<Intent, State>? = null,
+    @BuilderInference setup: FluxoSettingsS<Intent, State>.() -> Unit = {},
 ): Store<Intent, State> {
     contract { callsInPlace(setup, InvocationKind.EXACTLY_ONCE) }
     return store(initialState, ReducerIntentHandler(reducer), settings, setup)
@@ -86,8 +86,8 @@ public inline fun <Intent, State> CoroutineScope.store(
 public inline fun <Intent, State> CoroutineScope.store(
     initialState: State,
     @BuilderInference handler: IntentHandler<Intent, State, Nothing>,
-    settings: FluxoSettings<Intent, State, Nothing>? = null,
-    @BuilderInference setup: FluxoSettings<Intent, State, Nothing>.() -> Unit = {},
+    settings: FluxoSettingsS<Intent, State>? = null,
+    @BuilderInference setup: FluxoSettingsS<Intent, State>.() -> Unit = {},
 ): Store<Intent, State> {
     contract { callsInPlace(setup, InvocationKind.EXACTLY_ONCE) }
     val context = coroutineContext
@@ -131,8 +131,8 @@ public inline fun <Intent, State, SideEffect : Any> CoroutineScope.store(
 @InlineOnly
 public inline fun <State> container(
     initialState: State,
-    settings: FluxoSettings<FluxoIntentS<State>, State, Nothing>? = null,
-    @BuilderInference setup: FluxoSettings<FluxoIntentS<State>, State, Nothing>.() -> Unit = {},
+    settings: FluxoSettingsS<FluxoIntentS<State>, State>? = null,
+    @BuilderInference setup: FluxoSettingsS<FluxoIntentS<State>, State>.() -> Unit = {},
 ): ContainerS<State> {
     contract { callsInPlace(setup, InvocationKind.EXACTLY_ONCE) }
     return container<State, Nothing>(initialState, settings) {
@@ -172,8 +172,8 @@ public inline fun <State, SideEffect : Any> container(
 public inline fun <Intent, State> store(
     initialState: State,
     @BuilderInference noinline reducer: Reducer<Intent, State>,
-    settings: FluxoSettings<Intent, State, Nothing>? = null,
-    @BuilderInference setup: FluxoSettings<Intent, State, Nothing>.() -> Unit = {},
+    settings: FluxoSettingsS<Intent, State>? = null,
+    @BuilderInference setup: FluxoSettingsS<Intent, State>.() -> Unit = {},
 ): Store<Intent, State> {
     contract { callsInPlace(setup, InvocationKind.EXACTLY_ONCE) }
     return store(initialState, ReducerIntentHandler(reducer), settings, setup)
@@ -188,8 +188,8 @@ public inline fun <Intent, State> store(
 public inline fun <Intent, State> store(
     initialState: State,
     @BuilderInference handler: IntentHandler<Intent, State, Nothing>,
-    settings: FluxoSettings<Intent, State, Nothing>? = null,
-    @BuilderInference setup: FluxoSettings<Intent, State, Nothing>.() -> Unit = {},
+    settings: FluxoSettingsS<Intent, State>? = null,
+    @BuilderInference setup: FluxoSettingsS<Intent, State>.() -> Unit = {},
 ): Store<Intent, State> {
     contract { callsInPlace(setup, InvocationKind.EXACTLY_ONCE) }
     return store<Intent, State, Nothing>(initialState, handler, settings) {

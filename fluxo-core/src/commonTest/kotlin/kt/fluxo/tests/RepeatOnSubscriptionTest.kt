@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import kt.fluxo.core.closeAndWait
 import kt.fluxo.core.container
-import kt.fluxo.core.dsl.ContainerHost
+import kt.fluxo.core.dsl.ContainerHostS
 import kt.fluxo.core.intent
 import kt.fluxo.core.repeatOnSubscription
 import kt.fluxo.test.CoroutineScopeAwareTest
@@ -65,7 +65,7 @@ internal class RepeatOnSubscriptionTest : CoroutineScopeAwareTest() {
         host.container.closeAndWait()
     }
 
-    private inner class TestMiddleware : ContainerHost<State, Nothing> {
+    private inner class TestMiddleware : ContainerHostS<State> {
         override val container = scope.container<State, Nothing>(initialState)
 
         fun callOnSubscription(externalCall: suspend () -> Int) = intent {
