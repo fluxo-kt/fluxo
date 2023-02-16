@@ -13,7 +13,6 @@ internal class SideJobScopeImpl<in Intent, State, in SideEffect : Any>(
     private val sendIntent: (Intent) -> Job,
     private val sendSideEffect: suspend (SideEffect) -> Unit,
     override val currentStateWhenStarted: State,
-    override val restartState: SideJobScope.RestartState,
     coroutineScope: CoroutineScope,
 ) : SideJobScope<Intent, State, SideEffect>, CoroutineScope by coroutineScope {
 

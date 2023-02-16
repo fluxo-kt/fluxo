@@ -11,7 +11,7 @@ import kt.fluxo.core.SideJob
 import kt.fluxo.core.Store
 import kt.fluxo.core.annotation.CallSuper
 import kt.fluxo.core.annotation.FluxoDsl
-import kt.fluxo.core.internal.SideJobRequest.Companion.DEFAULT_SIDE_JOB
+import kt.fluxo.core.internal.RunningSideJob.Companion.DEFAULT_SIDE_JOB
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.internal.InlineOnly

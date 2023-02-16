@@ -13,8 +13,6 @@ public interface SideJobScope<in Intent, State, in SideEffect : Any> : Coroutine
 
     public val currentStateWhenStarted: State
 
-    public val restartState: RestartState
-
     /**
      * Updates the [Store.state] atomically using the specified [function] of its value.
      *
@@ -33,8 +31,4 @@ public interface SideJobScope<in Intent, State, in SideEffect : Any> : Coroutine
 
     @JsName("postSideEffect")
     public suspend fun postSideEffect(sideEffect: SideEffect)
-
-    public enum class RestartState {
-        Initial, Restarted
-    }
 }

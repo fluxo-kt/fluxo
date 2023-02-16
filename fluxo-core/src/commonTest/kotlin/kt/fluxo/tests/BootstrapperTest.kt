@@ -8,7 +8,6 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.sync.Mutex
 import kt.fluxo.core.closeAndWait
 import kt.fluxo.core.container
-import kt.fluxo.core.dsl.SideJobScope.RestartState
 import kt.fluxo.core.repeatOnSubscription
 import kt.fluxo.test.CoroutineScopeAwareTest
 import kt.fluxo.test.IgnoreJs
@@ -121,9 +120,9 @@ internal class BootstrapperTest : CoroutineScopeAwareTest() {
     fun b_side_job() = runUnitTest {
         val store = container<String, String>(INIT) {
             debugChecks = true
-            bootstrapperJob {
+            bootstrapperJob { wasRestarted ->
                 assertEquals(INIT, currentStateWhenStarted)
-                assertEquals(RestartState.Initial, restartState)
+                assertFalse(wasRestarted)
                 emit {
                     updateState { "$it.sideJob" }
                 }
@@ -156,8 +155,8 @@ internal class BootstrapperTest : CoroutineScopeAwareTest() {
         val store = container<String, String>(INIT) {
             onStart {
                 var i = 0
-                repeatOnSubscription(stopTimeout = 0) {
-                    assertEquals(RestartState.Initial, restartState)
+                repeatOnSubscription(stopTimeout = 0) { wasRestarted ->
+                    assertFalse(wasRestarted)
                     updateState { "update${i++}" }
                 }
             }

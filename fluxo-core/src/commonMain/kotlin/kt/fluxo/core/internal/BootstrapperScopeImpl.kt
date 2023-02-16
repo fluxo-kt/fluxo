@@ -2,8 +2,10 @@
 
 package kt.fluxo.core.internal
 
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.StateFlow
+import kt.fluxo.core.SideJob
 import kt.fluxo.core.dsl.BootstrapperScope
 import kotlin.coroutines.CoroutineContext
 
@@ -15,7 +17,7 @@ internal class BootstrapperScopeImpl<in Intent, State, SideEffect : Any>(
     private val emitIntent: suspend (Intent) -> Unit,
     private val sendIntent: (Intent) -> Job,
     sendSideEffect: suspend (SideEffect) -> Unit,
-    sendSideJob: suspend (SideJobRequest<Intent, State, SideEffect>) -> Unit,
+    sendSideJob: suspend (key: String, CoroutineContext, CoroutineStart, SideJob<Intent, State, SideEffect>) -> Job,
     subscriptionCount: StateFlow<Int>,
     coroutineContext: CoroutineContext,
 ) : StoreScopeImpl<Intent, State, SideEffect>(

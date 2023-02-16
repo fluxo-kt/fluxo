@@ -11,7 +11,7 @@ import kt.fluxo.core.annotation.CallSuper
 import kt.fluxo.core.annotation.ExperimentalFluxoApi
 import kt.fluxo.core.annotation.ThreadSafe
 import kt.fluxo.core.internal.Closeable
-import kt.fluxo.core.internal.SideJobRequest.Companion.DEFAULT_SIDE_JOB
+import kt.fluxo.core.internal.RunningSideJob.Companion.DEFAULT_SIDE_JOB
 import kotlin.internal.InlineOnly
 import kotlin.js.JsName
 import kotlin.jvm.JvmSynthetic

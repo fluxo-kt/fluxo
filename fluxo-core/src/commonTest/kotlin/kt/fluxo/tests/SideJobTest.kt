@@ -5,7 +5,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kt.fluxo.core.closeAndWait
 import kt.fluxo.core.container
-import kt.fluxo.core.dsl.SideJobScope.RestartState
 import kt.fluxo.core.dsl.accept
 import kt.fluxo.core.intent
 import kt.fluxo.core.store
@@ -23,15 +22,15 @@ internal class SideJobTest {
     fun sj_on_mvi_intent() = runUnitTest {
         val store = backgroundScope.store("a", handler = { state ->
             when (state) {
-                "a" -> sideJob {
-                    assertEquals(RestartState.Initial, restartState)
+                "a" -> sideJob { wasRestarted ->
+                    assertFalse(wasRestarted)
                     assertEquals("a", currentStateWhenStarted)
                     updateState { if (it == "a") "b" else it }
                     emit("b")
                 }
 
-                "b" -> sideJob {
-                    assertEquals(RestartState.Restarted, restartState)
+                "b" -> sideJob { wasRestarted ->
+                    assertTrue(wasRestarted)
                     assertEquals("b", currentStateWhenStarted)
                     updateState { if (it == "b") "c" else it }
                 }
@@ -54,16 +53,16 @@ internal class SideJobTest {
         val store = backgroundScope.container("a")
 
         fun secondIntent() = store.intent {
-            sideJob {
-                assertEquals(RestartState.Restarted, restartState)
+            sideJob { wasRestarted ->
+                assertTrue(wasRestarted)
                 assertEquals("b", currentStateWhenStarted)
                 updateState { "c" }
             }
         }
 
         store.send {
-            sideJob {
-                assertEquals(RestartState.Initial, restartState)
+            sideJob { wasRestarted ->
+                assertFalse(wasRestarted)
                 assertEquals("a", currentStateWhenStarted)
                 updateState { "b" }
                 secondIntent()
@@ -114,7 +113,7 @@ internal class SideJobTest {
 //            while (true) {
 //                val event = awaitItem()
 //                if (event is FluxoEvent.SideJobError) {
-//                    assertEquals(RestartState.Initial, event.restartState)
+//                    assertFalse(event.wasRestarted)
 //                    assertEquals(DEFAULT_SIDE_JOB, event.key)
 //                    assertIs<UnsupportedOperationException>(event.e)
 //                    cancelAndIgnoreRemainingEvents()
@@ -131,13 +130,13 @@ internal class SideJobTest {
     fun sj_restart_state() = runUnitTest {
         val store = container<String, String>("init")
         store.intent {
-            sideJob {
-                assertEquals(RestartState.Initial, restartState)
+            sideJob { wasRestarted ->
+                assertFalse(wasRestarted)
                 delay(timeMillis = 1_000)
                 updateState { "a" }
             }
-            sideJob {
-                assertEquals(RestartState.Restarted, restartState)
+            sideJob { wasRestarted ->
+                assertTrue(wasRestarted)
                 updateState { "b" }
             }
         }
