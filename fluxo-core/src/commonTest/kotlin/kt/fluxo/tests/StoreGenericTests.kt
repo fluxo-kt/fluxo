@@ -1,7 +1,7 @@
 package kt.fluxo.tests
 
 import kotlinx.coroutines.test.runTest
-import kt.fluxo.core.Bootstrapper
+import kt.fluxo.core.BootstrapperS
 import kt.fluxo.core.Reducer
 import kt.fluxo.core.Store
 import kt.fluxo.core.store
@@ -13,7 +13,7 @@ internal class StoreGenericTests {
 
     private val storeFactory: (
         initialState: String,
-        bootstrapper: Bootstrapper<String, String, Nothing>?,
+        bootstrapper: BootstrapperS<String, String>?,
         reducer: Reducer<String, String>,
     ) -> Store<String, String> = { initialState, bootstrapper, reducer ->
         store(
@@ -44,7 +44,7 @@ internal class StoreGenericTests {
 
     private fun store(
         initialState: String = "initial_state",
-        bootstrapper: Bootstrapper<String, String, Nothing>? = null,
+        bootstrapper: BootstrapperS<String, String>? = null,
         reducer: Reducer<String, String> = { this },
     ) = storeFactory(initialState, bootstrapper, reducer)
 }
