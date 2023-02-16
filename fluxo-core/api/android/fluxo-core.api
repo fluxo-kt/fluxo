@@ -201,7 +201,7 @@ public final class kt/fluxo/core/internal/FluxoIntentHandler : kt/fluxo/core/Int
 	public fun handleIntent (Lkt/fluxo/core/dsl/StoreScope;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public final class kt/fluxo/core/internal/FluxoStore : kt/fluxo/core/StoreSE {
+public final class kt/fluxo/core/internal/FluxoStore : kotlin/coroutines/AbstractCoroutineContextElement, kotlinx/coroutines/CoroutineExceptionHandler, kt/fluxo/core/StoreSE {
 	public fun <init> (Ljava/lang/Object;Lkt/fluxo/core/IntentHandler;Lkt/fluxo/core/FluxoSettings;)V
 	public synthetic fun collect (Lkotlinx/coroutines/flow/FlowCollector;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun emit (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -211,6 +211,7 @@ public final class kt/fluxo/core/internal/FluxoStore : kt/fluxo/core/StoreSE {
 	public fun getSideEffectFlow ()Lkotlinx/coroutines/flow/Flow;
 	public fun getSubscriptionCount ()Lkotlinx/coroutines/flow/StateFlow;
 	public fun getValue ()Ljava/lang/Object;
+	public fun handleException (Lkotlin/coroutines/CoroutineContext;Ljava/lang/Throwable;)V
 	public fun send (Ljava/lang/Object;)Lkotlinx/coroutines/Job;
 	public fun setValue (Ljava/lang/Object;)V
 	public fun start ()Lkotlinx/coroutines/Job;
