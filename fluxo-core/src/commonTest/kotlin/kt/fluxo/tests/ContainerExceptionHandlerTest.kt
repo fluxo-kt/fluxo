@@ -4,14 +4,13 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
 import kt.fluxo.core.FluxoClosedException
@@ -30,7 +29,7 @@ import kotlin.test.assertIs
 class ContainerExceptionHandlerTest {
 
     @Test
-    fun by_default_exception_breaks_the_store() = runUnitTest {
+    fun by_default_exception_breaks_the_store() = runUnitTest(dispatchTimeoutMs = 5_000) {
         val initState = 1
         var completionException by MutableStateFlow<Throwable?>(null)
         val job = Job()
@@ -42,21 +41,22 @@ class ContainerExceptionHandlerTest {
         }
         container.send {
             throw IllegalStateException()
-        }
-        yield()
+        }.join()
+
+        assertIs<IllegalStateException>(completionException, "completionException was not caught.")
+        assertEquals(false, container.isActive, "Container is active but shouldn't.")
 
         assertFailsWith<FluxoClosedException> {
             container.send {
                 updateState { 2 }
             }
         }
-        yield()
 
-        assertEquals(false, container.isActive, "Container is active but shouldn't.")
-        assertEquals(false, job.isActive, "Job is active but shouldn't.")
+        assertEquals(initState, container.value)
         assertEquals(initState, container.first())
 
-        assertIs<IllegalStateException>(completionException, "completionException was not caught.")
+        yield() // yield so cancellation could propagate in any cases
+        assertEquals(false, job.isActive, "Job is active but shouldn't.")
     }
 
     @Test
@@ -64,7 +64,6 @@ class ContainerExceptionHandlerTest {
         val initState = 10
         val exceptions = mutableListOf<Throwable>()
         val container = container(initState) {
-            intentContext = Dispatchers.Unconfined
             onError { exceptions += it }
             closeOnExceptions = false
         }
@@ -97,23 +96,18 @@ class ContainerExceptionHandlerTest {
         checkCancellationPropagation(withExceptionHandler = false)
 
     private fun checkCancellationPropagation(withExceptionHandler: Boolean) = runUnitTest {
-        val scopeJob = SupervisorJob()
-        val containerScope = CoroutineScope(scopeJob)
-        val handler = when {
-            withExceptionHandler -> CoroutineExceptionHandler { _, _ -> }
-            else -> null
+        val container = backgroundScope.container<Unit, Nothing>(initialState = Unit) {
+            exceptionHandler = when {
+                withExceptionHandler -> CoroutineExceptionHandler { _, _ -> }
+                else -> null
+            }
         }
-        val container = containerScope.container<Unit, Nothing>(initialState = Unit) {
-            exceptionHandler = handler
-            intentContext = Dispatchers.Unconfined
-        }
-
-        // required on JS to pass this test
-        container.start()?.join()
 
         val exceptions = mutableListOf<Throwable>()
+        val mutex = Mutex(locked = true)
         container.send {
             try {
+                mutex.unlock()
                 flow {
                     while (true) {
                         emit(Unit)
@@ -122,13 +116,15 @@ class ContainerExceptionHandlerTest {
                         }
                     }
                 }.collect()
-            } catch (e: CancellationException) {
-                exceptions.add(e)
-                throw e
+            } catch (ce: CancellationException) {
+                exceptions.add(ce)
+                throw ce
             }
         }
-        containerScope.cancel()
-        scopeJob.join()
+
+        mutex.lock()
+        container.closeAndWait()
+        assertEquals(false, container.isActive, "Container is active but shouldn't.")
         assertEquals(1, exceptions.size, "CancellationException was not caught")
     }
 

@@ -86,9 +86,6 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
     private val exceptionHandler: CoroutineExceptionHandler?
     override val coroutineContext: CoroutineContext
 
-    @InternalFluxoApi
-    internal val intentContext: CoroutineContext
-
     override val subscriptionCount: StateFlow<Int>
 
     private val requestsChannel: Channel<StoreRequest<Intent, State>>
@@ -103,8 +100,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
             else -> CoroutineName(toString())
         }
 
-        val parent = ctx[Job] ?: conf.intentContext[Job]
-        val job = if (closeOnExceptions) Job(parent) else SupervisorJob(parent)
+        val job = ctx[Job].let { if (closeOnExceptions) Job(it) else SupervisorJob(it) }
         job.invokeOnCompletion(::onShutdown)
 
         exceptionHandler = conf.exceptionHandler ?: ctx[CoroutineExceptionHandler]
@@ -113,16 +109,10 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         val scope: CoroutineScope = this
         // endregion
 
-        intentContext = scope.coroutineContext + conf.intentContext + when {
-            !debugChecks -> EmptyCoroutineContext
-            else -> CoroutineName("$F[$name:intentScope]")
-        }
-
-        sideJobScope = if (intentHandler is ReducerIntentHandler && bootstrapper == null) {
-            // Minor optimization as side jobs are off when bootstrapper is null and ReducerIntentHandler set.
-            scope
-        } else {
-            scope + conf.sideJobsContext + exceptionHandler + SupervisorJob(job) + when {
+        // Minor optimization as side jobs are off when bootstrapper is null and ReducerIntentHandler set.
+        sideJobScope = when {
+            bootstrapper == null && intentHandler is ReducerIntentHandler -> scope
+            else -> scope + conf.sideJobsContext + exceptionHandler + SupervisorJob(job) + when {
                 !debugChecks -> EmptyCoroutineContext
                 else -> CoroutineName("$F[$name:sideJobScope]")
             }
@@ -369,7 +359,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
                 is StoreRequest.RestoreState -> updateState(request)
             }
         }
-        launch(intentContext, start = coroutineStart) {
+        (this@FluxoStore as CoroutineScope).launch(start = coroutineStart) {
             with(inputStrategy) {
                 inputStrategyScope.processRequests(requestsFlow)
             }
@@ -505,7 +495,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
 
     // endregion
 
-    private suspend fun safelyRunBootstrapper(bootstrapper: Bootstrapper<Intent, State, SideEffect>) = withContext(intentContext) {
+    private suspend fun safelyRunBootstrapper(bootstrapper: Bootstrapper<Intent, State, SideEffect>) {
         try {
             // Await all children completions with coroutineScope
             coroutineScope {
@@ -589,9 +579,6 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
     private fun onShutdown(error: Throwable?) {
         val cancellation = error.toCancellationException() ?: cancellationCause
         val cause = cancellation.cause ?: cancellation
-
-        // Useful if intentContext has an ovirriden Job
-        intentContext.cancel(cancellation)
 
         // Cancel and clear sideJobs
         // Cancel and clear sideJobs

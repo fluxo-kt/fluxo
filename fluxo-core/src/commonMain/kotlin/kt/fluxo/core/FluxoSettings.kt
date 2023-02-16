@@ -154,9 +154,7 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
      * [CoroutineDispatcher] or any [CoroutineContext] to run the main [Store] event loop.
      */
     public var coroutineContext: CoroutineContext = Dispatchers.Default
-    public var intentContext: CoroutineContext = EmptyCoroutineContext
     public var sideJobsContext: CoroutineContext = EmptyCoroutineContext
-    public var interceptorContext: CoroutineContext = EmptyCoroutineContext
 
     /**
      * If false, the [Store] offload everything possible to the provided [scope],
@@ -263,9 +261,7 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
 
         s.optimized = optimized
 
-        s.interceptorContext = interceptorContext
         s.sideJobsContext = sideJobsContext
-        s.intentContext = intentContext
         s.coroutineContext = coroutineContext
         s.scope = scope
 
