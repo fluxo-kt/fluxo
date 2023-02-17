@@ -85,7 +85,7 @@ public interface Store<in Intent, out State> : StateFlow<State>, FlowCollector<I
      */
     @CallSuper
     @JsName("start")
-    public fun start(): Job?
+    public fun start(): Job
 
     /**
      * Closes this [Store], cancelling its [Job] and all its children.

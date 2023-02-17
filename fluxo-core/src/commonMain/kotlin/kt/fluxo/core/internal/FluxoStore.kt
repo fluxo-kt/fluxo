@@ -90,7 +90,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
 
     private val requestsChannel: Channel<StoreRequest<Intent, State>>
 
-    private val initialised = atomic(false)
+    private val startJob: Job
 
     init {
         // region Prepare coroutine context
@@ -208,39 +208,100 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         this.subscriptionCount = subscriptionCount
 
         // Start the Store
-        if (!conf.lazy) {
-            // Eager start
-            start()
-        } else {
+        val startJob = scope.launch(
+            context = if (!debugChecks) EmptyCoroutineContext else CoroutineName("$F[$name:launch]"),
+            start = if (conf.lazy) CoroutineStart.LAZY else coroutineStart,
+        ) {
+            // Observe and process intents
+            // Use scope to not block the startJob completion.
+            val requestsFlow = requestsChannel.receiveAsFlow()
+            val inputStrategy = inputStrategy
+            val inputStrategyScope: InputStrategyScope<StoreRequest<Intent, State>> = { request ->
+                when (request) {
+                    is StoreRequest.HandleIntent -> {
+                        if (debugChecks) {
+                            withContext(CoroutineName("$F[$name <= Intent ${request.intent}]")) {
+                                safelyHandleIntent(request.intent, request.deferred)
+                            }
+                        } else {
+                            safelyHandleIntent(request.intent, request.deferred)
+                        }
+                    }
+
+                    is StoreRequest.RestoreState -> updateState(request)
+                }
+            }
+            scope.launch(start = coroutineStart) {
+                with(inputStrategy) {
+                    inputStrategyScope.processRequests(requestsFlow)
+                }
+            }
+
+            // bootstrap
+            bootstrapper?.let { bootstrapper ->
+                safelyRunBootstrapper(bootstrapper)
+            }
+        }
+        this.startJob = startJob
+
+        if (conf.lazy) {
             // Lazy start on state subscription
             val subscriptions = subscriptionCount
             scope.launch(
-                when {
-                    !debugChecks -> EmptyCoroutineContext
-                    else -> CoroutineName("$F[$name:lazyStart]")
-                },
+                context = if (!debugChecks) EmptyCoroutineContext else CoroutineName("$F[$name:lazyStart]"),
                 start = coroutineStart,
             ) {
                 // start on the first subscriber.
                 subscriptions.first { it > 0 }
                 if (isActive && job.isActive) {
-                    start()
+                    startJob.start()
                 }
             }
         }
     }
 
-    override fun start(): Job? {
+    override fun start(): Job {
         if (!coroutineContext.isActive) {
             throw FluxoClosedException(
                 "Store is closed, it cannot be restarted",
                 cancellationCause.let { it.cause ?: it },
             )
         }
-        if (initialised.compareAndSet(expect = false, update = true)) {
-            return launch()
+        return startJob.apply { start() }
+    }
+
+    private suspend fun safelyRunBootstrapper(bootstrapper: Bootstrapper<Intent, State, SideEffect>) {
+        try {
+            // Await all children completions with coroutineScope
+            coroutineScope {
+                val bootstrapperScope = BootstrapperScopeImpl(
+                    bootstrapper = bootstrapper,
+                    guardian = if (!debugChecks) {
+                        null
+                    } else {
+                        InputStrategyGuardian(
+                            parallelProcessing = inputStrategy.parallelProcessing,
+                            isBootstrap = true,
+                            intent = null,
+                            handler = bootstrapper,
+                        )
+                    },
+                    getState = mutableState::value,
+                    updateStateAndGet = ::updateStateAndGet,
+                    emitIntent = ::emit,
+                    sendIntent = ::send,
+                    sendSideEffect = ::postSideEffect,
+                    sendSideJob = ::postSideJob,
+                    subscriptionCount = subscriptionCount,
+                    coroutineContext = coroutineContext,
+                )
+                bootstrapperScope.bootstrapper()
+                bootstrapperScope.close()
+            }
+        } catch (_: CancellationException) {
+        } catch (e: Throwable) {
+            handleException(currentCoroutineContext(), e)
         }
-        return null
     }
 
     // endregion
@@ -263,112 +324,6 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
             requestsChannel.send(request)
         }
         return request.deferred
-    }
-
-    // endregion
-
-
-    // region State control
-
-    override var value: State
-        get() = mutableState.value
-        set(value) {
-            updateStateAndGet { value }
-        }
-
-    private fun updateState(request: StoreRequest.RestoreState<Intent, State>): State {
-        try {
-            val state = updateState(request.state)
-            request.deferred.complete(Unit)
-            return state
-        } catch (e: Throwable) {
-            request.deferred.cancel(e.toCancellationException())
-            throw e
-        }
-    }
-
-    private fun updateState(nextValue: State): State = updateStateAndGet { nextValue }
-
-    private fun updateStateAndGet(function: (State) -> State): State {
-        while (true) {
-            val prevValue = mutableState.value
-            val nextValue = function(prevValue)
-            if (mutableState.compareAndSet(prevValue, nextValue)) {
-                if (prevValue != nextValue) {
-                    prevValue.closeSafely()
-                }
-                return nextValue
-            }
-            // TODO: we may need to close nextValue here
-            coroutineContext.ensureActive()
-        }
-    }
-
-    // endregion
-
-
-    // region Internals
-
-    private suspend fun postSideEffect(sideEffect: SideEffect) {
-        try {
-            if (!coroutineContext.isActive) {
-                throw cancellationCause
-            }
-            if (sideEffect is GuaranteedEffect<*>) {
-                sideEffect.setResendFunction(::postSideEffectSync)
-            }
-            sideEffectChannel?.send(sideEffect)
-                ?: (sideEffectFlowField as MutableSharedFlow).emit(sideEffect)
-        } catch (e: CancellationException) {
-            sideEffect.closeSafely(e.cause)
-        } catch (e: Throwable) {
-            sideEffect.closeSafely(e)
-            handleException(currentCoroutineContext(), e)
-        }
-    }
-
-    private fun postSideEffectSync(sideEffect: SideEffect) {
-        launch(start = CoroutineStart.UNDISPATCHED) {
-            postSideEffect(sideEffect)
-        }
-    }
-
-    /** Called only once for each [FluxoStore] */
-    private fun launch() = launch(
-        when {
-            !debugChecks -> EmptyCoroutineContext
-            else -> CoroutineName("$F[$name:launch]")
-        },
-        start = coroutineStart,
-    ) {
-        // observe and process intents
-        val requestsFlow = requestsChannel.receiveAsFlow()
-        val inputStrategy = inputStrategy
-        val inputStrategyScope: InputStrategyScope<StoreRequest<Intent, State>> = { request ->
-            when (request) {
-                is StoreRequest.HandleIntent -> {
-                    if (debugChecks) {
-                        withContext(CoroutineName("$F[$name <= Intent ${request.intent}]")) {
-                            safelyHandleIntent(request.intent, request.deferred)
-                        }
-                    } else {
-                        safelyHandleIntent(request.intent, request.deferred)
-                    }
-                }
-
-                is StoreRequest.RestoreState -> updateState(request)
-            }
-        }
-        (this@FluxoStore as CoroutineScope).launch(start = coroutineStart) {
-            with(inputStrategy) {
-                inputStrategyScope.processRequests(requestsFlow)
-            }
-        }
-
-        // bootstrap
-        bootstrapper?.let { bootstrapper ->
-            safelyRunBootstrapper(bootstrapper)
-        }
     }
 
     private suspend fun safelyHandleIntent(intent: Intent, deferred: CompletableDeferred<Unit>?) {
@@ -418,6 +373,76 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
             handleException(currentCoroutineContext(), e)
         }
     }
+
+    // endregion
+
+
+    // region State control
+
+    override var value: State
+        get() = mutableState.value
+        set(value) {
+            updateStateAndGet { value }
+        }
+
+    private fun updateState(request: StoreRequest.RestoreState<Intent, State>): State {
+        try {
+            val state = updateState(request.state)
+            request.deferred.complete(Unit)
+            return state
+        } catch (e: Throwable) {
+            request.deferred.cancel(e.toCancellationException())
+            throw e
+        }
+    }
+
+    private fun updateState(nextValue: State): State = updateStateAndGet { nextValue }
+
+    private fun updateStateAndGet(function: (State) -> State): State {
+        while (true) {
+            val prevValue = mutableState.value
+            val nextValue = function(prevValue)
+            if (mutableState.compareAndSet(prevValue, nextValue)) {
+                if (prevValue != nextValue) {
+                    prevValue.closeSafely()
+                }
+                return nextValue
+            }
+            // TODO: we may need to close nextValue here
+            coroutineContext.ensureActive()
+        }
+    }
+
+    // endregion
+
+
+    // region Side effects
+
+    private suspend fun postSideEffect(sideEffect: SideEffect) {
+        try {
+            if (!coroutineContext.isActive) {
+                throw cancellationCause
+            }
+            if (sideEffect is GuaranteedEffect<*>) {
+                sideEffect.setResendFunction(::postSideEffectSync)
+            }
+            sideEffectChannel?.send(sideEffect)
+                ?: (sideEffectFlowField as MutableSharedFlow).emit(sideEffect)
+        } catch (e: CancellationException) {
+            sideEffect.closeSafely(e.cause)
+        } catch (e: Throwable) {
+            sideEffect.closeSafely(e)
+            handleException(currentCoroutineContext(), e)
+        }
+    }
+
+    private fun postSideEffectSync(sideEffect: SideEffect) {
+        launch(start = CoroutineStart.UNDISPATCHED) {
+            postSideEffect(sideEffect)
+        }
+    }
+
+    // endregion
 
 
     // region Side jobs
@@ -490,42 +515,6 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
             map[key] = RunningSideJob(job = job)
 
             return job
-        }
-    }
-
-    // endregion
-
-    private suspend fun safelyRunBootstrapper(bootstrapper: Bootstrapper<Intent, State, SideEffect>) {
-        try {
-            // Await all children completions with coroutineScope
-            coroutineScope {
-                val bootstrapperScope = BootstrapperScopeImpl(
-                    bootstrapper = bootstrapper,
-                    guardian = if (!debugChecks) {
-                        null
-                    } else {
-                        InputStrategyGuardian(
-                            parallelProcessing = inputStrategy.parallelProcessing,
-                            isBootstrap = true,
-                            intent = null,
-                            handler = bootstrapper,
-                        )
-                    },
-                    getState = mutableState::value,
-                    updateStateAndGet = ::updateStateAndGet,
-                    emitIntent = ::emit,
-                    sendIntent = ::send,
-                    sendSideEffect = ::postSideEffect,
-                    sendSideJob = ::postSideJob,
-                    subscriptionCount = subscriptionCount,
-                    coroutineContext = coroutineContext,
-                )
-                bootstrapperScope.bootstrapper()
-                bootstrapperScope.close()
-            }
-        } catch (_: CancellationException) {
-        } catch (e: Throwable) {
-            handleException(currentCoroutineContext(), e)
         }
     }
 

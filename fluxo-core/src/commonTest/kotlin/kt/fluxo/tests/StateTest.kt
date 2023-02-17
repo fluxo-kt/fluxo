@@ -79,7 +79,7 @@ internal class StateTest : CoroutineScopeAwareTest() {
             debugChecks = false
             closeOnExceptions = true
         }
-        container.start()?.join()
+        container.start().join()
         assertIs<IllegalArgumentException>(ex)
         assertFalse(container.isActive)
     }

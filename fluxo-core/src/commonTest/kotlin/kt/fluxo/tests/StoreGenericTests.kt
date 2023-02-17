@@ -38,7 +38,7 @@ internal class StoreGenericTests {
         val store = store(bootstrapper = {
             isInitialized = true
         })
-        store.start()?.join()
+        store.start().join()
         assertTrue(isInitialized)
     }
 
