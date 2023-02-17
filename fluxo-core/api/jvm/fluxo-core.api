@@ -4,8 +4,8 @@ public final class kt/fluxo/core/FluxoClosedException : java/util/concurrent/Can
 
 public final class kt/fluxo/core/FluxoDsl {
 	public static final fun closeStoreAndWait (Lkt/fluxo/core/Store;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static final fun repeatOnSubscriptionIn (Lkt/fluxo/core/dsl/StoreScope;Ljava/lang/String;JLkotlin/jvm/functions/Function3;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun repeatOnSubscriptionIn$default (Lkt/fluxo/core/dsl/StoreScope;Ljava/lang/String;JLkotlin/jvm/functions/Function3;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static final fun repeatOnSubscriptionIn (Lkt/fluxo/core/dsl/StoreScope;Ljava/lang/String;JLkotlin/coroutines/CoroutineContext;Lkotlinx/coroutines/CoroutineStart;Lkotlin/jvm/functions/Function3;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun repeatOnSubscriptionIn$default (Lkt/fluxo/core/dsl/StoreScope;Ljava/lang/String;JLkotlin/coroutines/CoroutineContext;Lkotlinx/coroutines/CoroutineStart;Lkotlin/jvm/functions/Function3;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 }
 
 public abstract interface class kt/fluxo/core/FluxoException {

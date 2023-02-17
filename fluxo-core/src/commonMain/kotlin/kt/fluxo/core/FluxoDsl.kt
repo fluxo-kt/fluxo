@@ -2,6 +2,7 @@
 
 package kt.fluxo.core
 
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -13,6 +14,8 @@ import kt.fluxo.core.annotation.ExperimentalFluxoApi
 import kt.fluxo.core.annotation.FluxoDsl
 import kt.fluxo.core.dsl.StoreScope
 import kt.fluxo.core.internal.RunningSideJob.Companion.DEFAULT_REPEAT_ON_SUBSCRIPTION_JOB
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.js.JsName
 import kotlin.jvm.JvmName
 
@@ -35,6 +38,9 @@ public suspend fun Store<*, *>.closeAndWait() {
 
 /**
  *
+ * NOTE: `wasRestarted` is `true` in the [block] when the
+ * [repeatOnSubscription] called second time with the same [key].
+ *
  * @see StoreScope.sideJob
  */
 @FluxoDsl
@@ -44,9 +50,11 @@ public suspend fun Store<*, *>.closeAndWait() {
 public suspend fun <I, S, SE : Any> StoreScope<I, S, SE>.repeatOnSubscription(
     key: String = DEFAULT_REPEAT_ON_SUBSCRIPTION_JOB,
     stopTimeout: Long = 100L,
+    context: CoroutineContext = EmptyCoroutineContext,
+    start: CoroutineStart = CoroutineStart.DEFAULT,
     block: SideJob<I, S, SE>,
 ) {
-    sideJob(key) { wasRestarted ->
+    sideJob(key = key, context = context, start = start) { wasRestarted ->
         val upstream = this@repeatOnSubscription.subscriptionCount
         if (stopTimeout > 0L) {
             upstream.mapLatest {
