@@ -145,11 +145,6 @@ public abstract interface class kt/fluxo/core/dsl/ContainerHost {
 	public abstract fun getContainer ()Lkt/fluxo/core/StoreSE;
 }
 
-public abstract interface class kt/fluxo/core/dsl/InterceptorScope : kotlinx/coroutines/CoroutineScope {
-	public abstract fun getStoreName ()Ljava/lang/String;
-	public abstract fun postRequest (Lkt/fluxo/core/intercept/StoreRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-}
-
 public abstract interface class kt/fluxo/core/dsl/SideJobScope : kotlinx/coroutines/CoroutineScope {
 	public abstract fun emit (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun getCurrentStateWhenStarted ()Ljava/lang/Object;
