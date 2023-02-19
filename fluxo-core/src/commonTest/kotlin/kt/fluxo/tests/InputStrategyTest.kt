@@ -151,9 +151,9 @@ internal class InputStrategyTest : CoroutineScopeAwareTest() {
     @Test
     fun input_guardian_parallel_state_access_prevention() = runUnitTest {
         val intent: FluxoIntent<Int, *> = intent@{
-            assertTrue(state in 0..1)
+            assertTrue(value in 0..1)
             // Parallel input strategy requires that inputs only access or update the state at most once.
-            assertFailsWith<FluxoRuntimeException> { state }
+            assertFailsWith<FluxoRuntimeException> { value }
             sideJob(key = "${Random.nextLong()}") {
                 // intent scope has already been closed.
                 assertFailsWith<FluxoRuntimeException> { this@intent.noOp() }

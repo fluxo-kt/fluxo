@@ -85,11 +85,8 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
     private val inputStrategy = conf.inputStrategy
     private val exceptionHandler: CoroutineExceptionHandler?
     override val coroutineContext: CoroutineContext
-
     override val subscriptionCount: StateFlow<Int>
-
     private val requestsChannel: Channel<StoreRequest<Intent, State>>
-
     private val startJob: Job
 
     init {
@@ -173,6 +170,14 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
             sideEffectsSubscriptionCount = flow.subscriptionCount
             sideEffectFlowField = flow
         } else {
+            // Leak-free transfer via channel
+            // https://github.com/Kotlin/kotlinx.coroutines/issues/1936
+            // See "Undelivered elements" section in Channel documentation for details.
+            //
+            // Handled cases:
+            // — sending operation cancelled before it had a chance to actually send the element.
+            // — receiving operation retrieved the element from the channel cancelled when trying to return it the caller.
+            // — channel cancelled, in which case onUndeliveredElement called on every remaining element in the channel's buffer.
             val seResendLock = Mutex()
             val channel = Channel<SideEffect>(conf.sideEffectBufferSize, BufferOverflow.SUSPEND) {
                 scope.launch(start = CoroutineStart.UNDISPATCHED) {
@@ -291,7 +296,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
                     emitIntent = ::emit,
                     sendIntent = ::send,
                     sendSideEffect = ::postSideEffect,
-                    sendSideJob = ::postSideJob,
+                    sendSideJob = ::sideJob,
                     subscriptionCount = subscriptionCount,
                     coroutineContext = coroutineContext,
                 )
@@ -353,7 +358,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
                         getState = mutableState::value,
                         updateStateAndGet = ::updateStateAndGet,
                         sendSideEffect = ::postSideEffect,
-                        sendSideJob = ::postSideJob,
+                        sendSideJob = ::sideJob,
                         subscriptionCount = subscriptionCount,
                         coroutineContext = coroutineContext,
                     )
@@ -437,7 +442,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
     }
 
     private fun postSideEffectSync(sideEffect: SideEffect) {
-        launch(start = CoroutineStart.UNDISPATCHED) {
+        (this as CoroutineScope).launch(start = CoroutineStart.UNDISPATCHED) {
             postSideEffect(sideEffect)
         }
     }
@@ -447,7 +452,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
 
     // region Side jobs
 
-    private suspend fun postSideJob(
+    private suspend fun sideJob(
         key: String,
         context: CoroutineContext,
         start: CoroutineStart,
@@ -569,7 +574,6 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         val cancellation = error.toCancellationException() ?: cancellationCause
         val cause = cancellation.cause ?: cancellation
 
-        // Cancel and clear sideJobs
         // Cancel and clear sideJobs
         sideJobsMap.run {
             values.forEach { it.job?.cancel(cancellation) }

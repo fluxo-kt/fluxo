@@ -25,7 +25,7 @@ internal open class StoreScopeImpl<in Intent, State, SideEffect : Any>(
     final override val coroutineContext: CoroutineContext,
 ) : StoreScope<Intent, State, SideEffect> {
 
-    final override val state: State
+    final override val value: State
         get() {
             guardian?.checkStateAccess()
             return getState()
@@ -46,9 +46,9 @@ internal open class StoreScopeImpl<in Intent, State, SideEffect : Any>(
         context: CoroutineContext,
         start: CoroutineStart,
         block: SideJob<Intent, State, SideEffect>,
-    ) {
+    ): Job {
         guardian?.checkSideJob()
-        sendSideJob(key, context, start, block)
+        return sendSideJob(key, context, start, block)
     }
 
     final override fun noOp() {

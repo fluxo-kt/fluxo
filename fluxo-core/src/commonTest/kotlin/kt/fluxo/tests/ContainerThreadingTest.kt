@@ -106,7 +106,7 @@ internal class ContainerThreadingTest : CoroutineScopeAwareTest() {
             delay(Random.nextLong(20))
         }
         updateState {
-            it.copy(ids = state.ids + 1)
+            it.copy(ids = value.ids + 1)
         }
     }
 
@@ -115,7 +115,7 @@ internal class ContainerThreadingTest : CoroutineScopeAwareTest() {
             delay(Random.nextLong(20))
         }
         updateState {
-            it.copy(ids = state.ids + 2)
+            it.copy(ids = value.ids + 2)
         }
     }
 
@@ -124,7 +124,7 @@ internal class ContainerThreadingTest : CoroutineScopeAwareTest() {
             delay(Random.nextLong(20))
         }
         updateState {
-            it.copy(ids = state.ids + 3)
+            it.copy(ids = value.ids + 3)
         }
     }
 

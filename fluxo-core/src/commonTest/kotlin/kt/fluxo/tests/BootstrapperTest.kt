@@ -97,7 +97,7 @@ internal class BootstrapperTest : CoroutineScopeAwareTest() {
         val store = scope.container(INIT) {
             debugChecks = true
             bootstrapper = {
-                assertEquals(INIT, state)
+                assertEquals(INIT, value)
                 updateState { "$it.update" }
             }
         }

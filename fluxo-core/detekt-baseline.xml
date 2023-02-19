@@ -10,7 +10,7 @@
     <ID>ForbiddenComment:FluxoStore.kt$FluxoStore$// TODO: we may need to close nextValue here</ID>
     <ID>ForbiddenComment:Store.kt$Store$// @SubclassOptInRequired(ExperimentalFluxoApi::class) // TODO: Kotlin API version 1.8</ID>
     <ID>ForbiddenComment:StoreSE.kt$StoreSE$// @SubclassOptInRequired(ExperimentalFluxoApi::class) // TODO: Kotlin API version 1.8</ID>
-    <ID>ForbiddenComment:StoreScope.kt$StoreScope$// TODO: Return some kind of DisposableHandle/Job?</ID>
+    <ID>ForbiddenComment:StoreScope.kt$StoreScope$// FIXME: More options for a side job restarting or start-avoidance. SideJobs registry/management API</ID>
     <ID>ForbiddenComment:ThreadInfo.kt$// TODO: Use JVM version</ID>
     <ID>TooManyFunctions:InputStrategyGuardian.kt$InputStrategyGuardian</ID>
   </CurrentIssues>

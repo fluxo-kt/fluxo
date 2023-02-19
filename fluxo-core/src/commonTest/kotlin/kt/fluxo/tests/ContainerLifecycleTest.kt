@@ -33,7 +33,7 @@ internal class ContainerLifecycleTest : CoroutineScopeAwareTest() {
         override val container = scope.container<TestState, String>(initialState) {
             @Suppress("DEPRECATION")
             onCreate {
-                onCreate(state)
+                onCreate(value)
             }
         }
 

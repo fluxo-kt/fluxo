@@ -181,7 +181,6 @@ public inline fun <Intent, State> store(
 
 /**
  * Returns MVI [Store] with MVVM+ [IntentHandler] DSL.
- *
  * Use [container] for MVVM+ [Store].
  */
 @InlineOnly
@@ -218,7 +217,7 @@ public inline fun <Intent, State, SideEffect : Any> store(
         initialState = initialState,
         intentHandler = handler,
         // Always do a copy to not change the original settings.
-        conf = (settings ?: fluxoSettings()).copy().apply(setup),
+        conf = (settings?.copy() ?: FluxoSettings()).copy().apply(setup),
     )
 }
 
@@ -243,7 +242,9 @@ public inline fun <State, SE : Any> ContainerHost<State, SE>.intent(noinline int
  */
 @FluxoDsl
 @InlineOnly
-public inline fun <State, SE : Any> ContainerHost<State, SE>.send(noinline intent: FluxoIntent<State, SE>): Job = container.send(intent)
+public inline fun <State, SE : Any> ContainerHost<State, SE>.send(noinline intent: FluxoIntent<State, SE>): Job {
+    return container.send(intent)
+}
 
 /**
  * Build and execute a functional [intent][FluxoIntent] on [Store].
@@ -254,21 +255,6 @@ public inline fun <State, SE : Any> ContainerHost<State, SE>.send(noinline inten
 @InlineOnly
 public inline fun <State, SE : Any> Container<State, SE>.intent(noinline intent: FluxoIntent<State, SE>) {
     send(intent)
-}
-
-// endregion
-
-
-// region Utils
-
-/**
- * This function helps to avoid unnecessary additional copy of the [FluxoSettings].
- */
-@InlineOnly
-@PublishedApi
-internal inline fun <Intent, State, SideEffect : Any> fluxoSettings(): FluxoSettings<Intent, State, SideEffect> {
-    @Suppress("UNCHECKED_CAST")
-    return FluxoSettings.DEFAULT as FluxoSettings<Intent, State, SideEffect>
 }
 
 // endregion

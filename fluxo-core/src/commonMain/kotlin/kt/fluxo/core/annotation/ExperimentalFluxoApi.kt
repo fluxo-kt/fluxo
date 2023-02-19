@@ -3,6 +3,7 @@ package kt.fluxo.core.annotation
 /**
  * Marks **experimental** parts in Fluxo API. Such APIs may be changed in the future without notice.
  */
+@MustBeDocumented
 @Retention(AnnotationRetention.BINARY)
 @Target(
     AnnotationTarget.ANNOTATION_CLASS,
