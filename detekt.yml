@@ -55,6 +55,8 @@ formatting:
     active: true
   ParameterListWrapping:
     maxLineLength: 140
+  SpacingBetweenDeclarationsWithAnnotations:
+    active: false
   TrailingCommaOnCallSite:
     active: false
   TrailingCommaOnDeclarationSite:

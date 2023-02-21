@@ -14,30 +14,30 @@ import org.openjdk.jmh.infra.Blackhole
  * _Example results:_
  * ```
  * Benchmark                                  Mode  Cnt   Score  Error   Units
- * decorator_interception                    thrpt   60   1.569 ±0.006  ops/ms
- * pipeline_interception                     thrpt   60   1.045 ±0.023  ops/ms
- * pipeline_interception_lambdas             thrpt   60   0.381 ±0.004  ops/ms
+ * decorator_interception                    thrpt   60   1.052 ±0.031  ops/ms
+ * pipeline_interception                     thrpt   60   1.045 ±0.019  ops/ms
+ * pipeline_interception_lambdas             thrpt   60   0.384 ±0.002  ops/ms
  *
- * decorator_interception                     avgt   60   3.805 ±0.007   ms/op
- * pipeline_interception                      avgt   60   5.778 ±0.133   ms/op
- * pipeline_interception_lambdas              avgt   60  15.740 ±0.383   ms/op
+ * decorator_interception                     avgt   60   6.508 ±0.132   ms/op
+ * pipeline_interception                      avgt   60   6.650 ±0.105   ms/op
+ * pipeline_interception_lambdas              avgt   60  18.480 ±0.200   ms/op
  *
- * decorator_interception                       ss   60   6.278 ±0.954   ms/op
- * pipeline_interception                        ss   60   8.871 ±1.178   ms/op
- * pipeline_interception_lambdas                ss   60  19.941 ±2.281   ms/op
+ * decorator_interception                       ss   60   7.718 ±0.963   ms/op
+ * pipeline_interception                        ss   60   7.918 ±0.816   ms/op
+ * pipeline_interception_lambdas                ss   60  22.084 ±1.789   ms/op
  *
  *
- * decorator_interception__creations         thrpt   60   1.785 ±0.007  ops/ms
- * pipeline_interception__creations          thrpt   60   1.176 ±0.024  ops/ms
- * pipeline_interception_lambdas__creations  thrpt   60   0.395 ±0.003  ops/ms
+ * pipeline_interception__creations          thrpt   60   1.205 ±0.009  ops/ms
+ * decorator_interception__creations         thrpt   60   1.107 ±0.010  ops/ms
+ * pipeline_interception_lambdas__creations  thrpt   60   0.394 ±0.002  ops/ms
  *
- * decorator_interception__creations          avgt   60   3.350 ±0.035   ms/op
- * pipeline_interception__creations           avgt   60   5.085 ±0.089   ms/op
- * pipeline_interception_lambdas__creations   avgt   60  15.539 ±0.527   ms/op
+ * decorator_interception__creations          avgt   60   6.179 ±0.060   ms/op
+ * pipeline_interception__creations           avgt   60   6.196 ±0.094   ms/op
+ * pipeline_interception_lambdas__creations   avgt   60  17.638 ±0.062   ms/op
  *
- * decorator_interception__creations            ss   60   7.327 ±1.825   ms/op
- * pipeline_interception__creations             ss   60   8.811 ±0.969   ms/op
- * pipeline_interception_lambdas__creations     ss   60  24.094 ±2.759   ms/op
+ * pipeline_interception__creations             ss   60   6.614 ±0.321   ms/op
+ * decorator_interception__creations            ss   60   7.762 ±0.710   ms/op
+ * pipeline_interception_lambdas__creations     ss   60  19.717 ±1.258   ms/op
  * ```
  */
 @State(Scope.Benchmark)

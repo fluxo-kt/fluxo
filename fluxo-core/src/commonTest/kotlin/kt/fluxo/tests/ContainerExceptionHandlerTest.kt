@@ -16,6 +16,7 @@ import kotlinx.coroutines.yield
 import kt.fluxo.core.FluxoClosedException
 import kt.fluxo.core.closeAndWait
 import kt.fluxo.core.container
+import kt.fluxo.core.updateState
 import kt.fluxo.test.getValue
 import kt.fluxo.test.runUnitTest
 import kt.fluxo.test.setValue
@@ -101,6 +102,7 @@ class ContainerExceptionHandlerTest {
                 withExceptionHandler -> CoroutineExceptionHandler { _, _ -> }
                 else -> null
             }
+            closeOnExceptions = withExceptionHandler
         }
 
         val exceptions = mutableListOf<Throwable>()

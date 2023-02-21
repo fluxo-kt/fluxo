@@ -8,6 +8,7 @@ import kt.fluxo.core.container
 import kt.fluxo.core.dsl.ContainerHostS
 import kt.fluxo.core.intent
 import kt.fluxo.core.repeatOnSubscription
+import kt.fluxo.core.updateState
 import kt.fluxo.test.CoroutineScopeAwareTest
 import kt.fluxo.test.IgnoreNative
 import kt.fluxo.test.runUnitTest

@@ -2,7 +2,7 @@ name: Benchmark
 
 on:
   schedule:
-    - cron: '0 10 * * 2'
+    - cron: '0 7 * * 2,4'
   push:
     paths:
       - '**/**Benchmark.kt'

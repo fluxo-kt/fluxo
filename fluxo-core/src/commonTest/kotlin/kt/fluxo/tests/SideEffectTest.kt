@@ -136,15 +136,14 @@ internal class SideEffectTest {
     @Test
     fun consumed_side_effects_are_not_resent() = runUnitTest {
         val container = backgroundScope.container<Unit, Int>(Unit)
-        val flow = container.sideEffectFlow
         repeat(5) {
             container.postSideEffect(it)
         }
-        assertContentEquals(listOf(0, 1, 2), flow.take(3).toList())
-        assertContentEquals(listOf(3), flow.take(1).toList())
+        assertContentEquals(listOf(0, 1, 2), container.sideEffectFlow.take(3).toList())
+        assertContentEquals(listOf(3), container.sideEffectFlow.take(1).toList())
         container.close()
 
-        assertContentEquals(listOf(4), flow.toList())
+        assertContentEquals(listOf(4), container.sideEffectFlow.toList())
         container.closeAndWait()
     }
 
@@ -169,12 +168,12 @@ internal class SideEffectTest {
     fun disabled_side_effects() = runUnitTest {
         for (strategy in BASIC_STRATEGIES + SideEffectsStrategy.SHARE()) {
             val container = container(Unit) {
-                // cover additional lines of code
+                // cover extra lines of code
                 name = ""
                 debugChecks = false
             }
             assertFailsWith<IllegalStateException> {
-                container.sideEffectFlow
+                (container as Container<*, *>).sideEffectFlow
             }
             container.closeAndWait()
         }

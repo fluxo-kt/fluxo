@@ -5,9 +5,12 @@
     <ID>ForbiddenComment:Debug.kt$// TODO: Split debug and release version</ID>
     <ID>ForbiddenComment:DebugIntentWrapper.kt$// TODO: No AccessibleObject.canAccess method on Android, but should we use it for Java 9+?</ID>
     <ID>ForbiddenComment:DebugIntentWrapper.kt$// TODO: Only for test/debug variants?</ID>
-    <ID>ForbiddenComment:FluxoStore.kt$FluxoStore$// TODO: Generate name from Store host with reflection in debug mode?</ID>
+    <ID>ForbiddenComment:FluxoStore.kt$FluxoStore$// TODO: Can we awoid lambda creation?</ID>
+    <ID>ForbiddenComment:FluxoStore.kt$FluxoStore$// TODO: Cancel the collecting Job if the store closed during the collection.</ID>
+    <ID>ForbiddenComment:FluxoStore.kt$FluxoStore$// TODO: Generate a name from Store host with reflection in debug mode?</ID>
+    <ID>ForbiddenComment:FluxoStore.kt$FluxoStore$// TODO: Move the intent filter before queing or completely replace with decorators?</ID>
     <ID>ForbiddenComment:FluxoStore.kt$FluxoStore$// TODO: Test if job awaits for all potential children completions when join</ID>
-    <ID>ForbiddenComment:FluxoStore.kt$FluxoStore$// TODO: we may need to close nextValue here</ID>
+    <ID>ForbiddenComment:InputStrategyGuardian.kt$InputStrategyGuardian$// TODO: Should be fixed somehow as compareAndSet call will access state twice or more times even in normal situation</ID>
     <ID>ForbiddenComment:Store.kt$Store$// @SubclassOptInRequired(ExperimentalFluxoApi::class) // TODO: Kotlin API version 1.8</ID>
     <ID>ForbiddenComment:StoreSE.kt$StoreSE$// @SubclassOptInRequired(ExperimentalFluxoApi::class) // TODO: Kotlin API version 1.8</ID>
     <ID>ForbiddenComment:StoreScope.kt$StoreScope$// FIXME: More options for a side job restarting or start-avoidance. SideJobs registry/management API</ID>

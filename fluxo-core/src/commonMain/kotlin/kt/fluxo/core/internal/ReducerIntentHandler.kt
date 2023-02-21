@@ -7,6 +7,7 @@ import kt.fluxo.core.IntentHandler
 import kt.fluxo.core.Reducer
 import kt.fluxo.core.annotation.InternalFluxoApi
 import kt.fluxo.core.dsl.StoreScope
+import kt.fluxo.core.updateState
 import kotlin.js.JsName
 import kotlin.jvm.JvmName
 import kotlin.native.ObjCName

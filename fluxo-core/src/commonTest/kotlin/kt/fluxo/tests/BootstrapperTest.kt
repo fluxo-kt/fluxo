@@ -9,6 +9,7 @@ import kotlinx.coroutines.sync.Mutex
 import kt.fluxo.core.closeAndWait
 import kt.fluxo.core.container
 import kt.fluxo.core.repeatOnSubscription
+import kt.fluxo.core.updateState
 import kt.fluxo.test.CoroutineScopeAwareTest
 import kt.fluxo.test.IgnoreJs
 import kt.fluxo.test.runBlocking
@@ -93,16 +94,18 @@ internal class BootstrapperTest : CoroutineScopeAwareTest() {
     }
 
     @Test
-    fun b_update_state() = runUnitTest {
+    fun b_update_state() = runUnitTest(dispatchTimeoutMs = 3_000) {
+        val newValue = "$INIT.update"
         val store = scope.container(INIT) {
             debugChecks = true
             bootstrapper = {
                 assertEquals(INIT, value)
                 updateState { "$it.update" }
+                assertEquals(newValue, value)
             }
         }
         assertNotNull(store.start(), "Expected Job for explicit lazy start").join()
-        assertEquals("$INIT.update", store.value)
+        assertEquals(newValue, store.value)
     }
 
     @Test
@@ -121,11 +124,9 @@ internal class BootstrapperTest : CoroutineScopeAwareTest() {
         val store = container<String, String>(INIT) {
             debugChecks = true
             bootstrapperJob { wasRestarted ->
-                assertEquals(INIT, currentStateWhenStarted)
+                assertEquals(INIT, value)
                 assertFalse(wasRestarted)
-                emit {
-                    updateState { "$it.sideJob" }
-                }
+                emit { updateState { "$it.sideJob" } }
             }
         }
         assertEquals("$INIT.sideJob", store.first { it != INIT })
@@ -151,8 +152,24 @@ internal class BootstrapperTest : CoroutineScopeAwareTest() {
     }
 
     @Test
-    fun b_repeat_on_subscription() = runUnitTest {
-        val store = container<String, String>(INIT) {
+    fun b_repeat_on_subscription_with_side_effects() = runUnitTest {
+        val store = backgroundScope.container<String, String>(INIT) {
+            onStart {
+                var i = 0
+                repeatOnSubscription(stopTimeout = 0) { wasRestarted ->
+                    assertFalse(wasRestarted)
+                    updateState { "update${i++}" }
+                }
+            }
+        }
+        assertContentEquals(listOf(INIT, "update0"), store.take(2).toList())
+        assertContentEquals(listOf("update0", "update1"), store.take(2).toList())
+        store.closeAndWait()
+    }
+
+    @Test
+    fun b_repeat_on_subscription_no_side_effects() = runUnitTest {
+        val store = container(INIT) {
             onStart {
                 var i = 0
                 repeatOnSubscription(stopTimeout = 0) { wasRestarted ->

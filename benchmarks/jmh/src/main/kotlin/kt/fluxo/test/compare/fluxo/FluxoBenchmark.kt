@@ -9,6 +9,7 @@ import kt.fluxo.core.closeAndWait
 import kt.fluxo.core.container
 import kt.fluxo.core.internal.Closeable
 import kt.fluxo.core.store
+import kt.fluxo.core.updateState
 import kt.fluxo.test.compare.CommonBenchmark.consumeCommon
 import kt.fluxo.test.compare.CommonBenchmark.launchCommon
 import kt.fluxo.test.compare.IntentIncrement

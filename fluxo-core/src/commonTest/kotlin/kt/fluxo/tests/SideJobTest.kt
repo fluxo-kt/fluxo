@@ -1,13 +1,16 @@
 package kt.fluxo.tests
 
 import app.cash.turbine.test
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.withContext
 import kt.fluxo.core.closeAndWait
 import kt.fluxo.core.container
 import kt.fluxo.core.dsl.accept
 import kt.fluxo.core.intent
 import kt.fluxo.core.store
+import kt.fluxo.core.updateState
 import kt.fluxo.test.runUnitTest
 import kotlin.test.Ignore
 import kotlin.test.Test
@@ -23,15 +26,15 @@ internal class SideJobTest {
         val store = backgroundScope.store("a", handler = { state ->
             when (state) {
                 "a" -> sideJob { wasRestarted ->
+                    assertEquals("a", value)
                     assertFalse(wasRestarted)
-                    assertEquals("a", currentStateWhenStarted)
                     updateState { if (it == "a") "b" else it }
                     emit("b")
                 }
 
                 "b" -> sideJob { wasRestarted ->
+                    assertEquals("b", value)
                     assertTrue(wasRestarted)
-                    assertEquals("b", currentStateWhenStarted)
                     updateState { if (it == "b") "c" else it }
                 }
             }
@@ -54,16 +57,16 @@ internal class SideJobTest {
 
         fun secondIntent() = store.intent {
             sideJob { wasRestarted ->
+                assertEquals("b", value)
                 assertTrue(wasRestarted)
-                assertEquals("b", currentStateWhenStarted)
                 updateState { "c" }
             }
         }
 
         store.send {
             sideJob { wasRestarted ->
+                assertEquals("a", value)
                 assertFalse(wasRestarted)
-                assertEquals("a", currentStateWhenStarted)
                 updateState { "b" }
                 secondIntent()
             }
@@ -132,7 +135,9 @@ internal class SideJobTest {
         store.intent {
             sideJob { wasRestarted ->
                 assertFalse(wasRestarted)
-                delay(timeMillis = 1_000)
+                withContext(Dispatchers.Default) {
+                    delay(timeMillis = 1_000)
+                }
                 updateState { "a" }
             }
             sideJob { wasRestarted ->

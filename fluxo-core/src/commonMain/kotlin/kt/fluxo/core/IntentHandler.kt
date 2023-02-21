@@ -9,7 +9,7 @@ import kotlin.js.JsName
  *
  * @see Reducer
  */
-public fun interface IntentHandler<Intent, State, out SideEffect : Any> {
+public fun interface IntentHandler<Intent, State, SideEffect : Any> {
 
     @JsName("handleIntent")
     @Suppress("FUN_INTERFACE_WITH_SUSPEND_FUNCTION")

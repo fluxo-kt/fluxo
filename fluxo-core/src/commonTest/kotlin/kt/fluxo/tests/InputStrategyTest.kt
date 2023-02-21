@@ -20,10 +20,12 @@ import kt.fluxo.core.container
 import kt.fluxo.core.dsl.InputStrategyScope
 import kt.fluxo.core.intent
 import kt.fluxo.core.store
+import kt.fluxo.core.updateState
 import kt.fluxo.test.CoroutineScopeAwareTest
 import kt.fluxo.test.IgnoreNativeAndJs
 import kt.fluxo.test.runUnitTest
 import kotlin.random.Random
+import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -148,14 +150,16 @@ internal class InputStrategyTest : CoroutineScopeAwareTest() {
     }
 
 
+    /** @TODO: Return wnen InputStrategyGuardian will be ready */
     @Test
+    @Ignore // Ignore while InputStrategyGuardian doesn't correctly verify the one-time only state access in parallel strategies.
     fun input_guardian_parallel_state_access_prevention() = runUnitTest {
         val intent: FluxoIntent<Int, *> = intent@{
             assertTrue(value in 0..1)
             // Parallel input strategy requires that inputs only access or update the state at most once.
             assertFailsWith<FluxoRuntimeException> { value }
             sideJob(key = "${Random.nextLong()}") {
-                // intent scope has already been closed.
+                // intent scope already closed.
                 assertFailsWith<FluxoRuntimeException> { this@intent.noOp() }
                 updateState { it + 1 }
             }

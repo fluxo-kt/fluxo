@@ -3,6 +3,7 @@ package kt.fluxo.tests
 import kotlinx.coroutines.flow.first
 import kt.fluxo.core.closeAndWait
 import kt.fluxo.core.store
+import kt.fluxo.core.updateState
 import kt.fluxo.test.runUnitTest
 import kotlin.test.Test
 import kotlin.test.assertContentEquals

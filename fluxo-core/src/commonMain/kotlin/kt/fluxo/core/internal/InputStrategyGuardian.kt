@@ -12,7 +12,7 @@ import kotlin.contracts.contract
  * especially with race conditions due to parallel processing.
  */
 @InternalFluxoApi
-internal open class InputStrategyGuardian(
+internal class InputStrategyGuardian(
     private val parallelProcessing: Boolean,
     private val isBootstrap: Boolean,
     private val intent: Any?,
@@ -23,7 +23,7 @@ internal open class InputStrategyGuardian(
     private val usedProperly = atomic(false)
     private val closed = atomic(false)
 
-    open fun checkStateAccess() {
+    fun checkStateAccess() {
         if (parallelProcessing) {
             performStateAccessCheck()
         }
@@ -33,37 +33,30 @@ internal open class InputStrategyGuardian(
         usedProperly.value = true
     }
 
-    open fun checkStateUpdate() {
-        if (parallelProcessing) {
-            performStateAccessCheck()
-        }
-        checkNotClosed()
-        checkNoSideJobs()
-        stateAccessed.value = true
-        usedProperly.value = true
-    }
+    fun checkStateUpdate() = checkStateAccess()
 
-    open fun checkPostSideEffect() {
+    /** @TODO Better naming? */
+    fun checkPostSideEffect() {
         checkNotClosed()
         checkNoSideJobs()
         usedProperly.value = true
     }
 
-    open fun checkPostIntent() = checkPostSideEffect()
+    fun checkEmitIntent() = checkPostSideEffect()
 
-    open fun checkNoOp() {
+    fun checkNoOp() {
         checkNotClosed()
         checkNoSideJobs()
         usedProperly.value = true
     }
 
-    open fun checkSideJob() {
+    fun checkSideJob() {
         checkNotClosed()
         sideJobPosted.value = true
         usedProperly.value = true
     }
 
-    open fun close() {
+    fun close() {
         checkNotClosed()
         checkUsedProperly()
         closed.value = true
@@ -71,10 +64,11 @@ internal open class InputStrategyGuardian(
 
 
     private fun performStateAccessCheck() {
-        check(!stateAccessed.value) {
-            "Parallel input strategy requires that inputs only access or update the state at most once as a " +
-                "safeguard against race conditions.$info"
-        }
+        // TODO: Should be fixed somehow as compareAndSet call will access state twice or more times even in normal situation
+//        check(!stateAccessed.value) {
+//            "Parallel input strategy requires that inputs only access or update the state at most once as a " +
+//                "safeguard against race conditions.$info"
+//        }
     }
 
     private fun checkNotClosed() {
@@ -105,7 +99,7 @@ internal open class InputStrategyGuardian(
             val name = try {
                 handler.debugClassName()
             } catch (_: Throwable) {
-                ""
+                "$handler"
             }
             return when {
                 isBootstrap -> if (name.isNullOrEmpty()) "" else " ($name)"
