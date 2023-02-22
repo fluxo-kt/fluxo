@@ -207,8 +207,7 @@ public final class kt/fluxo/core/internal/FluxoStore : kotlin/coroutines/Abstrac
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class kt/fluxo/core/internal/ReducerIntentHandler : kt/fluxo/core/IntentHandler {
-	public fun <init> (Lkotlin/jvm/functions/Function2;)V
-	public fun handleIntent (Lkt/fluxo/core/dsl/StoreScope;Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+public final class kt/fluxo/core/internal/ReducerIntentHandler {
+	public static final fun create (Lkotlin/jvm/functions/Function2;)Lkt/fluxo/core/IntentHandler;
 }
 

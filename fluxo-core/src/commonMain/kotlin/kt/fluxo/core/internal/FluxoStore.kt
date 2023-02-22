@@ -108,7 +108,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
 
         // Minor optimization as side jobs are off when bootstrapper is null and ReducerIntentHandler set.
         sideJobScope = when {
-            bootstrapper == null && intentHandler is ReducerIntentHandler -> scope
+            bootstrapper == null && intentHandler is ReducerHandler -> scope
             else -> scope + conf.sideJobsContext + exceptionHandler + SupervisorJob(job) + when {
                 !debugChecks -> EmptyCoroutineContext
                 else -> CoroutineName("$F[$name:sideJobScope]")
