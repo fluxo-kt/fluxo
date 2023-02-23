@@ -6,6 +6,7 @@ pluginManagement {
         google()
         gradlePluginPortal()
         maven("https://jitpack.io")
+        maven("https://maven.pkg.jetbrains.space/kotlin/p/dokka/dev/")
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
     plugins {
@@ -31,6 +32,7 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven("https://jitpack.io")
+        maven("https://maven.pkg.jetbrains.space/kotlin/p/dokka/dev/")
     }
 }
 

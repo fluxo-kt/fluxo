@@ -42,6 +42,9 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 //  https://github.com/gradle/gradle/issues/12600
 //  https://github.com/gradle/gradle/issues/20016
 
+private const val USE_DOKKA: Boolean = true
+
+
 fun Project.setupPublication() {
     val config = requireDefaults<PublicationConfig>()
     when {
@@ -63,11 +66,23 @@ private fun Project.setupPublicationMultiplatform(config: PublicationConfig) {
     setupPublicationExtension(config)
     setupPublicationRepository(config)
 
-    if (isGenericCompilationEnabled) {
-        multiplatformExtension.apply {
-            if (targets.any { it.platformType == KotlinPlatformType.androidJvm }) {
-                android {
-                    publishLibraryVariants("release", "debug")
+    if (!isGenericCompilationEnabled) return
+    multiplatformExtension.apply {
+        if (targets.any { it.platformType == KotlinPlatformType.androidJvm }) {
+            android {
+                publishLibraryVariants("release", "debug")
+            }
+
+            // Gradle 8 compatibility
+            if (config.isSigningEnabled) {
+                val deps = tasks.matching {
+                    it.name.startsWith("sign") && it.name.endsWith("Publication")
+                }
+                tasks.matching {
+                    it.name.endsWith("PublicationToMavenLocal")
+                        || it.name.endsWith("PublicationToMavenRepository")
+                }.configureEach {
+                    dependsOn(deps)
                 }
             }
         }
@@ -177,7 +192,10 @@ private fun Project.setupPublicationJava(config: PublicationConfig) {
 
 internal fun MavenPublication.setupPublicationPom(project: Project, config: PublicationConfig) {
     // Publish docs with each artifact.
+    val useDokka = USE_DOKKA && !config.isSnapshot
     try {
+        check(useDokka) { "Dokka disabled" }
+
         val taskName = "dokkaHtmlAsJavadoc"
         val dokkaHtmlAsJavadoc = project.tasks.run {
             findByName(taskName) ?: run {
@@ -190,7 +208,9 @@ internal fun MavenPublication.setupPublicationPom(project: Project, config: Publ
         }
         artifact(dokkaHtmlAsJavadoc)
     } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
-        project.logger.lifecycle("Fallback to Javadoc. Dokka publication setup error: $e", e)
+        if (useDokka) {
+            project.logger.lifecycle("Fallback to Javadoc. Dokka publication setup error: $e", e)
+        }
         artifact(project.javadocJarTask())
     }
 
@@ -228,9 +248,7 @@ internal fun MavenPublication.setupPublicationPom(project: Project, config: Publ
 }
 
 internal fun Project.setupPublicationRepository(config: PublicationConfig) {
-    val isSigningEnabled = !config.signingKey.isNullOrEmpty()
-
-    if (isSigningEnabled) {
+    if (config.isSigningEnabled) {
         logger.lifecycle("SIGNING KEY SET, applying signing configuration")
         plugins.apply("signing")
     } else {
@@ -238,7 +256,7 @@ internal fun Project.setupPublicationRepository(config: PublicationConfig) {
     }
 
     extensions.configure<PublishingExtension> {
-        if (isSigningEnabled) {
+        if (config.isSigningEnabled) {
             extensions.configure<SigningExtension> {
                 useInMemoryPgpKeys(config.signingKey, config.signingPassword)
                 sign(publications)

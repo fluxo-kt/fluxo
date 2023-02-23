@@ -37,4 +37,7 @@ class PublicationConfig(
     // https://github.com/jveverka/java-11-examples/blob/b9819fe0/artefact-publishing-demo/test-artefact/README.md
     // https://motorro.medium.com/thanks-a-lot-for-this-step-by-step-instructions-f6fecbe5a4e6
     // https://central.sonatype.org/publish/requirements/gpg/
-)
+) {
+    val isSigningEnabled: Boolean
+        get() = !signingKey.isNullOrEmpty()
+}

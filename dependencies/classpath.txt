@@ -45,7 +45,7 @@ com.dropbox.dependency-guard:com.dropbox.dependency-guard.gradle.plugin:0.4.1
 com.dropbox.dependency-guard:dependency-guard:0.4.1
 com.fasterxml.jackson.core:jackson-annotations:2.12.7
 com.fasterxml.jackson.core:jackson-core:2.12.7
-com.fasterxml.jackson.core:jackson-databind:2.12.7
+com.fasterxml.jackson.core:jackson-databind:2.12.7.1
 com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.12.7
 com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.12.7
 com.fasterxml.jackson.module:jackson-module-kotlin:2.12.7
@@ -141,9 +141,9 @@ org.codehaus.woodstox:stax2-api:4.2.1
 org.glassfish.jaxb:jaxb-runtime:2.3.2
 org.glassfish.jaxb:txw2:2.3.2
 org.jdom:jdom2:2.0.6
-org.jetbrains.dokka:dokka-core:1.7.20
-org.jetbrains.dokka:dokka-gradle-plugin:1.7.20
-org.jetbrains.dokka:org.jetbrains.dokka.gradle.plugin:1.7.20
+org.jetbrains.dokka:dokka-core:1.8.0-dev-194
+org.jetbrains.dokka:dokka-gradle-plugin:1.8.0-dev-194
+org.jetbrains.dokka:org.jetbrains.dokka.gradle.plugin:1.8.0-dev-194
 org.jetbrains.intellij.deps:trove4j:1.0.20200330
 org.jetbrains.kotlin.android:org.jetbrains.kotlin.android.gradle.plugin:1.8.20-Beta
 org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin:1.8.20-Beta
@@ -198,7 +198,7 @@ org.jetbrains:annotations:13.0
 org.jetbrains:markdown-jvm:0.3.1
 org.jetbrains:markdown:0.3.1
 org.json:json:20180813
-org.jsoup:jsoup:1.14.3
+org.jsoup:jsoup:1.15.3
 org.jvnet.staxex:stax-ex:1.8.1
 org.mozilla:rhino:1.7.10
 org.ow2.asm:asm-analysis:9.3
