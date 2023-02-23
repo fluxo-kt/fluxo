@@ -1,8 +1,6 @@
-# https://github.com/twitter/compose-rules/blob/main/rules/detekt/src/main/resources/config/config.yml
-TwitterCompose:
+# https://github.com/mrmans0n/compose-rules/blob/main/rules/detekt/src/main/resources/config/config.yml
+Compose:
   CompositionLocalAllowlist:
-    active: true
-  CompositionLocalNaming:
     active: true
   ContentEmitterReturningValues:
     active: true
