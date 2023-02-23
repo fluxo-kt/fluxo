@@ -196,7 +196,7 @@ detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 
 # Plugin provides a task to determine which dependencies have updates
 # https://github.com/ben-manes/gradle-versions-plugin
-deps-versions = { id = "com.github.ben-manes.versions", version = "0.45.0" }
+deps-versions = { id = "com.github.ben-manes.versions", version = "0.46.0" }
 
 # Detect unused and misused dependencies
 # https://github.com/autonomousapps/dependency-analysis-android-gradle-plugin/tags
