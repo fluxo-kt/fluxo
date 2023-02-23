@@ -60,7 +60,7 @@ detekt = "1.22.0"
 # https://developer.android.com/jetpack/androidx/versions/all-channel#latest_release
 
 # https://developer.android.com/jetpack/androidx/releases/annotation
-androidx-annotation = "1.5.0"
+androidx-annotation = "1.6.0"
 
 # Java Microbenchmark Harness (JMH)
 # https://github.com/openjdk/jmh/tags
