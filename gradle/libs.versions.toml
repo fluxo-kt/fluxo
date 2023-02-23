@@ -89,7 +89,7 @@ mvicore = "1.4.0"
 # https://mvnrepository.com/artifact/com.arkivanov.mvikotlin/mvikotlin
 mvikotlin = "3.1.0"
 # https://mvnrepository.com/artifact/org.orbit-mvi/orbit-core
-orbit = "4.5.0"
+orbit = "4.6.1"
 
 
 [libraries]
