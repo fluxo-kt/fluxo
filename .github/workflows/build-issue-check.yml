@@ -10,6 +10,7 @@ on:
       - '**/build-issue-check.yml'
 
 env:
+  TRIGGER_COUNTER: 2
   GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx6g -Dorg.gradle.daemon=false -Dkotlin.incremental=false \
   -Dorg.gradle.configureondemand=false \
   -Dorg.gradle.parallel=false \
