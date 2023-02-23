@@ -43,6 +43,7 @@ gradle-embedded-kotlin = "3.2.6"
 
 # Public API management tool
 # https://github.com/Kotlin/binary-compatibility-validator/releases
+# Can't be updated to 0.13+ vefore Kotlin metadata 0.6.0 support in AtomicFU
 bin-compat-validator = "0.12.1"
 
 # https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google
@@ -156,7 +157,7 @@ plugin-binCompatValidator = { module = "org.jetbrains.kotlinx:binary-compatibili
 
 # AtomicFU: The idiomatic way to use atomic operations in Kotlin
 # https://github.com/Kotlin/kotlinx-atomicfu/releases
-plugin-kotlinx-atomicfu = { module = "org.jetbrains.kotlinx:atomicfu-gradle-plugin", version = "0.19.0" }
+plugin-kotlinx-atomicfu = { module = "org.jetbrains.kotlinx:atomicfu-gradle-plugin", version = "0.20.0" }
 kotlin-gradle-api = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin-api", version.ref = "kotlin" }
 
 plugin-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
