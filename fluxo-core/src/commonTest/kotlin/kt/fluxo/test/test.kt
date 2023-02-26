@@ -14,6 +14,8 @@ import kotlin.contracts.contract
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
+private const val DEBUG = false
+
 /**
  * [runTest] with lowered default [timeout][dispatchTimeoutMs] and more safety.
  *
@@ -29,6 +31,9 @@ fun runUnitTest(
     dispatchTimeoutMs: Long = 2_000L,
     testBody: suspend TestScope.() -> Unit,
 ): TestResult {
+    if (DEBUG) {
+        printStackItemWithTestName()
+    }
     var scope: TestScope? = null
     try {
         return runTest(context, dispatchTimeoutMs) {
@@ -52,6 +57,25 @@ fun runUnitTest(
             // TODO: TestScopeImpl has an uncaughtExceptions field that can be read here, at least in JVM
         }
         throw e
+    }
+}
+
+private fun printStackItemWithTestName() {
+    try {
+        val stack = Throwable().stackTraceToString().lineSequence()
+            .filter { it.isNotBlank() }
+        var line = ""
+        var found = false
+        for (l in stack) {
+            line = l
+            when {
+                ::runUnitTest.name in l -> found = true
+                found -> break
+            }
+        }
+        testLog(line.trim())
+    } catch (e: Throwable) {
+        testLog("printStackItemWithTestName error: $e\n${e.printStackTrace()}")
     }
 }
 
