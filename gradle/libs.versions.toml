@@ -14,7 +14,7 @@ fluxo = "0.1.0-SNAPSHOT"
 androidMinSdk = "9"
 androidTargetSdk = "33"
 androidCompileSdk = "33"
-androidBuildTools = "33.0.1"
+androidBuildTools = "33.0.2"
 
 # Java/Kotlin compatibility
 javaToolchain = "11"
