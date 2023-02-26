@@ -31,7 +31,7 @@ object Compilations {
 }
 
 val Project.isGenericCompilationEnabled
-    inline get() = Compilations.isGenericEnabledForProject(this)
+    get() = Compilations.isGenericEnabledForProject(this)
 
 internal fun KotlinProjectExtension.disableCompilationsOfNeeded(project: Project) {
     if (!EnvParams.splitTargets) {
