@@ -2,9 +2,14 @@ package kt.fluxo.test
 
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
@@ -38,7 +43,28 @@ fun runUnitTest(
     try {
         return runTest(context, dispatchTimeoutMs) {
             scope = this
-            testBody()
+
+            var job: Job? = null
+            if (KMM_PLATFORM != Platform.JS) {
+                val s = this
+                job = backgroundScope.launch(Dispatchers.Default) {
+                    // NOTE: delay is safe bacause of Dispatcher
+                    delay(dispatchTimeoutMs)
+                    ensureActive()
+                    val message = "Timed out waiting for $dispatchTimeoutMs ms"
+                    s.cancel(CancellationException(message))
+                    testLog(message)
+                }
+            }
+
+            try {
+                testBody()
+            } catch (e: CancellationException) {
+                job?.cancel(e)
+                throw e
+            } finally {
+                job?.cancel()
+            }
         }
     } catch (e: IllegalStateException) {
         val s = scope
