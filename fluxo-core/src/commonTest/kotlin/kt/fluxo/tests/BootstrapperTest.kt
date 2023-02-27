@@ -121,7 +121,7 @@ internal class BootstrapperTest : CoroutineScopeAwareTest() {
 
     @Test
     fun b_side_job() = runUnitTest {
-        val store = container<String, String>(INIT) {
+        val store = backgroundScope.container<String, String>(INIT) {
             debugChecks = true
             bootstrapperJob { wasRestarted ->
                 assertEquals(INIT, value)
