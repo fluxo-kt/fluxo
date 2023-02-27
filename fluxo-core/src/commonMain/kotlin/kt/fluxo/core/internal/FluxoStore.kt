@@ -628,7 +628,10 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         decorator.onClosed(cause)
     }
 
-    override fun toString(): String = "$F[$name]: $value"
+    override fun toString(): String {
+        val closeFlag = if (coroutineContext.isActive) "" else ";CLOSED"
+        return "$F[$name$closeFlag]: $value"
+    }
 
     private companion object {
         private const val F = "Fluxo"
