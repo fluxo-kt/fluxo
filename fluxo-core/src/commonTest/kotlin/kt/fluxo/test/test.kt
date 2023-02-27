@@ -1,3 +1,5 @@
+@file:Suppress("Filename")
+
 package kt.fluxo.test
 
 import kotlinx.coroutines.CancellationException
@@ -8,7 +10,7 @@ import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.TestScope
@@ -43,6 +45,13 @@ fun runUnitTest(
     try {
         return runTest(context, dispatchTimeoutMs) {
             scope = this
+            val testJob = coroutineContext[Job]!!
+
+            if (DEBUG) {
+                testJob.invokeOnCompletion {
+                    testLog("Test finish")
+                }
+            }
 
             var job: Job? = null
             if (KMM_PLATFORM != Platform.JS) {
@@ -50,10 +59,11 @@ fun runUnitTest(
                 job = backgroundScope.launch(Dispatchers.Default) {
                     // NOTE: delay is safe bacause of Dispatcher
                     delay(dispatchTimeoutMs)
-                    ensureActive()
-                    val message = "Timed out waiting for $dispatchTimeoutMs ms"
-                    s.cancel(CancellationException(message))
-                    testLog(message)
+                    if (isActive && testJob.isActive) {
+                        val message = "Timed out waiting for $dispatchTimeoutMs ms"
+                        s.cancel(CancellationException(message))
+                        testLog(message)
+                    }
                 }
             }
 
@@ -101,6 +111,7 @@ private fun printStackItemWithTestName() {
         }
         testLog(line.trim())
     } catch (e: Throwable) {
+        @Suppress("PrintStackTrace")
         testLog("printStackItemWithTestName error: $e\n${e.printStackTrace()}")
     }
 }
