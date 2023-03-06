@@ -56,7 +56,7 @@ jobs:
           gradle-home-cache-cleanup: true
 
       - name: Submit Gradle Dependency Graph
-        uses: mikepenz/gradle-dependency-submission@v0.8.4
+        uses: mikepenz/gradle-dependency-submission@v0.8.5
         with:
           gradle-build-module: |-
             :
