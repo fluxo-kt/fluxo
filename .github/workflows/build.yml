@@ -2,10 +2,14 @@ name: Build
 
 on:
   pull_request:
-    branches:
-      - '**'
     paths-ignore:
+      - '**-check.yml'
+      - '**-submission.yml'
+      - '**-validation.yml'
+      - '**.*ignore'
       - '**.md'
+      - '**.txt'
+      - '**dependabot.yml'
   push:
     paths-ignore:
       - '**-check.yml'
@@ -13,6 +17,7 @@ on:
       - '**-validation.yml'
       - '**.*ignore'
       - '**.md'
+      - '**.txt'
       - '**dependabot.yml'
 
 env:
