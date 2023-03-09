@@ -112,7 +112,7 @@ kotlinx-coroutines-reactive = { module = "org.jetbrains.kotlinx:kotlinx-coroutin
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 
 # https://mvnrepository.com/artifact/org.jetbrains/annotations
-jetbrains-annotation = { module = "org.jetbrains:annotations", version.strictly = "24.0.0" }
+jetbrains-annotation = { module = "org.jetbrains:annotations", version.strictly = "24.0.1" }
 
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
 
