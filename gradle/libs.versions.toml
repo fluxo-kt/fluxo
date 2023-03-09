@@ -35,7 +35,7 @@ essenty = "1.0.0"
 dokka = "1.8.0-dev-194"
 
 # https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-coroutines-core
-coroutines = "1.6.4"
+coroutines = "1.7.0-Beta"
 
 # https://plugins.gradle.org/plugin/org.gradle.kotlin.embedded-kotlin
 gradle-embedded-kotlin = "4.0.6"

@@ -1,7 +1,7 @@
 org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.20-Beta
 org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.20-Beta
 org.jetbrains.kotlin:kotlin-stdlib:1.8.20-Beta
-org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.6.4
-org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4
-org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4
+org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.7.0-Beta
+org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.7.0-Beta
+org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.0-Beta
 org.jetbrains:annotations:24.0.1
