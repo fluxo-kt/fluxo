@@ -11,7 +11,7 @@ on:
 
 env:
   GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.unsafe.configuration-cache=false -Dorg.gradle.vfs.watch=false"
-  TRIGGER_COUNTER: 2
+  TRIGGER_COUNTER: 3
 
 jobs:
   os-checks:

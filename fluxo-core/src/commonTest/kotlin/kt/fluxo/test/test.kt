@@ -20,13 +20,19 @@ import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
+import kotlin.time.Duration.Companion.milliseconds
 
 private const val DEBUG = false
 
 /**
- * [runTest] with lowered default [timeout][dispatchTimeoutMs] and more safety.
+ * The default timeout to use when running a test.
+ */
+internal const val DEFAULT_TEST_TIMEOUT_MS = 5_000L
+
+/**
+ * [runTest] with custom default [timeout][timeoutMs] and bit more safety.
  *
- * * [dispatchTimeoutMs] is 2 seconds by default
+ * * [timeoutMs] is 2 seconds by default
  * * Catches suppressed exceptions (can be helpful when debugging some problems)
  *
  * See issue [#3270](https://github.com/Kotlin/kotlinx.coroutines/issues/3270) for more details.
@@ -35,7 +41,7 @@ private const val DEBUG = false
 @Suppress("NestedBlockDepth")
 fun runUnitTest(
     context: CoroutineContext = EmptyCoroutineContext,
-    dispatchTimeoutMs: Long = 2_000L,
+    timeoutMs: Long = DEFAULT_TEST_TIMEOUT_MS,
     testBody: suspend TestScope.() -> Unit,
 ): TestResult {
     if (DEBUG) {
@@ -43,7 +49,7 @@ fun runUnitTest(
     }
     var scope: TestScope? = null
     try {
-        return runTest(context, dispatchTimeoutMs) {
+        return runTest(context = context, timeout = timeoutMs.milliseconds) {
             scope = this
             val testJob = coroutineContext[Job]!!
 
@@ -58,9 +64,11 @@ fun runUnitTest(
                 val s = this
                 job = backgroundScope.launch(Dispatchers.Default) {
                     // NOTE: delay is safe bacause of Dispatcher
-                    delay(dispatchTimeoutMs)
+                    // Extra 500 ms to not conflict with regular runTest timeout, but back him up.
+                    val delayMs = timeoutMs + 500L
+                    delay(delayMs)
                     if (isActive && testJob.isActive) {
-                        val message = "Timed out waiting for $dispatchTimeoutMs ms"
+                        val message = "Timed out waiting for $delayMs ms"
                         s.cancel(CancellationException(message))
                         testLog(message)
                     }

@@ -31,7 +31,7 @@ import kotlin.test.assertIs
 class ContainerExceptionHandlerTest {
 
     @Test
-    fun by_default_exception_breaks_the_store() = runUnitTest(dispatchTimeoutMs = 5_000) {
+    fun by_default_exception_breaks_the_store() = runUnitTest {
         val initState = 1
         var completionException by MutableStateFlow<Throwable?>(null)
         val job = Job()

@@ -94,7 +94,7 @@ internal class BootstrapperTest : CoroutineScopeAwareTest() {
     }
 
     @Test
-    fun b_update_state() = runUnitTest(dispatchTimeoutMs = 3_000) {
+    fun b_update_state() = runUnitTest {
         val newValue = "$INIT.update"
         val store = scope.container(INIT) {
             debugChecks = true

@@ -26,6 +26,7 @@ import kt.fluxo.core.intent
 import kt.fluxo.core.store
 import kt.fluxo.core.updateState
 import kt.fluxo.test.CoroutineScopeAwareTest
+import kt.fluxo.test.DEFAULT_TEST_TIMEOUT_MS
 import kt.fluxo.test.IgnoreNativeAndJs
 import kt.fluxo.test.KMM_PLATFORM
 import kt.fluxo.test.Platform
@@ -123,8 +124,8 @@ internal class InputStrategyTest : CoroutineScopeAwareTest() {
         return results
     }
 
-    private fun t(timeoutMs: Long = 3_000, testBody: suspend TestScope.() -> Unit): TestResult =
-        runUnitTest(dispatchTimeoutMs = timeoutMs, testBody = testBody)
+    private fun t(timeoutMs: Long = DEFAULT_TEST_TIMEOUT_MS, testBody: suspend TestScope.() -> Unit): TestResult =
+        runUnitTest(timeoutMs = timeoutMs, testBody = testBody)
 
 
     // region Fifo
