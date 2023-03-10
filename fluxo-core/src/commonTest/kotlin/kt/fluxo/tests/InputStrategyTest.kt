@@ -191,6 +191,7 @@ internal class InputStrategyTest : CoroutineScopeAwareTest() {
 
 
     // region Custom input strategy
+    // TODO: Test CustomFifoStrategy Fifo with resending and BufferOverflow.DROP_LATEST
 
     @Test
     fun custom_test_scope() = t { custom_test() }
@@ -207,11 +208,14 @@ internal class InputStrategyTest : CoroutineScopeAwareTest() {
     private class CustomInputStrategy : InputStrategy() {
         override fun toString() = "Custom"
 
+        override val resendUndelivered: Boolean get() = false
+
         override fun <Request> createQueue(onUndeliveredElement: ((Request) -> Unit)?): Channel<Request> =
             Channel(capacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST, onUndeliveredElement = onUndeliveredElement)
 
-        override suspend fun <Request> (InputStrategyScope<Request>).processRequests(queue: Flow<Request>) =
+        override suspend fun <Request> (InputStrategyScope<Request>).processRequests(queue: Flow<Request>) {
             queue.collectLatest(this)
+        }
     }
 
     // endregion
