@@ -1,12 +1,11 @@
-package fluxo
-
+import impl.checkIsRootProject
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.execution.TaskExecutionGraph
 import org.gradle.api.logging.Logger
 import org.gradle.kotlin.dsl.extra
 
-private const val PROPERTY_NAME = "fluxo.disableTasks"
+private const val PROPERTY_NAME = "setup.disableTasks"
 
 fun Project.ensureUnreachableTasksDisabled() {
     checkIsRootProject()
@@ -14,12 +13,11 @@ fun Project.ensureUnreachableTasksDisabled() {
     if (extra.has(PROPERTY_NAME)) {
         return
     }
-
     extra.set(PROPERTY_NAME, true)
 
     gradle.taskGraph.whenReady {
         DisableTasks(graph = this, logger = logger)
-            .disableTasks()
+            .apply()
     }
 }
 
@@ -47,11 +45,8 @@ private class DisableTasks(
         return rootTasks
     }
 
-    fun disableTasks() {
-        graph
-            .allTasks
-            .filterNot { it.enabled }
-            .forEach { disableChildren(it) }
+    fun apply() {
+        graph.allTasks.filterNot { it.enabled }.forEach { disableChildren(it) }
     }
 
     private fun disableChildren(task: Task) {
@@ -71,28 +66,26 @@ private class DisableTasks(
         }
     }
 
-    private fun isTaskAccessible(task: Task): Boolean =
-        rootTasks.any {
-            val isPathExists = (it != task) && isPathExists(source = it, destination = task)
+    private fun isTaskAccessible(task: Task): Boolean = rootTasks.any {
+        val isPathExists = (it != task) && isPathExists(source = it, destination = task)
 
-            if (isPathExists) {
-                logger.info("Task {} accessible from {}", task, it)
-            }
-
-            isPathExists
+        if (isPathExists) {
+            logger.info("Task {} accessible from {}", task, it)
         }
 
-    private fun isPathExists(source: Task, destination: Task): Boolean =
-        results.getOrPut(source to destination) {
-            when {
-                !source.enabled -> false
-                source == destination -> true.also { logger.info("Task reached: {}", destination) }
+        isPathExists
+    }
 
-                else -> graph.getDependencies(source).any { isPathExists(source = it, destination = destination) }.also {
-                    if (it) {
-                        logger.info("Task path found from {} to {}", source, destination)
-                    }
+    private fun isPathExists(source: Task, destination: Task): Boolean = results.getOrPut(source to destination) {
+        when {
+            !source.enabled -> false
+            source == destination -> true.also { logger.info("Task reached: {}", destination) }
+
+            else -> graph.getDependencies(source).any { isPathExists(source = it, destination = destination) }.also {
+                if (it) {
+                    logger.info("Task path found from {} to {}", source, destination)
                 }
             }
         }
+    }
 }

@@ -1,23 +1,5 @@
 @file:Suppress("SuspiciousCollectionReassignment")
 
-import fluxo.AndroidConfig
-import fluxo.Compilations
-import fluxo.PublicationConfig
-import fluxo.ensureUnreachableTasksDisabled
-import fluxo.envOrPropValue
-import fluxo.getValue
-import fluxo.iosCompat
-import fluxo.isCI
-import fluxo.isGenericCompilationEnabled
-import fluxo.isRelease
-import fluxo.macosCompat
-import fluxo.scmTag
-import fluxo.setupDefaults
-import fluxo.setupVerification
-import fluxo.signingKey
-import fluxo.tvosCompat
-import fluxo.useKotlinDebug
-import fluxo.watchosCompat
 import java.net.URL
 
 buildscript {
@@ -105,7 +87,7 @@ setupDefaults(
             }
         }
     },
-    androidConfig = AndroidConfig(
+    androidConfig = AndroidConfigSetup(
         minSdkVersion = libs.versions.androidMinSdk.get().toInt(),
         compileSdkVersion = libs.versions.androidCompileSdk.get().toInt(),
         targetSdkVersion = libs.versions.androidTargetSdk.get().toInt(),
@@ -166,12 +148,12 @@ dependencyGuard {
 koverMerged {
     enable()
 
-    val isCi by isCI()
+    val isCI by isCI()
     xmlReport {
         onCheck.set(true)
         reportFile.set(layout.buildDirectory.file("reports/kover-merged-report.xml"))
     }
-    if (!isCi) {
+    if (!isCI) {
         htmlReport {
             onCheck.set(true)
             reportDir.set(layout.buildDirectory.dir("reports/kover-merged-report-html")) // change report directory
@@ -307,7 +289,7 @@ allprojects {
             versions.webpackDevServer.version = libs.versions.js.webpackDevServer.get()
         }
 
-        val isCi by isCI()
+        val isCI by isCI()
         val isRelease by isRelease()
         val useKotlinDebug by useKotlinDebug()
         tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask<*>>().configureEach {
@@ -315,9 +297,9 @@ allprojects {
             val isTestTask = "Test" in name
             val isDebugTask = "Debug" in name
             val isReleaseTask = "Release" in name
-            val releaseSettings = isCi || isRelease || isReleaseTask
+            val releaseSettings = isCI || isRelease || isReleaseTask
             compilerOptions {
-                val noWarningsAllowed = !isJsTask && !isTestTask && (isCi || isRelease)
+                val noWarningsAllowed = !isJsTask && !isTestTask && (isCI || isRelease)
                 if (noWarningsAllowed) {
                     allWarningsAsErrors.set(true)
                 }

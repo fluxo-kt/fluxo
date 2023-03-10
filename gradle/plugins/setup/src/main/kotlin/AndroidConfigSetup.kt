@@ -1,8 +1,6 @@
-package fluxo
-
 import com.android.build.gradle.BaseExtension
 
-class AndroidConfig(
+class AndroidConfigSetup(
     val minSdkVersion: Int = 15,
     val compileSdkVersion: Int,
     val targetSdkVersion: Int = compileSdkVersion,

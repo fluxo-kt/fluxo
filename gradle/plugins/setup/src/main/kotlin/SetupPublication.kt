@@ -1,8 +1,7 @@
 @file:Suppress("TooManyFunctions")
 
-package fluxo
-
 import com.android.build.gradle.LibraryExtension
+import impl.hasExtension
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.plugins.JavaPluginExtension
@@ -29,7 +28,9 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 
 
 /*
- * Set up publishing. Useful resources:
+ * Set up publishing.
+ *
+ * Useful resources:
  * - https://kotlinlang.org/docs/mpp-publish-lib.html
  * - https://central.sonatype.org/publish/publish-guide/
  * - https://central.sonatype.org/publish/publish-gradle/
@@ -79,8 +80,7 @@ private fun Project.setupPublicationMultiplatform(config: PublicationConfig) {
                     it.name.startsWith("sign") && it.name.endsWith("Publication")
                 }
                 tasks.matching {
-                    it.name.endsWith("PublicationToMavenLocal")
-                        || it.name.endsWith("PublicationToMavenRepository")
+                    it.name.endsWith("PublicationToMavenLocal") || it.name.endsWith("PublicationToMavenRepository")
                 }.configureEach {
                     dependsOn(deps)
                 }

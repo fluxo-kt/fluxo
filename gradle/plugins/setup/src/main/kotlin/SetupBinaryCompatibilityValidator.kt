@@ -1,6 +1,5 @@
-package fluxo
-
 import com.android.build.gradle.LibraryExtension
+import impl.hasExtension
 import kotlinx.validation.KotlinApiCompareTask
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.withType

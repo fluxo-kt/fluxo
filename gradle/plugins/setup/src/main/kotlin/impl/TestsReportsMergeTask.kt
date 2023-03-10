@@ -1,98 +1,25 @@
-@file:Suppress("ArgumentListWrapping")
-
-package fluxo
+package impl
 
 import groovy.time.TimeCategory
 import org.gradle.api.DefaultTask
-import org.gradle.api.Project
 import org.gradle.api.file.RegularFileProperty
-import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.testing.AbstractTestTask
 import org.gradle.api.tasks.testing.TestDescriptor
 import org.gradle.api.tasks.testing.TestResult
-import org.gradle.api.tasks.testing.logging.TestExceptionFormat
-import org.gradle.api.tasks.testing.logging.TestLogEvent
-import org.gradle.kotlin.dsl.KotlinClosure2
-import org.gradle.kotlin.dsl.withType
 import org.gradle.work.DisableCachingByDefault
 import org.jetbrains.kotlin.gradle.tasks.KotlinTest
 import java.io.FileOutputStream
-import java.lang.System.currentTimeMillis
-import java.util.*
+import java.util.Date
 import java.util.concurrent.ConcurrentLinkedQueue
 import javax.xml.stream.XMLOutputFactory
-
-private const val TEST_REPORTS_TASK_NAME = "mergedTestReport"
-
-fun Project.setupTestsReport() {
-    checkIsRootProject()
-
-    val mergedReport = tasks.register(TEST_REPORTS_TASK_NAME, TestsReportsMergeTask::class.java) {
-        group = JavaBasePlugin.VERIFICATION_GROUP
-        description = "Combines all tests reports from all modules to the published root one"
-        output.set(project.layout.buildDirectory.file("tests-report-merged.xml"))
-    }
-
-    val disableTests by disableTests()
-    if (disableTests) {
-        logger.lifecycle("Test tasks disabled!")
-    }
-
-    allprojects {
-        if (!disableTests) {
-            val targetNames = hashSetOf(
-                "check", "test", "allTests", "assemble", "build",
-                "jvmTest", "jsTest", "jsNodeTest", "jsBrowserTest", "mingwX64Test",
-            )
-            tasks.matching { it.name in targetNames }.configureEach {
-                finalizedBy(mergedReport)
-            }
-        }
-
-        tasks.withType<AbstractTestTask> configuration@{
-            if (disableTests || !isTestTaskAllowed()) {
-                enabled = false
-                return@configuration
-            }
-
-            val testTask = this
-            finalizedBy(mergedReport)
-
-            if (enabled) {
-                mergedReport.configure {
-                    mustRunAfter(testTask)
-                }
-            }
-
-            testLogging {
-                events = setOf(
-                    TestLogEvent.FAILED,
-                    TestLogEvent.SKIPPED,
-                    TestLogEvent.STANDARD_OUT,
-                    TestLogEvent.STANDARD_ERROR,
-                )
-                exceptionFormat = TestExceptionFormat.FULL
-                showExceptions = true
-                showCauses = true
-                showStackTraces = true
-            }
-
-            ignoreFailures = true // Always run all tests for all modules
-
-            afterTest(KotlinClosure2({ desc: TestDescriptor, result: TestResult ->
-                mergedReport.get().registerTestResult(testTask, desc, result)
-            }))
-        }
-    }
-}
 
 /**
  * Exports merged JUnit-like XML tests report for all tests in all projects.
  */
 @DisableCachingByDefault(because = "Not cacheable")
-private abstract class TestsReportsMergeTask : DefaultTask() {
+internal abstract class TestsReportsMergeTask : DefaultTask() {
 
     @get:OutputFile
     abstract val output: RegularFileProperty
@@ -119,10 +46,11 @@ private abstract class TestsReportsMergeTask : DefaultTask() {
             writer.writeStartDocument()
             writer.writeStartElement("report")
 
-            for ((testSuite, results) in testResults
+            val mappedTestResults = testResults
                 .groupBy { it.testSuite }
                 .mapValues { it.value.sortedBy { t -> t.name } }
-            ) {
+
+            for ((testSuite, results) in mappedTestResults) {
                 writer.writeStartElement("testsuite")
                 writer.writeAttribute("name", testSuite)
 
@@ -135,7 +63,9 @@ private abstract class TestsReportsMergeTask : DefaultTask() {
                     val r = results[i].result
                     testSuiteSkipped += r.skippedTestCount
                     testSuiteFailures += r.failedTestCount
-                    testSuiteTests += maxOf(r.testCount, r.skippedTestCount + r.failedTestCount + r.successfulTestCount)
+                    val testCountSum =
+                        r.skippedTestCount + r.failedTestCount + r.successfulTestCount
+                    testSuiteTests += maxOf(r.testCount, testCountSum)
                     testSuiteTimeMillis += r.endTime - r.startTime
                     if (r.endTime > testSuiteTimestamp) {
                         testSuiteTimestamp = r.endTime
@@ -154,7 +84,7 @@ private abstract class TestsReportsMergeTask : DefaultTask() {
                     writer.writeAttribute("hostname", "")
                 }
                 writer.writeAttribute("timestamp", testSuiteTimestamp.toString())
-                writer.writeAttribute("time", (testSuiteTimeMillis / 1000f).toString())
+                writer.writeAttribute("time", (testSuiteTimeMillis / MILLIS_IN_SECOND_F).toString())
 
 
                 if (VERBOSE_OUTPUT) {
@@ -170,7 +100,8 @@ private abstract class TestsReportsMergeTask : DefaultTask() {
 
                     writer.writeAttribute("name", rtr.name)
                     writer.writeAttribute("classname", rtr.className)
-                    writer.writeAttribute("time", ((r.endTime - r.startTime) / 1000f).toString())
+                    val timeInSeconds = ((r.endTime - r.startTime) / MILLIS_IN_SECOND_F).toString()
+                    writer.writeAttribute("time", timeInSeconds)
 
                     when (r.resultType) {
                         TestResult.ResultType.SKIPPED -> {
@@ -210,14 +141,14 @@ private abstract class TestsReportsMergeTask : DefaultTask() {
             }
 
             val totalSuccesses = totalTests - totalFailures - totalSkipped
-            val status = if (totalFailures > 0) "FAILED" else if (totalSuccesses > 0) "SUCCESS" else "SKIPPED"
+            val status = getStatusFrom(totalFailures, totalSuccesses)
             writer.writeStartElement("total")
             writer.writeAttribute("status", status)
             writer.writeAttribute("tests", totalTests.toString())
             writer.writeAttribute("skipped", totalSkipped.toString())
             writer.writeAttribute("failures", totalFailures.toString())
-            writer.writeAttribute("timestamp", currentTimeMillis().toString())
-            writer.writeAttribute("time", (totalTimeMillis / 1000f).toString())
+            writer.writeAttribute("timestamp", System.currentTimeMillis().toString())
+            writer.writeAttribute("time", (totalTimeMillis / MILLIS_IN_SECOND_F).toString())
             writer.writeAttribute("kmpTargets", kmpTargets.size.toString())
             writer.writeEndElement()
 
@@ -229,22 +160,28 @@ private abstract class TestsReportsMergeTask : DefaultTask() {
         }
 
         // Final test results report in console
-        val now = currentTimeMillis()
+        val now = System.currentTimeMillis()
         val totalSuccesses = totalTests - totalFailures - totalSkipped
-        val status = if (totalFailures > 0) "FAILED" else if (totalSuccesses > 0) "SUCCESS" else "SKIPPED"
+        val status = getStatusFrom(totalFailures, totalSuccesses)
         val summary = "Overall tests result: $status (" +
-                "$totalTests tests, " +
-                "$totalSuccesses successes, " +
-                "$totalFailures failures, " +
-                "$totalSkipped skipped, " +
-                "${kmpTargets.size} KMP targets" +
-                ") " +
-                "in ${TimeCategory.minus(Date(now), Date(now - totalTimeMillis))}" +
-                "\n" +
-                "Merged XML tests report to $outputFile"
+            "$totalTests tests, " +
+            "$totalSuccesses successes, " +
+            "$totalFailures failures, " +
+            "$totalSkipped skipped, " +
+            "${kmpTargets.size} KMP targets" +
+            ") " +
+            "in ${TimeCategory.minus(Date(now), Date(now - totalTimeMillis))}" +
+            "\n" +
+            "Merged XML tests report to $outputFile"
 
         logger.lifecycle(formatSummary(summary, fails))
         testResults.clear()
+    }
+
+    private fun getStatusFrom(totalFailures: Long, totalSuccesses: Long) = when {
+        totalFailures > 0 -> "FAILED"
+        totalSuccesses > 0 -> "SUCCESS"
+        else -> "SKIPPED"
     }
 
     fun registerTestResult(testTask: AbstractTestTask, desc: TestDescriptor, result: TestResult) {
@@ -268,7 +205,7 @@ private class ReportTestResult(
     val name: String
 
     init {
-        var name = desc.displayName
+        var name = desc.displayName ?: ""
         if (!name.endsWith(']')) {
             val targetName = (task as? KotlinTest)?.targetName ?: testTaskName
             if (targetName.isNotBlank()) {
@@ -278,7 +215,7 @@ private class ReportTestResult(
 
         kmpTarget = name.substringAfterLast('[', "").trimEnd(']').takeIf { it.isNotEmpty() }
 
-        // Show target details in test name (browser/node, background, etc.)
+        // Show target details in test name (browser/node, background, and so on.)
         if (kmpTarget != testTaskName && ", " !in name) {
             name = name.substringBeforeLast('[') + "[$testTaskName]"
         }
@@ -287,9 +224,10 @@ private class ReportTestResult(
     }
 }
 
-private fun formatSummary(summary: String, fails: List<String>): String {
+internal fun formatSummary(summary: String, fails: List<String>): String {
     val maxLength = summary.lines().maxOf { it.length + 1 }
 
+    @Suppress("MagicNumber")
     val sb = StringBuilder(maxLength * (6 + fails.size))
     for (i in 1..(maxLength + 2)) sb.append('_')
     sb.append('\n')
@@ -310,3 +248,5 @@ private fun formatSummary(summary: String, fails: List<String>): String {
 
     return sb.toString()
 }
+
+private const val MILLIS_IN_SECOND_F = 1000f

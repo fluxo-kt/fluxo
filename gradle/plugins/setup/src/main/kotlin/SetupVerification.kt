@@ -1,7 +1,10 @@
-package fluxo
-
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.gradle.internal.lint.AndroidLintTask
+import impl.MergeDetektBaselinesTask
+import impl.checkIsRootProject
+import impl.isDetektTaskAllowed
+import impl.library
+import impl.libsCatalog
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.DetektCreateBaselineTask
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
@@ -14,7 +17,15 @@ import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.withType
 import org.gradle.language.base.plugins.LifecycleBasePlugin
 
-fun Project.setupVerification() {
+/**
+ *
+ * @param ignoredBuildTypes List of Android build types for which to create no detekt task
+ * @param ignoredFlavors List of Android build flavors for which to create no detekt task
+ */
+fun Project.setupVerification(
+    ignoredBuildTypes: List<String> = listOf(),
+    ignoredFlavors: List<String> = listOf(),
+) {
     checkIsRootProject()
 
     val mergeLint = tasks.register(MERGE_LINT_TASK_NAME, ReportMergeTask::class.java) {
@@ -43,32 +54,42 @@ fun Project.setupVerification() {
         val taskNames = gradle.startParameter.taskNames
         val mergeDetektBaselinesTask = when {
             !taskNames.any { it == MergeDetektBaselinesTask.TASK_NAME } -> null
-            else -> tasks.register(MergeDetektBaselinesTask.TASK_NAME, MergeDetektBaselinesTask::class.java) {
+            else -> tasks.register(
+                MergeDetektBaselinesTask.TASK_NAME,
+                MergeDetektBaselinesTask::class.java,
+            ) {
                 outputFile.set(detektBaselineFile)
             }
+        }
+        val detektMergeStarted = mergeDetektBaselinesTask != null
+        val testStarted = taskNames.any { name ->
+            arrayOf("check", "test").any { name.startsWith(it) }
         }
 
         val detektBaselineIntermediate = "$buildDir/intermediates/detekt/baseline"
         extensions.configure<DetektExtension> {
-            val isCi by isCI()
+            val isCI by isCI()
 
             parallel = true
             buildUponDefaultConfig = true
-            ignoreFailures = mergeDetektBaselinesTask != null || taskNames.any { it.startsWith("detekt") }
-            autoCorrect = !isCi
+            ignoreFailures = true
+            autoCorrect = !isCI && !testStarted && !detektMergeStarted
             basePath = rootBasePath
+
+            this.ignoredBuildTypes = ignoredBuildTypes
+            this.ignoredFlavors = ignoredFlavors
 
             val files = arrayOf(
                 file("detekt.yml"),
                 rootProject.file("detekt.yml"),
                 detektCompose,
-            ).filter { it.exists() }.toTypedArray()
+            ).filter { it.exists() && it.canRead() }.toTypedArray()
             if (files.isNotEmpty()) {
                 @Suppress("SpreadOperator")
                 config.from(*files)
             }
 
-            baseline = if (mergeDetektBaselinesTask != null) {
+            baseline = if (detektMergeStarted) {
                 file("$detektBaselineIntermediate.xml")
             } else {
                 file(detektBaselineFile)
@@ -97,10 +118,13 @@ fun Project.setupVerification() {
                 xml.required.set(false)
             }
         }
-        tasks.register("detektAll") {
+        val detektAll = tasks.register("detektAll") {
             group = LifecycleBasePlugin.VERIFICATION_GROUP
             description = "Calls all available Detekt tasks for this project"
             dependsOn(detektTasks)
+        }
+        tasks.matching { it.name == "check" }.configureEach {
+            dependsOn(detektAll)
         }
         mergeDetekt.configure {
             dependsOn(detektTasks)
@@ -108,12 +132,13 @@ fun Project.setupVerification() {
         }
 
         dependencies {
+            val conf = "detektPlugins"
             val libsCatalog = rootProject.libsCatalog
 
-            add("detektPlugins", libsCatalog.library("detekt-formatting"))
+            add(conf, libsCatalog.library("detekt-formatting"))
             if (hasDetektCompose) {
                 // Add to all modules (even ones that don't use Compose) as detecting Compose can be messy.
-                add("detektPlugins", libsCatalog.library("detekt-compose"))
+                add(conf, libsCatalog.library("detekt-compose"))
             }
         }
 
@@ -135,17 +160,18 @@ private fun Project.setupLint(mergeLint: TaskProvider<ReportMergeTask>?) {
         lint {
             sarifReport = !disableLint
             htmlReport = !disableLint
-            textReport = false
+            textReport = !disableLint
             xmlReport = false
 
             baseline = file("lint-baseline.xml")
-            // absolutePaths = true
-            warningsAsErrors = !disableLint
-            checkAllWarnings = !disableLint
-            abortOnError = false
-            checkDependencies = !disableLint
 
+            abortOnError = false
+            absolutePaths = false
+            checkAllWarnings = !disableLint
+            checkDependencies = false
             checkReleaseBuilds = !disableLint
+            explainIssues = false
+            warningsAsErrors = !disableLint
         }
     }
 

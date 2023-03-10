@@ -1,11 +1,6 @@
 @file:Suppress("DSL_SCOPE_VIOLATION", "TrailingCommaOnCallSite")
 
-import fluxo.envOrPropInt
-import fluxo.envOrPropList
-import fluxo.envOrPropValue
-import fluxo.setupJvmApp
-
-// TODO: Remove once KTIJ-19369 is fixed
+// TODO: Remove DSL_SCOPE_VIOLATION suppression once KTIJ-19369 is fixed
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.jmh)

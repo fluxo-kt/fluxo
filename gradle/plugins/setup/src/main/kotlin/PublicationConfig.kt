@@ -1,5 +1,3 @@
-package fluxo
-
 @Suppress("LongParameterList", "MemberVisibilityCanBePrivate")
 class PublicationConfig(
     val group: String,

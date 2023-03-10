@@ -1,26 +1,28 @@
-package fluxo
-
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import com.android.build.gradle.internal.lint.AndroidLintTask
 import com.android.build.gradle.internal.lint.AndroidLintTextOutputTask
+import impl.libsCatalog
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.withGroovyBuilder
 import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-fun Project.setupAndroidLibrary() {
-    setupAndroid(requireDefaults())
+fun Project.setupAndroidLibrary(config: AndroidConfigSetup = requireDefaults()) {
+    setupAndroid(config)
 }
 
+@Suppress("FunctionSignature")
 fun Project.setupAndroidApp(
     applicationId: String,
     versionCode: Int,
     versionName: String,
+    config: AndroidConfigSetup = requireDefaults(),
 ) {
-    setupAndroid(requireDefaults())
+    setupAndroid(config)
 
     extensions.configure<BaseAppModuleExtension> {
         defaultConfig {
@@ -31,7 +33,8 @@ fun Project.setupAndroidApp(
     }
 }
 
-private fun Project.setupAndroid(config: AndroidConfig) {
+private fun Project.setupAndroid(config: AndroidConfigSetup) {
+    setupKotlinJvmToolchain(kotlinExtension)
     setupAndroidCommon(config)
 
     tasks.withType<KotlinCompile> {
@@ -39,7 +42,7 @@ private fun Project.setupAndroid(config: AndroidConfig) {
     }
 }
 
-internal fun Project.setupAndroidCommon(config: AndroidConfig) {
+internal fun Project.setupAndroidCommon(config: AndroidConfigSetup) {
     extensions.configure<BaseExtension> {
         config.buildToolsVersion?.let {
             buildToolsVersion = it

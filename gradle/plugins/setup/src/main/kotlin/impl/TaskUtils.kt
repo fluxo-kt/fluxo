@@ -1,7 +1,8 @@
-package fluxo
+package impl
 
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.DetektPlugin
+import isGenericCompilationEnabled
 import org.gradle.api.Project
 import org.gradle.api.Task
 

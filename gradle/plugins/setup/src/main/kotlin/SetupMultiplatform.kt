@@ -1,11 +1,10 @@
-package fluxo
+@file:Suppress("TooManyFunctions")
 
 import org.gradle.api.NamedDomainObjectCollection
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
-import org.gradle.api.plugins.JavaPluginExtension
-import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
@@ -14,17 +13,16 @@ import org.jetbrains.kotlin.konan.target.Family
 import kotlin.properties.PropertyDelegateProvider
 import kotlin.properties.ReadOnlyProperty
 
-fun Project.setupMultiplatform(targets: MultiplatformConfigurator = requireDefaults()) {
-    libsCatalog.findVersion("javaToolchain").map { version ->
-        extensions.configure<JavaPluginExtension>("java") {
-            toolchain {
-                languageVersion.set(JavaLanguageVersion.of(version.toString().substringAfter('.').toInt()))
-            }
-        }
-    }
+typealias MultiplatformConfigurator = KotlinMultiplatformExtension.() -> Unit
 
+internal val Project.multiplatformExtension: KotlinMultiplatformExtension
+    get() = kotlinExtension as KotlinMultiplatformExtension
+
+fun Project.setupMultiplatform(targets: MultiplatformConfigurator = requireDefaults()) {
     multiplatformExtension.apply {
-        with(targets) { invoke() }
+        setupKotlinJvmToolchain(this)
+
+        targets()
 
         setupSourceSets {
             common.main.dependencies {
@@ -46,10 +44,6 @@ fun Project.setupMultiplatform(targets: MultiplatformConfigurator = requireDefau
 
 fun KotlinMultiplatformExtension.setupSourceSets(block: MultiplatformSourceSets.() -> Unit) {
     DefaultMultiplatformSourceSets(targets, sourceSets).block()
-}
-
-fun interface MultiplatformConfigurator {
-    operator fun KotlinMultiplatformExtension.invoke()
 }
 
 internal enum class Target {

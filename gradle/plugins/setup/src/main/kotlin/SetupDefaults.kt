@@ -1,11 +1,9 @@
-package fluxo
-
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.extra
 
 fun Project.setupDefaults(
     multiplatformConfigurator: MultiplatformConfigurator? = null,
-    androidConfig: AndroidConfig? = null,
+    androidConfig: AndroidConfigSetup? = null,
     publicationConfig: PublicationConfig? = null,
 ) {
     extra.set(
@@ -24,12 +22,13 @@ internal inline fun <reified T : Any> Project.requireDefaults(): T =
 internal inline fun <reified T : Any> Project.getDefaults(): T? = getDefaults { it as? T }
 
 private fun <T : Any> Project.getDefaults(mapper: (Any) -> T?): T? {
-    return getDefaultsList()?.asSequence()?.mapNotNull(mapper)?.firstOrNull() ?: parent?.getDefaults(mapper)
+    return getDefaultsList()?.asSequence()?.mapNotNull(mapper)?.firstOrNull()
+        ?: parent?.getDefaults(mapper)
 }
 
-@Suppress("UNCHECKED_CAST", "IdentifierGrammar")
+@Suppress("UNCHECKED_CAST", "IdentifierGrammar", "CastToNullableType")
 private fun Project.getDefaultsList(): MutableList<Any>? {
     return extra.takeIf { it.has(DEFAULTS_KEY) }?.get(DEFAULTS_KEY) as ArrayList<Any>?
 }
 
-private const val DEFAULTS_KEY = "fluxo.defaults"
+private const val DEFAULTS_KEY = "setup.defaults"
