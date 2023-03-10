@@ -31,6 +31,7 @@ import kt.fluxo.test.KMM_PLATFORM
 import kt.fluxo.test.Platform
 import kt.fluxo.test.TestLoggingStoreFactory
 import kt.fluxo.test.runUnitTest
+import kt.fluxo.test.testLog
 import kotlin.random.Random
 import kotlin.test.Ignore
 import kotlin.test.Test
@@ -85,21 +86,27 @@ internal class InputStrategyTest : CoroutineScopeAwareTest() {
                 }
             },
         ) { inputStrategy = strategy }
+        if (DBG >= 1) testLog("Store created: $store")
         ints.forEach {
             if (it % 2 == 0) store.send(it) else store.emit(it)
         }
 
         // Wait till the processing finish
+        if (DBG >= 1) testLog("All items sent, wait till the processing finish: $store")
         finishLock.withLock {}
+
         @Suppress("ComplexCondition")
         if ((generic || parallel) && (nonOrderedEqual || equal)) {
+            if (DBG >= 1) testLog("Additional delay: $store")
             // TODO: Store.awaitIdle()
             while (results.size < NUMBER_OF_ITEMS) {
                 delay(timeMillis = 10)
             }
         }
+        if (DBG >= 1) testLog("Closing store: $store")
         store.closeAndWait()
 
+        if (DBG >= 1) testLog("Store closed, start assertions: $store")
         if (equal || nonOrderedEqual) {
             assertEquals(NUMBER_OF_ITEMS, results.size, "unexpected results.size")
         }
