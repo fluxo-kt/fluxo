@@ -132,7 +132,7 @@ jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", ver
 # https://mvnrepository.com/artifact/com.fasterxml.woodstox/woodstox-core
 woodstox-core = { module = "com.fasterxml.woodstox:woodstox-core", version = "6.4.0" }
 # https://mvnrepository.com/artifact/org.jsoup/jsoup
-jsoup = { module = "org.jsoup:jsoup", version = "1.15.3" }
+jsoup = { module = "org.jsoup:jsoup", version = "1.15.4" }
 
 test-junit = { module = "junit:junit" }
 # https://mvnrepository.com/artifact/org.robolectric/robolectric
