@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# Avoid error when process cannot access the file because it is being used by another process.
+./gradlew --stop
+
+# Lint will recreate baselines only if they are missing, so delete them first
+find . -name "lint-baseline.xml" -type f -print -delete
+
+# 1) Configuration cache is disabled as many plugins, including Kotlin, don't support it well enough
+# 2) Use continue options to prevent stop on occasional error
+
+export CI=true
+
+# Update only Lint baselines
+#./gradlew lint lintDebug lintRelease -Pci --console=plain \
+# --continue --stacktrace --no-configuration-cache -Dlint.baselines.continue=true
+
+./gradlew lint lintDebug lintRelease detektBaselineMerge dependencyGuardBaseline -Pci --console=plain \
+ --continue --stacktrace --no-configuration-cache -Dlint.baselines.continue=true
