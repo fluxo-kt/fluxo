@@ -64,6 +64,12 @@ kotlin {
             compileOnly(libs.jetbrains.annotation)
             compileOnly(libs.jsr305)
         }
+
+        // Workaround for
+        // https://youtrack.jetbrains.com/issue/KT-57235#focus=Comments-27-6989130.0-0
+        js.main.dependencies {
+            implementation(libs.kotlin.atomicfu.runtime)
+        }
     }
 }
 

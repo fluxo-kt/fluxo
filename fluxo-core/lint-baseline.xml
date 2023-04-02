@@ -19,7 +19,7 @@
         errorLine2="                                                                                       ~~~~~~~~~~">
         <location
             file="../gradle/libs.versions.toml"
-            line="131"
+            line="137"
             column="88"/>
     </issue>
 
@@ -30,7 +30,7 @@
         errorLine2="                                                                ~~~~~~~~">
         <location
             file="../gradle/libs.versions.toml"
-            line="141"
+            line="147"
             column="65"/>
     </issue>
 
@@ -41,19 +41,8 @@
         errorLine2="                                                                        ~~~~~~~">
         <location
             file="../gradle/libs.versions.toml"
-            line="149"
+            line="157"
             column="73"/>
-    </issue>
-
-    <issue
-        id="GradleDependency"
-        message="A newer version of org.jetbrains.kotlinx:atomicfu-gradle-plugin than 0.20.0 is available: 0.20.1"
-        errorLine1="plugin-kotlinx-atomicfu = { module = &quot;org.jetbrains.kotlinx:atomicfu-gradle-plugin&quot;, version = &quot;0.20.0&quot; }"
-        errorLine2="                                                                                               ~~~~~~~~">
-        <location
-            file="../gradle/libs.versions.toml"
-            line="160"
-            column="96"/>
     </issue>
 
 </issues>
