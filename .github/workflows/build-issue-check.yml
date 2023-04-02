@@ -52,12 +52,15 @@ jobs:
         with:
           node-version: 18
 
-      - name: Cache kotlin konan
+      - name: Cache Konan (Kotlin/Native compiler)
         uses: actions/cache@v3
+        continue-on-error: true
         with:
           path: ~/.konan
-          key: ${{ matrix.os }}-konan-${{ hashFiles('**/*.konan*') }}
-          restore-keys: ${{ matrix.os }}-konan-
+          key: ${{ runner.os }}-konan-${{ hashFiles('**/*.versions.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-konan-${{ hashFiles('**/*.versions.toml') }}
+            ${{ runner.os }}-konan-
 
       - name: 'Build and check (${{ matrix.os }})'
         timeout-minutes: 45
