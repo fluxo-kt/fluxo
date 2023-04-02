@@ -62,7 +62,7 @@ setupDefaults(
             macosCompat()
         }
 
-        // Duplicate opt-ins here as IDEA don't catch settings from compile tasks.
+        // Duplicate opt-ins here as the IDE doesn't catch settings from compile tasks.
         sourceSets.all {
             languageSettings {
                 optIn("kotlin.contracts.ExperimentalContracts")
@@ -358,7 +358,7 @@ allprojects {
 }
 
 subprojects {
-    // Convenience task that will print full dependencies tree for any module
+    // Convenience task to print full dependencies tree for any module
     // Use `buildEnvironment` task for the report about plugins
     // https://docs.gradle.org/current/userguide/viewing_debugging_dependencies.html
     tasks.register<DependencyReportTask>("allDeps")
