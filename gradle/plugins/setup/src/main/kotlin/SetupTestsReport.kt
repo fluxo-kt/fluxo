@@ -24,10 +24,6 @@ fun Project.setupTestsReport() {
     }
 
     val disableTests by disableTests()
-    if (disableTests) {
-        logger.lifecycle("Test tasks disabled!")
-    }
-
     allprojects {
         if (!disableTests) {
             val targetNames = hashSetOf(

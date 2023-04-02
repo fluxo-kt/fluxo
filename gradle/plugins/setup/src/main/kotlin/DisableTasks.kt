@@ -7,7 +7,7 @@ import org.gradle.kotlin.dsl.extra
 
 private const val PROPERTY_NAME = "setup.disableTasks"
 
-fun Project.ensureUnreachableTasksDisabled() {
+internal fun Project.ensureUnreachableTasksDisabled() {
     checkIsRootProject()
 
     if (extra.has(PROPERTY_NAME)) {
@@ -54,7 +54,7 @@ private class DisableTasks(
             if (child.enabled) {
                 if (!isTaskAccessible(task = child)) {
                     child.enabled = false
-                    logger.info("Task disabled: ${child.path}")
+                    logger.lifecycle("Inaccessible task disabled: ${child.path}")
                     disableChildren(task = child)
                 } else {
                     logger.info("Task accessible: ${child.path}")
@@ -76,16 +76,19 @@ private class DisableTasks(
         isPathExists
     }
 
-    private fun isPathExists(source: Task, destination: Task): Boolean = results.getOrPut(source to destination) {
-        when {
-            !source.enabled -> false
-            source == destination -> true.also { logger.info("Task reached: {}", destination) }
+    private fun isPathExists(source: Task, destination: Task): Boolean =
+        results.getOrPut(source to destination) {
+            when {
+                !source.enabled -> false
+                source == destination -> true.also { logger.info("Task reached: {}", destination) }
 
-            else -> graph.getDependencies(source).any { isPathExists(source = it, destination = destination) }.also {
-                if (it) {
-                    logger.info("Task path found from {} to {}", source, destination)
-                }
+                else -> graph.getDependencies(source)
+                    .any { isPathExists(source = it, destination = destination) }
+                    .also {
+                        if (it) {
+                            logger.info("Task path found from {} to {}", source, destination)
+                        }
+                    }
             }
         }
-    }
 }

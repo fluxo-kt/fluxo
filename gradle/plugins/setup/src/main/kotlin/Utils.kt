@@ -14,9 +14,29 @@ fun Project.envOrPropInt(name: String): Int? = envOrPropValue(name)?.toIntOrNull
 fun Project.envOrPropList(name: String): List<String> = envOrPropValue(name)?.split(Pattern.compile("\\s*,\\s*")).orEmpty()
 
 fun Project.isCI(): Provider<Boolean> = envOrPropFlag("CI")
+
 fun Project.isRelease(): Provider<Boolean> = envOrPropFlag("RELEASE")
+
 fun Project.useKotlinDebug(): Provider<Boolean> = envOrPropFlag("USE_KOTLIN_DEBUG")
+
 fun Project.disableTests(): Provider<Boolean> = envOrPropFlag("DISABLE_TESTS")
+
+fun Project.areComposeMetricsEnabled(): Provider<Boolean> = envOrPropFlag("COMPOSE_METRICS")
+
+fun Project.isDesugaringEnabled(): Provider<Boolean> = envOrPropFlag("DESUGARING")
+
+fun Project.isMaxDebugEnabled(): Provider<Boolean> = envOrPropFlag("MAX_DEBUG")
+
+fun Project.isR8Disabled(): Provider<Boolean> = envOrPropFlag("DISABLE_R8")
+
+
+fun Project.signingKey(): String? = envOrPropValue("SIGNING_KEY")?.replace("\\n", "\n")
+
+fun Project.buildNumberSuffix(): String {
+    val n = envOrProp("BUILD_NUMBER").orNull
+    return if (!n.isNullOrBlank()) ".$n" else ""
+}
+
 
 @Incubating
 fun Project.scmTag(): Provider<String?> {
@@ -32,10 +52,8 @@ fun Project.scmTag(): Provider<String?> {
     }
 }
 
-fun Project.signingKey(): String? = envOrPropValue("SIGNING_KEY")?.replace("\\n", "\n")
-
 @Suppress("UnstableApiUsage")
-fun Project.runCommand(command: String): String? {
+private fun Project.runCommand(command: String): String? {
     // https://docs.gradle.org/7.5.1/userguide/configuration_cache.html#config_cache:requirements:external_processes
     return try {
         val exec = providers.exec {

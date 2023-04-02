@@ -56,6 +56,10 @@ arrow = "1.1.5"
 # https://github.com/detekt/detekt/releases
 detekt = "1.22.0"
 
+# Compose Multiplatform
+# https://github.com/JetBrains/compose-multiplatform/releases
+jetbrains-compose = "1.3.1"
+
 # Android Jetpack
 # https://developer.android.com/jetpack/androidx/versions
 # https://developer.android.com/jetpack/androidx/versions/all-channel#latest_release
@@ -145,6 +149,8 @@ test-turbine = { module = "app.cash.turbine:turbine", version = "0.12.1" }
 plugin-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 plugin-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
 plugin-android = { module = "com.android.tools.build:gradle", version.ref = "android-gradle-plugin" }
+plugin-ksp = { module = "com.google.devtools.ksp:symbol-processing-gradle-plugin", version.ref = "ksp" }
+plugin-jetbrains-compose = { group = "org.jetbrains.compose", name = "compose-gradle-plugin", version.ref = "jetbrains-compose" }
 
 # https://github.com/mrmans0n/compose-rules/releases
 # https://mvnrepository.com/artifact/io.nlopez.compose.rules/detekt

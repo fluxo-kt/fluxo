@@ -37,7 +37,7 @@ formatting:
   FunctionReturnTypeSpacing:
     active: true
   FunctionSignature:
-    active: true
+    active: false
     maxLineLength: 140
   FunctionStartOfBodySpacing:
     active: true

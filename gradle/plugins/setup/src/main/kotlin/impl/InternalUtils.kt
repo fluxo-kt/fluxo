@@ -1,14 +1,19 @@
 package impl
 
 import org.gradle.api.Project
+import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.provider.Provider
 import kotlin.reflect.KClass
 
-internal inline fun <reified T : Any> Project.hasExtension(): Boolean {
-    return extensions.findByType(T::class.java) != null
+internal inline fun <reified T : Any> ExtensionAware.hasExtension(): Boolean {
+    return try {
+        extensions.findByType(T::class.java) != null
+    } catch (_: NoClassDefFoundError) {
+        false
+    }
 }
 
-internal inline fun Project.hasExtension(clazz: () -> KClass<*>): Boolean {
+internal inline fun ExtensionAware.hasExtension(clazz: () -> KClass<*>): Boolean {
     return try {
         extensions.findByType(clazz().java) != null
     } catch (_: NoClassDefFoundError) {
@@ -16,8 +21,11 @@ internal inline fun Project.hasExtension(clazz: () -> KClass<*>): Boolean {
     }
 }
 
+internal val Project.isRootProject: Boolean
+    get() = rootProject == this
+
 internal fun Project.checkIsRootProject() {
-    require(rootProject == this) { "Must be called on a root project" }
+    require(isRootProject) { "Must be called on a root project" }
 }
 
 

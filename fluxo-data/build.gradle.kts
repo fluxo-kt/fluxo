@@ -8,31 +8,16 @@ plugins {
     id("fluxo-setup")
 }
 
-setupMultiplatform()
+setupMultiplatform(namespace = "kt.fluxo.data")
 setupPublication()
 setupBinaryCompatibilityValidator()
 
-kotlin {
-    setupSourceSets {
-        matching { "Test" in it.name }.configureEach {
-            languageSettings {
-                optIn("kotlinx.coroutines.ExperimentalCoroutinesApi")
-            }
-        }
-
-        common.main.dependencies {
-            implementation(libs.kotlinx.coroutines.core)
-        }
-        common.test.dependencies {
-            implementation(libs.kotlinx.coroutines.test)
-        }
-
-        // Workaround for
-        // https://youtrack.jetbrains.com/issue/KT-57235#focus=Comments-27-6989130.0-0
-        val js by bundle()
-        js.main.dependencies {
-            implementation(libs.kotlin.atomicfu.runtime)
-        }
+kotlin.setupSourceSets {
+    // Workaround for
+    // https://youtrack.jetbrains.com/issue/KT-57235#focus=Comments-27-6989130.0-0
+    val js by bundle()
+    js.main.dependencies {
+        implementation(libs.kotlin.atomicfu.runtime)
     }
 }
 
@@ -46,5 +31,3 @@ dependencyGuard {
         configuration("jsRuntimeClasspath")
     }
 }
-
-android.namespace = "kt.fluxo.data"

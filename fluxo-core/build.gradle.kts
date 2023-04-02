@@ -9,67 +9,22 @@ plugins {
 }
 apply<kotlinx.atomicfu.plugin.gradle.AtomicFUGradlePlugin>()
 
-setupMultiplatform()
+setupMultiplatform(
+    namespace = "kt.fluxo.core",
+    optIns = listOf(
+        "kt.fluxo.core.annotation.ExperimentalFluxoApi",
+        "kt.fluxo.core.annotation.InternalFluxoApi",
+    ),
+)
 setupPublication()
 setupBinaryCompatibilityValidator()
 
-kotlin {
-    setupSourceSets {
-        val js by bundle()
-        val jsNative by bundle()
-        val native by bundle()
-        val java by bundle()
-        val darwin by bundle()
-        val linux by bundle()
-        val mingw by bundle()
-
-        jsNative dependsOn common
-        native dependsOn common
-        java dependsOn common
-        js dependsOn jsNative
-        javaSet dependsOn java
-        nativeSet dependsOn jsNative
-        nativeSet dependsOn native
-        darwinSet dependsOn darwin
-        linuxSet dependsOn linux
-        mingwSet dependsOn mingw
-
-        all {
-            languageSettings {
-                optIn("kotlin.experimental.ExperimentalTypeInference")
-                optIn("kt.fluxo.core.annotation.ExperimentalFluxoApi")
-                optIn("kt.fluxo.core.annotation.InternalFluxoApi")
-            }
-
-            if ("Test" in name) {
-                languageSettings {
-                    optIn("kotlinx.coroutines.ExperimentalCoroutinesApi")
-                }
-            }
-        }
-
-        common.main.dependencies {
-            implementation(libs.kotlinx.coroutines.core)
-        }
-        common.test.dependencies {
-            implementation(kotlin("reflect"))
-            implementation(kotlin("test"))
-            implementation(libs.kotlinx.coroutines.test)
-            implementation(libs.kotlinx.datetime)
-            implementation(libs.test.turbine)
-        }
-
-        java.main.dependencies {
-            compileOnly(libs.androidx.annotation)
-            compileOnly(libs.jetbrains.annotation)
-            compileOnly(libs.jsr305)
-        }
-
-        // Workaround for
-        // https://youtrack.jetbrains.com/issue/KT-57235#focus=Comments-27-6989130.0-0
-        js.main.dependencies {
-            implementation(libs.kotlin.atomicfu.runtime)
-        }
+kotlin.setupSourceSets {
+    // Workaround for
+    // https://youtrack.jetbrains.com/issue/KT-57235#focus=Comments-27-6989130.0-0
+    val js by bundle()
+    js.main.dependencies {
+        implementation(libs.kotlin.atomicfu.runtime)
     }
 }
 
@@ -88,5 +43,3 @@ dependencyGuard {
         configuration("jsRuntimeClasspath")
     }
 }
-
-android.namespace = "kt.fluxo.core"

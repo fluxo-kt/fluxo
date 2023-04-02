@@ -6,21 +6,24 @@ plugins {
     alias(libs.plugins.jmh)
 }
 
-setupJvmApp()
+setupKotlin(
+    config = KotlinConfigSetup(
+        kotlinLangVersion = "latest",
+        javaLangTarget = "11",
+        optInInternal = true,
+        optIns = listOf("kt.fluxo.core.annotation.ExperimentalFluxoApi"),
+    )
+)
 
 dependencies {
     jmh(libs.jmh.core)
     jmh(libs.jmh.generator.annprocess)
 
-    testImplementation(kotlin("test"))
-    testImplementation(libs.kotlinx.coroutines.test)
-
-    implementation(libs.kotlinx.coroutines.core)
     implementation(projects.fluxoCore)
     implementation(projects.fluxoData)
 
 
-    // Libraries to compare/benchmark against
+    // Libraries to compare/benchmark with
 
     // Ballast
     implementation("io.github.copper-leaf:ballast-core:" + libs.versions.ballast.get())
@@ -40,29 +43,10 @@ dependencies {
     implementation("org.orbit-mvi:orbit-core:" + libs.versions.orbit.get())
 }
 
-java.toolchain.languageVersion.set(JavaLanguageVersion.of(11))
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-    compilerOptions {
-        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
-        org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0.let {
-            languageVersion.set(it)
-            apiVersion.set(it)
-        }
-
-        // https://github.com/JetBrains/kotlin/blob/master/compiler/testData/cli/jvm/extraHelp.out
-        freeCompilerArgs.addAll(
-            "-opt-in=kotlinx.coroutines.DelicateCoroutinesApi",
-            "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
-            "-opt-in=kt.fluxo.core.annotation.ExperimentalFluxoApi",
-            "-progressive",
-        )
-    }
-}
-
 jmh {
     // https://github.com/melix/jmh-gradle-plugin#configuration-options
 
-    // One! pattern (regular expression) for benchmarks to be executed
+    // One! pattern (regular expression) for executed benchmarks
     includes.addAll(listOfNotNull(envOrPropValue("jmh")?.also {
         logger.lifecycle("JMH include='$it'")
     }))
@@ -76,7 +60,7 @@ jmh {
     threads.set(envOrPropInt("jmh_t") ?: 4)
     fork.set(envOrPropInt("jmh_f") ?: 2)
 
-    // Benchmark mode. Available modes are: [Throughput/thrpt, AverageTime/avgt, SampleTime/sample, SingleShotTime/ss, All/all]
+    // Benchmark mode: [Throughput/thrpt, AverageTime/avgt, SampleTime/sample, SingleShotTime/ss, All/all]
     benchmarkMode.set(envOrPropList("jmh_bm").ifEmpty { listOf("thrpt", "avgt", "ss") })
 
     // Output time unit. Available time units are: [m, s, ms, us, ns].

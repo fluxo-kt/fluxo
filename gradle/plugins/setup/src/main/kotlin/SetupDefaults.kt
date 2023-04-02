@@ -4,6 +4,7 @@ import org.gradle.kotlin.dsl.extra
 fun Project.setupDefaults(
     multiplatformConfigurator: MultiplatformConfigurator? = null,
     androidConfig: AndroidConfigSetup? = null,
+    kotlinConfig: KotlinConfigSetup? = null,
     publicationConfig: PublicationConfig? = null,
 ) {
     extra.set(
@@ -11,6 +12,7 @@ fun Project.setupDefaults(
         listOfNotNull(
             multiplatformConfigurator,
             androidConfig,
+            kotlinConfig,
             publicationConfig,
         )
     )

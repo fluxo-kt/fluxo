@@ -1,15 +1,27 @@
 @file:Suppress("TooManyFunctions")
 
+import com.android.build.gradle.LibraryExtension
+import impl.implementation
+import impl.libsCatalog
+import impl.onLibrary
+import impl.optionalVersion
 import org.gradle.api.NamedDomainObjectCollection
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
+import org.gradle.api.artifacts.Dependency
+import org.gradle.api.plugins.ExtensionAware
+import org.gradle.kotlin.dsl.kotlin
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
+import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
+import org.jetbrains.kotlin.gradle.plugin.KotlinTargetsContainer
+import org.jetbrains.kotlin.gradle.plugin.mpp.DefaultKotlinDependencyHandler
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.konan.target.Family
+import org.jetbrains.kotlin.utils.addToStdlib.ifNotEmpty
 import kotlin.properties.PropertyDelegateProvider
 import kotlin.properties.ReadOnlyProperty
 
@@ -18,32 +30,194 @@ typealias MultiplatformConfigurator = KotlinMultiplatformExtension.() -> Unit
 internal val Project.multiplatformExtension: KotlinMultiplatformExtension
     get() = kotlinExtension as KotlinMultiplatformExtension
 
-fun Project.setupMultiplatform(targets: MultiplatformConfigurator = requireDefaults()) {
+@Suppress("LongParameterList")
+fun Project.setupMultiplatform(
+    config: KotlinConfigSetup = requireDefaults(),
+    namespace: String? = null,
+    setupCompose: Boolean = false,
+    enableBuildConfig: Boolean? = null,
+    optIns: List<String> = emptyList(),
+    configurator: MultiplatformConfigurator? = getDefaults(),
+    configureAndroid: (LibraryExtension.() -> Unit)? = null,
+    body: MultiplatformConfigurator? = null,
+) {
     multiplatformExtension.apply {
-        setupKotlinJvmToolchain(this)
+        logger.lifecycle("> Conf :setupMultiplatform")
 
-        targets()
+        setupKotlinExtension(this, config, optIns)
+        setupMultiplatformDependencies(config, project)
 
-        setupSourceSets {
-            common.main.dependencies {
-                implementation(kotlin("stdlib"))
-            }
+        configurator?.invoke(this)
 
-            common.test.dependencies {
-                implementation(kotlin("test"))
+        setupSourceSets(project)
+
+        val jbCompose = (this as ExtensionAware).extensions.findByName("compose")
+        val setupAndroidCompose = setupCompose && jbCompose == null
+        if (isMultiplatformTargetEnabled(Target.ANDROID) || configureAndroid != null) {
+            setupAndroidCommon(
+                namespace = checkNotNull(namespace) { "namespace is required for android setup" },
+                setupKsp = false,
+                setupRoom = false,
+                setupCompose = setupAndroidCompose,
+                enableBuildConfig = enableBuildConfig,
+                kotlinConfig = config,
+            )
+            project.extensions.configure<LibraryExtension>("android") {
+                configureAndroid?.invoke(this)
             }
         }
 
-        disableCompilationsOfNeeded(project)
-    }
+        if (setupCompose) {
+            setupCompose(project, jbCompose, config)
+        }
 
-    if (isMultiplatformTargetEnabled(Target.ANDROID)) {
-        setupAndroidCommon(requireDefaults())
+        body?.invoke(this)
     }
 }
 
+private fun KotlinMultiplatformExtension.setupMultiplatformDependencies(config: KotlinConfigSetup, project: Project) {
+    setupSourceSets {
+        val libs = project.libsCatalog
+
+        val kotlinVersion = libs.optionalVersion("kotlin")
+        project.dependencies.apply {
+            implementation(enforcedPlatform(kotlin("bom", kotlinVersion)))
+            libs.onLibrary("kotlinx-coroutines-bom") {
+                implementation(enforcedPlatform(it))
+            }
+            libs.onLibrary("square-okio-bom") { implementation(enforcedPlatform(it)) }
+            libs.onLibrary("square-okhttp-bom") { implementation(enforcedPlatform(it)) }
+        }
+
+        common.main.dependencies {
+            implementation(kotlin("stdlib", kotlinVersion))
+
+            if (config.setupCoroutines) {
+                libs.onLibrary("kotlinx-coroutines-core") { implementation(it) }
+            }
+        }
+
+        common.test.dependencies {
+            implementation(kotlin("reflect"))
+            implementation(kotlin("test"))
+
+            libs.onLibrary("kotlinx-datetime") { implementation(it) }
+
+            if (config.setupCoroutines) {
+                libs.onLibrary("kotlinx-coroutines-test") { implementation(it) }
+                libs.onLibrary("test-turbine") { implementation(it) }
+            }
+        }
+    }
+}
+
+private fun KotlinMultiplatformExtension.setupSourceSets(project: Project) {
+    setupSourceSets {
+        setupCommonJavaSourceSets(project, javaSet)
+
+        nativeSet.ifNotEmpty {
+            val nativeSet = this
+            val jsSet = jsSet
+
+            val native by bundle()
+            if (jsSet.isEmpty()) {
+                nativeSet dependsOn native
+            } else {
+                val nativeAndJs by bundle()
+                native dependsOn nativeAndJs
+
+                val js by bundle()
+                js dependsOn nativeAndJs
+            }
+            nativeSet dependsOn native
+        }
+
+        darwinSet.ifNotEmpty {
+            val darwin by bundle()
+            this dependsOn darwin
+        }
+
+        linuxSet.ifNotEmpty {
+            val linux by bundle()
+            this dependsOn linux
+        }
+
+        mingwSet.ifNotEmpty {
+            val mingw by bundle()
+            this dependsOn mingw
+        }
+    }
+}
+
+private fun MultiplatformSourceSets.setupCommonJavaSourceSets(project: Project, sourceSet: Set<SourceSetBundle>) {
+    if (sourceSet.isEmpty()) {
+        return
+    }
+
+    val java by bundle()
+    java dependsOn common
+    sourceSet dependsOn java
+
+    val libs = project.libsCatalog
+    val constraints = project.dependencies.constraints
+    (sourceSet + java).main.dependencies {
+        val compileOnlyWithConstraint: (Any) -> Unit = {
+            compileOnly(it)
+            constraints.implementation(it)
+        }
+
+        // Java-only annotations
+        libs.onLibrary("jetbrains-annotation", compileOnlyWithConstraint)
+        compileOnlyWithConstraint(JSR305_DEPENDENCY)
+
+        // TODO: Use `compileOnlyApi` for transitively included compile-only dependencies.
+        // https://issuetracker.google.com/issues/216293107
+        // https://issuetracker.google.com/issues/216305675
+        //
+        // Also note that atm androidx annotations aren't usable in the common source sets!
+        // https://issuetracker.google.com/issues/273468771
+        libs.onLibrary("androidx-annotation") { compileOnlyWithConstraint(it) }
+    }
+}
+
+private fun KotlinMultiplatformExtension.setupCompose(project: Project, jbCompose: Any?, config: KotlinConfigSetup) {
+    setupSourceSets {
+        val libs = project.libsCatalog
+
+        // AndroidX Compose
+        if (jbCompose == null) {
+            val constraints = project.dependencies.constraints
+            androidSet.main.dependencies {
+                // Support compose @Stable and @Immutable annotations
+                libs.onLibrary("androidx-compose-runtime") {
+                    compileOnly(it)
+                    constraints.implementation(it)
+                }
+            }
+        }
+
+        // Jetbrains KMP Compose
+        else {
+            val composeDependency = jbCompose as org.jetbrains.compose.ComposePlugin.Dependencies
+            val composeRuntime = composeDependency.runtime
+
+            common.main.dependencies {
+                // Support compose @Stable and @Immutable annotations
+                if (config.noMultiplatformCompileOnly) {
+                    // A compileOnly dependencies aren't applicable for Kotlin/Native.
+                    // Use 'implementation' or 'api' dependency type instead.
+                    implementation(composeRuntime)
+                } else {
+                    compileOnly(composeRuntime)
+                }
+            }
+        }
+    }
+}
+
+
 fun KotlinMultiplatformExtension.setupSourceSets(block: MultiplatformSourceSets.() -> Unit) {
-    DefaultMultiplatformSourceSets(targets, sourceSets).block()
+    MultiplatformSourceSets(targets, sourceSets).block()
 }
 
 internal enum class Target {
@@ -51,68 +225,67 @@ internal enum class Target {
     JVM,
 }
 
-internal fun Project.isMultiplatformTargetEnabled(target: Target): Boolean = multiplatformExtension.targets.any {
-    when (it.platformType) {
-        KotlinPlatformType.androidJvm -> target == Target.ANDROID
-        KotlinPlatformType.jvm -> target == Target.JVM
-        KotlinPlatformType.common,
-        KotlinPlatformType.js,
-        KotlinPlatformType.native,
-        KotlinPlatformType.wasm,
-        -> false
+internal fun Project.isMultiplatformTargetEnabled(target: Target): Boolean =
+    multiplatformExtension.isMultiplatformTargetEnabled(target)
+
+internal fun KotlinTargetsContainer.isMultiplatformTargetEnabled(target: Target): Boolean =
+    targets.any {
+        when (it.platformType) {
+            KotlinPlatformType.androidJvm -> target == Target.ANDROID
+            KotlinPlatformType.jvm -> target == Target.JVM
+            KotlinPlatformType.common,
+            KotlinPlatformType.js,
+            KotlinPlatformType.native,
+            KotlinPlatformType.wasm,
+            -> false
+        }
     }
-}
 
-interface MultiplatformSourceSets : NamedDomainObjectContainer<KotlinSourceSet> {
-
-    val common: SourceSetBundle
-    val allSet: Set<SourceSetBundle>
-    val javaSet: Set<SourceSetBundle>
-    val androidSet: Set<SourceSetBundle>
-    val nativeSet: Set<SourceSetBundle>
-    val linuxSet: Set<SourceSetBundle>
-    val androidNativeSet: Set<SourceSetBundle>
-    val mingwSet: Set<SourceSetBundle>
-    val darwinSet: Set<SourceSetBundle>
-    val iosSet: Set<SourceSetBundle>
-    val watchosSet: Set<SourceSetBundle>
-    val tvosSet: Set<SourceSetBundle>
-    val macosSet: Set<SourceSetBundle>
-}
-
-private class DefaultMultiplatformSourceSets(
+class MultiplatformSourceSets
+internal constructor(
     private val targets: NamedDomainObjectCollection<KotlinTarget>,
     private val sourceSets: NamedDomainObjectContainer<KotlinSourceSet>,
-) : MultiplatformSourceSets, NamedDomainObjectContainer<KotlinSourceSet> by sourceSets {
+) : NamedDomainObjectContainer<KotlinSourceSet> by sourceSets {
 
-    override val common: SourceSetBundle by bundle()
+    val common: SourceSetBundle by bundle()
 
-    override val allSet: Set<SourceSetBundle> =
-        targets.toSourceSetBundles()
+    /** All enabled targets */
+    val allSet: Set<SourceSetBundle> = targets.toSourceSetBundles()
 
-    override val javaSet: Set<SourceSetBundle> = targets
+    /** androidJvm, jvm */
+    val javaSet: Set<SourceSetBundle> = targets
         .filter { it.platformType in setOf(KotlinPlatformType.androidJvm, KotlinPlatformType.jvm) }
         .toSourceSetBundles()
 
-    override val androidSet: Set<SourceSetBundle> = targets
-        .filter { it.platformType in setOf(KotlinPlatformType.androidJvm) }
+    /** androidJvm */
+    val androidSet: Set<SourceSetBundle> = targets
+        .filter { it.platformType == KotlinPlatformType.androidJvm }
         .toSourceSetBundles()
 
-    override val nativeSet: Set<SourceSetBundle> = nativeSourceSets()
-    override val linuxSet: Set<SourceSetBundle> = nativeSourceSets(Family.LINUX)
-    override val androidNativeSet: Set<SourceSetBundle> = nativeSourceSets(Family.ANDROID)
-    override val mingwSet: Set<SourceSetBundle> = nativeSourceSets(Family.MINGW)
-
-    override val darwinSet: Set<SourceSetBundle> = nativeSourceSets(Family.IOS, Family.OSX, Family.WATCHOS, Family.TVOS)
-    override val iosSet: Set<SourceSetBundle> = nativeSourceSets(Family.IOS)
-    override val watchosSet: Set<SourceSetBundle> = nativeSourceSets(Family.WATCHOS)
-    override val tvosSet: Set<SourceSetBundle> = nativeSourceSets(Family.TVOS)
-    override val macosSet: Set<SourceSetBundle> = nativeSourceSets(Family.OSX)
-
-    private fun nativeSourceSets(vararg families: Family = Family.values()): Set<SourceSetBundle> = targets
-        .filterIsInstance<KotlinNativeTarget>()
-        .filter { it.konanTarget.family in families }
+    /** js */
+    val jsSet: Set<SourceSetBundle> = targets
+        .filter { it.platformType == KotlinPlatformType.js }
         .toSourceSetBundles()
+
+    /** All Kotlin/Native targets */
+    val nativeSet: Set<SourceSetBundle> = nativeSourceSets()
+    val linuxSet: Set<SourceSetBundle> = nativeSourceSets(Family.LINUX)
+    val mingwSet: Set<SourceSetBundle> = nativeSourceSets(Family.MINGW)
+    val androidNativeSet: Set<SourceSetBundle> = nativeSourceSets(Family.ANDROID)
+    val wasmSet: Set<SourceSetBundle> = nativeSourceSets(Family.WASM)
+
+    /** All Darwin targets */
+    val darwinSet: Set<SourceSetBundle> =
+        nativeSourceSets(Family.IOS, Family.OSX, Family.WATCHOS, Family.TVOS)
+    val iosSet: Set<SourceSetBundle> = nativeSourceSets(Family.IOS)
+    val watchosSet: Set<SourceSetBundle> = nativeSourceSets(Family.WATCHOS)
+    val tvosSet: Set<SourceSetBundle> = nativeSourceSets(Family.TVOS)
+    val macosSet: Set<SourceSetBundle> = nativeSourceSets(Family.OSX)
+
+    private fun nativeSourceSets(vararg families: Family = Family.values()): Set<SourceSetBundle> =
+        targets.filterIsInstance<KotlinNativeTarget>()
+            .filter { it.konanTarget.family in families }
+            .toSourceSetBundles()
 
     private fun Iterable<KotlinTarget>.toSourceSetBundles(): Set<SourceSetBundle> {
         return filter { it.platformType != KotlinPlatformType.common }
@@ -150,9 +323,14 @@ data class SourceSetBundle(
     val test: KotlinSourceSet,
 )
 
-operator fun SourceSetBundle.plus(other: SourceSetBundle): Set<SourceSetBundle> = this + setOf(other)
 
-operator fun SourceSetBundle.plus(other: Set<SourceSetBundle>): Set<SourceSetBundle> = setOf(this) + other
+// region Dependecies declaration
+
+operator fun SourceSetBundle.plus(other: SourceSetBundle): Set<SourceSetBundle> =
+    this + setOf(other)
+
+operator fun SourceSetBundle.plus(other: Set<SourceSetBundle>): Set<SourceSetBundle> =
+    setOf(this) + other
 
 infix fun SourceSetBundle.dependsOn(other: SourceSetBundle) {
     main.dependsOn(other.main)
@@ -174,6 +352,58 @@ infix fun SourceSetBundle.dependsOn(other: Iterable<SourceSetBundle>) {
 infix fun Iterable<SourceSetBundle>.dependsOn(other: SourceSetBundle) {
     this dependsOn listOf(other)
 }
+
+
+infix fun KotlinSourceSet.dependsOn(other: SourceSetBundle) {
+    dependsOn(if ("Test" in name) other.test else other.main)
+}
+
+@JvmName("dependsOnBundles")
+infix fun KotlinSourceSet.dependsOn(other: Iterable<SourceSetBundle>) {
+    other.forEach { right ->
+        dependsOn(right)
+    }
+}
+
+infix fun KotlinSourceSet.dependsOn(other: Iterable<KotlinSourceSet>) {
+    other.forEach { right ->
+        dependsOn(right)
+    }
+}
+
+
+val Iterable<SourceSetBundle>.main: List<KotlinSourceSet> get() = map { it.main }
+
+val Iterable<SourceSetBundle>.test: List<KotlinSourceSet> get() = map { it.test }
+
+infix fun Iterable<KotlinSourceSet>.dependencies(configure: KotlinDependencyHandler.() -> Unit) {
+    forEach { left ->
+        left.dependencies(configure)
+    }
+}
+
+
+fun KotlinDependencyHandler.ksp(dependencyNotation: Any): Dependency? {
+    // Starting from KSP 1.0.1, applying KSP on a multiplatform project requires
+    // instead of writing the ksp("dep")
+    // use ksp<Target>() or add(ksp<SourceSet>).
+    // https://kotlinlang.org/docs/ksp-multiplatform.html
+    val parent = (this as DefaultKotlinDependencyHandler).parent
+    var configurationName = parent.compileOnlyConfigurationName.replace("compileOnly", "", ignoreCase = true)
+    if (configurationName.startsWith("commonMain", ignoreCase = true)) {
+        configurationName += "Metadata"
+    } else {
+        configurationName = configurationName.replace("Main", "", ignoreCase = true)
+    }
+    configurationName = "ksp${configurationName[0].uppercase()}${configurationName.substring(1)}"
+    project.logger.lifecycle(">>> ksp configurationName: $configurationName")
+    return project.dependencies.add(configurationName, dependencyNotation)
+}
+
+// endregion
+
+
+// region Darwin compat
 
 fun KotlinMultiplatformExtension.iosCompat(
     x64: String? = DEFAULT_TARGET_NAME,
@@ -239,3 +469,5 @@ private fun KotlinMultiplatformExtension.enableTarget(
 }
 
 private const val DEFAULT_TARGET_NAME = "fluxo.DEFAULT_TARGET_NAME"
+
+// endregion

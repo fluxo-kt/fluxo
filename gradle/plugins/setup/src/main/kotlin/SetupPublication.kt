@@ -25,12 +25,14 @@ import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
+import java.util.concurrent.atomic.AtomicBoolean
 
 
 /*
  * Set up publishing.
  *
  * Useful resources:
+ *
  * - https://kotlinlang.org/docs/mpp-publish-lib.html
  * - https://central.sonatype.org/publish/publish-guide/
  * - https://central.sonatype.org/publish/publish-gradle/
@@ -209,7 +211,7 @@ internal fun MavenPublication.setupPublicationPom(project: Project, config: Publ
         artifact(dokkaHtmlAsJavadoc)
     } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
         if (useDokka) {
-            project.logger.lifecycle("Fallback to Javadoc. Dokka publication setup error: $e", e)
+            project.logger.warn("Fallback to Javadoc. Dokka publication setup error: $e", e)
         }
         artifact(project.javadocJarTask())
     }
@@ -247,12 +249,15 @@ internal fun MavenPublication.setupPublicationPom(project: Project, config: Publ
     }
 }
 
+private val signingKeyNotificationLogged = AtomicBoolean()
+
 internal fun Project.setupPublicationRepository(config: PublicationConfig) {
+    val notify = signingKeyNotificationLogged.compareAndSet(false, true)
     if (config.isSigningEnabled) {
-        logger.lifecycle("SIGNING KEY SET, applying signing configuration")
+        if (notify) logger.lifecycle("> Conf SIGNING KEY SET, applying signing configuration")
         plugins.apply("signing")
-    } else {
-        logger.warn("SIGNING KEY IS NOT SET! Publications are unsigned")
+    } else if (notify) {
+        logger.warn("> Conf SIGNING KEY IS NOT SET! Publications are unsigned")
     }
 
     extensions.configure<PublishingExtension> {

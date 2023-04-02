@@ -1,26 +1,34 @@
+@file:Suppress("ktPropBy", "UnstableApiUsage")
+
 import com.android.build.api.dsl.CommonExtension
+import com.android.build.gradle.internal.lint.AndroidLintAnalysisTask
 import com.android.build.gradle.internal.lint.AndroidLintTask
+import com.android.build.gradle.internal.lint.AndroidLintTextOutputTask
+import com.android.build.gradle.internal.tasks.AndroidVariantTask
 import impl.MergeDetektBaselinesTask
 import impl.checkIsRootProject
 import impl.isDetektTaskAllowed
-import impl.library
 import impl.libsCatalog
+import impl.onLibrary
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.DetektCreateBaselineTask
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import io.gitlab.arturbosch.detekt.report.ReportMergeTask
+import org.gradle.api.Action
 import org.gradle.api.Project
+import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.withType
 import org.gradle.language.base.plugins.LifecycleBasePlugin
+import org.jetbrains.kotlin.utils.addToStdlib.ifNotEmpty
 
 /**
  *
- * @param ignoredBuildTypes List of Android build types for which to create no detekt task
- * @param ignoredFlavors List of Android build flavors for which to create no detekt task
+ * @param ignoredBuildTypes List of Android build types for which to create no detekt task.
+ * @param ignoredFlavors List of Android build flavors for which to create no detekt task.
  */
 fun Project.setupVerification(
     ignoredBuildTypes: List<String> = listOf(),
@@ -44,7 +52,6 @@ fun Project.setupVerification(
     }
 
     val detektCompose = rootProject.file("detekt-compose.yml")
-    val hasDetektCompose = detektCompose.exists()
     val rootBasePath = rootProject.projectDir.absolutePath
 
     allprojects {
@@ -132,29 +139,29 @@ fun Project.setupVerification(
         }
 
         dependencies {
-            val conf = "detektPlugins"
-            val libsCatalog = rootProject.libsCatalog
-
-            add(conf, libsCatalog.library("detekt-formatting"))
-            if (hasDetektCompose) {
-                // Add to all modules (even ones that don't use Compose) as detecting Compose can be messy.
-                add(conf, libsCatalog.library("detekt-compose"))
-            }
+            val libs = rootProject.libsCatalog
+            libs.onLibrary("detekt-formatting") { detektPlugins(it) }
+            libs.onLibrary("detekt-compose") { detektPlugins(it) }
         }
 
-
-        plugins.withId("com.android.library") {
-            setupLint(mergeLint)
+        val function = Action<Any> {
+            setupLint(mergeLint, ignoredBuildTypes, ignoredFlavors)
         }
-        plugins.withId("com.android.application") {
-            setupLint(mergeLint)
-        }
+        plugins.withId("com.android.library", function)
+        plugins.withId("com.android.application", function)
     }
 
     setupTestsReport()
 }
 
-private fun Project.setupLint(mergeLint: TaskProvider<ReportMergeTask>?) {
+internal fun DependencyHandler.detektPlugins(dependencyNotation: Any) =
+    add("detektPlugins", dependencyNotation)
+
+private fun Project.setupLint(
+    mergeLint: TaskProvider<ReportMergeTask>?,
+    ignoredBuildTypes: List<String>,
+    ignoredFlavors: List<String>,
+) {
     val disableLint = !isGenericCompilationEnabled || disableTests().get()
     extensions.configure<CommonExtension<*, *, *, *>>("android") {
         lint {
@@ -163,7 +170,12 @@ private fun Project.setupLint(mergeLint: TaskProvider<ReportMergeTask>?) {
             textReport = !disableLint
             xmlReport = false
 
-            baseline = file("lint-baseline.xml")
+            // Use baseline only for CI checks, show all problems in local development.
+            val isCI by project.isCI()
+            val isRelease by project.isRelease()
+            if (isCI || isRelease) {
+                baseline = file("lint-baseline.xml")
+            }
 
             abortOnError = false
             absolutePaths = false
@@ -171,21 +183,39 @@ private fun Project.setupLint(mergeLint: TaskProvider<ReportMergeTask>?) {
             checkDependencies = false
             checkReleaseBuilds = !disableLint
             explainIssues = false
+            noLines = true
             warningsAsErrors = !disableLint
         }
     }
 
-    if (disableLint || mergeLint == null) {
-        return
-    }
-    tasks.withType<AndroidLintTask> {
-        val lintTask = this
-        if (name.startsWith("lintReport")) {
-            mergeLint.configure {
-                input.from(lintTask.sarifReportOutputFile)
-                dependsOn(lintTask)
+    if (!disableLint && mergeLint != null) {
+        tasks.withType<AndroidLintTask> {
+            val lintTask = this
+            if (name.startsWith("lintReport")) {
+                mergeLint.configure {
+                    input.from(lintTask.sarifReportOutputFile)
+                    dependsOn(lintTask)
+                }
             }
         }
+    }
+
+    val variants = (ignoredBuildTypes + ignoredFlavors).ifNotEmpty { toHashSet().toTypedArray() }
+    if (!variants.isNullOrEmpty()) {
+        val disableIgnoredVariants: AndroidVariantTask.() -> Unit = {
+            if (enabled) {
+                for (v in variants) {
+                    if (name.contains(v, ignoreCase = true)) {
+                        enabled = false
+                        logger.lifecycle("Task disabled: $path")
+                        break
+                    }
+                }
+            }
+        }
+        tasks.withType<AndroidLintTextOutputTask>(disableIgnoredVariants)
+        tasks.withType<AndroidLintAnalysisTask>(disableIgnoredVariants)
+        tasks.withType<AndroidLintTask>(disableIgnoredVariants)
     }
 }
 

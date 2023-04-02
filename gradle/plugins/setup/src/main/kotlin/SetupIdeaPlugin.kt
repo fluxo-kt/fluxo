@@ -17,7 +17,7 @@ fun Project.setupIdeaPlugin(
     this.group = group
     this.version = version
 
-    setupJvmApp {
+    setupKotlin {
         tasks.withType<BuildSearchableOptionsTask>().configureEach {
             enabled = project.isGenericCompilationEnabled
         }

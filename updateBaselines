@@ -8,12 +8,14 @@ find . -name "lint-baseline.xml" -type f -print -delete
 
 # 1) Configuration cache is disabled as many plugins, including Kotlin, don't support it well enough
 # 2) Use continue options to prevent stop on occasional error
+# 3) Build cache is disabled for the precise API dump
 
 export CI=true
 
 # Update only Lint baselines
-#./gradlew lint lintDebug lintRelease -Pci --console=plain \
-# --continue --stacktrace --no-configuration-cache -Dlint.baselines.continue=true
+#./gradlew lint lintDebug lintRelease -Dlint.baselines.continue=true \
+# -Pci --console=plain --continue --stacktrace --no-configuration-cache
 
-./gradlew lint lintDebug lintRelease detektBaselineMerge dependencyGuardBaseline -Pci --console=plain \
- --continue --stacktrace --no-configuration-cache -Dlint.baselines.continue=true
+./gradlew lint lintDebug lintRelease detektBaselineMerge dependencyGuardBaseline apiDump \
+ kotlinUpgradeYarnLock kotlinStoreYarnLock -Dlint.baselines.continue=true \
+ -Pci --console=plain --continue --stacktrace --no-build-cache --no-configuration-cache -Dkotlin.incremental=false

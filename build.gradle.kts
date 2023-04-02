@@ -112,6 +112,11 @@ setupDefaults(
             }
         },
     ),
+    kotlinConfig = KotlinConfigSetup(
+        optInInternal = true,
+        warningsAsErrors = true,
+        alwaysIndyLambdas = false,
+    ),
     publicationConfig = run {
         val version = libs.versions.fluxo.get()
         val isSnapshot = version.endsWith("SNAPSHOT", ignoreCase = true)
@@ -144,8 +149,6 @@ setupDefaults(
 )
 
 setupVerification()
-
-ensureUnreachableTasksDisabled()
 
 // TODO: Configure universally via convenience plugin
 dependencyGuard {
@@ -224,22 +227,7 @@ if (hasProperty("buildScan")) {
     }
 }
 
-tasks.register<Task>(name = "resolveDependencies") {
-    group = "other"
-    description = "Resolve and prefetch dependencies"
-    doLast {
-        rootProject.allprojects.forEach { p ->
-            p.configurations.plus(p.buildscript.configurations)
-                .filter { it.isCanBeResolved }.forEach {
-                    try {
-                        it.resolve()
-                    } catch (_: Throwable) {
-                    }
-                }
-        }
-    }
-}
-
+// TODO: Set universally via toml bundle
 val pinnedDeps = arrayOf(
     // security recommendations
     libs.jackson.databind,
@@ -279,94 +267,4 @@ allprojects {
             }
         }
     }
-
-    if (name == "jmh") {
-        return@allprojects
-    }
-
-    afterEvaluate {
-        // Fixes webpack-cli incompatibility by pinning the newest version.
-        // Workaround for https://youtrack.jetbrains.com/issue/KT-52776
-        // Also see https://github.com/rjaros/kvision/blob/d9044ab/build.gradle.kts#L28
-        rootProject.extensions.findByType<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension>()?.apply {
-            versions.karma.version = libs.versions.js.karma.get()
-            versions.mocha.version = libs.versions.js.mocha.get()
-            versions.webpack.version = libs.versions.js.webpack.get()
-            versions.webpackCli.version = libs.versions.js.webpackCli.get()
-            versions.webpackDevServer.version = libs.versions.js.webpackDevServer.get()
-        }
-
-        val isCI by isCI()
-        val isRelease by isRelease()
-        val useKotlinDebug by useKotlinDebug()
-        tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask<*>>().configureEach {
-            val isJsTask = "Js" in name
-            val isTestTask = "Test" in name
-            val isDebugTask = "Debug" in name
-            val isReleaseTask = "Release" in name
-            val releaseSettings = isCI || isRelease || isReleaseTask
-            compilerOptions {
-                val noWarningsAllowed = !isJsTask && !isTestTask && (isCI || isRelease)
-                if (noWarningsAllowed) {
-                    allWarningsAsErrors.set(true)
-                }
-
-                org.jetbrains.kotlin.gradle.dsl.KotlinVersion.fromVersion(libs.versions.kotlinLangVersion.get()).let {
-                    languageVersion.set(it)
-                    apiVersion.set(it)
-                }
-
-                if (this is org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions) {
-                    jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget(libs.versions.javaLangTarget.get()))
-                    javaParameters.set(!isDebugTask)
-
-                    // https://github.com/JetBrains/kotlin/blob/master/compiler/testData/cli/jvm/extraHelp.out
-                    freeCompilerArgs.addAll(
-                        "-Xjsr305=strict",
-                        "-Xjvm-default=all",
-                        "-Xtype-enhancement-improvements-strict-mode",
-                        "-Xvalidate-bytecode",
-                        "-Xvalidate-ir",
-                    )
-
-                    // Using the new faster version of JAR FS should make build faster,
-                    // but it's experimental and causes warning.
-                    if (!noWarningsAllowed) {
-                        freeCompilerArgs.add("-Xuse-fast-jar-file-system")
-                    }
-
-                    // more data on MVVM+ lambda intents for debugging
-                    // class mode provides arguments names
-                    freeCompilerArgs.addAll((if (releaseSettings) "indy" else "class").let {
-                        listOf("-Xlambdas=$it", "-Xsam-conversions=$it")
-                    })
-                }
-
-                // https://github.com/JetBrains/kotlin/blob/master/compiler/testData/cli/jvm/extraHelp.out
-                // https://github.com/JetBrains/kotlin/blob/master/compiler/testData/cli/js/jsExtraHelp.out
-                freeCompilerArgs.addAll(
-                    "-Xcontext-receivers",
-                    "-Xklib-enable-signature-clash-checks",
-                    "-opt-in=kotlin.RequiresOptIn",
-                    "-opt-in=kotlin.contracts.ExperimentalContracts",
-                    "-opt-in=kotlin.experimental.ExperimentalObjCName",
-                    "-opt-in=kotlin.js.ExperimentalJsExport",
-                    // w: '-progressive' is meaningful only for the latest language version (1.8)
-                    //"-progressive",
-                )
-
-                // https://kotlinlang.org/docs/whatsnew18.html#a-new-compiler-option-for-disabling-optimizations
-                if (!releaseSettings && useKotlinDebug) {
-                    freeCompilerArgs.add("-Xdebug")
-                }
-            }
-        }
-    }
-}
-
-subprojects {
-    // Convenience task to print full dependencies tree for any module
-    // Use `buildEnvironment` task for the report about plugins
-    // https://docs.gradle.org/current/userguide/viewing_debugging_dependencies.html
-    tasks.register<DependencyReportTask>("allDeps")
 }
