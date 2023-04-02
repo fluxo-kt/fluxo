@@ -27,13 +27,18 @@ plugins {
 
 setupDefaults(
     multiplatformConfigurator = {
+        // TODO: Enable the default target hierarchy:
+        //  https://kotlinlang.org/docs/whatsnew1820.html#new-approach-to-source-set-hierarchy
+        // @OptIn(ExperimentalKotlinGradlePluginApi::class)
+        // targetHierarchy.default()
+
         explicitApi()
 
         android()
         jvm()
         if (project.isGenericCompilationEnabled) {
             js(IR) {
-                // Required for generation of TypeScript declaration files
+                // Earlier required for generation of TypeScript declaration files
                 // https://kotlinlang.org/docs/js-ir-compiler.html#preview-generation-of-typescript-declaration-files-d-ts
                 binaries.executable()
 
@@ -46,6 +51,8 @@ setupDefaults(
                 }
                 nodejs()
                 browser()
+
+                generateTypeScriptDefinitions()
             }
         }
 

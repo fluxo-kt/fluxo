@@ -22,17 +22,18 @@ javaLangTarget = "1.8"
 kotlinLangVersion = "1.7"
 
 # https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-gradle-plugin
-kotlin = "1.8.20-Beta"
+kotlin = "1.8.20"
 
 # https://github.com/google/ksp/releases
-ksp = "1.8.20-Beta-1.0.9"
+ksp = "1.8.20-1.0.10"
 
 # https://github.com/arkivanov/Essenty/releases
 essenty = "1.0.0"
 
 # Dokka is a documentation engine for Kotlin/Java
 # https://github.com/Kotlin/dokka/releases
-dokka = "1.8.0-dev-194"
+# https://mvnrepository.com/artifact/org.jetbrains.dokka/dokka-gradle-plugin?repo=space-kotlin-dokka-dev
+dokka = "1.8.20-dev-204"
 
 # https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-coroutines-core
 coroutines = "1.7.0-Beta"
