@@ -32,7 +32,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: [ '11' ]
+        java: [ '17', '20' ]
         os: [ 'macos-latest', 'windows-latest', 'ubuntu-latest' ]
 
     name: 'Test on ${{ matrix.os }} JDK ${{ matrix.java }}'
@@ -58,12 +58,12 @@ jobs:
           java-version: '${{ matrix.java }}'
           cache: 'gradle'
 
-      - name: 'Set up NodeJS 18'
+      - name: 'Set up NodeJS 18 (LTS)'
         uses: actions/setup-node@v3
         with:
           node-version: 18
 
-      - name: Cache Konan (Kotlin/Native compiler)
+      - name: 'Cache Konan (Kotlin/Native compiler)'
         timeout-minutes: 6
         uses: actions/cache@v3
         continue-on-error: true
@@ -85,7 +85,7 @@ jobs:
           arguments: build assemble check --stacktrace --continue --scan
 
       - name: 'Publish SNAPSHOT'
-        if: success() && matrix.os == 'macos-latest' && github.event_name == 'push'
+        if: success() && matrix.os == 'macos-latest' && matrix.java == '17' && github.event_name == 'push'
           && github.ref == 'refs/heads/main' && github.repository == 'fluxo-kt/fluxo-mvi'
         continue-on-error: true
         env:
