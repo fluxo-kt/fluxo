@@ -14,10 +14,10 @@ import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.compile.JavaCompile
-import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.kotlin
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.Kotlin2JsProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
@@ -25,30 +25,31 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinSingleTargetExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
 
 fun Project.setupKotlin(
     config: KotlinConfigSetup = requireDefaults(),
     optIns: List<String> = emptyList(),
-    body: (KotlinJvmProjectExtension.() -> Unit)? = null,
+    body: (KotlinSingleTargetExtension<*>.() -> Unit)? = null,
 ) {
     val kotlin = kotlinExtension
-    require(kotlin is KotlinJvmProjectExtension) {
+    require(kotlin is KotlinJvmProjectExtension || kotlin is KotlinAndroidProjectExtension) {
         when (kotlin) {
             is KotlinMultiplatformExtension -> "use `setupMultiplatform` for KMP module"
-            is KotlinJsProjectExtension -> "use `setupJsApp` for Kotlin/JS module"
-            is KotlinAndroidProjectExtension -> "use `setupAndroidLibrary` or `setupAndroidApp` for Kotlin in android module"
+
+            is KotlinJsProjectExtension, is Kotlin2JsProjectExtension ->
+                "use `setupJsApp` for Kotlin/JS module"
+
             else -> "unexpected KotlinProjectExtension: $kotlin"
         }
     }
     setupKotlinExtension(kotlin, config, optIns)
     dependencies.setupKotlinDependencies(project = this, config)
 
-    extensions.configure<KotlinJvmProjectExtension> {
-        body?.invoke(this)
-        disableCompilationsOfNeeded(project)
-    }
+    body?.invoke(kotlin as KotlinSingleTargetExtension<*>)
+    kotlin.disableCompilationsOfNeeded(project)
 }
 
 internal fun Project.setupKotlinExtension(
