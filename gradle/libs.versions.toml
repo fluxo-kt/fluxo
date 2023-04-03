@@ -136,7 +136,7 @@ arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
 # https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
 jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version = "2.12.7.1" }
 # https://mvnrepository.com/artifact/com.fasterxml.woodstox/woodstox-core
-woodstox-core = { module = "com.fasterxml.woodstox:woodstox-core", version = "6.4.0" }
+woodstox-core = { module = "com.fasterxml.woodstox:woodstox-core", version = "6.5.0" }
 # https://mvnrepository.com/artifact/org.jsoup/jsoup
 jsoup = { module = "org.jsoup:jsoup", version = "1.15.3" }
 
