@@ -44,7 +44,7 @@ gradle-embedded-kotlin = "4.0.6"
 # Public API management tool
 # https://github.com/Kotlin/binary-compatibility-validator/releases
 # Can't be updated to 0.13+ vefore Kotlin metadata 0.6.0 support in AtomicFU
-bin-compat-validator = "0.12.1"
+bin-compat-validator = "0.13.0"
 
 # https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google
 android-gradle-plugin = "7.4.1"
