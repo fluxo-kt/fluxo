@@ -83,7 +83,7 @@ js-webpack = "5.77.0"
 # https://www.npmjs.com/package/webpack-cli?activeTab=versions
 js-webpackCli = "5.0.1"
 # https://www.npmjs.com/package/webpack-dev-server?activeTab=versions
-js-webpackDevServer = "4.11.1"
+js-webpackDevServer = "4.13.2"
 
 
 # Libraries to compare/benchmark against
