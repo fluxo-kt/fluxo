@@ -21,6 +21,7 @@ on:
       - '**dependabot.yml'
 
 env:
+  GRADLE_BUILD_ACTION_CACHE_DEBUG_ENABLED: true
   GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx6g -Dorg.gradle.daemon=false -Dkotlin.incremental=false \
   -Dorg.gradle.configureondemand=false \
   -Dorg.gradle.unsafe.configuration-cache=false \
@@ -56,7 +57,6 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '${{ matrix.java }}'
-          cache: 'gradle'
 
       - name: 'Set up NodeJS 18 (LTS)'
         uses: actions/setup-node@v3
@@ -82,6 +82,7 @@ jobs:
           CI: true
         with:
           gradle-home-cache-cleanup: true
+          cache-read-only: ${{ github.ref != 'refs/heads/main' || matrix.java != '17' }}
           arguments: build assemble check --stacktrace --continue --scan
 
       - name: 'Publish SNAPSHOT'
