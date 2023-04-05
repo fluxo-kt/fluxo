@@ -74,12 +74,12 @@ class GradleSetupPlugin : Plugin<Project> {
         target.allprojects {
             afterEvaluate {
                 target.plugins.withType<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin> {
+                    val libs = target.libsCatalog
                     target.the<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension>().apply {
                         lockFileDirectory = project.rootDir.resolve(".kotlin-js-store")
-                        // resolution("got", "12.5.3")
+                        libs.onVersion("js-uaParserJs") { resolution("ua-parser-js", it) }
                     }
                     target.the<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension>().apply {
-                        val libs = target.libsCatalog
                         libs.onVersion("js-karma") { versions.karma.version = it }
                         libs.onVersion("js-mocha") { versions.mocha.version = it }
                         libs.onVersion("js-webpack") { versions.webpack.version = it }
