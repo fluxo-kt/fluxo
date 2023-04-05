@@ -16,6 +16,12 @@ internal fun DependencyHandler.ksp(dependencyNotation: Any) =
 internal fun DependencyHandler.implementation(dependencyNotation: Any) =
     add("implementation", dependencyNotation)
 
+internal fun DependencyHandler.implementation(
+    dependencyNotation: Provider<*>,
+    configuration: Action<ExternalModuleDependency>,
+) = addConfiguredDependencyTo(this, "implementation", dependencyNotation, configuration)
+
+
 internal fun DependencyHandler.testImplementation(dependencyNotation: Any) =
     add("testImplementation", dependencyNotation)
 

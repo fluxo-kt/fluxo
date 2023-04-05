@@ -85,7 +85,7 @@ js-webpackCli = "5.0.1"
 # https://www.npmjs.com/package/webpack-dev-server?activeTab=versions
 js-webpackDevServer = "4.13.2"
 # https://www.npmjs.com/package/ua-parser-js?activeTab=versions
-js-uaParserJs  = "0.7.35"
+js-uaParserJs = "0.7.35"
 
 
 # Libraries to compare/benchmark against

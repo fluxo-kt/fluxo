@@ -524,7 +524,7 @@ internal fun DependencyHandler.setupAndroidDependencies(
     libs.onLibrary("androidx-annotation-experimental") { compileOnlyWithConstraint(it) }
     libs.onLibrary("jetbrains-annotation") { compileOnlyWithConstraint(it) }
 
-    implementation(kotlin("stdlib-jdk7"))
+    implementation(kotlin("stdlib"))
     androidTestImplementation(kotlin("test-junit"))
 
     if (kotlinConfig.setupCoroutines) {
@@ -591,7 +591,7 @@ internal fun DependencyHandler.setupAndroidDependencies(
     libs.onLibrary("androidx-test-rules") { androidTestImplementation(it) }
     libs.onLibrary("androidx-test-runner") { androidTestImplementation(it) }
 
-    libs.onLibrary("firebase-bom") { implementation(enforcedPlatform(it)) }
+    libs.onLibrary("firebase-bom") { implementation(if (isApplication) enforcedPlatform(it) else platform(it)) }
     libs.onLibrary("androidx-compose-bom") { implementation(platform(it)) }
 
     if (setupRoom) {

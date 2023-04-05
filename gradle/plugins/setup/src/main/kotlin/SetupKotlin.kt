@@ -1,5 +1,6 @@
 @file:Suppress("ktPropBy")
 
+import impl.compileOnlyWithConstraint
 import impl.implementation
 import impl.libsCatalog
 import impl.onBundle
@@ -10,10 +11,12 @@ import impl.testImplementation
 import impl.v
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
+import org.gradle.api.artifacts.ExternalModuleDependency
 import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.compile.JavaCompile
+import org.gradle.kotlin.dsl.exclude
 import org.gradle.kotlin.dsl.kotlin
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -143,18 +146,32 @@ internal fun DependencyHandler.setupKotlinDependencies(
 ) {
     val libs = project.libsCatalog
 
-    implementation(enforcedPlatform(kotlin("bom", libs.optionalVersion("kotlin"))))
+    compileOnlyWithConstraint(JSR305_DEPENDENCY)
+    libs.onLibrary("jetbrains-annotation") { compileOnlyWithConstraint(it) }
+
+    val kotlinBom = enforcedPlatform(kotlin("bom", libs.optionalVersion("kotlin")))
+    when {
+        config.allowGradlePlatform -> implementation(kotlinBom)
+        else -> testImplementation(kotlinBom)
+    }
     testImplementation(kotlin("test-junit"))
 
 
-    val hasBom = libs.onLibrary("kotlinx-coroutines-bom") {
-        implementation(enforcedPlatform(it))
-        if (config.setupCoroutines) {
-            implementation(COROUTINES_DEPENDENCY)
+    val hasCoroutinesBom = libs.onLibrary("kotlinx-coroutines-bom") {
+        if (config.allowGradlePlatform) {
+            implementation(enforcedPlatform(it), excludeAnnotations)
+            if (config.setupCoroutines) {
+                implementation(COROUTINES_DEPENDENCY)
+            }
+        } else {
+            testImplementation(enforcedPlatform(it))
+            if (config.setupCoroutines) {
+                testImplementation(COROUTINES_DEPENDENCY)
+            }
         }
-    }
+    } && config.allowGradlePlatform
     if (config.setupCoroutines) {
-        if (!hasBom) {
+        if (!hasCoroutinesBom) {
             libs.onLibrary("kotlinx-coroutines-core") { implementation(it) }
         }
         libs.onLibrary("kotlinx-coroutines-test") { testImplementation(it) }
@@ -334,6 +351,11 @@ private fun KotlinConfigSetup.getListOfOptIns(isTest: Boolean, optIns: List<Stri
         set.add("kotlinx.coroutines.InternalCoroutinesApi")
     }
     return set.toList()
+}
+
+
+internal val excludeAnnotations: ExternalModuleDependency.() -> Unit = {
+    exclude(group = "org.jetbrains", module = "annotations")
 }
 
 internal const val COROUTINES_DEPENDENCY = "org.jetbrains.kotlinx:kotlinx-coroutines-core"

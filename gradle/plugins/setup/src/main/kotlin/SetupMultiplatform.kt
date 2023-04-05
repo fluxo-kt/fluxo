@@ -5,6 +5,7 @@ import impl.implementation
 import impl.libsCatalog
 import impl.onLibrary
 import impl.optionalVersion
+import impl.testImplementation
 import org.gradle.api.NamedDomainObjectCollection
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
@@ -86,16 +87,27 @@ private fun KotlinMultiplatformExtension.setupMultiplatformDependencies(config: 
 
         val kotlinVersion = libs.optionalVersion("kotlin")
         project.dependencies.apply {
-            implementation(enforcedPlatform(kotlin("bom", kotlinVersion)))
-            libs.onLibrary("kotlinx-coroutines-bom") {
-                implementation(enforcedPlatform(it))
+            val kotlinBom = enforcedPlatform(kotlin("bom", kotlinVersion))
+            when {
+                config.allowGradlePlatform -> implementation(kotlinBom)
+                else -> testImplementation(kotlinBom)
             }
-            libs.onLibrary("square-okio-bom") { implementation(enforcedPlatform(it)) }
-            libs.onLibrary("square-okhttp-bom") { implementation(enforcedPlatform(it)) }
+
+            if (config.setupCoroutines) {
+                libs.onLibrary("kotlinx-coroutines-bom") {
+                    when {
+                        config.allowGradlePlatform -> implementation(enforcedPlatform(it))
+                        else -> testImplementation(enforcedPlatform(it))
+                    }
+                }
+            }
+
+            libs.onLibrary("square-okio-bom") { implementation(platform(it)) }
+            libs.onLibrary("square-okhttp-bom") { implementation(platform(it)) }
         }
 
         common.main.dependencies {
-            implementation(kotlin("stdlib", kotlinVersion))
+            implementation(kotlin("stdlib", kotlinVersion), excludeAnnotations)
 
             if (config.setupCoroutines) {
                 libs.onLibrary("kotlinx-coroutines-core") { implementation(it) }

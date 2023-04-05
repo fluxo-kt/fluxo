@@ -80,6 +80,13 @@ class KotlinConfigSetup(
     val noMultiplatformCompileOnly: Boolean = false,
 
     /**
+     * Use it only for an actual app, not libraries.
+     *
+     * See: https://docs.gradle.org/current/userguide/java_platform_plugin.html
+     */
+    val allowGradlePlatform: Boolean = false,
+
+    /**
      * Kotlin opt-ins to add
      */
     val optIns: List<String> = emptyList(),
