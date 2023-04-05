@@ -33,6 +33,7 @@ import org.jetbrains.kotlin.utils.addToStdlib.ifNotEmpty
 fun Project.setupVerification(
     ignoredBuildTypes: List<String> = listOf(),
     ignoredFlavors: List<String> = listOf(),
+    kotlinConfig: KotlinConfigSetup? = getDefaults(),
 ) {
     checkIsRootProject()
 
@@ -114,9 +115,14 @@ fun Project.setupVerification(
         }
 
         val disableTests by disableTests()
+        val libs = rootProject.libsCatalog
+        val javaLangTarget = libs.getJavaLangTarget(kotlinConfig)
         val detektTasks = tasks.withType<Detekt> {
             if (disableTests || !isDetektTaskAllowed()) {
                 enabled = false
+            }
+            if (javaLangTarget != null) {
+                jvmTarget = javaLangTarget
             }
             reports {
                 sarif.required.set(true)
@@ -139,7 +145,6 @@ fun Project.setupVerification(
         }
 
         dependencies {
-            val libs = rootProject.libsCatalog
             libs.onLibrary("detekt-formatting") { detektPlugins(it) }
             libs.onLibrary("detekt-compose") { detektPlugins(it) }
         }

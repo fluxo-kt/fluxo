@@ -298,8 +298,8 @@ private fun KotlinCommonCompilerOptions.setupKotlinOptions(
     config.configurator?.invoke(this)
 }
 
-internal fun VersionCatalog.getJavaLangTarget(config: KotlinConfigSetup): String? {
-    return config.javaLangTarget ?: if (config.setupJvmToolchain) {
+internal fun VersionCatalog.getJavaLangTarget(config: KotlinConfigSetup?): String? {
+    return config?.javaLangTarget ?: if (config?.setupJvmToolchain == true) {
         optionalVersion("javaToolchain") ?: optionalVersion("javaLangTarget")
     } else {
         optionalVersion("javaLangTarget") ?: optionalVersion("javaToolchain")
