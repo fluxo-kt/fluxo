@@ -10,5 +10,5 @@ object Platform {
     const val JS = "JS"
     const val LINUX = "LINUX"
     const val MINGW = "MINGW"
-    const val DARWIN = "DARWIN"
+    const val APPLE = "APPLE"
 }

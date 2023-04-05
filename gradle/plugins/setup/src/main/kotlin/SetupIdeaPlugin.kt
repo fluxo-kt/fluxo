@@ -6,6 +6,7 @@ import org.gradle.kotlin.dsl.withType
 import org.jetbrains.intellij.IntelliJPluginExtension
 import org.jetbrains.intellij.tasks.BuildSearchableOptionsTask
 import org.jetbrains.intellij.tasks.PatchPluginXmlTask
+import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 fun Project.setupIdeaPlugin(
@@ -17,7 +18,7 @@ fun Project.setupIdeaPlugin(
     this.group = group
     this.version = version
 
-    setupKotlin {
+    setupKotlin0 {
         tasks.withType<BuildSearchableOptionsTask>().configureEach {
             enabled = project.isGenericCompilationEnabled
         }
@@ -42,4 +43,6 @@ fun Project.setupIdeaPlugin(
         this.version.set(intellijVersion)
         this.updateSinceUntilBuild.set(false)
     }
+
+    kotlinExtension.disableCompilationsOfNeeded(project)
 }

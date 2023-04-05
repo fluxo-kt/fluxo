@@ -34,6 +34,15 @@ fun Project.setupKotlin(
     optIns: List<String> = emptyList(),
     body: (KotlinSingleTargetExtension<*>.() -> Unit)? = null,
 ) {
+    setupKotlin0(config, optIns, body)
+    kotlinExtension.disableCompilationsOfNeeded(project)
+}
+
+internal fun Project.setupKotlin0(
+    config: KotlinConfigSetup = requireDefaults(),
+    optIns: List<String> = emptyList(),
+    body: (KotlinSingleTargetExtension<*>.() -> Unit)? = null,
+) {
     val kotlin = kotlinExtension
     require(kotlin is KotlinJvmProjectExtension || kotlin is KotlinAndroidProjectExtension) {
         when (kotlin) {
@@ -49,7 +58,6 @@ fun Project.setupKotlin(
     dependencies.setupKotlinDependencies(project = this, config)
 
     body?.invoke(kotlin as KotlinSingleTargetExtension<*>)
-    kotlin.disableCompilationsOfNeeded(project)
 }
 
 internal fun Project.setupKotlinExtension(

@@ -45,7 +45,7 @@ internal fun KotlinProjectExtension.disableCompilationsOfNeeded(project: Project
 
     project.afterEvaluate {
         project.tasks.withType<org.gradle.jvm.tasks.Jar> {
-            if (!isTaskAllowedBasedByName()) {
+            if (enabled && !isTaskAllowedBasedByName()) {
                 logger.info("{}, {}, jar disabled", project, this)
                 enabled = false
             }
@@ -59,8 +59,10 @@ internal fun KotlinProjectExtension.disableCompilationsOfNeeded(project: Project
                 org.jetbrains.kotlin.gradle.targets.js.yarn.YarnLockStoreTask::class.java,
             ).forEach { type ->
                 project.tasks.withType(type) {
-                    logger.info("{}, {}, task disabled", project, this)
-                    enabled = false
+                    if (enabled) {
+                        logger.info("{}, {}, task disabled", project, this)
+                        enabled = false
+                    }
                 }
             }
         }
@@ -130,6 +132,7 @@ private fun nativeFamilyFromString(platform: String?): Family = when {
     platform.equals("ios", ignoreCase = true) -> Family.IOS
 
     platform.equals("darwin", ignoreCase = true) ||
+            platform.equals("apple", ignoreCase = true) ||
             platform.equals("macos", ignoreCase = true)
     -> Family.OSX
 

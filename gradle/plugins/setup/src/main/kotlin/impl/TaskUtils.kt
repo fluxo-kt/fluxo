@@ -96,6 +96,7 @@ private fun detectPlatformFromString(platform: String?): DetectedTaskPlatform? =
     -> DetectedTaskPlatform.JVM
 
     platform.equals("Darwin", ignoreCase = true) ||
+            platform.equals("Apple", ignoreCase = true) ||
             platform.equals("Ios", ignoreCase = true) ||
             platform.equals("Watchos", ignoreCase = true) ||
             platform.equals("Tvos", ignoreCase = true) ||

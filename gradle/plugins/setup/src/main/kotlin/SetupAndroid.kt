@@ -36,6 +36,7 @@ import org.gradle.kotlin.dsl.kotlin
 import org.gradle.kotlin.dsl.provideDelegate
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
+import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
 import java.io.File
 import java.util.Properties
 
@@ -54,7 +55,7 @@ fun Project.setupAndroidLibrary(
     extensions.configure<LibraryExtension>("android") {
         logger.lifecycle("> Conf :setupAndroidLibrary")
 
-        setupKotlin(config = kotlinConfig)
+        setupKotlin0(config = kotlinConfig)
         setupAndroidCommon(
             namespace = namespace,
             config = config,
@@ -66,6 +67,8 @@ fun Project.setupAndroidLibrary(
         )
 
         body?.invoke(this)
+
+        kotlinExtension.disableCompilationsOfNeeded(project)
     }
 }
 
@@ -86,7 +89,7 @@ fun Project.setupAndroidApp(
         logger.lifecycle("> Conf :setupAndroidApp")
         namespace = applicationId
 
-        setupKotlin(config = kotlinConfig)
+        setupKotlin0(config = kotlinConfig)
 
 
         defaultConfig {
@@ -108,6 +111,8 @@ fun Project.setupAndroidApp(
         )
 
         body?.invoke(this)
+
+        kotlinExtension.disableCompilationsOfNeeded(project)
     }
 }
 

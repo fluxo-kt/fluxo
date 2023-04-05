@@ -30,6 +30,9 @@ typealias MultiplatformConfigurator = KotlinMultiplatformExtension.() -> Unit
 internal val Project.multiplatformExtension: KotlinMultiplatformExtension
     get() = kotlinExtension as KotlinMultiplatformExtension
 
+// FIXME: Improve setup, completely remove disabled sources/plugins/tasks. Add everything dynamically, see:
+//  https://github.com/05nelsonm/gradle-kmp-configuration-plugin
+
 @Suppress("LongParameterList")
 fun Project.setupMultiplatform(
     config: KotlinConfigSetup = requireDefaults(),
@@ -72,6 +75,8 @@ fun Project.setupMultiplatform(
         }
 
         body?.invoke(this)
+
+        disableCompilationsOfNeeded(project)
     }
 }
 
@@ -115,36 +120,45 @@ private fun KotlinMultiplatformExtension.setupSourceSets(project: Project) {
     setupSourceSets {
         setupCommonJavaSourceSets(project, javaSet)
 
-        nativeSet.ifNotEmpty {
-            val nativeSet = this
-            val jsSet = jsSet
+        val nativeSet = nativeSet.toMutableSet()
+        val jsSet = jsSet
+        if (nativeSet.isNotEmpty() || jsSet.isNotEmpty()) {
+            val nativeAndJs by bundle()
+            nativeAndJs dependsOn common
 
             val native by bundle()
-            if (jsSet.isEmpty()) {
-                nativeSet dependsOn native
-            } else {
-                val nativeAndJs by bundle()
-                native dependsOn nativeAndJs
+            native dependsOn nativeAndJs
 
+            if (jsSet.isNotEmpty()) {
                 val js by bundle()
                 js dependsOn nativeAndJs
+                native dependsOn common
             }
-            nativeSet dependsOn native
-        }
 
-        darwinSet.ifNotEmpty {
-            val darwin by bundle()
-            this dependsOn darwin
-        }
+            if (nativeSet.isNotEmpty()) {
+                darwinSet.ifNotEmpty {
+                    nativeSet -= this
+                    val apple by bundle()
+                    apple dependsOn native
+                    this dependsOn apple
+                }
 
-        linuxSet.ifNotEmpty {
-            val linux by bundle()
-            this dependsOn linux
-        }
+                linuxSet.ifNotEmpty {
+                    nativeSet -= this
+                    val linux by bundle()
+                    linux dependsOn native
+                    this dependsOn linux
+                }
 
-        mingwSet.ifNotEmpty {
-            val mingw by bundle()
-            this dependsOn mingw
+                mingwSet.ifNotEmpty {
+                    nativeSet -= this
+                    val mingw by bundle()
+                    mingw dependsOn native
+                    this dependsOn mingw
+                }
+
+                nativeSet dependsOn native
+            }
         }
     }
 }
