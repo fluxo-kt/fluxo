@@ -215,7 +215,7 @@ deps-analysis = { id = "com.autonomousapps.dependency-analysis", version = "1.19
 
 # Plugin that guards against unintentional dependency changes
 # https://github.com/dropbox/dependency-guard/releases
-deps-guard = { id = "com.dropbox.dependency-guard", version = "0.4.1" }
+deps-guard = { id = "com.dropbox.dependency-guard", version = "0.4.3" }
 
 # 'taskTree' task that prints task dependency tree
 # https://github.com/dorongold/gradle-task-tree
