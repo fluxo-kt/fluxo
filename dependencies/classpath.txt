@@ -41,8 +41,8 @@ com.android:signflinger:7.4.1
 com.android:zipflinger:7.4.1
 com.dorongold.plugins:task-tree:2.1.1
 com.dorongold.task-tree:com.dorongold.task-tree.gradle.plugin:2.1.1
-com.dropbox.dependency-guard:com.dropbox.dependency-guard.gradle.plugin:0.4.1
-com.dropbox.dependency-guard:dependency-guard:0.4.1
+com.dropbox.dependency-guard:com.dropbox.dependency-guard.gradle.plugin:0.4.3
+com.dropbox.dependency-guard:dependency-guard:0.4.3
 com.fasterxml.jackson.core:jackson-annotations:2.12.7
 com.fasterxml.jackson.core:jackson-core:2.12.7
 com.fasterxml.jackson.core:jackson-databind:2.12.7.1
