@@ -146,7 +146,7 @@ test-junit = { module = "junit:junit" }
 # https://mvnrepository.com/artifact/org.robolectric/robolectric
 test-robolectric = { module = "org.robolectric:robolectric", version = "4.9.2" }
 # https://github.com/cashapp/turbine/releases
-test-turbine = { module = "app.cash.turbine:turbine", version = "0.12.1" }
+test-turbine = { module = "app.cash.turbine:turbine", version = "0.12.3" }
 
 plugin-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 plugin-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
