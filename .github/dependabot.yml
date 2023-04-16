@@ -8,7 +8,7 @@ updates:
   - package-ecosystem: "gradle"
     directory: "/"
     commit-message:
-      prefix: "[Dependabot]"
+      prefix: "build(deps)"
     schedule:
       interval: "weekly"
     reviewers:
@@ -20,7 +20,7 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     commit-message:
-      prefix: "[Dependabot]"
+      prefix: "ci(github)"
     schedule:
       interval: "weekly"
     reviewers:
