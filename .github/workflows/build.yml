@@ -23,7 +23,7 @@ on:
 env:
   CI: true
   GRADLE_BUILD_ACTION_CACHE_DEBUG_ENABLED: true
-  GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx6g \
+  GRADLE_OPTS: "\
   -Dorg.gradle.unsafe.configuration-cache=false \
   -Dorg.gradle.vfs.watch=false \
   -Dorg.gradle.unsafe.watch-fs=false \
