@@ -340,7 +340,7 @@ private fun CommonExtension<*, *, *, *>.setupDefaultConfig(
 }
 
 private fun CommonExtension<*, *, *, *>.setupPackagingOptions(project: Project) {
-    packagingOptions {
+    packaging {
         val isCI by project.isCI()
         val isRelease by project.isRelease()
 
