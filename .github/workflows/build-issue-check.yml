@@ -11,11 +11,15 @@ on:
 
 env:
   TRIGGER_COUNTER: 3
-  GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx6g -Dorg.gradle.daemon=false -Dkotlin.incremental=false \
-  -Dorg.gradle.configureondemand=false \
+  GRADLE_BUILD_ACTION_CACHE_DEBUG_ENABLED: true
+  GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx6g \
+  -Dorg.gradle.daemon=false \
   -Dorg.gradle.parallel=false \
+  -Dorg.gradle.configureondemand=false \
   -Dorg.gradle.unsafe.configuration-cache=false \
   -Dorg.gradle.vfs.watch=false \
+  -Dorg.gradle.unsafe.watch-fs=false \
+  -Dkotlin.incremental=false \
   "
 
 jobs:
@@ -23,7 +27,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: [ '17', '20' ]
+        java: [ '17' ]
         os: [ 'ubuntu-latest', 'windows-latest' ]
 
     name: 'Test on ${{ matrix.os }} JDK ${{ matrix.java }}'
@@ -69,4 +73,5 @@ jobs:
           CI: true
         with:
           gradle-home-cache-cleanup: true
+          cache-read-only: ${{ github.ref != 'refs/heads/main' || matrix.java != '17' }}
           arguments: build assemble check -d --stacktrace --continue --scan
