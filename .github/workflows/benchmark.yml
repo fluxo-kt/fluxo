@@ -10,15 +10,20 @@ on:
       - '**/benchmark.yml'
 
 env:
-  GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.unsafe.configuration-cache=false -Dorg.gradle.vfs.watch=false"
   TRIGGER_COUNTER: 3
+  GRADLE_BUILD_ACTION_CACHE_DEBUG_ENABLED: true
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false \
+  -Dorg.gradle.unsafe.configuration-cache=false \
+  -Dorg.gradle.vfs.watch=false \
+  -Dorg.gradle.unsafe.watch-fs=false \
+  "
 
 jobs:
   os-checks:
     strategy:
       fail-fast: false
       matrix:
-        java: [ '11', '17', '20' ]
+        java: [ '11', '17' ]
         os: [ 'macos-latest', 'windows-latest', 'ubuntu-latest' ]
 
     name: 'Benchmark on ${{ matrix.os }} JDK ${{ matrix.java }}'
@@ -51,6 +56,8 @@ jobs:
           jmh_f: 3
         with:
           gradle-home-cache-cleanup: true
+          cache-disabled: ${{ matrix.os == '11' }}
+          cache-read-only: ${{ github.ref != 'refs/heads/main' || matrix.java != '17' }}
           arguments: jmh --stacktrace --no-configuration-cache --scan
 
       - name: Summary
