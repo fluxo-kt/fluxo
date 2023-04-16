@@ -191,6 +191,16 @@ plugin-intellij = { module = "org.jetbrains.intellij.plugins:gradle-intellij-plu
 rxjava2 = { module = "io.reactivex.rxjava2:rxjava", version.strictly = "2.2.21" }
 
 
+[bundles]
+# List of deps with forced versions
+pinned = [
+    # security recommendations
+    "jackson-databind",
+    "woodstox-core",
+    "jsoup",
+]
+
+
 [plugins]
 kotlin-dsl = { id = "org.gradle.kotlin.kotlin-dsl", version.ref = "gradle-embedded-kotlin" }
 kotlin-embedded = { id = "org.gradle.kotlin.embedded-kotlin", version.ref = "gradle-embedded-kotlin" }

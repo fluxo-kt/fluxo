@@ -229,24 +229,17 @@ if (hasProperty("buildScan")) {
     }
 }
 
-// TODO: Set universally via toml bundle
-val pinnedDeps = arrayOf(
-    // security recommendations
-    libs.jackson.databind,
-    libs.woodstox.core,
-    libs.jsoup,
-).map { it.get() }
-
+val pinnedDeps = libs.bundles.pinned.get().associate {
+    it.module to it.versionConstraint.toString()
+}
 allprojects {
-    configurations.all {
-        if (pinnedDeps.isNotEmpty()) {
+    if (pinnedDeps.isNotEmpty()) {
+        configurations.all {
             resolutionStrategy.eachDependency {
-                val module = requested.module
-                for (d in pinnedDeps) {
-                    if (d.module == module) {
-                        useVersion(d.versionConstraint.toString())
-                        because("security recommendations or other considerations")
-                    }
+                val version = pinnedDeps[requested.module]
+                if (version != null) {
+                    useVersion(version)
+                    because("security recommendations or other considerations")
                 }
             }
         }
