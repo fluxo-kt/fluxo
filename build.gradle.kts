@@ -155,67 +155,69 @@ dependencyGuard {
     configuration("classpath")
 }
 
-koverMerged {
-    enable()
+kover {
+    useKoverTool(libs.versions.kover.agent.get())
+}
+koverReport {
+    dependencies {
+        kover(projects.fluxoCore)
+        kover(projects.fluxoData)
+    }
 
     val isCI by isCI()
-    xmlReport {
-        onCheck.set(true)
-        reportFile.set(layout.buildDirectory.file("reports/kover-merged-report.xml"))
+    xml {
+        onCheck = true
+        setReportFile(layout.buildDirectory.file("reports/kover-merged-report.xml"))
     }
     if (!isCI) {
-        htmlReport {
-            onCheck.set(true)
-            reportDir.set(layout.buildDirectory.dir("reports/kover-merged-report-html")) // change report directory
+        html {
+            onCheck = true
+            setReportDir(layout.buildDirectory.dir("reports/kover-merged-report-html")) // change report directory
         }
     }
 
     verify {
-        onCheck.set(true)
+        onCheck = true
         rule {
             isEnabled = true
-            target = kotlinx.kover.api.VerificationTarget.ALL
+            entity = kotlinx.kover.gradle.plugin.dsl.GroupingEntityType.APPLICATION
+            minBound(63)
             bound {
                 minValue = 80
-                counter = kotlinx.kover.api.CounterType.LINE
-                valueType = kotlinx.kover.api.VerificationValueType.COVERED_PERCENTAGE
+                metric = kotlinx.kover.gradle.plugin.dsl.MetricType.LINE
+                aggregation = kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
             }
             bound {
                 minValue = 74
-                counter = kotlinx.kover.api.CounterType.INSTRUCTION
-                valueType = kotlinx.kover.api.VerificationValueType.COVERED_PERCENTAGE
+                metric = kotlinx.kover.gradle.plugin.dsl.MetricType.INSTRUCTION
+                aggregation = kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
             }
             bound {
                 minValue = 63
-                counter = kotlinx.kover.api.CounterType.BRANCH
-                valueType = kotlinx.kover.api.VerificationValueType.COVERED_PERCENTAGE
+                metric = kotlinx.kover.gradle.plugin.dsl.MetricType.BRANCH
+                aggregation = kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
             }
         }
     }
 
     filters {
-        classes {
-            excludes += listOf(
+        excludes {
+            classes(
                 // Test classes
                 "kt.fluxo.test.*",
                 "kt.fluxo.tests.*",
-                // Inline DSL, coverage not detected properly (still everything covered!)
+                // Inline DSL, coverage not detected (still everything covered!)
                 "kt.fluxo.core.FluxoKt*",
                 "kt.fluxo.core.dsl.MigrationKt*",
             )
-        }
-        annotations {
-            excludes += listOf(
-                // Coverage not detected properly for inline methods (still everything covered!)
-                "kotlin.internal.InlineOnly",
+            annotatedBy(
+                // Coverage is invalid for inline and InlineOnly methods (still everything covered!)
+                "*Inline*",
                 // JvmSynthetic used as a marker for migration helpers and inline-only DSL hidden from non-kotlin usage
-                "kotlin.jvm.JvmSynthetic",
+                "*Synthetic*",
                 // No need for a deprecated methods coverage
-                "kotlin.Deprecated",
+                "*Deprecated*",
             )
-        }
-        projects {
-            excludes += listOf("jmh")
         }
     }
 }
