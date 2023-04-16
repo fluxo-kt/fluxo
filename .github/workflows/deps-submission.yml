@@ -34,7 +34,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Set up JDK 11
+      - name: Set up JDK 17
         uses: Wandalen/wretry.action@v1.0.36
         timeout-minutes: 5
         with:
@@ -42,7 +42,7 @@ jobs:
           with: |
             cache: gradle
             distribution: temurin
-            java-version: 11
+            java-version: 17
           attempt_limit: 3
           attempt_delay: 2000
 
@@ -52,7 +52,7 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
         with:
-          cache-read-only: false
+          cache-read-only: true
           gradle-home-cache-cleanup: true
 
       - name: Submit Gradle Dependency Graph
