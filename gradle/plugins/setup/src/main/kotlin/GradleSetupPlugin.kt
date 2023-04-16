@@ -91,6 +91,9 @@ class GradleSetupPlugin : Plugin<Project> {
             }
         }
 
-        target.ensureUnreachableTasksDisabled()
+        // Run only for CI. Takes time and not so useful locally
+        if (isCI) {
+            target.ensureUnreachableTasksDisabled()
+        }
     }
 }
