@@ -23,7 +23,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: [ '11', '17' ]
+        java: [ '17' ]
         os: [ 'macos-latest', 'windows-latest', 'ubuntu-latest' ]
 
     name: 'Benchmark on ${{ matrix.os }} JDK ${{ matrix.java }}'
