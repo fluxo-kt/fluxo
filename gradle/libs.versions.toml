@@ -39,7 +39,7 @@ dokka = "1.8.20-dev-212"
 coroutines = "1.7.0-Beta"
 
 # https://plugins.gradle.org/plugin/org.gradle.kotlin.embedded-kotlin
-gradle-embedded-kotlin = "4.0.7"
+gradle-embedded-kotlin = "4.0.11"
 
 # Public API management tool
 # https://github.com/Kotlin/binary-compatibility-validator/releases
