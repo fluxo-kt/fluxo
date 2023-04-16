@@ -143,9 +143,9 @@ org.codehaus.woodstox:stax2-api:4.2.1
 org.glassfish.jaxb:jaxb-runtime:2.3.2
 org.glassfish.jaxb:txw2:2.3.2
 org.jdom:jdom2:2.0.6
-org.jetbrains.dokka:dokka-core:1.8.20-dev-204
-org.jetbrains.dokka:dokka-gradle-plugin:1.8.20-dev-204
-org.jetbrains.dokka:org.jetbrains.dokka.gradle.plugin:1.8.20-dev-204
+org.jetbrains.dokka:dokka-core:1.8.20-dev-212
+org.jetbrains.dokka:dokka-gradle-plugin:1.8.20-dev-212
+org.jetbrains.dokka:org.jetbrains.dokka.gradle.plugin:1.8.20-dev-212
 org.jetbrains.intellij.deps:trove4j:1.0.20200330
 org.jetbrains.kotlin.android:org.jetbrains.kotlin.android.gradle.plugin:1.8.20
 org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin:1.8.20

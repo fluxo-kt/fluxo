@@ -33,7 +33,7 @@ essenty = "1.0.0"
 # Dokka is a documentation engine for Kotlin/Java
 # https://github.com/Kotlin/dokka/releases
 # https://mvnrepository.com/artifact/org.jetbrains.dokka/dokka-gradle-plugin?repo=space-kotlin-dokka-dev
-dokka = "1.8.20-dev-204"
+dokka = "1.8.20-dev-212"
 
 # https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-coroutines-core
 coroutines = "1.7.0-Beta"
