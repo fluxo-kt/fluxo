@@ -205,12 +205,14 @@ android-lib = { id = "com.android.library", version.ref = "android-gradle-plugin
 
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 
-# Plugin provides a task to determine which dependencies have updates
+# Gradle Versions Plugin: provides a task to determine which dependencies have updates
 # https://github.com/ben-manes/gradle-versions-plugin
+# https://mvnrepository.com/artifact/com.github.ben-manes/gradle-versions-plugin?repo=gradle-plugins
 deps-versions = { id = "com.github.ben-manes.versions", version = "0.46.0" }
 
 # Detect unused and misused dependencies
 # https://github.com/autonomousapps/dependency-analysis-android-gradle-plugin/tags
+# https://mvnrepository.com/artifact/com.autonomousapps/dependency-analysis-gradle-plugin
 deps-analysis = { id = "com.autonomousapps.dependency-analysis", version = "1.19.0" }
 
 # Plugin that guards against unintentional dependency changes
