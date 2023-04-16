@@ -16,7 +16,7 @@ env:
   -Dorg.gradle.daemon=false \
   -Dorg.gradle.parallel=false \
   -Dorg.gradle.configureondemand=false \
-  -Dorg.gradle.unsafe.configuration-cache=false \
+  -Dorg.gradle.configuration-cache=false \
   -Dorg.gradle.vfs.watch=false \
   -Dorg.gradle.unsafe.watch-fs=false \
   -Dkotlin.incremental=false \

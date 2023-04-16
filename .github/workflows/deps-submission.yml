@@ -47,7 +47,7 @@ jobs:
           attempt_delay: 2000
 
       - name: Disable configuration cache
-        run: sed -i 's/org.gradle.unsafe.configuration-cache=true/org.gradle.unsafe.configuration-cache=false/' gradle.properties
+        run: sed -i 's/org.gradle.configuration-cache=true/org.gradle.configuration-cache=false/' gradle.properties
 
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2

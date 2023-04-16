@@ -42,6 +42,7 @@ class GradleSetupPlugin : Plugin<Project> {
         if (isDesugaringEnabled) target.logger.lifecycle("> Conf DESUGARING mode is enabled!")
 
         target.logger.lifecycle("> Conf JRE version is ${System.getProperty("java.version")}")
+        target.logger.lifecycle("> Conf Gradle version is ${target.gradle.gradleVersion}")
 
 
         target.subprojects {
