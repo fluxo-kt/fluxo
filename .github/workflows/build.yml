@@ -21,11 +21,12 @@ on:
       - '**dependabot.yml'
 
 env:
+  CI: true
   GRADLE_BUILD_ACTION_CACHE_DEBUG_ENABLED: true
-  GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx6g -Dorg.gradle.daemon=false -Dkotlin.incremental=false \
-  -Dorg.gradle.configureondemand=false \
+  GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx6g \
   -Dorg.gradle.unsafe.configuration-cache=false \
   -Dorg.gradle.vfs.watch=false \
+  -Dorg.gradle.unsafe.watch-fs=false \
   "
 
 jobs:
@@ -33,7 +34,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: [ '17', '20' ]
+        java: [ '17' ]
         os: [ 'macos-latest', 'windows-latest', 'ubuntu-latest' ]
 
     name: 'Test on ${{ matrix.os }} JDK ${{ matrix.java }}'
@@ -78,8 +79,6 @@ jobs:
         if: matrix.os == 'macos-latest'
         timeout-minutes: 50
         uses: gradle/gradle-build-action@v2
-        env:
-          CI: true
         with:
           gradle-home-cache-cleanup: true
           cache-read-only: ${{ github.ref != 'refs/heads/main' || matrix.java != '17' }}
@@ -90,21 +89,23 @@ jobs:
           && github.ref == 'refs/heads/main' && github.repository == 'fluxo-kt/fluxo-mvi'
         continue-on-error: true
         env:
-          CI: true
           OSSRH_USER: ${{ secrets.OSSRH_USER }}
           OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
-        run: ./gradlew publish -DDISABLE_TESTS --stacktrace --scan
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-home-cache-cleanup: true
+          cache-read-only: ${{ github.ref != 'refs/heads/main' || matrix.java != '17' }}
+          arguments: publish -DDISABLE_TESTS --stacktrace --scan
 
       - name: 'Build and check on ${{ matrix.os }} (split_targets, macOS ignored)'
         if: matrix.os != 'macos-latest'
         timeout-minutes: 40
         uses: gradle/gradle-build-action@v2
-        env:
-          CI: true
         with:
           gradle-home-cache-cleanup: true
+          cache-read-only: ${{ github.ref != 'refs/heads/main' || matrix.java != '17' }}
           arguments: build assemble check -Dsplit_targets --stacktrace --continue --scan
 
       - name: Summary
