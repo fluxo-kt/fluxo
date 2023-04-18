@@ -1,4 +1,4 @@
-# Fluxo MVI / MVVM+ Multiplatform
+# Fluxo MVI/MVVM+ multiplatform
 
 ![Stability: Alpha](https://kotl.in/badges/alpha.svg)
 [![Snapshot Version](https://img.shields.io/nexus/s/https/s01.oss.sonatype.org/io.github.fluxo-kt/fluxo-core.svg)](https://s01.oss.sonatype.org/content/repositories/snapshots/io/github/fluxo-kt/)
@@ -16,9 +16,14 @@
 
 ---
 
-**Fluxo** *\[ˈfluksu]* is a simple yet super powerful MVI / MVVM+ library for Kotlin Multiplatform.
+**Fluxo** *\[ˈfluksu]* is a simple yet super powerful state management library for Kotlin Multiplatform.
 
-**Work-In-Progress**, first release is coming. **API is not stable yet!**
+Approach is best known as `MVI`, `MVVM+`, `Redux`, or even `StateMachine`.
+Often used in the UI or presentation layers of the architecture.
+But suitable and proven useful for any layer of the app
+if you need better control over your state changes and a structured pipeline for it!
+
+**Work-In-Progress**, first release is coming. **API isn't stable yet!**
 
 ### TLDR: Use SNAPSHOT Artefact in Gradle
 
@@ -41,55 +46,56 @@ ease of readability, and maintainability of the **MVVM+**._
 
 The experiment paid off!
 It is possible to combine **MVVM+** with great performance, high-quality time-travel, logging,
-auto-analysis of the transition graph and much more.
+auto analysis of the transition graph and much more.
 A long list of features is implemented gradually in this library (see the [Roadmap](#roadmap) for details).
 
 Basic usage is elementary, yet you can take advantage of fine-tuning and super powerful features when you need them.
 
 * Kotlin **coroutine-based** state container.
 * One-liner creation, simple usage, type-safe, no-boilerplate!
-* Can be used for the UI or background tasks with same ease.
+* Use Fluxo for the UI, business, or data tasks with the same ease.
 * Native integration with coroutines:
   * Each Fluxo [`Store`][Store] is a [`StateFlow`][StateFlow] with **states** and a [`FlowCollector`][FlowCollector]
     for **intents**.
-    It allows you to easily combine them with each other and with any other flows and collectors.
+    You can easily combine stores with each other and with any other flows, flow operators, and collectors.
   * Also, Fluxo [`Store`][Store] is a [`CoroutineScope`][CoroutineScope] itself, so you can integrate it with
     any existing coroutine workflow and treat just as a usual coroutine scope.
 * **Multiplatform**, supports all Kotlin MPP/KMM targets (**Android**, **iOS**, **JVM**,
   **JS**, **Linux**, **Windows/MinGW**, **macOS**, **watchOS**, **tvOS**).
 * Different usage styles:
   * Strict **Redux/MVI** (the highest correctness guarantees, but may be subjectively less readable and intuitive)
-  * Simple and flexible **MVVM+**
+  * Flexible **MVVM+**
     (see [contextual reduction](https://dev.to/feresr/a-case-against-the-mvi-architecture-pattern-1add),
     [orbit-way](https://github.com/orbit-mvi/orbit-mvi#what-is-orbit), intuitively readable, may be easier
-    to maintain, support every feature and more :)
-  * Redux-style discrete Inputs with MVVM+ style reduction DSL (hybrid way)
+    to maintain, support for every feature and more :)
+  * Redux-style discrete intents with MVVM+ style reduction DSL (hybrid way)
   * _More is coming…_
-* **Side effects** support (sometimes called news or events).
-  * Four strategies allow you to fully control how side effects sharing can be handled in the Store
+* **Side effects** support (sometimes called **news** or **events**).
+  * Four strategies to fully control how side effects are shared from the store
     (_RECEIVE_, _CONSUME_, _SHARE_, _DISABLE_).
   * Side effects are cached while the subscriber (e.g., view) is not attached.
-  * Side effects consumption guarantees with `GuaranteedEffect` (effect handled and exactly
+  * Side effects can have consumption guarantees with `GuaranteedEffect` (effect handled and exactly
     once) [[1](https://github.com/Kotlin/kotlinx.coroutines/issues/2886),
     [2](https://medium.com/androiddevelopers/livedata-with-snackbar-navigation-and-other-events-the-singleliveevent-case-ac2622673150)].
 * **Lifecycle-awareness** with full control based on coroutine scopes.
-* Subscription lifecycle with convenience API (`repeatOnSubscription`).
+* Subscription lifecycle with convenience API (`repeatOnSubscription`). Do something in store when subscriber connects or disconnects.
 * Forceful customization:
-  * Pluggable **input strategies**:
-    * _First In, First Out_ (Fifo). Default, predictable and intuitive, good performance.
+  * Pluggable **intent (input) strategies**:
+    * _First In, First Out_ (Fifo). Default, predictable, and intuitive, good performance.
     * _Last In, First Out_ (Lifo). Can improve responsiveness for e.g., UI events processing, but can lose some intents!
     * _Parallel_. No processing order guarantees, can provide better performance comparing to _Fifo_.
     * Create your own!
-  * Bootstrap (initialization tasks), eager or lazy initialization.
-  * Errors handling and on exception behavior control.
+  * Eager or lazy initialization of the store.
+  * Error handling and exception behavior control.
   * Global default settings for easier setup of state stores swarm.
     * Change settings once and for all at one place (`FluxoSettings.DEFAULT`).
     * Provide a prepared settings object for the group of your stores.
-    * Just configure each store individually.
+    * Or configure each store individually.
 * Common data states in a [`fluxo-data`](fluxo-data) module *(Success, Failure, Loading, Cached, Empty, Not Loaded)*.
 * Side jobs for long-running tasks (MVVM+ DSL).
+* Bootstrap (initialization side job).
 * Leak-free transfer, delivery
-  guarantees [[1](https://github.com/Kotlin/kotlinx.coroutines/issues/1936), [2](https://gmk57.medium.com/unfortunately-events-may-be-dropped-if-channel-receiveasflow-cfe78ae29004)].
+  guarantees [[1](https://github.com/Kotlin/kotlinx.coroutines/issues/1936), [2](https://gmk57.medium.com/unfortunately-events-may-be-dropped-if-channel-receiveasflow-cfe78ae29004)] for intents and side effects.
 * Strictly not recommended, but JVM `Closeable` resources partially supported as a state and side effects.
   * The previous state will be closed on change.
   * Side effects closed when not delivered.
@@ -156,8 +162,8 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super p
 
 ### Versioning
 
-**Fluxo** uses [SemVer](http://semver.org/) for versioning. For the versions
-available, see the [tags on this repository](../../tags).
+**Fluxo** uses [SemVer](http://semver.org/) for versioning.
+For the versions available, see the [tags on this repository](../../tags).
 
 ### Code quality checks
 
