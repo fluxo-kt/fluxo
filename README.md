@@ -70,10 +70,21 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super p
     to maintain, support for every feature and more :)
   * Redux-style discrete intents with MVVM+ style reduction DSL (hybrid way)
   * _More is coming…_
-* **Side effects** support (sometimes called **news** or **events**).
-  * Four strategies to fully control how side effects are shared from the store
+* **Side effect** support (sometimes called **news** or **one-off event**).
+  * **Note that using side effects is generally considered as antipattern!**
+    [[1](https://medium.com/androiddevelopers/viewmodel-one-off-event-antipatterns-16a1da869b95),
+    [2](https://developer.android.com/topic/architecture/ui-layer/events#other-use-cases),
+    [3](https://proandroiddev.com/how-to-handle-viewmodel-one-time-events-in-jetpack-compose-a01af0678b76#0009)].<br>
+    But it can still be useful sometimes, especially when migrating an old codebase.<br>
+    *However, if you find yourself in one of these situations,
+    reconsider what this one-time event actually means for your app.
+    Handle events immediately and reduce them to state.
+    State is a better representation of the given point in time,
+    and it gives you more delivery and processing guarantees.
+    State is usually easier to test, and it integrates consistently with the rest of your app.*
+  * Fluxo has four strategies to fully control how side effects are shared from the store
     (_RECEIVE_, _CONSUME_, _SHARE_, _DISABLE_).
-  * Side effects are cached while the subscriber (e.g., view) is not attached.
+  * Side effects are cached while the subscriber (e.g., view) isn't attached.
   * Side effects can have consumption guarantees with `GuaranteedEffect` (effect handled and exactly
     once) [[1](https://github.com/Kotlin/kotlinx.coroutines/issues/2886),
     [2](https://medium.com/androiddevelopers/livedata-with-snackbar-navigation-and-other-events-the-singleliveevent-case-ac2622673150)].
