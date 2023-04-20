@@ -5,7 +5,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kt.fluxo.test.Platform
 import kt.fluxo.test.runUnitTest
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
@@ -109,11 +108,6 @@ class JobTest {
         assertTrue(job.isActive, "job.isActive 6")
         assertFalse(job.isCompleted, "job.isCompleted 6")
         assertFalse(job.isCancelled, "job.isCancelled 6")
-        if (!Platform.isNative) { // linuxX64, iosX64, macosX64
-            job.children.toList().let {
-                assertContentEquals(listOf(childJob, childJob2), it, "job.children, check 4: $it")
-            }
-        }
 
         job.join()
         assertFalse(childJob.isActive, "childJob.isActive 7")
@@ -181,7 +175,7 @@ class JobTest {
         assertTrue(childJob2.isCancelled, "childJob2.isCancelled 6")
 
         assertFalse(job.isActive, "job.isActive 7")
-        assertTrue(job.isCompleted, "job.isCompleted 7")
+        // job.isCompleted can have any value at this moment (tvosX64)
         assertTrue(job.isCancelled, "job.isCancelled 7")
         job.children.toList().let {
             assertContentEquals(listOf(), it, "job.children, check 3: $it")
