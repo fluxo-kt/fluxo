@@ -38,9 +38,6 @@ dokka = "1.8.20-dev-212"
 # https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-coroutines-core
 coroutines = "1.7.0-Beta"
 
-# https://plugins.gradle.org/plugin/org.gradle.kotlin.embedded-kotlin
-gradle-embedded-kotlin = "4.0.7"
-
 # Public API management tool
 # https://github.com/Kotlin/binary-compatibility-validator/releases
 # Can't be updated to 0.13+ vefore Kotlin metadata 0.6.0 support in AtomicFU
@@ -202,10 +199,6 @@ pinned = [
 
 
 [plugins]
-kotlin-dsl = { id = "org.gradle.kotlin.kotlin-dsl", version.ref = "gradle-embedded-kotlin" }
-kotlin-embedded = { id = "org.gradle.kotlin.embedded-kotlin", version.ref = "gradle-embedded-kotlin" }
-kotlin-precompiled-script = { id = "org.gradle.kotlin.kotlin-dsl.precompiled-script-plugins", version.ref = "gradle-embedded-kotlin" }
-
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
