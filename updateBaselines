@@ -16,11 +16,6 @@ export CI=true
 #./gradlew lint lintDebug lintRelease -Dlint.baselines.continue=true \
 # -Pci --console=plain --continue --stacktrace --no-configuration-cache
 
-# Generate verification data from scratch (verification-metadata.dryrun.xml)
-# https://docs.gradle.org/8.1/userguide/dependency_verification.html#sec:verification-dry-mode
-#./gradlew --write-verification-metadata sha256 help --dry-run
-
 ./gradlew lint lintDebug lintRelease detektBaselineMerge dependencyGuardBaseline apiDump \
  kotlinUpgradeYarnLock kotlinStoreYarnLock -Dlint.baselines.continue=true \
- -Pci --console=plain --continue --stacktrace --no-build-cache --no-configuration-cache -Dkotlin.incremental=false \
- --write-verification-metadata pgp,sha256
+ -Pci --console=plain --continue --stacktrace --no-build-cache --no-configuration-cache -Dkotlin.incremental=false
