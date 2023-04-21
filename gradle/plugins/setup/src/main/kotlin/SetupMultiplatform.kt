@@ -204,6 +204,11 @@ private fun MultiplatformSourceSets.setupCommonJavaSourceSets(project: Project, 
         // https://issuetracker.google.com/issues/273468771
         libs.onLibrary("androidx-annotation") { compileOnlyWithConstraint(it) }
     }
+
+    // Help with https://youtrack.jetbrains.com/issue/KT-29341
+    (sourceSet + java).test.dependencies {
+        compileOnly("junit:junit")
+    }
 }
 
 private fun KotlinMultiplatformExtension.setupCompose(project: Project, jbCompose: Any?, config: KotlinConfigSetup) {
