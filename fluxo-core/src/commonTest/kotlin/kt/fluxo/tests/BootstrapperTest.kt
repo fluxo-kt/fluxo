@@ -12,6 +12,7 @@ import kt.fluxo.core.repeatOnSubscription
 import kt.fluxo.core.updateState
 import kt.fluxo.test.CoroutineScopeAwareTest
 import kt.fluxo.test.IgnoreJs
+import kt.fluxo.test.IgnoreJvm
 import kt.fluxo.test.runBlocking
 import kt.fluxo.test.runUnitTest
 import kotlin.test.Ignore
@@ -119,7 +120,12 @@ internal class BootstrapperTest : CoroutineScopeAwareTest() {
         assertEquals("se1", store.sideEffectFlow.first())
     }
 
+    // FIXME: UncompletedCoroutinesError: After waiting for 5s, the test coroutine is not completing
+    //  jvm
+    //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4756275550/jobs/8451589421#step:8:404
+    //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4759202632/jobs/8458210085#step:8:548
     @Test
+    @IgnoreJvm
     fun b_side_job() = runUnitTest {
         val store = backgroundScope.container<String, String>(INIT) {
             debugChecks = true

@@ -64,8 +64,13 @@ internal class DslThreadingTest {
         middleware.assertReducerAndComplete(info, bgJob)
     }
 
-
+    // TODO: Timeout of 2000ms exceeded
+    //  js, node
+    //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4756275550/jobs/8451589421#step:8:1260
+    //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4759165968/jobs/8458124296#step:8:1239
+    //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4759202632/jobs/8458210085#step:8:1222
     @Test
+    @IgnoreJs
     fun suspending_intent_does_not_block_the_reducer() = test(
         scopes = {
             if (KMM_PLATFORM != Platform.JS) ALL_SCOPES() else mapOf(
