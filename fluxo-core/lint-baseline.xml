@@ -6,7 +6,7 @@
         message="A newer version of org.jetbrains.kotlinx:binary-compatibility-validator than 0.12.1 is available: 0.13.0">
         <location
             file="../gradle/libs.versions.toml"
-            line="44"
+            line="45"
             column="24"/>
     </issue>
 
@@ -15,7 +15,7 @@
         message="A newer version of com.fasterxml.jackson.core:jackson-databind than 2.12.7.1 is available: 2.14.2">
         <location
             file="../gradle/libs.versions.toml"
-            line="143"
+            line="184"
             column="88"/>
     </issue>
 
