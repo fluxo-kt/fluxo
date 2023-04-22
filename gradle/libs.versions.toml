@@ -137,14 +137,6 @@ essenty-lifecycle = { module = "com.arkivanov.essenty:lifecycle", version.ref = 
 arrow-bom = { module = "io.arrow-kt:arrow-stack", version.ref = "arrow" }
 arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
 
-# build or classpath dependencies for the forced update (security recommendations)
-# https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
-jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version = "2.12.7.1" }
-# https://mvnrepository.com/artifact/com.fasterxml.woodstox/woodstox-core
-woodstox-core = { module = "com.fasterxml.woodstox:woodstox-core", version = "6.5.0" }
-# https://mvnrepository.com/artifact/org.jsoup/jsoup
-jsoup = { module = "org.jsoup:jsoup", version = "1.15.4" }
-
 test-junit = { module = "junit:junit" }
 # https://mvnrepository.com/artifact/org.robolectric/robolectric
 test-robolectric = { module = "org.robolectric:robolectric", version = "4.10" }
@@ -179,10 +171,23 @@ plugin-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref
 # https://github.com/JetBrains/gradle-intellij-plugin/releases
 plugin-intellij = { module = "org.jetbrains.intellij.plugins:gradle-intellij-plugin", version = "1.12.0" }
 
+
 # Benchmark dependencies
 
 # https://mvnrepository.com/artifact/io.reactivex.rxjava2/rxjava
 rxjava2 = { module = "io.reactivex.rxjava2:rxjava", version.strictly = "2.2.21" }
+
+
+# build or classpath dependencies for the forced update (security recommendations)
+
+# https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
+jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version = "2.12.7.1" }
+# https://mvnrepository.com/artifact/org.jsoup/jsoup
+jsoup = { module = "org.jsoup:jsoup", version = "1.15.4" }
+# https://mvnrepository.com/artifact/org.json/json
+org-json = { module = "org.json:json", version = "20230227" }
+# https://mvnrepository.com/artifact/com.fasterxml.woodstox/woodstox-core
+woodstox-core = { module = "com.fasterxml.woodstox:woodstox-core", version = "6.5.0" }
 
 
 [bundles]
@@ -190,8 +195,9 @@ rxjava2 = { module = "io.reactivex.rxjava2:rxjava", version.strictly = "2.2.21" 
 pinned = [
     # security recommendations
     "jackson-databind",
-    "woodstox-core",
     "jsoup",
+    "org-json",
+    "woodstox-core",
 ]
 
 
