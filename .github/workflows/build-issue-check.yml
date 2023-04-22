@@ -76,4 +76,4 @@ jobs:
         with:
           gradle-home-cache-cleanup: true
           cache-read-only: ${{ github.ref != 'refs/heads/main' || matrix.java != '17' }}
-          arguments: build assemble check -d --stacktrace --continue --scan
+          arguments: build assemble check --stacktrace --continue --scan
