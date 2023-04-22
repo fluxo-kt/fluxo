@@ -180,13 +180,13 @@ private fun MultiplatformSourceSets.setupCommonJavaSourceSets(project: Project, 
         return
     }
 
-    val java by bundle()
-    java dependsOn common
-    sourceSet dependsOn java
+    val javaCommon = bundle("java")
+    javaCommon dependsOn common
+    sourceSet dependsOn javaCommon
 
     val libs = project.libsCatalog
     val constraints = project.dependencies.constraints
-    (sourceSet + java).main.dependencies {
+    (sourceSet + javaCommon).main.dependencies {
         val compileOnlyWithConstraint: (Any) -> Unit = {
             compileOnly(it)
             constraints.implementation(it)
@@ -206,8 +206,8 @@ private fun MultiplatformSourceSets.setupCommonJavaSourceSets(project: Project, 
     }
 
     // Help with https://youtrack.jetbrains.com/issue/KT-29341
-    (sourceSet + java).test.dependencies {
-        compileOnly("junit:junit")
+    javaCommon.test.dependencies {
+        compileOnly("junit:junit:4.13.2")
     }
 }
 
