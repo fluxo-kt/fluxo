@@ -57,9 +57,7 @@ detekt = "1.23.0-RC1"
 # Kotlin code coverage plugin
 # https://github.com/Kotlin/kotlinx-kover/releases
 # https://mvnrepository.com/artifact/org.jetbrains.kotlinx.kover/org.jetbrains.kotlinx.kover.gradle.plugin
-kover = "0.7.0-Alpha"
-# https://mvnrepository.com/artifact/org.jetbrains.intellij.deps/intellij-coverage-agent
-kover-agent = "1.0.715"
+kover = "0.7.0-Beta"
 
 # Compose Multiplatform
 # https://github.com/JetBrains/compose-multiplatform/releases
@@ -164,8 +162,6 @@ plugin-jetbrains-compose = { group = "org.jetbrains.compose", name = "compose-gr
 detekt-compose = { module = "io.nlopez.compose.rules:detekt", version = "0.1.5" }
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 detekt-core = { module = "io.gitlab.arturbosch.detekt:detekt-core", version.ref = "detekt" }
-
-kotlinx-kover-agent = { module = "org.jetbrains.intellij.deps:intellij-coverage-agent", version.ref = "kover-agent" }
 
 jmh-core = { module = "org.openjdk.jmh:jmh-core", version.ref = "jmh" }
 jmh-generator-annprocess = { module = "org.openjdk.jmh:jmh-generator-annprocess", version.ref = "jmh" }

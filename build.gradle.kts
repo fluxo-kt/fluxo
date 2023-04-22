@@ -154,47 +154,46 @@ dependencyGuard {
     configuration("classpath")
 }
 
-kover {
-    useKoverTool(libs.versions.kover.agent.get())
-}
 koverReport {
     dependencies {
         kover(projects.fluxoCore)
         kover(projects.fluxoData)
     }
 
-    val isCI by isCI()
-    xml {
-        onCheck = true
-        setReportFile(layout.buildDirectory.file("reports/kover-merged-report.xml"))
-    }
-    if (!isCI) {
-        html {
+    defaults {
+        val isCI by isCI()
+        xml {
             onCheck = true
-            setReportDir(layout.buildDirectory.dir("reports/kover-merged-report-html")) // change report directory
+            setReportFile(layout.buildDirectory.file("reports/kover-merged-report.xml"))
         }
-    }
+        if (!isCI) {
+            html {
+                onCheck = true
+                setReportDir(layout.buildDirectory.dir("reports/kover-merged-report-html")) // change report directory
+            }
+        }
 
-    verify {
-        onCheck = true
-        rule {
-            isEnabled = true
-            entity = kotlinx.kover.gradle.plugin.dsl.GroupingEntityType.APPLICATION
-            minBound(63)
-            bound {
-                minValue = 80
-                metric = kotlinx.kover.gradle.plugin.dsl.MetricType.LINE
-                aggregation = kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
-            }
-            bound {
-                minValue = 74
-                metric = kotlinx.kover.gradle.plugin.dsl.MetricType.INSTRUCTION
-                aggregation = kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
-            }
-            bound {
-                minValue = 63
-                metric = kotlinx.kover.gradle.plugin.dsl.MetricType.BRANCH
-                aggregation = kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
+        verify {
+            onCheck = true
+            rule {
+                isEnabled = true
+                entity = kotlinx.kover.gradle.plugin.dsl.GroupingEntityType.APPLICATION
+                minBound(63)
+                bound {
+                    minValue = 80
+                    metric = kotlinx.kover.gradle.plugin.dsl.MetricType.LINE
+                    aggregation = kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
+                }
+                bound {
+                    minValue = 74
+                    metric = kotlinx.kover.gradle.plugin.dsl.MetricType.INSTRUCTION
+                    aggregation = kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
+                }
+                bound {
+                    minValue = 63
+                    metric = kotlinx.kover.gradle.plugin.dsl.MetricType.BRANCH
+                    aggregation = kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
+                }
             }
         }
     }
