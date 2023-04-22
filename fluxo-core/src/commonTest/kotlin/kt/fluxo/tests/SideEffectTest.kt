@@ -35,6 +35,12 @@ internal class SideEffectTest {
         private val BASIC_STRATEGIES = arrayOf(SideEffectsStrategy.RECEIVE, SideEffectsStrategy.CONSUME)
     }
 
+    // TODO: Timeout of 2000ms exceeded
+    // js, node/browser
+    // https://github.com/fluxo-kt/fluxo-mvi/actions/runs/3797488660/jobs/6458474871#step:8:897
+    // jvm, android
+    //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4018550114/jobs/6904304918#step:8:375
+    //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4018550114/jobs/6904304918#step:8:597
     @Test
     fun side_effects_strategies_api() {
         assertEquals("RECEIVE", SideEffectsStrategy.RECEIVE.toString())
@@ -199,6 +205,13 @@ internal class SideEffectTest {
     }
 
 
+    // TODO: Expected value to be true.
+    // :linuxX64
+    // :testReleaseUnit
+    // https://github.com/fluxo-kt/fluxo-mvi/actions/runs/3713049727/jobs/6295263338#step:7:471
+    // Expected to have closed effects
+    // :testReleaseUnit
+    // https://github.com/fluxo-kt/fluxo-mvi/actions/runs/3713762763/jobs/6296805652#step:6:332
     @Test
     fun unconsumed_side_effects_will_be_closed__consume_strategy() = unconsumed_side_effects_will_be_closed(SideEffectsStrategy.CONSUME)
 
@@ -238,6 +251,15 @@ internal class SideEffectTest {
     }
 
 
+    // TODO: Timeout of 10000ms exceeded
+    // js, node/browser
+    // macosX64Background
+    // jvm, testReleaseUnit
+    // https://github.com/fluxo-kt/fluxo-mvi/actions/runs/3713049727/jobs/6295263119#step:6:593
+    // https://github.com/fluxo-kt/fluxo-mvi/actions/runs/3713049727/jobs/6295263119#step:6:617
+    // https://github.com/fluxo-kt/fluxo-mvi/actions/runs/3713367491/jobs/6295930135#step:6:563
+    // https://github.com/fluxo-kt/fluxo-mvi/actions/runs/3713762763/jobs/6296805652#step:6:291
+    // https://github.com/fluxo-kt/fluxo-mvi/actions/runs/3714168176/jobs/6297720613#step:6:271
     @Test
     @Ignore // TODO: Should be returned after `fluxo-event-stream` will be added
     fun undelivered_side_effects__consume_strategy() = undelivered_side_effects(SideEffectsStrategy.CONSUME)

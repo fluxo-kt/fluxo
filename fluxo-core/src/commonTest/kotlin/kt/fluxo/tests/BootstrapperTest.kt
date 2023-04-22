@@ -109,6 +109,16 @@ internal class BootstrapperTest : CoroutineScopeAwareTest() {
         assertEquals(newValue, store.value)
     }
 
+    // TODO: fails under Win and macOS occasionally, should be fixed!
+    // kt.fluxo.BootstrapperTest.b_repeat_on_subscription FAILED
+    //    kotlinx.coroutines.test.UncompletedCoroutinesError at null:-1
+    // :mingwX64BackgroundTest
+    // :testDebugUnitTest
+    //
+    // https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4018550114/jobs/6904304918#step:8:266
+    // MacOS :jvmTest
+    // Win :testReleaseUnitTest
+    //   TimeoutCancellationException: Timed out waiting for 2000 ms
     @Test
     fun b_side_effect() = runUnitTest {
         val store = scope.container<String, String>(INIT) {
@@ -124,6 +134,7 @@ internal class BootstrapperTest : CoroutineScopeAwareTest() {
     //  jvm
     //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4756275550/jobs/8451589421#step:8:404
     //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4759202632/jobs/8458210085#step:8:548
+    //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4600266159/jobs/8126636920#step:8:397
     @Test
     @IgnoreJvm
     fun b_side_job() = runUnitTest {
@@ -139,6 +150,9 @@ internal class BootstrapperTest : CoroutineScopeAwareTest() {
         store.closeAndWait()
     }
 
+    // TODO: Failed on win with "After waiting for 5s, the test coroutine is not completing"
+    // jvm, android
+    //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4600266159/jobs/8126636920#step:8:397
     @Test
     @Ignore // TODO: Should be returned after `fluxo-event-stream` will be added
     fun b_cancellation() = runUnitTest {
@@ -157,6 +171,8 @@ internal class BootstrapperTest : CoroutineScopeAwareTest() {
 //        assertIs<FluxoEvent.BootstrapperCancelled<*, *, *>>(def.await())
     }
 
+    // TODO: TimeoutCancellationException: Timed out waiting for 2000 ms
+    //  :jvm
     @Test
     fun b_repeat_on_subscription_with_side_effects() = runUnitTest {
         val store = backgroundScope.container<String, String>(INIT) {
@@ -173,6 +189,11 @@ internal class BootstrapperTest : CoroutineScopeAwareTest() {
         store.closeAndWait()
     }
 
+    // TODO: UncompletedCoroutinesError: After waiting for 2000 ms, the test coroutine is not completing
+    //  jvm, android
+    //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4018550114/jobs/6904304918#step:8:299
+    //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4018550114/jobs/6904304918#step:8:506
+    //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4018550114/jobs/6904304918#step:8:565
     @Test
     fun b_repeat_on_subscription_no_side_effects() = runUnitTest {
         val store = container(INIT) {

@@ -28,6 +28,24 @@ internal class RepeatOnSubscriptionTest : CoroutineScopeAwareTest() {
 
     private val initialState = State()
 
+    // TODO: Occasional error, especially on Native targets
+    // UncompletedCoroutinesError: After waiting for 2000 ms, the test coroutine is not completing
+    // https://github.com/fluxo-kt/fluxo-mvi/actions/runs/3549059711/jobs/5960987385#step:5:359
+    // https://github.com/fluxo-kt/fluxo-mvi/actions/runs/3687829562/jobs/6241899636#step:7:412
+    // https://github.com/fluxo-kt/fluxo-mvi/actions/runs/3687829562/jobs/6241899466#step:6:564
+    // https://github.com/fluxo-kt/fluxo-mvi/actions/runs/3741347577/jobs/6350835320#step:6:181
+    // https://github.com/fluxo-kt/fluxo-mvi/actions/runs/3750797026/jobs/6370973736#step:7:413
+    // https://github.com/fluxo-kt/fluxo-mvi/actions/runs/3761111607/jobs/6392515862#step:7:376
+    // https://github.com/fluxo-kt/fluxo-mvi/actions/runs/3778414293/jobs/6422869407#step:6:756
+    // https://github.com/fluxo-kt/fluxo-mvi/actions/runs/3778414323/jobs/6422869455#step:8:684
+    // https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4076070449/jobs/7023307721#step:8:510
+    // :mingwX64BackgroundTest
+    // :mingwX64Test
+    // :linuxX64Test
+    // :tvosX64Test
+    // :iosX64Test
+    // :jvmTest
+    // :testReleaseUnitTest
     @Test
     fun repeatOnSubscription_mechanics() = runUnitTest {
         val sideEffectsStrategies = arrayOf(

@@ -207,6 +207,12 @@ internal class InputStrategyTest : CoroutineScopeAwareTest() {
     @Test
     fun lifo_background_scope_plus_non_parallel_dispatcher() = t { (backgroundScope + NonParallelDispatcher).lifo_test() }
 
+    // TODO: Failed on win with "Expected to have cancelled intents"
+    //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4589435787/jobs/8104321283#step:10:408
+    //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4618402874/jobs/8165813350#step:10:525
+    //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4589435787/jobs/8104321283#step:10:408
+    //  :mingwX64Test
+    //  :mingwX64BackgroundTest
     @Test
     fun lifo_generic_scope() = t { scope.lifo_test() }
 
@@ -233,6 +239,9 @@ internal class InputStrategyTest : CoroutineScopeAwareTest() {
     @Test
     fun ordered_lifo_background_scope() = t { backgroundScope.ordered_lifo_test() }
 
+    // TODO: AssertionError: Last result should be presented. Expected <999>, actual <991>.
+    //  :macosX64BackgroundTest
+    //   https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4067858739/jobs/7005714035#step:8:1109
     @Test
     @IgnoreJs // TODO: Can we fix it for JS?
     fun ordered_lifo_test_scope_plus_default_dispatcher() = t { (this + Default).ordered_lifo_test() }
@@ -275,6 +284,9 @@ internal class InputStrategyTest : CoroutineScopeAwareTest() {
     @Test
     fun channel_lifo_background_scope_plus_default_dispatcher() = t { (backgroundScope + Default).channel_lifo_test() }
 
+    // TODO: AssertionError: Last result should be presented. Expected <999>, actual <987>.
+    //  linuxX64
+    //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4773710515/jobs/8486952812#step:10:750
     @Test
     @IgnoreJs // TODO: Can we fix it for JS?
     fun channel_lifo_test_scope_plus_unconfined_dispatcher() = t { (this + Unconfined).channel_lifo_test() }
@@ -392,12 +404,16 @@ internal class InputStrategyTest : CoroutineScopeAwareTest() {
     @Test
     fun custom_test_scope_plus_unconfined_dispatcher() = t { (this + Unconfined).custom_test() }
 
+    // TODO: Timeout of 2000ms exceeded.
+    //  :jsNodeTest local
     @Test
     fun custom_background_scope_plus_unconfined_dispatcher() = t { (backgroundScope + Unconfined).custom_test() }
 
+    // TODO: Flaky test?
     @Test
     fun custom_test_scope_plus_non_parallel_dispatcher() = t { (this + NonParallelDispatcher).custom_test() }
 
+    // TODO: Flaky test?
     @Test
     fun custom_background_scope_plus_non_parallel_dispatcher() = t { (backgroundScope + NonParallelDispatcher).custom_test() }
 
