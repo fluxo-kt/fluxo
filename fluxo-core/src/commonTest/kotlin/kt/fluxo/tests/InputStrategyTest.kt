@@ -253,7 +253,10 @@ internal class InputStrategyTest : CoroutineScopeAwareTest() {
     @IgnoreJs // TODO: Can we fix it for JS?
     fun ordered_lifo_background_scope_plus_default_dispatcher() = t { (backgroundScope + Default).ordered_lifo_test() }
 
+    // TODO: Timeout of 2000ms exceeded (js, node, win)
+    //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4780106427/jobs/8497620699#step:8:1164
     @Test
+    @IgnoreJs
     fun ordered_lifo_test_scope_plus_unconfined_dispatcher() = t { (this + Unconfined).ordered_lifo_test() }
 
     @Test
