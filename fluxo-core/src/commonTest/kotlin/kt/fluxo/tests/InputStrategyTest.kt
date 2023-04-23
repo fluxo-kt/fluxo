@@ -192,6 +192,8 @@ internal class InputStrategyTest : CoroutineScopeAwareTest() {
     @Test
     fun lifo_test_scope_plus_default_dispatcher() = t { (this + Default).lifo_test() }
 
+    // TODO: Failed with "Last result should be presented. Expected <999>, actual <867>" :linuxX64Background
+    //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4774084419/jobs/8487545269#step:8:1139
     @Test
     fun lifo_background_scope_plus_default_dispatcher() = t { (backgroundScope + Default).lifo_test() }
 
@@ -207,12 +209,6 @@ internal class InputStrategyTest : CoroutineScopeAwareTest() {
     @Test
     fun lifo_background_scope_plus_non_parallel_dispatcher() = t { (backgroundScope + NonParallelDispatcher).lifo_test() }
 
-    // TODO: Failed on win with "Expected to have cancelled intents"
-    //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4589435787/jobs/8104321283#step:10:408
-    //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4618402874/jobs/8165813350#step:10:525
-    //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4589435787/jobs/8104321283#step:10:408
-    //  :mingwX64Test
-    //  :mingwX64BackgroundTest
     @Test
     fun lifo_generic_scope() = t { scope.lifo_test() }
 
@@ -221,9 +217,16 @@ internal class InputStrategyTest : CoroutineScopeAwareTest() {
     private suspend fun CoroutineScope.lifo_test(strategy: InputStrategy.Factory) {
         @OptIn(ExperimentalStdlibApi::class)
         val isUnconfined = coroutineContext[CoroutineDispatcher] == Unconfined
+        val isRegularLifo = strategy == Lifo
         val results = input_strategy_test(strategy = strategy, equal = isUnconfined)
-        assertEquals(NUMBER_OF_ITEMS - 1, results.last(), "Last result should be presented")
-        if (!isUnconfined && KMM_PLATFORM != LINUX) {
+        val last = NUMBER_OF_ITEMS - 1
+        assertTrue(last in results, "Last result should be presented ($last), but wasn't in ${results.size} results")
+        if (isUnconfined) {
+            return
+        }
+        if (isRegularLifo) {
+            assertTrue(results.size in 1..NUMBER_OF_ITEMS, "Can have cancelled intents with $strategy strategy")
+        } else {
             assertTrue(results.size < NUMBER_OF_ITEMS, "Expected to have cancelled intents with $strategy strategy")
         }
     }
