@@ -1,4 +1,4 @@
-# Fluxo MVI/MVVM+ multiplatform
+# Fluxo
 
 ![Stability: Alpha](https://kotl.in/badges/alpha.svg)
 [![Snapshot Version](https://img.shields.io/nexus/s/https/s01.oss.sonatype.org/io.github.fluxo-kt/fluxo-core.svg)](https://s01.oss.sonatype.org/content/repositories/snapshots/io/github/fluxo-kt/)
