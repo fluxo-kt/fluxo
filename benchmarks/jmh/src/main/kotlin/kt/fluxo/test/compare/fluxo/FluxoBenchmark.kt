@@ -24,6 +24,7 @@ internal object FluxoBenchmark {
     fun mvvmIntent(): Int {
         val container = container(0) {
             coroutineContext = Dispatchers.Unconfined
+            inputStrategy = Direct
             debugChecks = false
             lazy = false
         }
@@ -46,9 +47,7 @@ internal object FluxoBenchmark {
                 closeable = context
                 context
             }
-            if (strategy != null) {
-                inputStrategy = strategy
-            }
+            inputStrategy = strategy ?: Direct
             debugChecks = false
             lazy = false
         }
@@ -65,6 +64,7 @@ internal object FluxoBenchmark {
             },
         ) {
             coroutineContext = Dispatchers.Unconfined
+            inputStrategy = Direct
             debugChecks = false
             lazy = false
         }

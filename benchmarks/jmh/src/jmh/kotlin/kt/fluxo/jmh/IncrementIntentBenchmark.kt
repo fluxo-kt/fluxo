@@ -1,5 +1,6 @@
 package kt.fluxo.jmh
 
+import kotlinx.coroutines.Dispatchers.Unconfined
 import kt.fluxo.test.compare.ballast.BallastBenchmark
 import kt.fluxo.test.compare.fluxo.FluxoBenchmark
 import kt.fluxo.test.compare.mvicore.MviCoreBenchmark
@@ -54,7 +55,7 @@ open class IncrementIntentBenchmark {
     fun fluxo__mvvm_intent(bh: Blackhole) = bh.consume(FluxoBenchmark.mvvmIntent())
 
     @Benchmark
-    fun fluxo__mvi_reducer(bh: Blackhole) = bh.consume(FluxoBenchmark.mviReducer())
+    fun fluxo__mvi_reducer(bh: Blackhole) = bh.consume(FluxoBenchmark.mviReducer(dispatcher = Unconfined))
 
     @Benchmark
     fun fluxo__mvi_handler(bh: Blackhole) = bh.consume(FluxoBenchmark.mviHandler())
