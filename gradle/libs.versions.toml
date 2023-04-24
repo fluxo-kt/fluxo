@@ -226,7 +226,7 @@ deps-versions = { id = "com.github.ben-manes.versions", version = "0.46.0" }
 # Detect unused and misused dependencies
 # https://github.com/autonomousapps/dependency-analysis-android-gradle-plugin/tags
 # https://mvnrepository.com/artifact/com.autonomousapps/dependency-analysis-gradle-plugin
-deps-analysis = { id = "com.autonomousapps.dependency-analysis", version = "1.19.0" }
+deps-analysis = { id = "com.autonomousapps.dependency-analysis", version = "1.20.0" }
 
 # Plugin that guards against unintentional dependency changes
 # https://github.com/dropbox/dependency-guard/releases
