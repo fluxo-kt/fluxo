@@ -187,7 +187,7 @@ jsoup = { module = "org.jsoup:jsoup", version = "1.15.4" }
 # https://mvnrepository.com/artifact/org.json/json
 org-json = { module = "org.json:json", version = "20230227" }
 # https://mvnrepository.com/artifact/com.fasterxml.woodstox/woodstox-core
-woodstox-core = { module = "com.fasterxml.woodstox:woodstox-core", version = "6.5.0" }
+woodstox-core = { module = "com.fasterxml.woodstox:woodstox-core", version = "6.5.1" }
 
 
 [bundles]
