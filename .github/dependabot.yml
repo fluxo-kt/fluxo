@@ -20,11 +20,23 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     commit-message:
-      prefix: "ci(github)"
+      prefix: "ci(GitHub)"
     schedule:
       interval: "weekly"
     reviewers:
       - "amal"
     labels:
       - "gh-action"
+      - "dependencies"
+
+  - package-ecosystem: "npm"
+    directory: "/"
+    commit-message:
+      prefix: "build(deps)"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "amal"
+    labels:
+      - "js"
       - "dependencies"
