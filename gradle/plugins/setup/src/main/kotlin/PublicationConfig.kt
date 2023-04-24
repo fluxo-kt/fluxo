@@ -55,9 +55,11 @@ class PublicationConfig(
         if (reproducibleSnapshots && isSnapshot) {
             // Make snapshot builds safe and reproducible for usage
             // Version structure:
-            // `major.minor.patch-SNAPSHOT-yyMMddHHmmss-buildNumber`.
-            v += "-" + SimpleDateFormat("yyMMddHHmmss").format(Date())
+            // `major.minor.patch-yyMMddHHmmss-buildNumber-SNAPSHOT`.
+            v = v.substringBeforeLast("SNAPSHOT")
+            v += SimpleDateFormat("yyMMddHHmmss").format(Date())
             v += project.buildNumberSuffix("-local", "-")
+            v += "-SNAPSHOT"
         }
         this.version = v
     }
