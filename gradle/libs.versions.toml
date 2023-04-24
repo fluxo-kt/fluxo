@@ -28,7 +28,7 @@ kotlin = "1.8.20"
 ksp = "1.8.20-1.0.11"
 
 # https://github.com/arkivanov/Essenty/releases
-essenty = "1.0.0"
+essenty = "1.1.0"
 
 # Dokka is a documentation engine for Kotlin/Java
 # https://github.com/Kotlin/dokka/releases
