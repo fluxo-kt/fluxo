@@ -111,7 +111,7 @@ kotlin-parcelize-runtime = { module = "org.jetbrains.kotlin:kotlin-parcelize-run
 # Framework for testing concurrent data structures
 # https://kotlinlang.org/docs/lincheck-guide.html
 # https://github.com/Kotlin/kotlinx-lincheck/releases
-kotlinx-lincheck = { module = "org.jetbrains.kotlinx:lincheck", version = "2.16" }
+kotlinx-lincheck = { module = "org.jetbrains.kotlinx:lincheck", version = "2.17" }
 
 # https://github.com/Kotlin/kotlinx-datetime/tags
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.4.0" }
