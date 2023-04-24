@@ -118,7 +118,7 @@ setupDefaults(
     ),
     publicationConfig = run {
         val version = libs.versions.fluxo.get()
-        val isSnapshot = version.endsWith("SNAPSHOT", ignoreCase = true)
+        val isSnapshot = version.contains("SNAPSHOT", ignoreCase = true)
         val scmTag = if (isSnapshot) scmTag().orNull ?: "main" else "v$version"
         val url = "https://github.com/fluxo-kt/fluxo-mvi"
         val publicationUrl = "$url/tree/$scmTag"
@@ -143,6 +143,7 @@ setupDefaults(
             signingPassword = envOrPropValue("SIGNING_PASSWORD"),
             repositoryUserName = envOrPropValue("OSSRH_USER"),
             repositoryPassword = envOrPropValue("OSSRH_PASSWORD"),
+            project = project,
         )
     },
 )

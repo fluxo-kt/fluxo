@@ -27,11 +27,15 @@ if you need better control over your state changes and a structured pipeline for
 
 ### TLDR: Use SNAPSHOT Artefact in Gradle
 
+Snapshot version: [![Snapshot Version](https://img.shields.io/nexus/s/https/s01.oss.sonatype.org/io.github.fluxo-kt/fluxo-core.svg)](https://s01.oss.sonatype.org/content/repositories/snapshots/io/github/fluxo-kt/)
+<br>Take it without `v` prefix!
+
 ```kotlin
+
 dependencies {
-  implementation("io.github.fluxo-kt:fluxo-core:0.1.0-SNAPSHOT")
+  implementation("io.github.fluxo-kt:fluxo-core:<SNAPSHOT-VERSION>")
   // For common data states
-  implementation("io.github.fluxo-kt:fluxo-data:0.1.0-SNAPSHOT")
+  implementation("io.github.fluxo-kt:fluxo-data:<SNAPSHOT-VERSION>")
 }
 repositories {
   maven(url = "https://s01.oss.sonatype.org/content/repositories/snapshots/")

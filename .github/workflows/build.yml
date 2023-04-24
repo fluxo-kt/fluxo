@@ -22,6 +22,7 @@ on:
 
 env:
   CI: true
+  BUILD_NUMBER: ${{ github.run_number }}
   GRADLE_BUILD_ACTION_CACHE_DEBUG_ENABLED: true
   GRADLE_OPTS: "\
   -Dorg.gradle.configuration-cache=false \

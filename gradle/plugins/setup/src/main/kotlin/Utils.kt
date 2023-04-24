@@ -29,12 +29,16 @@ fun Project.isMaxDebugEnabled(): Provider<Boolean> = envOrPropFlag("MAX_DEBUG")
 
 fun Project.isR8Disabled(): Provider<Boolean> = envOrPropFlag("DISABLE_R8")
 
+fun Project?.buildNumber(): String? = "BUILD_NUMBER".let {
+    return this?.envOrProp(it)?.orNull ?: System.getProperty(it, null)
+}
+
 
 fun Project.signingKey(): String? = envOrPropValue("SIGNING_KEY")?.replace("\\n", "\n")
 
-fun Project.buildNumberSuffix(): String {
-    val n = envOrProp("BUILD_NUMBER").orNull
-    return if (!n.isNullOrBlank()) ".$n" else ""
+fun Project?.buildNumberSuffix(default: String = "", delimiter: String = "."): String {
+    val n = buildNumber()
+    return if (!n.isNullOrBlank()) "$delimiter$n" else default
 }
 
 
