@@ -181,7 +181,7 @@ rxjava2 = { module = "io.reactivex.rxjava2:rxjava", version.strictly = "2.2.21" 
 # build or classpath dependencies for the forced update (security recommendations)
 
 # https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
-jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version = "2.12.7.1" }
+jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version = "2.15.0" }
 # https://mvnrepository.com/artifact/org.jsoup/jsoup
 jsoup = { module = "org.jsoup:jsoup", version = "1.15.4" }
 # https://mvnrepository.com/artifact/org.json/json
