@@ -45,6 +45,10 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
+// TODO: Timeout of 2000ms exceeded (js, node, win)
+//  is it only for CI win vm?
+//  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4796934259/jobs/8533286094#step:8:1291
+@IgnoreJs
 @Suppress("SuspendFunctionOnCoroutineScope")
 internal class InputStrategyTest : CoroutineScopeAwareTest() {
 
