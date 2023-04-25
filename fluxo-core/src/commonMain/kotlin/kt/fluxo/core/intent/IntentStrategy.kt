@@ -27,6 +27,9 @@ public abstract class IntentStrategy<in Intent, State>(
     protected val handler: IntentStrategyScope<Intent, State>,
 ) : Closeable {
 
+    /** Enable if [launch] should be called for this strategy */
+    public open val isLaunchNeeded: Boolean get() = false
+
     public open val parallelProcessing: Boolean get() = false
 
     protected open val rollbackOnCancellation: Boolean get() = !parallelProcessing
@@ -37,7 +40,7 @@ public abstract class IntentStrategy<in Intent, State>(
      *
      * **NOTE:** Can suspend until the [close] call!
      */
-    public open suspend fun launch() {}
+    public open suspend fun launch(): Unit = throw NotImplementedError(toString())
 
 
     /**

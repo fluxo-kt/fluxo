@@ -232,23 +232,23 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
     }
 
     override suspend fun onStart(bootstrapper: Bootstrapper<Intent, State, SideEffect>?) {
-        // TODO: Allow to avoid this launch completely with info from intentStrategy (benchmark)?
-        // Observe and process intents
-        // - Use store scope to not block the startJob completion.
-        // - Re-save intent strategy to avoid the whole store captured in the launched lambda.
+        // Observe and process intents, launching strategy if needed.
+        // • Use store scope to not block the startJob completion.
+        // • Re-save intent strategy to avoid the store capture in the launched lambda.
         val intentStrategy = intentStrategy
-        val storeJob = checkNotNull(coroutineContext[Job])
-        (this as CoroutineScope).launch(
-            context = if (!debugChecks) EmptyCoroutineContext else CoroutineName("$F[$name:intentStrategy]"),
-            start = CoroutineStart.UNDISPATCHED,
-        ) {
-            try {
-                // Can suspend until the store closed!
-                intentStrategy.launch()
-            } catch (ce: CancellationException) {
-                if (storeJob.isActive) {
-                    // We don't expect cancellation here!
-                    throw IllegalStateException("Intent strategy shouldn't be cancelled", ce.cause ?: ce)
+        if (intentStrategy.isLaunchNeeded) {
+            val storeJob = checkNotNull(coroutineContext[Job])
+            (this as CoroutineScope).launch(
+                context = if (!debugChecks) EmptyCoroutineContext else CoroutineName("$F[$name:intentStrategy]"),
+                start = CoroutineStart.UNDISPATCHED,
+            ) {
+                try {
+                    // Can suspend until the store closed!
+                    intentStrategy.launch()
+                } catch (ce: CancellationException) {
+                    if (storeJob.isActive) {
+                        throw IllegalStateException("Intent strategy shouldn't be cancelled while store is active", ce.cause ?: ce)
+                    }
                 }
             }
         }

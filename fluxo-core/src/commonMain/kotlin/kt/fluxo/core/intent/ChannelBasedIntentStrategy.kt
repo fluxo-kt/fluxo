@@ -108,6 +108,8 @@ internal open class ChannelBasedIntentStrategy<Intent, State>(
      */
     override suspend fun launch() = emitAll(requestsChannel)
 
+    final override val isLaunchNeeded: Boolean get() = true
+
     /**
      * Helper method to use [IntentStrategy] itself as a [FlowCollector] for [emitAll],
      * without allocating extra objects.
