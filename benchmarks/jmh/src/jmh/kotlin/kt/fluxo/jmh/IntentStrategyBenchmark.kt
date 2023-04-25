@@ -4,11 +4,11 @@ package kt.fluxo.jmh
 
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Dispatchers.Unconfined
-import kt.fluxo.core.input.InputStrategy.InBox.ChannelLifo
-import kt.fluxo.core.input.InputStrategy.InBox.Direct
-import kt.fluxo.core.input.InputStrategy.InBox.Fifo
-import kt.fluxo.core.input.InputStrategy.InBox.Lifo
-import kt.fluxo.core.input.InputStrategy.InBox.Parallel
+import kt.fluxo.core.intent.IntentStrategy.InBox.ChannelLifo
+import kt.fluxo.core.intent.IntentStrategy.InBox.Direct
+import kt.fluxo.core.intent.IntentStrategy.InBox.Fifo
+import kt.fluxo.core.intent.IntentStrategy.InBox.Lifo
+import kt.fluxo.core.intent.IntentStrategy.InBox.Parallel
 import kt.fluxo.test.compare.fluxo.FluxoBenchmark
 import org.openjdk.jmh.annotations.Benchmark
 import org.openjdk.jmh.annotations.Scope
@@ -16,7 +16,7 @@ import org.openjdk.jmh.annotations.State
 import org.openjdk.jmh.infra.Blackhole
 
 /**
- * Benchmark throughput for different input strategies.
+ * Benchmark throughput for different intent strategies.
  *
  * [Lifo] strategies are tested only with [Unconfined] dispacher to not loosing any intents.
  *
@@ -54,7 +54,7 @@ import org.openjdk.jmh.infra.Blackhole
  */
 @State(Scope.Benchmark)
 @Suppress("FunctionNaming", "FunctionName", "InjectDispatcher")
-open class InputStrategyBenchmark {
+open class IntentStrategyBenchmark {
     @Benchmark
     fun fifo__dispatcher_default(bh: Blackhole) = bh.consume(FluxoBenchmark.mviReducer(strategy = Fifo, dispatcher = Default))
 

@@ -94,7 +94,7 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super p
 * **Lifecycle-awareness** with full control based on coroutine scopes.
 * Subscription lifecycle with convenience API (`repeatOnSubscription`). Do something in store when subscriber connects or disconnects.
 * Forceful customization:
-  * Pluggable **intent (input) strategies**:
+  * Pluggable **intent strategies**:
     * _First In, First Out_ (Fifo). Default, predictable, and intuitive, ordered processing with good performance.
     * _Last In, First Out_ (Lifo). Can improve responsiveness, e.g. UI events processing, but may lose some intents!
     * _Parallel_. No processing order guarantees, can provide better performance and responsiveness compared to _Fifo_.

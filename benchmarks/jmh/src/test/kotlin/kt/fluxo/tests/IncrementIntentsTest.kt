@@ -11,6 +11,7 @@ import kt.fluxo.test.compare.orbit.OrbitBenchmark
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
+
 @Suppress("FunctionNaming")
 class IncrementIntentsTest {
 

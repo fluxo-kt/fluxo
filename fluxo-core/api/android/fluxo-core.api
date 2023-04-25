@@ -24,12 +24,12 @@ public final class kt/fluxo/core/FluxoSettings {
 	public final fun getCoroutineContext ()Lkotlin/coroutines/CoroutineContext;
 	public final fun getDebugChecks ()Z
 	public final fun getExceptionHandler ()Lkotlinx/coroutines/CoroutineExceptionHandler;
-	public final fun getInputStrategy ()Lkt/fluxo/core/input/InputStrategy$Factory;
 	public final fun getIntentFilter ()Lkotlin/jvm/functions/Function2;
+	public final fun getIntentStrategy ()Lkt/fluxo/core/intent/IntentStrategy$Factory;
 	public final fun getName ()Ljava/lang/String;
 	public final fun getScope ()Lkotlinx/coroutines/CoroutineScope;
 	public final fun getSideEffectBufferSize ()I
-	public final fun getSideEffectsStrategy ()Lkt/fluxo/core/SideEffectsStrategy;
+	public final fun getSideEffectStrategy ()Lkt/fluxo/core/SideEffectStrategy;
 	public final fun getSideJobsContext ()Lkotlin/coroutines/CoroutineContext;
 	public final fun isCloseOnExceptions ()Z
 	public final fun isLazy ()Z
@@ -39,14 +39,14 @@ public final class kt/fluxo/core/FluxoSettings {
 	public final fun setCoroutineContext (Lkotlin/coroutines/CoroutineContext;)V
 	public final fun setDebugChecks (Z)V
 	public final fun setExceptionHandler (Lkotlinx/coroutines/CoroutineExceptionHandler;)V
-	public final fun setInputStrategy (Lkt/fluxo/core/input/InputStrategy$Factory;)V
 	public final fun setIntentFilter (Lkotlin/jvm/functions/Function2;)V
+	public final fun setIntentStrategy (Lkt/fluxo/core/intent/IntentStrategy$Factory;)V
 	public final fun setLazy (Z)V
 	public final fun setName (Ljava/lang/String;)V
 	public final fun setOptimized (Z)V
 	public final fun setScope (Lkotlinx/coroutines/CoroutineScope;)V
 	public final fun setSideEffectBufferSize (I)V
-	public final fun setSideEffectsStrategy (Lkt/fluxo/core/SideEffectsStrategy;)V
+	public final fun setSideEffectStrategy (Lkt/fluxo/core/SideEffectStrategy;)V
 	public final fun setSideJobsContext (Lkotlin/coroutines/CoroutineContext;)V
 }
 
@@ -58,25 +58,25 @@ public abstract interface class kt/fluxo/core/IntentHandler {
 	public abstract fun handleIntent (Lkt/fluxo/core/dsl/StoreScope;Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public abstract interface class kt/fluxo/core/SideEffectsStrategy {
+public abstract interface class kt/fluxo/core/SideEffectStrategy {
 }
 
-public final class kt/fluxo/core/SideEffectsStrategy$CONSUME : kt/fluxo/core/SideEffectsStrategy {
-	public static final field INSTANCE Lkt/fluxo/core/SideEffectsStrategy$CONSUME;
+public final class kt/fluxo/core/SideEffectStrategy$CONSUME : kt/fluxo/core/SideEffectStrategy {
+	public static final field INSTANCE Lkt/fluxo/core/SideEffectStrategy$CONSUME;
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class kt/fluxo/core/SideEffectsStrategy$DISABLE : kt/fluxo/core/SideEffectsStrategy {
-	public static final field INSTANCE Lkt/fluxo/core/SideEffectsStrategy$DISABLE;
+public final class kt/fluxo/core/SideEffectStrategy$DISABLE : kt/fluxo/core/SideEffectStrategy {
+	public static final field INSTANCE Lkt/fluxo/core/SideEffectStrategy$DISABLE;
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class kt/fluxo/core/SideEffectsStrategy$RECEIVE : kt/fluxo/core/SideEffectsStrategy {
-	public static final field INSTANCE Lkt/fluxo/core/SideEffectsStrategy$RECEIVE;
+public final class kt/fluxo/core/SideEffectStrategy$RECEIVE : kt/fluxo/core/SideEffectStrategy {
+	public static final field INSTANCE Lkt/fluxo/core/SideEffectStrategy$RECEIVE;
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class kt/fluxo/core/SideEffectsStrategy$SHARE : kt/fluxo/core/SideEffectsStrategy {
+public final class kt/fluxo/core/SideEffectStrategy$SHARE : kt/fluxo/core/SideEffectStrategy {
 	public final field replay I
 	public fun <init> ()V
 	public fun <init> (I)V
@@ -192,10 +192,10 @@ public abstract class kt/fluxo/core/factory/StoreFactory {
 	public final fun createWithNoSideEffects (Ljava/lang/Object;Lkt/fluxo/core/IntentHandler;Lkt/fluxo/core/FluxoSettings;)Lkt/fluxo/core/Store;
 }
 
-public abstract class kt/fluxo/core/input/InputStrategy : java/io/Closeable {
-	public static final field InBox Lkt/fluxo/core/input/InputStrategy$InBox;
-	protected final field handler Lkt/fluxo/core/input/InputStrategyScope;
-	public fun <init> (Lkt/fluxo/core/input/InputStrategyScope;)V
+public abstract class kt/fluxo/core/intent/IntentStrategy : java/io/Closeable {
+	public static final field InBox Lkt/fluxo/core/intent/IntentStrategy$InBox;
+	protected final field handler Lkt/fluxo/core/intent/IntentStrategyScope;
+	public fun <init> (Lkt/fluxo/core/intent/IntentStrategyScope;)V
 	public fun close ()V
 	protected final fun executeIntent (Lkotlinx/coroutines/CoroutineScope;Ljava/lang/Object;Lkotlinx/coroutines/CompletableDeferred;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun getParallelProcessing ()Z
@@ -205,18 +205,18 @@ public abstract class kt/fluxo/core/input/InputStrategy : java/io/Closeable {
 	public fun queueIntentSuspend (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public abstract interface class kt/fluxo/core/input/InputStrategy$Factory {
-	public abstract fun invoke (Lkt/fluxo/core/input/InputStrategyScope;)Lkt/fluxo/core/input/InputStrategy;
+public abstract interface class kt/fluxo/core/intent/IntentStrategy$Factory {
+	public abstract fun invoke (Lkt/fluxo/core/intent/IntentStrategyScope;)Lkt/fluxo/core/intent/IntentStrategy;
 }
 
-public final class kt/fluxo/core/input/InputStrategy$InBox {
-	public final fun Direct ()Lkt/fluxo/core/input/InputStrategy$Factory;
-	public final fun Fifo ()Lkt/fluxo/core/input/InputStrategy$Factory;
-	public final fun Lifo ()Lkt/fluxo/core/input/InputStrategy$Factory;
-	public final fun Parallel ()Lkt/fluxo/core/input/InputStrategy$Factory;
+public final class kt/fluxo/core/intent/IntentStrategy$InBox {
+	public final fun Direct ()Lkt/fluxo/core/intent/IntentStrategy$Factory;
+	public final fun Fifo ()Lkt/fluxo/core/intent/IntentStrategy$Factory;
+	public final fun Lifo ()Lkt/fluxo/core/intent/IntentStrategy$Factory;
+	public final fun Parallel ()Lkt/fluxo/core/intent/IntentStrategy$Factory;
 }
 
-public abstract interface class kt/fluxo/core/input/InputStrategyScope : kotlinx/coroutines/CoroutineScope {
+public abstract interface class kt/fluxo/core/intent/IntentStrategyScope : kotlinx/coroutines/CoroutineScope {
 	public abstract fun executeIntent (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun getValue ()Ljava/lang/Object;
 	public abstract fun handleException (Lkotlin/coroutines/CoroutineContext;Ljava/lang/Throwable;)V

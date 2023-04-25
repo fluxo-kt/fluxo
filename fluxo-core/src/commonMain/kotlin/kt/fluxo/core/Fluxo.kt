@@ -174,7 +174,7 @@ public inline fun <State> container(
         settings = settings,
         factory = factory,
     ) {
-        sideEffectsStrategy = SideEffectsStrategy.DISABLE
+        sideEffectStrategy = SideEffectStrategy.DISABLE
         setup()
     }
 }
@@ -245,7 +245,7 @@ public inline fun <Intent, State> store(
         handler = handler,
         // Always do a copy to not change the original settings.
         settings = (settings?.copy() ?: FluxoSettings()).apply {
-            sideEffectsStrategy = SideEffectsStrategy.DISABLE
+            sideEffectStrategy = SideEffectStrategy.DISABLE
             setup()
         },
     )

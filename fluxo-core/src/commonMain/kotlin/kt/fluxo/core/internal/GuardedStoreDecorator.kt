@@ -8,7 +8,7 @@ import kt.fluxo.core.factory.StoreDecoratorBase
 import kotlin.coroutines.CoroutineContext
 
 internal class GuardedStoreDecorator<Intent, State, SideEffect : Any>(
-    private val guardian: InputStrategyGuardian,
+    private val guardian: IntentStrategyGuardian,
     store: StoreDecorator<Intent, State, SideEffect>,
 ) : StoreDecoratorBase<Intent, State, SideEffect>(store) {
 

@@ -1,4 +1,4 @@
-package kt.fluxo.core.input
+package kt.fluxo.core.intent
 
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
@@ -15,7 +15,7 @@ import kotlin.js.JsName
  * @see StoreScope
  */
 @ExperimentalFluxoApi
-public interface InputStrategyScope<in Intent, State> : CoroutineScope {
+public interface IntentStrategyScope<in Intent, State> : CoroutineScope {
 
     /** @see StoreScope.value */
     public var value: State

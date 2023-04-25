@@ -2,7 +2,7 @@ package kt.fluxo.tests.factory
 
 import kt.fluxo.core.FluxoIntentS
 import kt.fluxo.core.FluxoSettings
-import kt.fluxo.core.SideEffectsStrategy
+import kt.fluxo.core.SideEffectStrategy
 import kt.fluxo.core.container
 import kt.fluxo.core.debug.DEBUG
 import kt.fluxo.core.debug.DebugStoreDecorator
@@ -44,7 +44,7 @@ class StoreFactoryTest {
         val handler = FluxoIntentHandler<Int, Nothing>()
         val settings = FluxoSettings<FluxoIntentS<Int>, Int, Nothing>().apply {
             debugChecks = true
-            sideEffectsStrategy = SideEffectsStrategy.CONSUME
+            sideEffectStrategy = SideEffectStrategy.CONSUME
         }
         val error = assertFailsWith<IllegalArgumentException> {
             FluxoStoreFactory.create(initialState = 0, handler = handler, settings = settings)

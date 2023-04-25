@@ -5,9 +5,9 @@ import kotlin.test.Test
 
 class MigrationHelpersAndOtherTest {
     @Test
-    fun inputStrategyLifo() {
+    fun intentStrategyLifo() {
         val container = container(Unit) {
-            inputStrategy = Lifo
+            intentStrategy = Lifo
         }
         container.close()
     }

@@ -18,7 +18,7 @@ internal class ContainerThreadingTest : CoroutineScopeAwareTest() {
     @Test
     fun container_can_process_second_action_while_the_first_suspended() = runTest {
         val container = scope.container<Int, Nothing>(Random.nextInt()) {
-            inputStrategy = Parallel
+            intentStrategy = Parallel
         }
         val observer = container.test()
         val newState = Random.nextInt()
@@ -67,7 +67,7 @@ internal class ContainerThreadingTest : CoroutineScopeAwareTest() {
     fun reductions_run_in_sequence_but_in_undefined_order_when_executed_from_multiple_threads() = runTest {
         // This scenario meant to simulate calling only reducers from the UI thread.
         val container = scope.container<TestState, Nothing>(TestState()) {
-            inputStrategy = Parallel
+            intentStrategy = Parallel
             debugChecks = false
         }
         val testStateObserver = container.test()

@@ -12,7 +12,7 @@ import kotlin.contracts.contract
  * especially with race conditions due to parallel processing.
  */
 @InternalFluxoApi
-internal class InputStrategyGuardian(
+internal class IntentStrategyGuardian(
     private val parallelProcessing: Boolean,
     private val isBootstrap: Boolean,
     private val intent: Any?,
@@ -66,7 +66,7 @@ internal class InputStrategyGuardian(
     private fun performStateAccessCheck() {
         // TODO: Should be fixed somehow as compareAndSet call will access state twice or more times even in normal situation
 //        check(!stateAccessed.value) {
-//            "Parallel input strategy requires that inputs only access or update the state at most once as a " +
+//            "Parallel intent strategy requires that inputs only access or update the state at most once as a " +
 //                "safeguard against race conditions.$info"
 //        }
     }

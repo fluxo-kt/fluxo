@@ -35,14 +35,14 @@ import kt.fluxo.core.Bootstrapper
 import kt.fluxo.core.FluxoClosedException
 import kt.fluxo.core.FluxoSettings
 import kt.fluxo.core.IntentHandler
-import kt.fluxo.core.SideEffectsStrategy
+import kt.fluxo.core.SideEffectStrategy
 import kt.fluxo.core.SideJob
 import kt.fluxo.core.annotation.InternalFluxoApi
 import kt.fluxo.core.data.GuaranteedEffect
 import kt.fluxo.core.dsl.StoreScope
 import kt.fluxo.core.factory.StoreDecorator
-import kt.fluxo.core.input.InputStrategy
-import kt.fluxo.core.input.InputStrategyScope
+import kt.fluxo.core.intent.IntentStrategy
+import kt.fluxo.core.intent.IntentStrategyScope
 import kt.fluxo.core.updateState
 import kotlin.coroutines.AbstractCoroutineContextElement
 import kotlin.coroutines.CoroutineContext
@@ -56,7 +56,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
     conf: FluxoSettings<Intent, State, SideEffect>,
 ) : AbstractCoroutineContextElement(CoroutineExceptionHandler), CoroutineExceptionHandler,
     StoreDecorator<Intent, State, SideEffect>,
-    InputStrategyScope<Intent, State> {
+    IntentStrategyScope<Intent, State> {
 
     // region Fields, initialization
 
@@ -67,7 +67,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
     override val subscriptionCount: StateFlow<Int>
     override val coroutineContext: CoroutineContext
 
-    private val inputStrategy: InputStrategy<Intent, State>
+    private val intentStrategy: IntentStrategy<Intent, State>
     private val intentFilter = conf.intentFilter
 
     private val sideEffectChannel: Channel<SideEffect>?
@@ -120,24 +120,24 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         }
 
         // Input handling
-        inputStrategy = conf.inputStrategy(scope = this)
+        intentStrategy = conf.intentStrategy(scope = this)
 
         // region Prepare side effects handling, considering all possible strategies
         var subscriptionCount = mutableState.subscriptionCount
         val sideEffectsSubscriptionCount: StateFlow<Int>?
-        val sideEffectsStrategy = conf.sideEffectsStrategy
+        val sideEffectsStrategy = conf.sideEffectStrategy
         if (hasReducerIntentHandler && debugChecks) {
-            require(sideEffectsStrategy == SideEffectsStrategy.DISABLE) {
+            require(sideEffectsStrategy == SideEffectStrategy.DISABLE) {
                 "Expected SideEffectsStrategy.DISABLE to be set as a sideEffectsStrategy. " +
                     "Please, fill an issue if you think it should be done automatically here."
             }
         }
-        if (sideEffectsStrategy === SideEffectsStrategy.DISABLE) {
+        if (sideEffectsStrategy === SideEffectStrategy.DISABLE) {
             // Disable side effects
             sideEffectChannel = null
             sideEffectFlowField = null
             sideEffectsSubscriptionCount = null
-        } else if (sideEffectsStrategy is SideEffectsStrategy.SHARE) {
+        } else if (sideEffectsStrategy is SideEffectStrategy.SHARE) {
             // MutableSharedFlow-based SideEffect
             sideEffectChannel = null
             val flow = MutableSharedFlow<SideEffect>(
@@ -178,10 +178,10 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
             }
             sideEffectChannel = channel
             sideEffectsSubscriptionCount = MutableStateFlow(0)
-            val flow = if (sideEffectsStrategy === SideEffectsStrategy.CONSUME) {
+            val flow = if (sideEffectsStrategy === SideEffectStrategy.CONSUME) {
                 channel.consumeAsFlow()
             } else {
-                check(!debugChecks || sideEffectsStrategy === SideEffectsStrategy.RECEIVE)
+                check(!debugChecks || sideEffectsStrategy === SideEffectStrategy.RECEIVE)
                 channel.receiveAsFlow()
             }
             sideEffectFlowField = SubscriptionCountFlow(sideEffectsSubscriptionCount, flow)
@@ -232,23 +232,23 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
     }
 
     override suspend fun onStart(bootstrapper: Bootstrapper<Intent, State, SideEffect>?) {
-        // TODO: Allow to avoid this launch completely with info from inputStrategy (benchmark)?
+        // TODO: Allow to avoid this launch completely with info from intentStrategy (benchmark)?
         // Observe and process intents
         // - Use store scope to not block the startJob completion.
-        // - Re-save input strategy to avoid the whole store captured in the launched lambda.
-        val inputStrategy = inputStrategy
+        // - Re-save intent strategy to avoid the whole store captured in the launched lambda.
+        val intentStrategy = intentStrategy
         val storeJob = checkNotNull(coroutineContext[Job])
         (this as CoroutineScope).launch(
-            context = if (!debugChecks) EmptyCoroutineContext else CoroutineName("$F[$name:inputStrategy]"),
+            context = if (!debugChecks) EmptyCoroutineContext else CoroutineName("$F[$name:intentStrategy]"),
             start = CoroutineStart.UNDISPATCHED,
         ) {
             try {
                 // Can suspend until the store closed!
-                inputStrategy.launch()
+                intentStrategy.launch()
             } catch (ce: CancellationException) {
                 if (storeJob.isActive) {
                     // We don't expect cancellation here!
-                    throw IllegalStateException("Input strategy shouldn't be cancelled", ce.cause ?: ce)
+                    throw IllegalStateException("Intent strategy shouldn't be cancelled", ce.cause ?: ce)
                 }
             }
         }
@@ -271,8 +271,8 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         val guardedScope: StoreScope<Intent, State, SideEffect>? = when {
             !debugChecks -> null
             else -> GuardedStoreDecorator(
-                guardian = InputStrategyGuardian(
-                    parallelProcessing = inputStrategy.parallelProcessing,
+                guardian = IntentStrategyGuardian(
+                    parallelProcessing = intentStrategy.parallelProcessing,
                     isBootstrap = true,
                     intent = null,
                     handler = bootstrapper,
@@ -294,12 +294,12 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
 
     override suspend fun emit(value: Intent) {
         start()
-        inputStrategy.queueIntentSuspend(value)
+        intentStrategy.queueIntentSuspend(value)
     }
 
     override fun send(intent: Intent): Job {
         start()
-        return inputStrategy.queueIntent(intent)
+        return intentStrategy.queueIntent(intent)
     }
 
     override suspend fun executeIntent(intent: Intent) {
@@ -326,8 +326,8 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         val guardedScope: StoreScope<Intent, State, SideEffect>? = when {
             !debugChecks -> null
             else -> GuardedStoreDecorator(
-                guardian = InputStrategyGuardian(
-                    parallelProcessing = inputStrategy.parallelProcessing,
+                guardian = IntentStrategyGuardian(
+                    parallelProcessing = intentStrategy.parallelProcessing,
                     isBootstrap = false,
                     intent = intent,
                     handler = intentHandler,
@@ -550,7 +550,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         }
 
         // Cancel and clear input strategy
-        inputStrategy.closeSafely()
+        intentStrategy.closeSafely()
 
         // Close and clear state & side effects machinery.
         value.closeSafely(cause)

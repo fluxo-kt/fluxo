@@ -9,7 +9,7 @@ import kt.fluxo.core.FluxoIntentS
 import kt.fluxo.core.FluxoSettings
 import kt.fluxo.core.IntentHandler
 import kt.fluxo.core.Reducer
-import kt.fluxo.core.SideEffectsStrategy
+import kt.fluxo.core.SideEffectStrategy
 import kt.fluxo.core.Store
 import kt.fluxo.core.StoreSE
 import kt.fluxo.core.annotation.ExperimentalFluxoApi
@@ -87,7 +87,7 @@ public abstract class StoreFactory {
         settings: FluxoSettings<Intent, State, Nothing>,
     ): Store<Intent, State> {
         if (settings.debugChecks) {
-            require(settings.sideEffectsStrategy == SideEffectsStrategy.DISABLE) {
+            require(settings.sideEffectStrategy == SideEffectStrategy.DISABLE) {
                 "Expected SideEffectsStrategy.DISABLE to be set as a sideEffectsStrategy. " +
                     "Please, fill an issue if you think it should be done automatically here."
             }

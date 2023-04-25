@@ -6,7 +6,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.receiveAsFlow
-import kt.fluxo.core.SideEffectsStrategy.RECEIVE
+import kt.fluxo.core.SideEffectStrategy.RECEIVE
 import kt.fluxo.core.annotation.InternalFluxoApi
 import kotlin.jvm.JvmField
 
@@ -14,7 +14,7 @@ import kotlin.jvm.JvmField
  * Strategies for side effects sharing from the [Store].
  * When in doubt, use the [default][RECEIVE] one.
  */
-public sealed interface SideEffectsStrategy {
+public sealed interface SideEffectStrategy {
 
     /**
      * [Channel]-based strategy with sharing through the [receiveAsFlow].
@@ -26,7 +26,7 @@ public sealed interface SideEffectsStrategy {
      * @see SHARE
      * @see CONSUME
      */
-    public object RECEIVE : SideEffectsStrategy {
+    public object RECEIVE : SideEffectStrategy {
         /** @hide */
         @InternalFluxoApi
         override fun toString(): String = "RECEIVE"
@@ -47,7 +47,7 @@ public sealed interface SideEffectsStrategy {
      * @see RECEIVE
      * @see SHARE
      */
-    public object CONSUME : SideEffectsStrategy {
+    public object CONSUME : SideEffectStrategy {
         /** @hide */
         @InternalFluxoApi
         override fun toString(): String = "CONSUME"
@@ -67,7 +67,7 @@ public sealed interface SideEffectsStrategy {
     public class SHARE(
         @JvmField
         public val replay: Int,
-    ) : SideEffectsStrategy {
+    ) : SideEffectStrategy {
         public constructor() : this(replay = 0)
 
         /** @hide */
@@ -87,7 +87,7 @@ public sealed interface SideEffectsStrategy {
      * Completely turns off side effects.
      * Saves a bit of app memory, and sometimes brain cells (as a purer way is to use only state & intents).
      */
-    public object DISABLE : SideEffectsStrategy {
+    public object DISABLE : SideEffectStrategy {
         /** @hide */
         @InternalFluxoApi
         override fun toString(): String = "DISABLE"

@@ -1,7 +1,7 @@
 package kt.fluxo.jmh
 
 import kotlinx.coroutines.Dispatchers
-import kt.fluxo.core.input.InputStrategy.InBox.Parallel
+import kt.fluxo.core.intent.IntentStrategy.InBox.Parallel
 import kt.fluxo.test.compare.fluxo.FluxoBenchmark
 import org.openjdk.jmh.annotations.Benchmark
 import org.openjdk.jmh.annotations.Scope

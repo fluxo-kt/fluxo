@@ -19,15 +19,15 @@ import kt.fluxo.core.FluxoIntent
 import kt.fluxo.core.FluxoRuntimeException
 import kt.fluxo.core.closeAndWait
 import kt.fluxo.core.container
-import kt.fluxo.core.input.ChannelBasedInputStrategy
-import kt.fluxo.core.input.InputStrategy
-import kt.fluxo.core.input.InputStrategy.InBox.ChannelLifo
-import kt.fluxo.core.input.InputStrategy.InBox.Direct
-import kt.fluxo.core.input.InputStrategy.InBox.Fifo
-import kt.fluxo.core.input.InputStrategy.InBox.Lifo
-import kt.fluxo.core.input.InputStrategy.InBox.Parallel
-import kt.fluxo.core.input.InputStrategyScope
 import kt.fluxo.core.intent
+import kt.fluxo.core.intent.ChannelBasedIntentStrategy
+import kt.fluxo.core.intent.IntentStrategy
+import kt.fluxo.core.intent.IntentStrategy.InBox.ChannelLifo
+import kt.fluxo.core.intent.IntentStrategy.InBox.Direct
+import kt.fluxo.core.intent.IntentStrategy.InBox.Fifo
+import kt.fluxo.core.intent.IntentStrategy.InBox.Lifo
+import kt.fluxo.core.intent.IntentStrategy.InBox.Parallel
+import kt.fluxo.core.intent.IntentStrategyScope
 import kt.fluxo.core.store
 import kt.fluxo.core.updateState
 import kt.fluxo.test.CoroutineScopeAwareTest
@@ -50,7 +50,7 @@ import kotlin.test.assertTrue
 //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4796934259/jobs/8533286094#step:8:1291
 @IgnoreJs
 @Suppress("SuspendFunctionOnCoroutineScope")
-internal class InputStrategyTest : CoroutineScopeAwareTest() {
+internal class IntentStrategyTest : CoroutineScopeAwareTest() {
 
     internal companion object {
         private const val DBG = 0
@@ -74,8 +74,8 @@ internal class InputStrategyTest : CoroutineScopeAwareTest() {
      * @TODO: Check for absence of undelivered intents for strategies that should always deliver and vice versa.
      */
     @Suppress("CyclomaticComplexMethod")
-    private suspend fun CoroutineScope.input_strategy_test(
-        strategy: InputStrategy.Factory,
+    private suspend fun CoroutineScope.intent_strategy_test(
+        strategy: IntentStrategy.Factory,
         equal: Boolean = false,
         nonOrderedEqual: Boolean = false,
         generic: Boolean = false,
@@ -106,7 +106,7 @@ internal class InputStrategyTest : CoroutineScopeAwareTest() {
                     finishLock.unlock()
                 }
             },
-        ) { inputStrategy = strategy }
+        ) { this.intentStrategy = strategy }
         if (DBG >= 1) testLog("Store created: $store")
         ints.forEach {
             if (it % 2 == 0) store.send(it) else store.emit(it)
@@ -178,7 +178,7 @@ internal class InputStrategyTest : CoroutineScopeAwareTest() {
     @IgnoreNativeAndJs // test can freeze on Native and JS targets
     fun fifo_generic_scope() = t(timeoutMs = 20_000) { scope.fifo_test() }
 
-    private suspend fun CoroutineScope.fifo_test() = input_strategy_test(strategy = Fifo, equal = true)
+    private suspend fun CoroutineScope.fifo_test() = intent_strategy_test(strategy = Fifo, equal = true)
 
     // endregion
 
@@ -223,10 +223,10 @@ internal class InputStrategyTest : CoroutineScopeAwareTest() {
 
     private suspend fun CoroutineScope.lifo_test() = lifo_test(strategy = Lifo)
 
-    private suspend fun CoroutineScope.lifo_test(strategy: InputStrategy.Factory) {
+    private suspend fun CoroutineScope.lifo_test(strategy: IntentStrategy.Factory) {
         @OptIn(ExperimentalStdlibApi::class)
         val isUnconfined = coroutineContext[CoroutineDispatcher] == Unconfined
-        val results = input_strategy_test(strategy = strategy, equal = isUnconfined)
+        val results = intent_strategy_test(strategy = strategy, equal = isUnconfined)
         val last = NUMBER_OF_ITEMS - 1
         assertTrue(last in results, "Last result should be presented ($last), but wasn't in ${results.size} results")
         if (isUnconfined) {
@@ -359,7 +359,7 @@ internal class InputStrategyTest : CoroutineScopeAwareTest() {
     private suspend fun CoroutineScope.parallel_test(generic: Boolean = false) {
         @OptIn(ExperimentalStdlibApi::class)
         val isUnconfined = coroutineContext[CoroutineDispatcher] == Unconfined
-        input_strategy_test(strategy = Parallel, equal = isUnconfined, nonOrderedEqual = true, generic = generic, parallel = true)
+        intent_strategy_test(strategy = Parallel, equal = isUnconfined, nonOrderedEqual = true, generic = generic, parallel = true)
     }
 
     // endregion
@@ -394,7 +394,7 @@ internal class InputStrategyTest : CoroutineScopeAwareTest() {
     @Test
     fun direct_generic_scope() = t { scope.direct_test() }
 
-    private suspend fun CoroutineScope.direct_test() = input_strategy_test(strategy = Direct, equal = true)
+    private suspend fun CoroutineScope.direct_test() = intent_strategy_test(strategy = Direct, equal = true)
 
     // endregion
 
@@ -436,15 +436,15 @@ internal class InputStrategyTest : CoroutineScopeAwareTest() {
     private suspend fun CoroutineScope.custom_test() = lifo_test(strategy = CustomStrategy)
 
     /** Custom strategy for testing customization mechanics. Works like 'Lifo'. */
-    private object CustomStrategy : InputStrategy.Factory {
+    private object CustomStrategy : IntentStrategy.Factory {
         override fun toString() = "Custom"
 
-        override fun <Intent, State> invoke(scope: InputStrategyScope<Intent, State>): InputStrategy<Intent, State> =
-            CustomInputStrategy(scope)
+        override fun <Intent, State> invoke(scope: IntentStrategyScope<Intent, State>): IntentStrategy<Intent, State> =
+            CustomIntentStrategy(scope)
 
         @Suppress("JS_FAKE_NAME_CLASH")
-        private class CustomInputStrategy<Intent, State>(handler: InputStrategyScope<Intent, State>) :
-            ChannelBasedInputStrategy<Intent, State>(handler, resendUndelivered = false) {
+        private class CustomIntentStrategy<Intent, State>(handler: IntentStrategyScope<Intent, State>) :
+            ChannelBasedIntentStrategy<Intent, State>(handler, resendUndelivered = false) {
             override fun <Request> createQueue(onUndeliveredElement: ((Request) -> Unit)?): Channel<Request> =
                 Channel(capacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST, onUndeliveredElement = onUndeliveredElement)
 
@@ -457,13 +457,13 @@ internal class InputStrategyTest : CoroutineScopeAwareTest() {
     // endregion
 
 
-    /** @TODO: Return wnen InputStrategyGuardian will be ready */
+    /** @TODO: Return wnen IntentStrategyGuardian will be ready */
     @Test
-    @Ignore // Ignore while InputStrategyGuardian doesn't correctly verify the one-time only state access in parallel strategies.
-    fun input_guardian_parallel_state_access_prevention() = t {
+    @Ignore // Ignore while IntentStrategyGuardian doesn't correctly verify the one-time only state access in parallel strategies.
+    fun intent_guardian_parallel_state_access_prevention() = t {
         val intent: FluxoIntent<Int, *> = intent@{
             assertTrue(value in 0..1)
-            // Parallel input strategy requires that inputs only access or update the state at most once.
+            // Parallel intent strategy requires that inputs only access or update the state at most once.
             assertFailsWith<FluxoRuntimeException> { value }
             sideJob(key = "${Random.nextLong()}") {
                 // intent scope already closed.
@@ -474,7 +474,7 @@ internal class InputStrategyTest : CoroutineScopeAwareTest() {
             assertFailsWith<FluxoRuntimeException> { noOp() }
         }
         val container = backgroundScope.container(0) {
-            inputStrategy = Parallel
+            intentStrategy = Parallel
             debugChecks = true
             bootstrapper = intent
             optimized = false

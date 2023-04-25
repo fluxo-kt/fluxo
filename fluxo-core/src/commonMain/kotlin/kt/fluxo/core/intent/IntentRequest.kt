@@ -1,4 +1,4 @@
-package kt.fluxo.core.input
+package kt.fluxo.core.intent
 
 import kotlinx.coroutines.CompletableDeferred
 import kt.fluxo.core.annotation.ExperimentalFluxoApi
@@ -8,7 +8,7 @@ import kotlin.jvm.JvmField
  *
  * **NOTE: please fill an issue if you need this class to be open for your own specific implementations!**
  *
- * @see ChannelBasedInputStrategy for usage
+ * @see ChannelBasedIntentStrategy for usage
  */
 @ExperimentalFluxoApi
 internal class IntentRequest<out Intent>(

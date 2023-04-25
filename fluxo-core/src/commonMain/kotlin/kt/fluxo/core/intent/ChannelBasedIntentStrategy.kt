@@ -1,4 +1,4 @@
-package kt.fluxo.core.input
+package kt.fluxo.core.intent
 
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineStart
@@ -19,7 +19,7 @@ import kotlin.js.JsName
 import kotlin.jvm.JvmField
 
 /**
- * [InputStrategy] that uses coroutines [Channel] to streamline [Intent]s.
+ * [IntentStrategy] that uses coroutines [Channel] to streamline [Intent]s.
  * Supports leak-free transfer via [Channel]. See "Undelivered elements" section in [Channel] documentation for details.
  *
  * **WARN:** Uses [createQueue] right in the constructor, be sure to override it using values available at construction time!
@@ -29,10 +29,10 @@ import kotlin.jvm.JvmField
  * @TODO: Causes JS_FAKE_NAME_CLASH warning on inheritors. Find how to avoid it.
  */
 @ExperimentalFluxoApi
-internal open class ChannelBasedInputStrategy<Intent, State>(
-    handler: InputStrategyScope<Intent, State>,
+internal open class ChannelBasedIntentStrategy<Intent, State>(
+    handler: IntentStrategyScope<Intent, State>,
     resendUndelivered: Boolean,
-) : InputStrategy<Intent, State>(handler), FlowCollector<IntentRequest<Intent>> {
+) : IntentStrategy<Intent, State>(handler), FlowCollector<IntentRequest<Intent>> {
 
     @JvmField
     protected val requestsChannel: Channel<IntentRequest<Intent>>
@@ -109,7 +109,7 @@ internal open class ChannelBasedInputStrategy<Intent, State>(
     override suspend fun launch() = emitAll(requestsChannel)
 
     /**
-     * Helper method to use [InputStrategy] itself as a [FlowCollector] for [emitAll],
+     * Helper method to use [IntentStrategy] itself as a [FlowCollector] for [emitAll],
      * without allocating extra objects.
      */
     final override suspend fun emit(value: IntentRequest<Intent>) {

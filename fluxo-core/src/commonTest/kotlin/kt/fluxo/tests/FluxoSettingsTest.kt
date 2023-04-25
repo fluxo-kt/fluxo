@@ -3,11 +3,11 @@ package kt.fluxo.tests
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kt.fluxo.core.FluxoSettings
-import kt.fluxo.core.SideEffectsStrategy
+import kt.fluxo.core.SideEffectStrategy
 import kt.fluxo.core.container
 import kt.fluxo.core.debug.DEBUG
-import kt.fluxo.core.input.InputStrategy.InBox.Direct
-import kt.fluxo.core.input.InputStrategy.InBox.Lifo
+import kt.fluxo.core.intent.IntentStrategy.InBox.Direct
+import kt.fluxo.core.intent.IntentStrategy.InBox.Lifo
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -30,9 +30,9 @@ class FluxoSettingsTest {
     fun sideEffectsStrategy() {
         val s = FluxoSettings.DEFAULT.copy()
         assertEquals(Channel.BUFFERED, s.sideEffectBufferSize)
-        val share = SideEffectsStrategy.SHARE()
-        s.sideEffectsStrategy = share
-        assertEquals(share, s.sideEffectsStrategy)
+        val share = SideEffectStrategy.SHARE()
+        s.sideEffectStrategy = share
+        assertEquals(share, s.sideEffectStrategy)
         assertEquals(0, s.sideEffectBufferSize)
     }
 
@@ -74,8 +74,8 @@ class FluxoSettingsTest {
         assertEquals(Dispatchers.Default, s.coroutineContext)
         assertNull(s.scope)
 
-        assertEquals(SideEffectsStrategy.RECEIVE, s.sideEffectsStrategy)
-        assertEquals(Direct, s.inputStrategy)
+        assertEquals(SideEffectStrategy.RECEIVE, s.sideEffectStrategy)
+        assertEquals(Direct, s.intentStrategy)
         assertNull(s.intentFilter)
         assertNull(s.bootstrapper)
 
@@ -85,18 +85,18 @@ class FluxoSettingsTest {
         assertTrue(s.lazy)
         assertNull(s.name)
 
-        val share = SideEffectsStrategy.SHARE()
-        s.sideEffectsStrategy = share
-        s.inputStrategy = Lifo
+        val share = SideEffectStrategy.SHARE()
+        s.sideEffectStrategy = share
+        s.intentStrategy = Lifo
         s.name = "test"
 
-        assertEquals(share, s.sideEffectsStrategy)
+        assertEquals(share, s.sideEffectStrategy)
         assertEquals(0, s.sideEffectBufferSize)
 
         val c = s.copy()
-        assertEquals(share, c.sideEffectsStrategy)
+        assertEquals(share, c.sideEffectStrategy)
         assertEquals(0, c.sideEffectBufferSize)
-        assertEquals(Lifo, c.inputStrategy)
+        assertEquals(Lifo, c.intentStrategy)
         assertEquals("test", c.name)
     }
 }

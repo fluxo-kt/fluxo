@@ -13,8 +13,8 @@ import kt.fluxo.core.annotation.ExperimentalFluxoApi
 import kt.fluxo.core.annotation.FluxoDsl
 import kt.fluxo.core.annotation.NotThreadSafe
 import kt.fluxo.core.debug.DEBUG
-import kt.fluxo.core.input.InputStrategy
-import kt.fluxo.core.internal.InputStrategyGuardian
+import kt.fluxo.core.intent.IntentStrategy
+import kt.fluxo.core.internal.IntentStrategyGuardian
 import kt.fluxo.core.internal.RunningSideJob.Companion.BOOTSTRAPPER_SIDE_JOB
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
@@ -61,7 +61,7 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
     /**
      * Enables all the debug checks in the [Store].
      *
-     * Disable explicitly if you need to bypass the [InputStrategyGuardian] checks, and sure in it.
+     * Disable explicitly if you need to bypass the [IntentStrategyGuardian] checks, and sure in it.
      *
      * [closeOnExceptions] is also enabled if [debugChecks] enabled explicitly.
      */
@@ -73,9 +73,9 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
 
     /**
      * Either a positive [SideEffect]s channel capacity or one of the constants defined in [Channel.Factory].
-     * Used as a `extraBufferCapacity` parameter for [MutableSharedFlow] when [SideEffectsStrategy.SHARE] used.
+     * Used as a `extraBufferCapacity` parameter for [MutableSharedFlow] when [SideEffectStrategy.SHARE] used.
      *
-     * @see sideEffectsStrategy
+     * @see sideEffectStrategy
      */
     public var sideEffectBufferSize: Int = Channel.BUFFERED
 
@@ -126,19 +126,19 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
      * Select from [Fifo], [Lifo], and [Parallel] strategies,
      * or create your own if you need.
      */
-    public var inputStrategy: InputStrategy.Factory = Direct
+    public var intentStrategy: IntentStrategy.Factory = Direct
 
     /**
      * A strategy for sharing side effects.
-     * [sideEffectBufferSize] defaults to `0` when [SideEffectsStrategy.SHARE] used.
+     * [sideEffectBufferSize] defaults to `0` when [SideEffectStrategy.SHARE] used.
      *
-     * @see SideEffectsStrategy
+     * @see SideEffectStrategy
      * @see sideEffectBufferSize
      */
-    public var sideEffectsStrategy: SideEffectsStrategy = SideEffectsStrategy.RECEIVE
+    public var sideEffectStrategy: SideEffectStrategy = SideEffectStrategy.RECEIVE
         set(value) {
             field = value
-            if (value is SideEffectsStrategy.SHARE && sideEffectBufferSize == Channel.BUFFERED) {
+            if (value is SideEffectStrategy.SHARE && sideEffectBufferSize == Channel.BUFFERED) {
                 sideEffectBufferSize = 0
             }
         }
@@ -231,7 +231,7 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
     @JsName("Fifo")
     @ObjCName("Fifo")
     @get:JvmName("Fifo")
-    public inline val Fifo: InputStrategy.Factory get() = InputStrategy.Fifo
+    public inline val Fifo: IntentStrategy.Factory get() = IntentStrategy.Fifo
 
     /**
      * **Lifo**, `last-in, first-out` strategy.
@@ -241,7 +241,7 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
      *
      * **IMPORTANT:** Cancels earlier unfinished intent when receives a new one!
      *
-     * **IMPORTANT:** No guarantee that inputs processed in any given order!
+     * **IMPORTANT:** No guarantee that intents processed in any given order!
      *
      * Consider [Parallel] if you need more responsiveness, but without dropping out anything.
      *
@@ -257,7 +257,7 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
     @JsName("Lifo")
     @ObjCName("Lifo")
     @get:JvmName("Lifo")
-    public inline val Lifo: InputStrategy.Factory get() = InputStrategy.Lifo
+    public inline val Lifo: IntentStrategy.Factory get() = IntentStrategy.Lifo
 
     /**
      * Strategy with parallel processing of intents.
@@ -265,7 +265,7 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
      *
      * Use [CoroutineDispatcher.limitedParallelism] on [coroutineContext] or [scope] to limit parallelism to some value.
      *
-     * **IMPORTANT:** No guarantee that inputs processed in any given order!
+     * **IMPORTANT:** No guarantee that intents processed in any given order!
      *
      * @see Fifo
      * @see Lifo
@@ -275,7 +275,7 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
     @JsName("Parallel")
     @ObjCName("Parallel")
     @get:JvmName("Parallel")
-    public inline val Parallel: InputStrategy.Factory get() = InputStrategy.Parallel
+    public inline val Parallel: IntentStrategy.Factory get() = IntentStrategy.Parallel
 
     /**
      * [Parallel] strategy that will immediately execute intent until its first suspension point in the current thread
@@ -291,7 +291,7 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
     @JsName("Direct")
     @ObjCName("Direct")
     @get:JvmName("Direct")
-    public inline val Direct: InputStrategy.Factory get() = InputStrategy.Direct
+    public inline val Direct: IntentStrategy.Factory get() = IntentStrategy.Direct
 
     /**
      * [Channel]-based implementation for the **[Lifo]**, `Last-in, first-out` strategy.
@@ -300,7 +300,7 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
      *
      * **IMPORTANT:** Cancels earlier unfinished intent when receives a new one!
      *
-     * **IMPORTANT:** No guarantee that inputs processed in any given order!
+     * **IMPORTANT:** No guarantee that intents processed in any given order!
      *
      * Consider [Parallel] if you need more responsiveness, but without dropping out any intents.
      *
@@ -321,7 +321,7 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
     @JsName("ChannelLifo")
     @ObjCName("ChannelLifo")
     @JvmName("ChannelLifo")
-    internal inline fun ChannelLifo(ordered: Boolean = true): InputStrategy.Factory = InputStrategy.ChannelLifo(ordered)
+    internal inline fun ChannelLifo(ordered: Boolean = true): IntentStrategy.Factory = IntentStrategy.ChannelLifo(ordered)
 
     // endregion
 
@@ -354,8 +354,8 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
         s.coroutineContext = coroutineContext
         s.scope = scope
 
-        s.sideEffectsStrategy = sideEffectsStrategy
-        s.inputStrategy = inputStrategy
+        s.sideEffectStrategy = sideEffectStrategy
+        s.intentStrategy = intentStrategy
         s.intentFilter = intentFilter
         s.bootstrapper = bootstrapper
 

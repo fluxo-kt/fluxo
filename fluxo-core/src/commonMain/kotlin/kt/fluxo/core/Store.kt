@@ -18,7 +18,7 @@ import kotlin.jvm.JvmSynthetic
 
 /**
  * The core of the Fluxo MVI.
- * Represents a state store with its input and outputs.
+ * Represents a state node with its inputs (intents) and outputs (state updates).
  *
  * [Store] implements [StateFlow] and [FlowCollector] interfaces,
  * allowing to combine different [Store]s with each other and with other [Flow]s.

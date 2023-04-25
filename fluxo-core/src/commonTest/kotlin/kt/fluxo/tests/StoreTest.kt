@@ -3,7 +3,7 @@ package kt.fluxo.tests
 import kt.fluxo.core.closeAndWait
 import kt.fluxo.core.container
 import kt.fluxo.test.runUnitTest
-import kt.fluxo.tests.InputStrategyTest.Companion.ALL_STRATEGIES
+import kt.fluxo.tests.IntentStrategyTest.Companion.ALL_STRATEGIES
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -39,8 +39,8 @@ class StoreTest {
     fun intent_processed_container_cancellation() = runUnitTest {
         for (strategy in ALL_STRATEGIES) {
             for (container in arrayOf(
-                container(0) { inputStrategy = strategy },
-                backgroundScope.container(0) { inputStrategy = strategy },
+                container(0) { this.intentStrategy = strategy },
+                backgroundScope.container(0) { this.intentStrategy = strategy },
             )) {
                 assertEquals(0, container.value)
                 container.send { value = 1 }.join()

@@ -1,1 +1,1 @@
-## Fluxo MVI / MVVM+ core module
+## Fluxo core module

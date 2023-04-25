@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
 import kt.fluxo.core.Container
-import kt.fluxo.core.SideEffectsStrategy
+import kt.fluxo.core.SideEffectStrategy
 import kt.fluxo.core.closeAndWait
 import kt.fluxo.core.container
 import kt.fluxo.core.debug.debugClassName
@@ -32,7 +32,7 @@ import kotlin.test.assertTrue
 
 internal class SideEffectTest {
     private companion object {
-        private val BASIC_STRATEGIES = arrayOf(SideEffectsStrategy.RECEIVE, SideEffectsStrategy.CONSUME)
+        private val BASIC_STRATEGIES = arrayOf(SideEffectStrategy.RECEIVE, SideEffectStrategy.CONSUME)
     }
 
     // TODO: Timeout of 2000ms exceeded
@@ -43,16 +43,16 @@ internal class SideEffectTest {
     //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4018550114/jobs/6904304918#step:8:597
     @Test
     fun side_effects_strategies_api() {
-        assertEquals("RECEIVE", SideEffectsStrategy.RECEIVE.toString())
-        assertEquals("CONSUME", SideEffectsStrategy.CONSUME.toString())
-        assertEquals("DISABLE", SideEffectsStrategy.DISABLE.toString())
-        assertEquals("SHARE(replay=0)", SideEffectsStrategy.SHARE().toString())
+        assertEquals("RECEIVE", SideEffectStrategy.RECEIVE.toString())
+        assertEquals("CONSUME", SideEffectStrategy.CONSUME.toString())
+        assertEquals("DISABLE", SideEffectStrategy.DISABLE.toString())
+        assertEquals("SHARE(replay=0)", SideEffectStrategy.SHARE().toString())
 
         for (s in arrayOf(
-            SideEffectsStrategy.RECEIVE,
-            SideEffectsStrategy.CONSUME,
-            SideEffectsStrategy.DISABLE,
-            SideEffectsStrategy.SHARE(),
+            SideEffectStrategy.RECEIVE,
+            SideEffectStrategy.CONSUME,
+            SideEffectStrategy.DISABLE,
+            SideEffectStrategy.SHARE(),
         )) {
             assertEquals(s, s)
             assertEquals(s.hashCode(), s.hashCode())
@@ -60,11 +60,11 @@ internal class SideEffectTest {
             assertSame(s, s)
         }
 
-        assertEquals(SideEffectsStrategy.SHARE(), SideEffectsStrategy.SHARE())
-        assertNotSame(SideEffectsStrategy.SHARE(), SideEffectsStrategy.SHARE())
-        assertNotEquals(SideEffectsStrategy.SHARE(1), SideEffectsStrategy.SHARE())
+        assertEquals(SideEffectStrategy.SHARE(), SideEffectStrategy.SHARE())
+        assertNotSame(SideEffectStrategy.SHARE(), SideEffectStrategy.SHARE())
+        assertNotEquals(SideEffectStrategy.SHARE(1), SideEffectStrategy.SHARE())
         @Suppress("RemoveExplicitTypeArguments")
-        assertNotEquals<SideEffectsStrategy>(SideEffectsStrategy.RECEIVE, SideEffectsStrategy.SHARE())
+        assertNotEquals<SideEffectStrategy>(SideEffectStrategy.RECEIVE, SideEffectStrategy.SHARE())
     }
 
 
@@ -74,7 +74,7 @@ internal class SideEffectTest {
         for (strategy in BASIC_STRATEGIES) {
             // Uses Fifo strategy by default, saving order of intents
             val container = backgroundScope.container<Unit, Int>(Unit) {
-                sideEffectsStrategy = strategy
+                sideEffectStrategy = strategy
             }
             container.sideEffectFlow.test {
                 val n = 500
@@ -121,15 +121,15 @@ internal class SideEffectTest {
 
     @Test
     fun side_effects_are_cached_when_there_are_no_subscribers__receive_strategy() =
-        side_effects_are_cached_when_there_are_no_subscribers(SideEffectsStrategy.RECEIVE)
+        side_effects_are_cached_when_there_are_no_subscribers(SideEffectStrategy.RECEIVE)
 
     @Test
     fun side_effects_are_cached_when_there_are_no_subscribers__consume_strategy() =
-        side_effects_are_cached_when_there_are_no_subscribers(SideEffectsStrategy.CONSUME)
+        side_effects_are_cached_when_there_are_no_subscribers(SideEffectStrategy.CONSUME)
 
-    private fun side_effects_are_cached_when_there_are_no_subscribers(strategy: SideEffectsStrategy) = runUnitTest {
+    private fun side_effects_are_cached_when_there_are_no_subscribers(strategy: SideEffectStrategy) = runUnitTest {
         val container = backgroundScope.container<Unit, Int>(Unit) {
-            sideEffectsStrategy = strategy
+            sideEffectStrategy = strategy
         }
         repeat(3) {
             container.postSideEffect(it)
@@ -176,7 +176,7 @@ internal class SideEffectTest {
 
     @Test
     fun disabled_side_effects() = runUnitTest {
-        for (strategy in BASIC_STRATEGIES + SideEffectsStrategy.SHARE()) {
+        for (strategy in BASIC_STRATEGIES + SideEffectStrategy.SHARE()) {
             val container = container(Unit) {
                 // cover extra lines of code
                 name = ""
@@ -197,7 +197,7 @@ internal class SideEffectTest {
     @Test
     fun side_effects_can_be_collected_only_once_with_consume_strategy() = runUnitTest {
         val container = container<Unit, Int>(Unit) {
-            sideEffectsStrategy = SideEffectsStrategy.CONSUME
+            sideEffectStrategy = SideEffectStrategy.CONSUME
         }
         container.postSideEffect(1)
         val flow = container.sideEffectFlow
@@ -217,14 +217,14 @@ internal class SideEffectTest {
     // :testReleaseUnit
     // https://github.com/fluxo-kt/fluxo-mvi/actions/runs/3713762763/jobs/6296805652#step:6:332
     @Test
-    fun unconsumed_side_effects_will_be_closed__consume_strategy() = unconsumed_side_effects_will_be_closed(SideEffectsStrategy.CONSUME)
+    fun unconsumed_side_effects_will_be_closed__consume_strategy() = unconsumed_side_effects_will_be_closed(SideEffectStrategy.CONSUME)
 
     @Test
-    fun unconsumed_side_effects_will_be_closed__receive_strategy() = unconsumed_side_effects_will_be_closed(SideEffectsStrategy.RECEIVE)
+    fun unconsumed_side_effects_will_be_closed__receive_strategy() = unconsumed_side_effects_will_be_closed(SideEffectStrategy.RECEIVE)
 
-    private fun unconsumed_side_effects_will_be_closed(strategy: SideEffectsStrategy) = runUnitTest {
+    private fun unconsumed_side_effects_will_be_closed(strategy: SideEffectStrategy) = runUnitTest {
         val container = container<Unit, Any>(initialState = Unit, setup = {
-            sideEffectsStrategy = strategy
+            sideEffectStrategy = strategy
             scope = CoroutineScope(SupervisorJob())
             debugChecks = false
             closeOnExceptions = false
@@ -266,15 +266,15 @@ internal class SideEffectTest {
     // https://github.com/fluxo-kt/fluxo-mvi/actions/runs/3714168176/jobs/6297720613#step:6:271
     @Test
     @Ignore // TODO: Should be returned after `fluxo-event-stream` will be added
-    fun undelivered_side_effects__consume_strategy() = undelivered_side_effects(SideEffectsStrategy.CONSUME)
+    fun undelivered_side_effects__consume_strategy() = undelivered_side_effects(SideEffectStrategy.CONSUME)
 
     @Test
     @Ignore // TODO: Should be returned after `fluxo-event-stream` will be added
-    fun undelivered_side_effects__receive_strategy() = undelivered_side_effects(SideEffectsStrategy.RECEIVE)
+    fun undelivered_side_effects__receive_strategy() = undelivered_side_effects(SideEffectStrategy.RECEIVE)
 
-    private fun undelivered_side_effects(strategy: SideEffectsStrategy) = runUnitTest {
+    private fun undelivered_side_effects(strategy: SideEffectStrategy) = runUnitTest {
         val container = backgroundScope.container<Unit, Int>(initialState = Unit, setup = {
-            sideEffectsStrategy = strategy
+            sideEffectStrategy = strategy
             sideEffectBufferSize = Channel.CONFLATED
         })
         var hasUndelivered by MutableStateFlow(false)

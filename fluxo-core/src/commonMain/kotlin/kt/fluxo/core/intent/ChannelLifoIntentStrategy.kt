@@ -1,6 +1,6 @@
 @file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
 
-package kt.fluxo.core.input
+package kt.fluxo.core.intent
 
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
@@ -17,15 +17,15 @@ import kotlin.coroutines.EmptyCoroutineContext
 /**
  * [Channel]-based implementation for the **Lifo**, `Last-in, first-out` strategy.
  * Optimized for a stream of events (e.g., user actions) in which new ones make previous ones obsolete.
- * Provides more responsiveness than [Fifo][FifoInputStrategy], but at the cost of possibly losing some intents!
+ * Provides more responsiveness than [Fifo][FifoIntentStrategy], but at the cost of possibly losing some intents!
  *
  * **IMPORTANT:** Cancels previous unfinished intent when receives a new one!
  *
- * **IMPORTANT:** There is no guarantee that the inputs will not be processed in parallel if [ordered] is `false`!
+ * **IMPORTANT:** There is no guarantee that the intents will not be processed in parallel if [ordered] is `false`!
  *
- * Consider [Parallel][ParallelInputStrategy] if you need more responsiveness, but without dropping out any intents.
+ * Consider [Parallel][ParallelIntentStrategy] if you need more responsiveness, but without dropping out any intents.
  *
- * Consider simple non-[channel][Channel]-based [Lifo][LifoInputStrategy]
+ * Consider simple non-[channel][Channel]-based [Lifo][LifoIntentStrategy]
  * if you don't need [strict order guarantee][ordered].
  *
  * @param ordered if `true`, the strategy will wait for the last intent to complete
@@ -33,32 +33,32 @@ import kotlin.coroutines.EmptyCoroutineContext
  *  without any moments of potentially parallel processing. As a consequence,
  *  it will allow the previous intent to block the next one, e.g. with busy-waiting.
  *
- * @see ParallelInputStrategy
- * @see LifoInputStrategy
- * @see FifoInputStrategy
+ * @see ParallelIntentStrategy
+ * @see LifoIntentStrategy
+ * @see FifoIntentStrategy
  */
 @ExperimentalFluxoApi
-internal class ChannelLifoInputStrategy(
+internal class ChannelLifoIntentStrategy(
     private val ordered: Boolean,
-) : InputStrategy.Factory {
+) : IntentStrategy.Factory {
 
     override fun toString() = "ChannelLifo(ordered=$ordered)"
 
     override fun equals(other: Any?): Boolean {
-        return this === other || other is ChannelLifoInputStrategy && ordered == other.ordered
+        return this === other || other is ChannelLifoIntentStrategy && ordered == other.ordered
     }
 
     override fun hashCode(): Int = ordered.hashCode()
 
 
-    override fun <Intent, State> invoke(scope: InputStrategyScope<Intent, State>): InputStrategy<Intent, State> =
+    override fun <Intent, State> invoke(scope: IntentStrategyScope<Intent, State>): IntentStrategy<Intent, State> =
         ChannelLifo(scope, ordered)
 
     @Suppress("JS_FAKE_NAME_CLASH")
     private class ChannelLifo<Intent, State>(
-        scope: InputStrategyScope<Intent, State>,
+        scope: IntentStrategyScope<Intent, State>,
         private val ordered: Boolean,
-    ) : ChannelBasedInputStrategy<Intent, State>(scope, resendUndelivered = false) {
+    ) : ChannelBasedIntentStrategy<Intent, State>(scope, resendUndelivered = false) {
 
         /**
          * Signal if next intent can start without waiting for the end of previous one, making strategy parallel.

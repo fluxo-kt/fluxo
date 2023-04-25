@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.yield
-import kt.fluxo.core.SideEffectsStrategy
+import kt.fluxo.core.SideEffectStrategy
 import kt.fluxo.core.closeAndWait
 import kt.fluxo.core.data.GuaranteedEffect
 import kt.fluxo.core.store
@@ -55,7 +55,7 @@ internal class GuaranteedEffectTest : CoroutineScopeAwareTest() {
         }) {
             lazy = false
             debugChecks = false
-            sideEffectsStrategy = SideEffectsStrategy.SHARE(replay = 1)
+            sideEffectStrategy = SideEffectStrategy.SHARE(replay = 1)
         }
         yield()
         repeat(3, store::send)

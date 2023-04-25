@@ -21,13 +21,13 @@ import kotlinx.coroutines.withTimeout
 import kt.fluxo.core.closeAndWait
 import kt.fluxo.core.container
 import kt.fluxo.core.dsl.ContainerHost
-import kt.fluxo.core.input.InputStrategy
-import kt.fluxo.core.input.InputStrategy.InBox.ChannelLifo
-import kt.fluxo.core.input.InputStrategy.InBox.Direct
-import kt.fluxo.core.input.InputStrategy.InBox.Fifo
-import kt.fluxo.core.input.InputStrategy.InBox.Lifo
-import kt.fluxo.core.input.InputStrategy.InBox.Parallel
 import kt.fluxo.core.intent
+import kt.fluxo.core.intent.IntentStrategy
+import kt.fluxo.core.intent.IntentStrategy.InBox.ChannelLifo
+import kt.fluxo.core.intent.IntentStrategy.InBox.Direct
+import kt.fluxo.core.intent.IntentStrategy.InBox.Fifo
+import kt.fluxo.core.intent.IntentStrategy.InBox.Lifo
+import kt.fluxo.core.intent.IntentStrategy.InBox.Parallel
 import kt.fluxo.core.send
 import kt.fluxo.test.IgnoreJs
 import kt.fluxo.test.KMM_PLATFORM
@@ -35,7 +35,7 @@ import kt.fluxo.test.Platform
 import kt.fluxo.test.TestLoggingStoreFactory
 import kt.fluxo.test.runUnitTest
 import kt.fluxo.test.testLog
-import kt.fluxo.tests.InputStrategyTest
+import kt.fluxo.tests.IntentStrategyTest
 import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -163,8 +163,8 @@ internal class DslThreadingTest {
 
     private fun test(
         scopes: TestScope.() -> Map<String, CoroutineScope?> = ALL_SCOPES,
-        strategies: TestScope.(scopeName: String) -> Array<out InputStrategy.Factory?> = { ALL_STRATEGIES },
-        block: suspend TestScope.(middleware: BaseDslMiddleware, strategy: InputStrategy.Factory, info: String) -> Unit,
+        strategies: TestScope.(scopeName: String) -> Array<out IntentStrategy.Factory?> = { ALL_STRATEGIES },
+        block: suspend TestScope.(middleware: BaseDslMiddleware, strategy: IntentStrategy.Factory, info: String) -> Unit,
     ) = runUnitTest(timeoutMs = TEST_TIMEOUT) {
         repeat(TEST_REPETITIONS) { iteration ->
             for ((scopeName, scope) in scopes()) {
@@ -190,7 +190,7 @@ internal class DslThreadingTest {
         }
     }
 
-    private fun Job.cancelForFifo(strategy: InputStrategy.Factory) {
+    private fun Job.cancelForFifo(strategy: IntentStrategy.Factory) {
         // Otherwise, Fifo will be blocked
         if (strategy == Fifo) {
             if (DBG > 0) testLog("blocking job cancellation for $strategy")
@@ -219,7 +219,7 @@ internal class DslThreadingTest {
     @Suppress("ControlFlowWithEmptyBody", "EmptyWhileBlock", "DEPRECATION")
     private inner class BaseDslMiddleware(
         scope: CoroutineScope,
-        strategy: InputStrategy.Factory = Parallel,
+        strategy: IntentStrategy.Factory = Parallel,
         debugChecks: Boolean = true,
     ) : ContainerHost<TestState, String> {
 
@@ -227,7 +227,7 @@ internal class DslThreadingTest {
             initialState = INIT_VALUE,
             factory = if (DBG >= 3) TestLoggingStoreFactory() else null,
         ) {
-            inputStrategy = strategy
+            this.intentStrategy = strategy
             this.debugChecks = debugChecks
         }
 
@@ -334,7 +334,7 @@ internal class DslThreadingTest {
 
 
     private companion object {
-        private inline val NonParallelDispatcher get() = InputStrategyTest.NonParallelDispatcher
+        private inline val NonParallelDispatcher get() = IntentStrategyTest.NonParallelDispatcher
 
         private val ALL_SCOPES: TestScope.() -> Map<String, CoroutineScope?> = {
             mapOf(
@@ -352,7 +352,7 @@ internal class DslThreadingTest {
             )
         }
 
-        private inline val ALL_STRATEGIES get() = InputStrategyTest.ALL_STRATEGIES
+        private inline val ALL_STRATEGIES get() = IntentStrategyTest.ALL_STRATEGIES
 
         /** Some problems are stochastic, try to detect them with repetitions */
         private val TEST_REPETITIONS = if (KMM_PLATFORM != Platform.JS) 2 else 100

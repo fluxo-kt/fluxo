@@ -9,7 +9,7 @@ import kt.fluxo.core.Store
 import kt.fluxo.core.annotation.ExperimentalFluxoApi
 import kt.fluxo.core.closeAndWait
 import kt.fluxo.core.container
-import kt.fluxo.core.input.InputStrategy
+import kt.fluxo.core.intent.IntentStrategy
 import kt.fluxo.core.internal.Closeable
 import kt.fluxo.core.store
 import kt.fluxo.core.updateState
@@ -24,7 +24,7 @@ internal object FluxoBenchmark {
     fun mvvmIntent(): Int {
         val container = container(0) {
             coroutineContext = Dispatchers.Unconfined
-            inputStrategy = Direct
+            intentStrategy = Direct
             debugChecks = false
             lazy = false
         }
@@ -32,7 +32,7 @@ internal object FluxoBenchmark {
         return container.consumeFluxo(intent)
     }
 
-    fun mviReducer(dispatcher: CoroutineContext? = null, strategy: InputStrategy.Factory? = null): Int {
+    fun mviReducer(dispatcher: CoroutineContext? = null, strategy: IntentStrategy.Factory? = null): Int {
         var closeable: ExecutorCoroutineDispatcher? = null
         val store = store<IntentIncrement, Int>(
             initialState = 0,
@@ -47,7 +47,7 @@ internal object FluxoBenchmark {
                 closeable = context
                 context
             }
-            inputStrategy = strategy ?: Direct
+            this.intentStrategy = strategy ?: Direct
             debugChecks = false
             lazy = false
         }
@@ -64,7 +64,7 @@ internal object FluxoBenchmark {
             },
         ) {
             coroutineContext = Dispatchers.Unconfined
-            inputStrategy = Direct
+            intentStrategy = Direct
             debugChecks = false
             lazy = false
         }

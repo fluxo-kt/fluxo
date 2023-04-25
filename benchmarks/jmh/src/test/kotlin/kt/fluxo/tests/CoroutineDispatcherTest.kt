@@ -4,7 +4,7 @@ import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Unconfined
 import kotlinx.coroutines.test.runTest
-import kt.fluxo.core.input.InputStrategy.InBox.Parallel
+import kt.fluxo.core.intent.IntentStrategy.InBox.Parallel
 import kt.fluxo.test.compare.fluxo.FluxoBenchmark
 import org.junit.Ignore
 import org.junit.Test

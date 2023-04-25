@@ -1,4 +1,4 @@
-package kt.fluxo.core.input
+package kt.fluxo.core.intent
 
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
@@ -18,13 +18,13 @@ import kotlin.jvm.JvmName
 import kotlin.native.ObjCName
 
 /**
- * Second version of [InputStrategy] system.
+ * Second version of [IntentStrategy] system.
  * Provides full control on how, when and where to execute [Intent]s.
  */
 @ExperimentalFluxoApi
-public abstract class InputStrategy<in Intent, State>(
+public abstract class IntentStrategy<in Intent, State>(
     @JvmField
-    protected val handler: InputStrategyScope<Intent, State>,
+    protected val handler: IntentStrategyScope<Intent, State>,
 ) : Closeable {
 
     public open val parallelProcessing: Boolean get() = false
@@ -41,7 +41,7 @@ public abstract class InputStrategy<in Intent, State>(
 
 
     /**
-     * Queues the [Intent] for processing using this [InputStrategy] in a suspendable way.
+     * Queues the [Intent] for processing using this [IntentStrategy] in a suspendable way.
      */
     @JsName("queueIntentSuspend")
     public open suspend fun queueIntentSuspend(intent: Intent) {
@@ -49,7 +49,7 @@ public abstract class InputStrategy<in Intent, State>(
     }
 
     /**
-     * Queues the [Intent] for processing using this [InputStrategy], returning a [Job].
+     * Queues the [Intent] for processing using this [IntentStrategy], returning a [Job].
      */
     @JsName("queueIntent")
     public abstract fun queueIntent(intent: Intent): Job
@@ -90,12 +90,12 @@ public abstract class InputStrategy<in Intent, State>(
     @ExperimentalFluxoApi
     public interface Factory {
         @JsName("create")
-        public operator fun <Intent, State> invoke(scope: InputStrategyScope<Intent, State>): InputStrategy<Intent, State>
+        public operator fun <Intent, State> invoke(scope: IntentStrategyScope<Intent, State>): IntentStrategy<Intent, State>
     }
 
 
     /**
-     * Accessors for in-box input strategies.
+     * Accessors for in-box intent strategies.
      */
     public companion object InBox {
         /**
@@ -113,7 +113,7 @@ public abstract class InputStrategy<in Intent, State>(
         @JsName("Fifo")
         @ObjCName("Fifo")
         @get:JvmName("Fifo")
-        public val Fifo: Factory get() = FifoInputStrategy
+        public val Fifo: Factory get() = FifoIntentStrategy
 
         /**
          * **Lifo**, `Last-in, first-out` strategy.
@@ -122,7 +122,7 @@ public abstract class InputStrategy<in Intent, State>(
          *
          * **IMPORTANT:** Cancels previous unfinished intent when receives a new one!
          *
-         * **IMPORTANT:** There is no guarantee that the inputs will not be processed in parallel!
+         * **IMPORTANT:** There is no guarantee that the intents will not be processed in parallel!
          *
          * Consider [Parallel] if you need more responsiveness, but without dropping out any intents.
          *
@@ -137,7 +137,7 @@ public abstract class InputStrategy<in Intent, State>(
         @JsName("Lifo")
         @ObjCName("Lifo")
         @get:JvmName("Lifo")
-        public val Lifo: Factory get() = LifoInputStrategy
+        public val Lifo: Factory get() = LifoIntentStrategy
 
 
         /**
@@ -155,7 +155,7 @@ public abstract class InputStrategy<in Intent, State>(
         @JsName("Parallel")
         @ObjCName("Parallel")
         @get:JvmName("Parallel")
-        public val Parallel: Factory get() = ParallelInputStrategy.DEFAULT
+        public val Parallel: Factory get() = ParallelIntentStrategy.DEFAULT
 
         /**
          * [Parallel] strategy that will immediately execute intent until its first suspension point in the current thread
@@ -170,7 +170,7 @@ public abstract class InputStrategy<in Intent, State>(
         @JsName("Direct")
         @ObjCName("Direct")
         @get:JvmName("Direct")
-        public val Direct: Factory get() = ParallelInputStrategy.DIRECT
+        public val Direct: Factory get() = ParallelIntentStrategy.DIRECT
 
 
         /**
@@ -180,7 +180,7 @@ public abstract class InputStrategy<in Intent, State>(
          *
          * **IMPORTANT:** Cancels previous unfinished intent when receives a new one!
          *
-         * **IMPORTANT:** There is no guarantee that the inputs will not be processed in parallel if [ordered] is `false`!
+         * **IMPORTANT:** There is no guarantee that the intents will not be processed in parallel if [ordered] is `false`!
          *
          * Consider [Parallel] if you need more responsiveness, but without dropping out any intents.
          *
@@ -200,6 +200,6 @@ public abstract class InputStrategy<in Intent, State>(
         @JsName("ChannelLifo")
         @ObjCName("ChannelLifo")
         @JvmName("ChannelLifo")
-        internal fun ChannelLifo(ordered: Boolean = true): Factory = ChannelLifoInputStrategy(ordered)
+        internal fun ChannelLifo(ordered: Boolean = true): Factory = ChannelLifoIntentStrategy(ordered)
     }
 }

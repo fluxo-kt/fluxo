@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.yield
 import kt.fluxo.core.Container
-import kt.fluxo.core.SideEffectsStrategy
+import kt.fluxo.core.SideEffectStrategy
 import kt.fluxo.core.closeAndWait
 import kt.fluxo.core.container
 import kt.fluxo.core.dsl.ContainerHostS
@@ -53,10 +53,10 @@ internal class RepeatOnSubscriptionTest : CoroutineScopeAwareTest() {
     @IgnoreJs // TODO: Can we fix it for JS?
     fun repeatOnSubscription_mechanics() = runUnitTest {
         val sideEffectsStrategies = arrayOf(
-            SideEffectsStrategy.RECEIVE,
-            SideEffectsStrategy.CONSUME,
-            SideEffectsStrategy.SHARE(),
-            SideEffectsStrategy.DISABLE,
+            SideEffectStrategy.RECEIVE,
+            SideEffectStrategy.CONSUME,
+            SideEffectStrategy.SHARE(),
+            SideEffectStrategy.DISABLE,
         )
 
         /** [TestScope] disables actual delay waiting */
@@ -67,12 +67,12 @@ internal class RepeatOnSubscriptionTest : CoroutineScopeAwareTest() {
                         onStart {
                             repeatOnSubscription(stopTimeout = stopTimeout) {
                                 updateState { it.copy(count = it.count + 1) }
-                                if (seStrategy != SideEffectsStrategy.DISABLE) {
+                                if (seStrategy != SideEffectStrategy.DISABLE) {
                                     postSideEffect(value.count)
                                 }
                             }
                         }
-                        sideEffectsStrategy = seStrategy
+                        sideEffectStrategy = seStrategy
                     }
                     repeatOnSubscription_mechanics0(container, seStrategy, stopTimeout)
                 }
@@ -80,7 +80,7 @@ internal class RepeatOnSubscriptionTest : CoroutineScopeAwareTest() {
         }
     }
 
-    private suspend fun repeatOnSubscription_mechanics0(store: Container<State, Int>, strategy: SideEffectsStrategy, timeout: Long) {
+    private suspend fun repeatOnSubscription_mechanics0(store: Container<State, Int>, strategy: SideEffectStrategy, timeout: Long) {
         assertEquals(initialState, store.value)
 
         val states = store.take(2).toList()
@@ -100,19 +100,19 @@ internal class RepeatOnSubscriptionTest : CoroutineScopeAwareTest() {
         assertEquals(State(2), store.value)
 
         when (strategy) {
-            SideEffectsStrategy.RECEIVE, SideEffectsStrategy.CONSUME -> {
+            SideEffectStrategy.RECEIVE, SideEffectStrategy.CONSUME -> {
                 val effects = store.sideEffectFlow.take(3).toList()
                 assertContentEquals(listOf(1, 2, 3), effects, "SideEffectsStrategy: $strategy")
                 assertEquals(State(3), store.value)
             }
 
-            is SideEffectsStrategy.SHARE -> {
+            is SideEffectStrategy.SHARE -> {
                 val effects = store.sideEffectFlow.take(1).toList()
                 assertContentEquals(listOf(3), effects, "SideEffectsStrategy: $strategy")
                 assertEquals(State(3), store.value)
             }
 
-            SideEffectsStrategy.DISABLE -> {
+            SideEffectStrategy.DISABLE -> {
                 // side effects turned off
                 assertFailsWith<IllegalStateException> { store.sideEffectFlow }
             }

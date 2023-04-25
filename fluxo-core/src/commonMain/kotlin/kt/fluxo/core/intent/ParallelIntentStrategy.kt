@@ -1,4 +1,4 @@
-package kt.fluxo.core.input
+package kt.fluxo.core.intent
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineStart
@@ -10,7 +10,7 @@ import kotlin.jvm.JvmField
 
 /**
  * Strategy with parallel processing of intents.
- * Can provide better responsiveness comparing to [Fifo][FifoInputStrategy].
+ * Can provide better responsiveness comparing to [Fifo][FifoIntentStrategy].
  *
  * Use [CoroutineDispatcher.limitedParallelism] on [FluxoSettings.coroutineContext] to limit parallelism to some value.
  *
@@ -18,37 +18,37 @@ import kotlin.jvm.JvmField
  *
  * @param start coroutine start option. The default value is [CoroutineStart.DEFAULT].
  *
- * @see FifoInputStrategy
- * @see LifoInputStrategy
- * @see ChannelLifoInputStrategy
+ * @see FifoIntentStrategy
+ * @see LifoIntentStrategy
+ * @see ChannelLifoIntentStrategy
  */
-internal class ParallelInputStrategy(
+internal class ParallelIntentStrategy(
     private val start: CoroutineStart,
-) : InputStrategy.Factory {
+) : IntentStrategy.Factory {
 
     companion object {
         @JvmField
-        val DEFAULT: InputStrategy.Factory = ParallelInputStrategy(start = CoroutineStart.DEFAULT)
+        val DEFAULT: IntentStrategy.Factory = ParallelIntentStrategy(start = CoroutineStart.DEFAULT)
 
         @JvmField
-        val DIRECT: InputStrategy.Factory = ParallelInputStrategy(start = CoroutineStart.UNDISPATCHED)
+        val DIRECT: IntentStrategy.Factory = ParallelIntentStrategy(start = CoroutineStart.UNDISPATCHED)
     }
 
     override fun toString() = "Parallel(start=$start)"
 
     override fun equals(other: Any?): Boolean {
-        return this === other || other is ParallelInputStrategy && start == other.start
+        return this === other || other is ParallelIntentStrategy && start == other.start
     }
 
     override fun hashCode(): Int = start.hashCode()
 
 
-    override fun <Intent, State> invoke(scope: InputStrategyScope<Intent, State>): InputStrategy<Intent, State> = Parallel(scope, start)
+    override fun <Intent, State> invoke(scope: IntentStrategyScope<Intent, State>): IntentStrategy<Intent, State> = Parallel(scope, start)
 
     private class Parallel<in Intent, State>(
-        handler: InputStrategyScope<Intent, State>,
+        handler: IntentStrategyScope<Intent, State>,
         private val coroutineStart: CoroutineStart,
-    ) : InputStrategy<Intent, State>(handler) {
+    ) : IntentStrategy<Intent, State>(handler) {
 
         override val parallelProcessing: Boolean get() = true
 

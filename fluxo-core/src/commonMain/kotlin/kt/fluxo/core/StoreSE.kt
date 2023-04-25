@@ -36,10 +36,10 @@ public interface StoreSE<in Intent, out State, out SideEffect : Any> : Store<Int
     /**
      * _hot_ [Flow] that shares emitted [SideEffect]s among its collectors.
      *
-     * Configure behavior of this flow with [FluxoSettings.sideEffectsStrategy].
+     * Configure behavior of this flow with [FluxoSettings.sideEffectStrategy].
      *
-     * @see FluxoSettings.sideEffectsStrategy
-     * @see SideEffectsStrategy
+     * @see FluxoSettings.sideEffectStrategy
+     * @see SideEffectStrategy
      *
      * @throws IllegalStateException if [SideEffect]s are off for this [Store].
      */
