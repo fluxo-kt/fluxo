@@ -153,7 +153,11 @@ internal class SideEffectTest {
         container.closeAndWait()
     }
 
+    // TODO: Timeout of 2000ms exceeded
+    //  :jsNodeTest win CI
+    //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4795937502/jobs/8531106215#step:8:1158
     @Test
+    @IgnoreJs
     fun only_new_side_effects_are_emitted_when_resubscribing() = runUnitTest {
         val container = backgroundScope.container<Unit, Int>(Unit)
         val flow = container.sideEffectFlow
