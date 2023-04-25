@@ -55,15 +55,18 @@ class PublicationConfig(
 
         // Make snapshot builds safe and reproducible for usage
         if (reproducibleSnapshots && isSnapshot) {
+            v = v.substringBeforeLast("SNAPSHOT")
+
             // commit short hash is more convenient for usage as date-n-build
             val commitSha = project?.scmTag(allowBranch = false)?.orNull
             if (!commitSha.isNullOrEmpty()) {
-                // Version structure: `major-COMMIT_SHA-SNAPSHOT`.
-                v = v.substring(0, v.indexOfFirst { !it.isDigit() })
+                // Version structure: `major.minor-COMMIT_SHA-SNAPSHOT`.
+                v = v.trimEnd { !it.isDigit() }
+                val idx = v.lastIndexOf('.')
+                if (idx > 0) v = v.substring(0, idx)
                 v += "-$commitSha"
             } else {
                 // Version structure: `major.minor.patch-yyMMddHHmmss-buildNumber-SNAPSHOT`.
-                v = v.substringBeforeLast("SNAPSHOT")
                 v += SimpleDateFormat("yyMMddHHmmss").format(Date())
                 v += project.buildNumberSuffix("-local", "-")
             }
