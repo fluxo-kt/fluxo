@@ -5,6 +5,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.TaskExecutionException
 import org.gradle.api.tasks.testing.AbstractTestTask
 import org.gradle.api.tasks.testing.TestDescriptor
 import org.gradle.api.tasks.testing.TestResult
@@ -176,6 +177,10 @@ internal abstract class TestsReportsMergeTask : DefaultTask() {
 
         logger.lifecycle(formatSummary(summary, fails))
         testResults.clear()
+
+        if (totalFailures > 0) {
+            throw TaskExecutionException(this, IllegalStateException("$totalFailures from $totalTests tests $status!"))
+        }
     }
 
     private fun getStatusFrom(totalFailures: Long, totalSuccesses: Long) = when {
