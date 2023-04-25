@@ -48,10 +48,11 @@ internal class ParallelIntentStrategy(
     private class Parallel<in Intent, State>(
         handler: IntentStrategyScope<Intent, State>,
         private val coroutineStart: CoroutineStart,
-    ) : IntentStrategy<Intent, State>(handler) {
-
-        override val parallelProcessing: Boolean get() = true
-
+    ) : IntentStrategy<Intent, State>(
+        handler = handler,
+        isLaunchNeeded = false,
+        parallelProcessing = true,
+    ) {
         override fun queueIntent(intent: Intent): Job {
             return handler.launch(context = EmptyCoroutineContext, start = coroutineStart) {
                 executeIntent(intent, null)

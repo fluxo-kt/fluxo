@@ -32,12 +32,12 @@ internal object LifoIntentStrategy : IntentStrategy.Factory {
 
     override fun <Intent, State> invoke(scope: IntentStrategyScope<Intent, State>): IntentStrategy<Intent, State> = Lifo(scope)
 
-    private class Lifo<in Intent, State>(handler: IntentStrategyScope<Intent, State>) : IntentStrategy<Intent, State>(handler) {
-
-        /**
-         * Next intent can start without waiting for the end of previous one, so mark strategy as parallel.
-         */
-        override val parallelProcessing: Boolean get() = true
+    private class Lifo<in Intent, State>(handler: IntentStrategyScope<Intent, State>) : IntentStrategy<Intent, State>(
+        handler = handler,
+        isLaunchNeeded = false,
+        /** Next intent can start without waiting for the end of the earlier one, so mark the strategy as parallel. */
+        parallelProcessing = true,
+    ) {
 
         private val previousJob = atomic<Job?>(null)
 

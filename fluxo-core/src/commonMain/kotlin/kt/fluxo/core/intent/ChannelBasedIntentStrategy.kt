@@ -2,7 +2,6 @@ package kt.fluxo.core.intent
 
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineStart
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
@@ -32,7 +31,12 @@ import kotlin.jvm.JvmField
 internal open class ChannelBasedIntentStrategy<Intent, State>(
     handler: IntentStrategyScope<Intent, State>,
     resendUndelivered: Boolean,
-) : IntentStrategy<Intent, State>(handler), FlowCollector<IntentRequest<Intent>> {
+    parallelProcessing: Boolean = false,
+) : IntentStrategy<Intent, State>(
+    handler = handler,
+    isLaunchNeeded = true,
+    parallelProcessing = parallelProcessing,
+), FlowCollector<IntentRequest<Intent>> {
 
     @JvmField
     protected val requestsChannel: Channel<IntentRequest<Intent>>
@@ -52,12 +56,11 @@ internal open class ChannelBasedIntentStrategy<Intent, State>(
         @Suppress("LeakingThis")
         requestsChannel = createQueue {
             var wasResent = false
-            // We don't want to fall into the recursion, so only one resending per moment.
+            // Don't fall into the recursion, so only one resending per moment.
             if (intentResendLock?.tryLock() == true) {
                 try {
                     @Suppress("UNINITIALIZED_VARIABLE")
                     val channel = requestsChannel
-                    @OptIn(ExperimentalCoroutinesApi::class)
                     if (!channel.isClosedForSend) {
                         wasResent = channel.trySend(it).isSuccess
                     }
@@ -94,7 +97,7 @@ internal open class ChannelBasedIntentStrategy<Intent, State>(
 
     /**
      * Reads all elements from the [requestsChannel], calls [executeIntent] for each [Intent] via [emit] method.
-     * [cancels][Channel.cancel] (consumes) the channel afterwards.
+     * [cancels][Channel.cancel] (consumes) the channel afterward.
      *
      * Note, that emitting values from a channel into a flow is not atomic. A value that was received from the
      * channel may not reach the flow collector if it was cancelled and will be lost.
@@ -108,14 +111,12 @@ internal open class ChannelBasedIntentStrategy<Intent, State>(
      */
     override suspend fun launch() = emitAll(requestsChannel)
 
-    final override val isLaunchNeeded: Boolean get() = true
-
     /**
      * Helper method to use [IntentStrategy] itself as a [FlowCollector] for [emitAll],
      * without allocating extra objects.
      */
     final override suspend fun emit(value: IntentRequest<Intent>) {
-        // Don't pay for dispatch here, it is never necessary
+        // Don't pay for dispatch here, it is never necessary.
         // It is also necessary not to add parallelism to the execution.
         handler.launch(context = value.deferred ?: EmptyCoroutineContext, start = CoroutineStart.UNDISPATCHED) {
             executeIntent(value.intent, value.deferred)

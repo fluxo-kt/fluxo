@@ -58,13 +58,12 @@ internal class ChannelLifoIntentStrategy(
     private class ChannelLifo<Intent, State>(
         scope: IntentStrategyScope<Intent, State>,
         private val ordered: Boolean,
-    ) : ChannelBasedIntentStrategy<Intent, State>(scope, resendUndelivered = false) {
-
-        /**
-         * Signal if next intent can start without waiting for the end of previous one, making strategy parallel.
-         */
-        override val parallelProcessing: Boolean get() = !ordered
-
+    ) : ChannelBasedIntentStrategy<Intent, State>(
+        handler = scope,
+        resendUndelivered = false,
+        /** Signal if the next intent can start without waiting for the end of the earlier one, making the strategy parallel. */
+        parallelProcessing = !ordered,
+    ) {
         override fun <Request> createQueue(onUndeliveredElement: ((Request) -> Unit)?): Channel<Request> {
             return Channel(
                 capacity = Channel.CONFLATED,

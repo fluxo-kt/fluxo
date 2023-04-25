@@ -195,12 +195,9 @@ public abstract class kt/fluxo/core/factory/StoreFactory {
 public abstract class kt/fluxo/core/intent/IntentStrategy : java/io/Closeable {
 	public static final field InBox Lkt/fluxo/core/intent/IntentStrategy$InBox;
 	protected final field handler Lkt/fluxo/core/intent/IntentStrategyScope;
-	public fun <init> (Lkt/fluxo/core/intent/IntentStrategyScope;)V
+	public fun <init> (Lkt/fluxo/core/intent/IntentStrategyScope;ZZZ)V
 	public fun close ()V
 	protected final fun executeIntent (Lkotlinx/coroutines/CoroutineScope;Ljava/lang/Object;Lkotlinx/coroutines/CompletableDeferred;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public fun getParallelProcessing ()Z
-	protected fun getRollbackOnCancellation ()Z
-	public fun isLaunchNeeded ()Z
 	public fun launch (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun queueIntent (Ljava/lang/Object;)Lkotlinx/coroutines/Job;
 	public fun queueIntentSuspend (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;

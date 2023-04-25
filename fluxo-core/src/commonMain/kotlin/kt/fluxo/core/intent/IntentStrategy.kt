@@ -19,20 +19,30 @@ import kotlin.native.ObjCName
 
 /**
  * Second version of [IntentStrategy] system.
- * Provides full control on how, when and where to execute [Intent]s.
+ * Provides full control on how, when, and where to execute [Intent]s.
+ *
+ * @param isLaunchNeeded Enable to call [launch] for this strategy initialization
+ * @param parallelProcessing Enable if strategy can process intents in parallel
+ * @param rollbackOnCancellation Enable for state rollback on intent cancellation
  */
 @ExperimentalFluxoApi
 public abstract class IntentStrategy<in Intent, State>(
     @JvmField
     protected val handler: IntentStrategyScope<Intent, State>,
+    @JvmField
+    internal val isLaunchNeeded: Boolean,
+    @JvmField
+    internal val parallelProcessing: Boolean,
+
+    private val rollbackOnCancellation: Boolean,
 ) : Closeable {
 
-    /** Enable if [launch] should be called for this strategy */
-    public open val isLaunchNeeded: Boolean get() = false
-
-    public open val parallelProcessing: Boolean get() = false
-
-    protected open val rollbackOnCancellation: Boolean get() = !parallelProcessing
+    internal constructor(handler: IntentStrategyScope<Intent, State>, isLaunchNeeded: Boolean, parallelProcessing: Boolean) : this(
+        handler = handler,
+        isLaunchNeeded = isLaunchNeeded,
+        parallelProcessing = parallelProcessing,
+        rollbackOnCancellation = !parallelProcessing,
+    )
 
 
     /**
