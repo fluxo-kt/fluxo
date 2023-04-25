@@ -7,11 +7,13 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
 ![badge][badge-android]
-![badge][badge-ios]
 ![badge][badge-jvm]
-![badge][badge-mac]
+![badge][badge-ios]
 ![badge][badge-tvos]
 ![badge][badge-watchos]
+![badge][badge-mac]
+![badge][badge-win]
+![badge][badge-linux]
 ![badge][badge-js]
 
 ---
@@ -203,10 +205,14 @@ This project is licensed under the Apache License, Version 2.0 — see the
 [FlowCollector]: https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-flow-collector/
 [CoroutineScope]: https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines/-coroutine-scope/
 
-[badge-android]: http://img.shields.io/badge/platform-android-6EDB8D.svg?style=flat
-[badge-ios]: http://img.shields.io/badge/platform-ios-CDCDCD.svg?style=flat
-[badge-js]: http://img.shields.io/badge/platform-js-F8DB5D.svg?style=flat
-[badge-jvm]: http://img.shields.io/badge/platform-jvm-DB413D.svg?style=flat
-[badge-mac]: http://img.shields.io/badge/platform-macos-111111.svg?style=flat
-[badge-tvos]: http://img.shields.io/badge/platform-tvos-808080.svg?style=flat
-[badge-watchos]: http://img.shields.io/badge/platform-watchos-C0C0C0.svg?style=flat
+[badge-android]: https://img.shields.io/badge/-android-6EDB8D.svg?logo=kotlin
+[badge-jvm]: http://img.shields.io/badge/-jvm-DB413D.svg?logo=kotlin
+
+[badge-ios]: http://img.shields.io/badge/-ios-E5E5EA.svg?logo=kotlin
+[badge-mac]: http://img.shields.io/badge/-macos-F4F4F4.svg?logo=kotlin
+[badge-tvos]: http://img.shields.io/badge/-tvos-808080.svg?logo=kotlin
+[badge-watchos]: http://img.shields.io/badge/-watchos-C0C0C0.svg?logo=kotlin
+
+[badge-linux]: http://img.shields.io/badge/-linux-6E1F7C.svg?logo=kotlin
+[badge-win]: http://img.shields.io/badge/-windows-00ADEF.svg?logo=kotlin
+[badge-js]: http://img.shields.io/badge/-js-F8DB5D.svg?logo=kotlin
