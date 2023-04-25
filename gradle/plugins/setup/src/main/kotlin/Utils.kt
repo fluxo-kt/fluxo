@@ -43,14 +43,26 @@ fun Project?.buildNumberSuffix(default: String = "", delimiter: String = "."): S
 
 
 @Incubating
-fun Project.scmTag(): Provider<String?> {
+@Suppress("ComplexCondition", "MagicNumber")
+fun Project.scmTag(allowBranch: Boolean = true): Provider<String?> {
     val envOrProp = envOrProp("SCM_TAG")
     return provider {
         var result = envOrProp.orNull
-        if (result.isNullOrEmpty()) {
-            result = runCommand("git tag -l --points-at HEAD") // current tag name
-                ?: runCommand("git rev-parse --short=8 HEAD") // current commit short hash
-                    ?: runCommand("git rev-parse --abbrev-ref HEAD") // current branch name
+        if (result.isNullOrBlank()) {
+            // current tag name
+            var tagName = runCommand("git tag -l --points-at HEAD")
+            if (tagName != null && tagName.length >= 2 && tagName[0] == 'v' && tagName[1].isDigit()) {
+                tagName = tagName.substring(1)
+            }
+
+            result = tagName
+                // current commit short hash
+                ?: runCommand("git rev-parse --short=7 HEAD")
+                    // current branch name
+                    ?: if (allowBranch) runCommand("git rev-parse --abbrev-ref HEAD") else null
+        } else if (result.length == 40) {
+            // full commit hash, sha1
+            result = result.substring(0, 7)
         }
         result
     }

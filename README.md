@@ -25,10 +25,11 @@ if you need better control over your state changes and a structured pipeline for
 
 **Work-In-Progress**, first release is coming. **API isn't stable yet!**
 
-### TLDR: Use SNAPSHOT Artefact in Gradle
+### TLDR: Use SNAPSHOT artefact in Gradle (in a safe and reproducible way)
 
-Snapshot version: [![Snapshot Version](https://img.shields.io/nexus/s/https/s01.oss.sonatype.org/io.github.fluxo-kt/fluxo-core.svg)](https://s01.oss.sonatype.org/content/repositories/snapshots/io/github/fluxo-kt/)
-<br>Take it without `v` prefix!
+Latest snapshot version: [![Snapshot Version](https://img.shields.io/nexus/s/https/s01.oss.sonatype.org/io.github.fluxo-kt/fluxo-core.svg)](https://s01.oss.sonatype.org/content/repositories/snapshots/io/github/fluxo-kt/)
+<br>Note: take it without `v` prefix!
+<br>You can select preferred commit using a scheme: `0-<SHORT_COMMIT_SHA>-SNAPSHOT`.
 
 ```kotlin
 
