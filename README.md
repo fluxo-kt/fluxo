@@ -27,8 +27,8 @@ if you need better control over your state changes and a structured pipeline for
 
 ### TLDR: Use SNAPSHOT artefact in Gradle (in a safe and reproducible way)
 
-Latest snapshot version: [![Snapshot Version](https://img.shields.io/nexus/s/https/s01.oss.sonatype.org/io.github.fluxo-kt/fluxo-core.svg)](https://s01.oss.sonatype.org/content/repositories/snapshots/io/github/fluxo-kt/)
-<br>You can select a snapshot for the preferred commit using a scheme: `0.1-<SHORT_COMMIT_SHA>-SNAPSHOT`.
+Select a snapshot for the preferred commit using a scheme: `0.1-<SHORT_COMMIT_SHA>-SNAPSHOT`.
+<br>For example: `0.1-f2b5944-SNAPSHOT`
 
 ```kotlin
 dependencies {
