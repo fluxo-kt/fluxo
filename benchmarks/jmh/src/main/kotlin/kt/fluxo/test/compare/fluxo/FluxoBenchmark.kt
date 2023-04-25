@@ -74,7 +74,7 @@ internal object FluxoBenchmark {
 
     private fun <I> Store<I, Int>.consumeFluxo(intent: I, closeable: Closeable? = null): Int {
         runBlocking {
-            val launchDef = launchCommon(intent) { send(it) }
+            val launchDef = launchCommon(intent) { emit(it) }
 
             consumeCommon(launchDef)
 

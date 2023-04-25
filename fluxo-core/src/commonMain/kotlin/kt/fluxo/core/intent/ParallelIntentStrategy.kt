@@ -53,6 +53,16 @@ internal class ParallelIntentStrategy(
         isLaunchNeeded = false,
         parallelProcessing = true,
     ) {
+        override suspend fun queueIntentSuspend(intent: Intent) {
+            // TODO: Separate the DIRECT implementation from Parallel to remove the ambiguity?
+            if (coroutineStart === CoroutineStart.UNDISPATCHED) {
+                // Optimize suspend calls to DIRECT strategy, remove the new coroutine creation and launch
+                handler.executeIntent(intent, null)
+            } else {
+                queueIntent(intent)
+            }
+        }
+
         override fun queueIntent(intent: Intent): Job {
             return handler.launch(context = EmptyCoroutineContext, start = coroutineStart) {
                 executeIntent(intent, null)
