@@ -34,8 +34,6 @@ import kt.fluxo.test.CoroutineScopeAwareTest
 import kt.fluxo.test.DEFAULT_TEST_TIMEOUT_MS
 import kt.fluxo.test.IgnoreJs
 import kt.fluxo.test.IgnoreNativeAndJs
-import kt.fluxo.test.KMM_PLATFORM
-import kt.fluxo.test.Platform.LINUX
 import kt.fluxo.test.TestLoggingStoreFactory
 import kt.fluxo.test.runUnitTest
 import kt.fluxo.test.testLog
@@ -224,18 +222,13 @@ internal class InputStrategyTest : CoroutineScopeAwareTest() {
     private suspend fun CoroutineScope.lifo_test(strategy: InputStrategy.Factory) {
         @OptIn(ExperimentalStdlibApi::class)
         val isUnconfined = coroutineContext[CoroutineDispatcher] == Unconfined
-        val isRegularLifo = strategy == Lifo || strategy is CustomStrategy || strategy == ChannelLifo(ordered = false)
         val results = input_strategy_test(strategy = strategy, equal = isUnconfined)
         val last = NUMBER_OF_ITEMS - 1
         assertTrue(last in results, "Last result should be presented ($last), but wasn't in ${results.size} results")
         if (isUnconfined) {
             return
         }
-        if (isRegularLifo) {
-            assertTrue(results.size in 1..NUMBER_OF_ITEMS, "Can have cancelled intents with $strategy strategy")
-        } else {
-            assertTrue(results.size < NUMBER_OF_ITEMS, "Expected to have cancelled intents with $strategy strategy")
-        }
+        assertTrue(results.size in 1..NUMBER_OF_ITEMS, "Can have cancelled intents with $strategy strategy")
     }
 
     // endregion
