@@ -78,6 +78,11 @@ internal class BootstrapperTest : CoroutineScopeAwareTest() {
         assertTrue(store.isActive, "store should be active")
     }
 
+    // TODO: After waiting for 5s, the test coroutine is not completing
+    //  :jvmTest mac
+    //  :testReleaseUnitTest mac
+    //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4797515958/jobs/8534599655#step:8:506
+    //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4797515958/jobs/8534599655#step:8:1030
     @Test
     fun b_intent() = runUnitTest {
         var hadIntent = false
