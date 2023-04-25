@@ -9,6 +9,7 @@ on:
       - '**.*ignore'
       - '**.md'
       - '**.txt'
+      - '**benchmark.yml'
       - '**dependabot.yml'
   push:
     paths-ignore:
@@ -18,6 +19,7 @@ on:
       - '**.*ignore'
       - '**.md'
       - '**.txt'
+      - '**benchmark.yml'
       - '**dependabot.yml'
 
 env:
