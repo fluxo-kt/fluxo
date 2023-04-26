@@ -1,20 +1,15 @@
 # Fluxo
 
 ![Stability: Alpha](https://kotl.in/badges/alpha.svg)
-[![Snapshot Version](https://img.shields.io/nexus/s/https/s01.oss.sonatype.org/io.github.fluxo-kt/fluxo-core.svg)](https://s01.oss.sonatype.org/content/repositories/snapshots/io/github/fluxo-kt/)
+[![Snapshot Version](https://img.shields.io/nexus/s/https/s01.oss.sonatype.org/io.github.fluxo-kt/fluxo-core?label=&labelColor=666&logo=gradle)](https://s01.oss.sonatype.org/content/repositories/snapshots/io/github/fluxo-kt/)
 [![Build](../../actions/workflows/build.yml/badge.svg)](../../actions/workflows/build.yml)
 [![codecov](https://codecov.io/gh/fluxo-kt/fluxo-mvi/branch/main/graph/badge.svg?token=LKCNVWR8QC)](https://codecov.io/gh/fluxo-kt/fluxo-mvi)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue)](LICENSE)
 
-![badge][badge-android]
-![badge][badge-jvm]
-![badge][badge-ios]
-![badge][badge-tvos]
-![badge][badge-watchos]
-![badge][badge-mac]
-![badge][badge-win]
-![badge][badge-linux]
-![badge][badge-js]
+![Kotlin Multiplatform][badge-kotlin]
+![JVM][badge-jvm] ![badge][badge-android]
+![badge][badge-ios] ![badge][badge-mac] ![badge][badge-watchos] ![badge][badge-tvos]
+![badge][badge-win] ![badge][badge-linux] ![badge][badge-js]
 
 ---
 
@@ -205,14 +200,15 @@ This project is licensed under the Apache License, Version 2.0 — see the
 [FlowCollector]: https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-flow-collector/
 [CoroutineScope]: https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines/-coroutine-scope/
 
-[badge-android]: https://img.shields.io/badge/-android-6EDB8D.svg?logo=kotlin
-[badge-jvm]: http://img.shields.io/badge/-jvm-DB413D.svg?logo=kotlin
+[badge-kotlin]: http://img.shields.io/badge/Kotlin-Multiplatform-7F52FF?logo=kotlin&logoColor=7F52FF&labelColor=2B2B2B
+[badge-jvm]: http://img.shields.io/badge/-JVM-530E0E?logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAMAAAAolt3jAAAAh1BMVEUAAABTgqFTgJ9Yg6VTgqFSg6FUgaFTgZ9TgqFSg6FSgqJTgp/ncABVgqRVgKpTg6HnbwDnbwBTgqDnbwDocADocADnbwDnbQBOgJ1Vg6T/ZgDnbwDnbwDnbwBTgqHnbwBTgqBTgqJTgaDnbgDnbwDnbgBVgqFRgqNRgKLpbQDpcQDjcQDtbQD42oiEAAAALXRSTlMAQyEPSWlUJqlwXllQKgaijIRmYFY3Lx8aEwXz5dLEta+ZlHZsQTkvLCMiEg6oPAWiAAAAfklEQVQI102LVxKDMBBDtbsugDGdUNJ7vf/5MjAJY33pjfTwz2eFMOk1pLrAuMBzX7fN8m63XXkJvAKbJjDPXbp+/3rmBa+xBIQY4EhXxiSKLLCbZn1n9qQy0WrC3pkqUYx+VgebH/MomhecDsqyyMAPopsA4p2O4zhxhsh+ASqXBd13PdMrAAAAAElFTkSuQmCC
+[badge-android]: https://img.shields.io/badge/-Android-0E3B1A?logo=android&logoColor=3DDC84
 
-[badge-ios]: http://img.shields.io/badge/-ios-E5E5EA.svg?logo=kotlin
-[badge-mac]: http://img.shields.io/badge/-macos-F4F4F4.svg?logo=kotlin
-[badge-tvos]: http://img.shields.io/badge/-tvos-808080.svg?logo=kotlin
-[badge-watchos]: http://img.shields.io/badge/-watchos-C0C0C0.svg?logo=kotlin
+[badge-ios]: http://img.shields.io/badge/-iOS-E5E5EA?logo=apple&logoColor=64647D
+[badge-mac]: http://img.shields.io/badge/-macOS-F4F4F4?logo=apple&logoColor=6D6D88
+[badge-watchos]: http://img.shields.io/badge/-watchOS-C0C0C0?logo=apple&logoColor=4C4C61
+[badge-tvos]: http://img.shields.io/badge/-tvOS-808080?logo=apple&logoColor=23232E
 
-[badge-linux]: http://img.shields.io/badge/-linux-6E1F7C.svg?logo=kotlin
-[badge-win]: http://img.shields.io/badge/-windows-00ADEF.svg?logo=kotlin
-[badge-js]: http://img.shields.io/badge/-js-F8DB5D.svg?logo=kotlin
+[badge-win]: http://img.shields.io/badge/-Windows-00ADEF?logo=windows&logoColor=FCFDFD
+[badge-linux]: http://img.shields.io/badge/-Linux-6E1F7C?logo=linux&logoColor=FFF6DB
+[badge-js]: http://img.shields.io/badge/-JavaScript-F8DB5D?logo=javascript&logoColor=312C02
