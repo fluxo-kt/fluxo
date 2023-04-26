@@ -1,7 +1,7 @@
 # Fluxo
 
 ![Stability: Alpha](https://kotl.in/badges/alpha.svg)
-[![Snapshot Version](https://img.shields.io/nexus/s/https/s01.oss.sonatype.org/io.github.fluxo-kt/fluxo-core?label=&labelColor=666&logo=gradle)](https://s01.oss.sonatype.org/content/repositories/snapshots/io/github/fluxo-kt/)
+[![Snapshot Version](https://img.shields.io/badge/dynamic/xml?color=f68244&logo=gradle&labelColor=666&label=&query=%2F%2Fversion%5Blast%28%29%5D&url=https%3A%2F%2Fs01.oss.sonatype.org%2Fcontent%2Frepositories%2Fsnapshots%2Fio%2Fgithub%2Ffluxo-kt%2Ffluxo-core%2Fmaven-metadata.xml)](https://s01.oss.sonatype.org/content/repositories/snapshots/io/github/fluxo-kt/)
 [![Build](../../actions/workflows/build.yml/badge.svg)](../../actions/workflows/build.yml)
 [![codecov](https://codecov.io/gh/fluxo-kt/fluxo-mvi/branch/main/graph/badge.svg?token=LKCNVWR8QC)](https://codecov.io/gh/fluxo-kt/fluxo-mvi)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue)](LICENSE)
@@ -23,9 +23,9 @@ if you need better control over your state changes and a structured pipeline for
 **Work-In-Progress**, first release is coming. **API isn't stable yet!**
 
 ### TLDR: Use SNAPSHOT artefact in Gradle (in a safe and reproducible way)
-
-Select a snapshot for the preferred commit using a scheme: `0.1-<SHORT_COMMIT_SHA>-SNAPSHOT`.
-<br>For example: `0.1-f2b5944-SNAPSHOT`
+[![Latest snapshot](https://img.shields.io/badge/dynamic/xml?color=f68244&logo=gradle&label=Latest%20snapshot&query=%2F%2Fversion%5Blast%28%29%5D&url=https%3A%2F%2Fs01.oss.sonatype.org%2Fcontent%2Frepositories%2Fsnapshots%2Fio%2Fgithub%2Ffluxo-kt%2Ffluxo-core%2Fmaven-metadata.xml)](https://s01.oss.sonatype.org/content/repositories/snapshots/io/github/fluxo-kt/fluxo-core/)
+<br>Select a snapshot for the preferred commit using a scheme: `0.1-<SHORT_COMMIT_SHA>-SNAPSHOT`.
+<br>For example: `0.1-55f15e9-SNAPSHOT`
 
 ```kotlin
 dependencies {
