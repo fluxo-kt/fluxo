@@ -15,10 +15,12 @@
 
 **Fluxo** *\[ˈfluksu]* is a simple yet super powerful state management library for Kotlin Multiplatform.
 
-Approach is best known as `BLoC`, `MVI`, `MVVM+`, `Redux`, or even `StateMachine`.
+Approach is best known as BLoC, MVI, MVVM+, Redux, or even State Machine/FSM.
 Often used in the UI or presentation layers of the architecture.
-But suitable and proven useful for any layer of the app
-if you need better control over your state changes and a structured pipeline for it!
+But suitable and proven useful for any architectural layer of the app for any platform.
+
+If you need predictable unidirectional data flow (UDF) or deterministic control over your state changes,
+**Fluxo** will get you covered!
 
 **Work-In-Progress**, first release is coming. **API isn't stable yet!**
 
@@ -60,7 +62,7 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super p
     You can easily combine stores with each other and with any other flows, flow operators, and collectors.
   * Also, Fluxo [`Store`][Store] is a [`CoroutineScope`][CoroutineScope] itself, so you can integrate it with
     any existing coroutine workflow and treat just as a usual coroutine scope.
-* **Multiplatform**, supports all Kotlin MPP/KMM targets (**Android**, **iOS**, **JVM**,
+* **Multiplatform**, supports all Kotlin KMP/KMM targets (**Android**, **iOS**, **JVM**,
   **JS**, **Linux**, **Windows/MinGW**, **macOS**, **watchOS**, **tvOS**).
 * Different usage styles:
   * Strict **Redux/MVI** (the highest correctness guarantees, but may be subjectively less readable and intuitive)
@@ -164,7 +166,7 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super p
 
 * [MVI: Model-View-Intent](http://hannesdorfmann.com/android/model-view-intent/)
 * [MVVM: Model-View-ViewModel](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93viewmodel)
-* [MVVM+][orbit-mvvm+]
+* [MVVM+, aka Redux/MVI with contextual reduction][orbit-mvvm+]
 * [BLoC](https://web.archive.org/web/20221205073553/https://www.didierboelens.com/2018/08/reactive-programming-streams-bloc/) [[1](https://bloclibrary.dev/)]
 * [FSM: Finite-state machine](https://en.wikipedia.org/wiki/Finite-state_machine)
 * [SAM: State-Action-Model](https://sam.js.org/)
@@ -195,6 +197,21 @@ For the versions available, see the [tags on this repository](../../tags).
 
 This project is licensed under the Apache License, Version 2.0 — see the
 [license](LICENSE) file for details.
+
+
+*[BLoC]: Business Logic Components
+*[MVI]: Model-View-Intent
+*[MVVM]: Model-View-ViewModel
+*[MVVM+]: Model-View-ViewModel plus, aka Redux/MVI with contextual reduction
+*[Redux]: Pattern for predictable managing and updating app state
+*[SM]: State Machine
+*[FSM]: Finite-State Machine
+*[SAM]: State-Action-Model
+*[UDF]: Unidirectional Data Flow
+*[KMP]: Kotlin Multiplatform
+*[KMM]: Kotlin Multiplatform for mobile
+*[JVM]: Java Virtual Machine
+*[JS]: JavaScript/TypeScript
 
 
 [Store]: fluxo-core/src/commonMain/kotlin/kt/fluxo/core/Store.kt
