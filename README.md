@@ -15,7 +15,7 @@
 
 **Fluxo** *\[ˈfluksu]* is a simple yet super powerful state management library for Kotlin Multiplatform.
 
-Approach is best known as `MVI`, `MVVM+`, `Redux`, or even `StateMachine`.
+Approach is best known as `BLoC`, `MVI`, `MVVM+`, `Redux`, or even `StateMachine`.
 Often used in the UI or presentation layers of the architecture.
 But suitable and proven useful for any layer of the app
 if you need better control over your state changes and a structured pipeline for it!
@@ -65,8 +65,8 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super p
 * Different usage styles:
   * Strict **Redux/MVI** (the highest correctness guarantees, but may be subjectively less readable and intuitive)
   * Flexible **MVVM+**
-    (see [contextual reduction](https://dev.to/feresr/a-case-against-the-mvi-architecture-pattern-1add),
-    [orbit-way](https://github.com/orbit-mvi/orbit-mvi#what-is-orbit), intuitively readable, may be easier
+    (see [contextual reduction][contextual-reduction],
+    [orbit-way][orbit-mvvm+], intuitively readable, may be easier
     to maintain, support for every feature and more :)
   * Redux-style discrete intents with MVVM+ style reduction DSL (hybrid way)
   * _More is coming…_
@@ -164,6 +164,8 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super p
 
 * [MVI: Model-View-Intent](http://hannesdorfmann.com/android/model-view-intent/)
 * [MVVM: Model-View-ViewModel](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93viewmodel)
+* [MVVM+][orbit-mvvm+]
+* [BLoC](https://web.archive.org/web/20221205073553/https://www.didierboelens.com/2018/08/reactive-programming-streams-bloc/) [[1](https://bloclibrary.dev/)]
 * [FSM: Finite-state machine](https://en.wikipedia.org/wiki/Finite-state_machine)
 * [SAM: State-Action-Model](https://sam.js.org/)
 
@@ -199,6 +201,9 @@ This project is licensed under the Apache License, Version 2.0 — see the
 [StateFlow]: https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-state-flow/
 [FlowCollector]: https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-flow-collector/
 [CoroutineScope]: https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines/-coroutine-scope/
+
+[orbit-mvvm+]: https://github.com/orbit-mvi/orbit-mvi/blob/6b6f290/README.md#what-is-orbit
+[contextual-reduction]: https://dev.to/feresr/a-case-against-the-mvi-architecture-pattern-1add
 
 [badge-kotlin]: http://img.shields.io/badge/Kotlin-Multiplatform-7F52FF?logo=kotlin&logoColor=7F52FF&labelColor=2B2B2B
 [badge-jvm]: http://img.shields.io/badge/-JVM-530E0E?logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAMAAAAolt3jAAAAh1BMVEUAAABTgqFTgJ9Yg6VTgqFSg6FUgaFTgZ9TgqFSg6FSgqJTgp/ncABVgqRVgKpTg6HnbwDnbwBTgqDnbwDocADocADnbwDnbQBOgJ1Vg6T/ZgDnbwDnbwDnbwBTgqHnbwBTgqBTgqJTgaDnbgDnbwDnbgBVgqFRgqNRgKLpbQDpcQDjcQDtbQD42oiEAAAALXRSTlMAQyEPSWlUJqlwXllQKgaijIRmYFY3Lx8aEwXz5dLEta+ZlHZsQTkvLCMiEg6oPAWiAAAAfklEQVQI102LVxKDMBBDtbsugDGdUNJ7vf/5MjAJY33pjfTwz2eFMOk1pLrAuMBzX7fN8m63XXkJvAKbJjDPXbp+/3rmBa+xBIQY4EhXxiSKLLCbZn1n9qQy0WrC3pkqUYx+VgebH/MomhecDsqyyMAPopsA4p2O4zhxhsh+ASqXBd13PdMrAAAAAElFTkSuQmCC
