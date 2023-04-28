@@ -22,6 +22,7 @@ javaLangTarget = "1.8"
 kotlinLangVersion = "1.7"
 
 # https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-gradle-plugin
+# WARN: Don't forget to update kotlin version badge in ../README.md
 kotlin = "1.8.20"
 
 # https://github.com/google/ksp/releases

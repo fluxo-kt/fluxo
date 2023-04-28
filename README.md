@@ -2,11 +2,12 @@
 
 ![Stability: Alpha](https://kotl.in/badges/alpha.svg)
 [![Snapshot Version](https://img.shields.io/badge/dynamic/xml?color=f68244&logo=gradle&labelColor=666&label=&query=%2F%2Fversion%5Blast%28%29%5D&url=https%3A%2F%2Fs01.oss.sonatype.org%2Fcontent%2Frepositories%2Fsnapshots%2Fio%2Fgithub%2Ffluxo-kt%2Ffluxo-core%2Fmaven-metadata.xml)](https://s01.oss.sonatype.org/content/repositories/snapshots/io/github/fluxo-kt/)
+[![Kotlin Version][badge-kotlin]][badge-kotlin-link]
 [![Build](../../actions/workflows/build.yml/badge.svg)](../../actions/workflows/build.yml)
 [![codecov](https://codecov.io/gh/fluxo-kt/fluxo/branch/main/graph/badge.svg?token=LKCNVWR8QC)](https://codecov.io/gh/fluxo-kt/fluxo)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue)](LICENSE)
 
-![Kotlin Multiplatform][badge-kotlin]
+![Kotlin Multiplatform][badge-kmp]
 ![JVM][badge-jvm] ![badge][badge-android]
 ![badge][badge-ios] ![badge][badge-mac] ![badge][badge-watchos] ![badge][badge-tvos]
 ![badge][badge-win] ![badge][badge-linux] ![badge][badge-js]
@@ -214,7 +215,10 @@ aka Redux/MVI with [contextual reduction][contextual-reduction].
 [orbit-mvvm+]: https://github.com/orbit-mvi/orbit-mvi/blob/6b6f290/README.md#what-is-orbit
 [contextual-reduction]: https://dev.to/feresr/a-case-against-the-mvi-architecture-pattern-1add
 
-[badge-kotlin]: http://img.shields.io/badge/Kotlin-Multiplatform-7F52FF?logo=kotlin&logoColor=7F52FF&labelColor=2B2B2B
+[badge-kotlin]: http://img.shields.io/badge/Kotlin-1.8.20-7F52FF?logo=kotlin&logoColor=7F52FF&labelColor=2B2B2B
+[badge-kotlin-link]: https://github.com/JetBrains/kotlin/releases
+
+[badge-kmp]: http://img.shields.io/badge/Kotlin-Multiplatform-7F52FF?logo=kotlin&logoColor=7F52FF&labelColor=2B2B2B
 [badge-jvm]: http://img.shields.io/badge/-JVM-530E0E?logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAMAAAAolt3jAAAAh1BMVEUAAABTgqFTgJ9Yg6VTgqFSg6FUgaFTgZ9TgqFSg6FSgqJTgp/ncABVgqRVgKpTg6HnbwDnbwBTgqDnbwDocADocADnbwDnbQBOgJ1Vg6T/ZgDnbwDnbwDnbwBTgqHnbwBTgqBTgqJTgaDnbgDnbwDnbgBVgqFRgqNRgKLpbQDpcQDjcQDtbQD42oiEAAAALXRSTlMAQyEPSWlUJqlwXllQKgaijIRmYFY3Lx8aEwXz5dLEta+ZlHZsQTkvLCMiEg6oPAWiAAAAfklEQVQI102LVxKDMBBDtbsugDGdUNJ7vf/5MjAJY33pjfTwz2eFMOk1pLrAuMBzX7fN8m63XXkJvAKbJjDPXbp+/3rmBa+xBIQY4EhXxiSKLLCbZn1n9qQy0WrC3pkqUYx+VgebH/MomhecDsqyyMAPopsA4p2O4zhxhsh+ASqXBd13PdMrAAAAAElFTkSuQmCC
 [badge-android]: https://img.shields.io/badge/-Android-0E3B1A?logo=android&logoColor=3DDC84
 
