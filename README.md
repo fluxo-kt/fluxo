@@ -70,10 +70,7 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super p
   * Redux-style discrete intents with MVVM+ style reduction DSL (hybrid way)
   * _More is coming…_
 * **Side effect** support (sometimes called **news** or **one-off event**).
-  * **Note that using side effects is generally considered as antipattern!**
-    [[1](https://medium.com/androiddevelopers/viewmodel-one-off-event-antipatterns-16a1da869b95),
-    [2](https://developer.android.com/topic/architecture/ui-layer/events#other-use-cases),
-    [3](https://proandroiddev.com/how-to-handle-viewmodel-one-time-events-in-jetpack-compose-a01af0678b76#0009)].<br>
+  * **Note that using side effects is generally considered as antipattern!**[^a][^b][^c].<br>
     But it can still be useful sometimes, especially when migrating an old codebase.<br>
     *However, if you find yourself in one of these situations,
     reconsider what this one-time event actually means for your app.
@@ -85,8 +82,7 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super p
     (_RECEIVE_, _CONSUME_, _SHARE_, _DISABLE_).
   * Side effects are cached while the subscriber (e.g., view) isn't attached.
   * Side effects can have consumption guarantees with `GuaranteedEffect` (effect handled and exactly
-    once) [[1](https://github.com/Kotlin/kotlinx.coroutines/issues/2886),
-    [2](https://medium.com/androiddevelopers/livedata-with-snackbar-navigation-and-other-events-the-singleliveevent-case-ac2622673150)].
+    once)[^e1][^e2].
 * **Lifecycle-awareness** with full control based on coroutine scopes.
 * Subscription lifecycle with convenience API (`repeatOnSubscription`). Do something in store when subscriber connects or disconnects.
 * Forceful customization:
@@ -106,11 +102,10 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super p
 * Common data states in a [`fluxo-data`](fluxo-data) module *(Success, Failure, Loading, Cached, Empty, Not Loaded)*.
 * Side jobs for long-running tasks (MVVM+ DSL).
 * Bootstrap (initialization side job).
-* Leak-free transfer, delivery
-  guarantees [[1](https://github.com/Kotlin/kotlinx.coroutines/issues/1936), [2](https://gmk57.medium.com/unfortunately-events-may-be-dropped-if-channel-receiveasflow-cfe78ae29004)] for intents and side effects.
-* Strictly not recommended, but JVM `Closeable` resources partially supported as a state and side effects.
-  * The previous state will be closed on change.
-  * Side effects closed when not delivered.
+* Leak-free transfer, delivery guarantees[^el1][^el2] for intents and side effects.
+* Strictly not recommended, but JVM `Closeable` resources are experimentally supported as a state and side effects.
+  * The previous state is closed on change.
+  * Side effects are closed when not delivered.
   * However, no clear guarantees!
 * Intentionally unopinionated, extensible API: you can follow guides or use it as you want.
 * Well tested.
@@ -196,6 +191,18 @@ aka Redux/MVI with [contextual reduction][contextual-reduction].
 [^5]: SAM: [State-Action-Model](https://sam.js.org/) architectural pattern.
 [^6]: FSM: [Finite-State Machine](https://en.wikipedia.org/wiki/Finite-state_machine).
 [^7]: [KMP/KMM](https://kotlinlang.org/lp/mobile/): Kotlin Multiplatform, Kotlin Multiplatform for mobile.
+
+[^a]: [ViewModel: One-off event antipatterns](https://medium.com/androiddevelopers/viewmodel-one-off-event-antipatterns-16a1da869b95)
+(2022, by Manuel Vivo from Google)
+[^b]: [Google Guide to app architecture, UI events > Other use cases > Note](https://developer.android.com/topic/architecture/ui-layer/events#other-use-cases) (Apr 2023)
+[^c]: [How To Handle ViewModel One-Time Events In Jetpack Compose, One-Time-Event Anti-Pattern](https://proandroiddev.com/how-to-handle-viewmodel-one-time-events-in-jetpack-compose-a01af0678b76#0009)] (2022, by Yanneck Reiß)
+
+[^e1]: \[Proposal] Primitive or Channel that guarantees the delivery and processing of items (Kotlin/kotlinx.coroutines#2886)
+[^e2]: [SingleLiveEvent case with an Event wrapper](https://medium.com/androiddevelopers/livedata-with-snackbar-navigation-and-other-events-the-singleliveevent-case-ac2622673150#0e87).
+
+[^el1]: Leak-free closeable resources transfer via Channel (Kotlin/kotlinx.coroutines#1936)
+[^el2]: [Unfortunately events may be dropped from `kotlinx.coroutines` Channel](https://gmk57.medium.com/unfortunately-events-may-be-dropped-if-channel-receiveasflow-cfe78ae29004)
+[^el3]: [Migrate from LiveData to Flow > Hints](https://github.com/EventFahrplan/EventFahrplan/issues/519)
 
 
 [Store]: fluxo-core/src/commonMain/kotlin/kt/fluxo/core/Store.kt
