@@ -13,6 +13,7 @@
 
 ### Roadmap
 
+* [ ] Compile with JetBrains Compose for safe usage with Compose.
 * [ ] Fetching utils for easier `FluxoResult` usage.
   * [ ] \(Optional) Retry logic.
 
