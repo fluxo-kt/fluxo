@@ -15,11 +15,11 @@
 
 **Fluxo** *\[ˈfluksu]* is a simple yet super powerful state management library for Kotlin Multiplatform.
 
-Approach is best known as BLoC, MVI, MVVM+, Redux, or even State Machine/FSM.
+> Approach is best known as `BLoC`[^1], `MVI`[^2], `MVVM+`[^3], `Redux`[^4], SAM[^5], or even `State Machine`/`FSM`[^6].
 Often used in the UI or presentation layers of the architecture.
 But suitable and proven useful for any architectural layer of the app for any platform.
 
-If you need predictable unidirectional data flow (UDF) or deterministic control over your state changes,
+If you need predictable unidirectional data flow (`UDF`) or deterministic control over your state changes,
 **Fluxo** will get you covered!
 
 **Work-In-Progress**, first release is coming. **API isn't stable yet!**
@@ -42,11 +42,11 @@ repositories {
 
 ## Overview
 
-**Fluxo** was started as a test for the hypothesis:
-_it should be possible to combine all the strong sides of strict **Redux/MVI** with flexibility,
-ease of readability, and maintainability of the **MVVM+**._
-
-The experiment paid off!
+> **Fluxo** was started as a test for the hypothesis:
+_it should be possible to combine all the strong sides of strict **Redux/MVI**[^4] with flexibility,
+ease of readability, and maintainability of the **MVVM+**[^3]._
+>
+> The experiment paid off!
 It is possible to combine **MVVM+** with great performance, high-quality time-travel, logging,
 auto analysis of the transition graph and much more.
 A long list of features is implemented gradually in this library (see the [Roadmap](#roadmap) for details).
@@ -62,14 +62,11 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super p
     You can easily combine stores with each other and with any other flows, flow operators, and collectors.
   * Also, Fluxo [`Store`][Store] is a [`CoroutineScope`][CoroutineScope] itself, so you can integrate it with
     any existing coroutine workflow and treat just as a usual coroutine scope.
-* **Multiplatform**, supports all Kotlin KMP/KMM targets (**Android**, **iOS**, **JVM**,
+* **Multiplatform**, supports all KMP/KMM[^7] targets (**Android**, **iOS**, **JVM**,
   **JS**, **Linux**, **Windows/MinGW**, **macOS**, **watchOS**, **tvOS**).
 * Different usage styles:
-  * Strict **Redux/MVI** (the highest correctness guarantees, but may be subjectively less readable and intuitive)
-  * Flexible **MVVM+**
-    (see [contextual reduction][contextual-reduction],
-    [orbit-way][orbit-mvvm+], intuitively readable, may be easier
-    to maintain, support for every feature and more :)
+  * Strict **Redux/MVI**[^4] (the highest correctness guarantees, but may be subjectively less readable and intuitive)
+  * Flexible **MVVM+**[^3] (intuitively readable, may be easier to maintain, has support for every feature and more :)
   * Redux-style discrete intents with MVVM+ style reduction DSL (hybrid way)
   * _More is coming…_
 * **Side effect** support (sometimes called **news** or **one-off event**).
@@ -162,16 +159,7 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super p
 * [ ] \(Optional) Undo/Redo
 * [ ] \(Optional) Stores synchronization
 
-### Based on architectural ideas:
-
-* [MVI: Model-View-Intent](http://hannesdorfmann.com/android/model-view-intent/)
-* [MVVM: Model-View-ViewModel](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93viewmodel)
-* [MVVM+, aka Redux/MVI with contextual reduction][orbit-mvvm+]
-* [BLoC](https://web.archive.org/web/20221205073553/https://www.didierboelens.com/2018/08/reactive-programming-streams-bloc/) [[1](https://bloclibrary.dev/)]
-* [FSM: Finite-state machine](https://en.wikipedia.org/wiki/Finite-state_machine)
-* [SAM: State-Action-Model](https://sam.js.org/)
-
-### Inspired and based on ideas from:
+### Heavily inspired by:
 
 * [Ballast](https://github.com/copper-leaf/ballast)
 * [Orbit MVI](https://github.com/orbit-mvi/orbit-mvi)
@@ -199,19 +187,13 @@ This project is licensed under the Apache License, Version 2.0 — see the
 [license](LICENSE) file for details.
 
 
-*[BLoC]: Business Logic Components
-*[MVI]: Model-View-Intent
-*[MVVM]: Model-View-ViewModel
-*[MVVM+]: Model-View-ViewModel plus, aka Redux/MVI with contextual reduction
-*[Redux]: Pattern for predictable managing and updating app state
-*[SM]: State Machine
-*[FSM]: Finite-State Machine
-*[SAM]: State-Action-Model
-*[UDF]: Unidirectional Data Flow
-*[KMP]: Kotlin Multiplatform
-*[KMM]: Kotlin Multiplatform for mobile
-*[JVM]: Java Virtual Machine
-*[JS]: JavaScript/TypeScript
+[^1]: BLoC stands for [Business Logic Components](https://web.archive.org/web/20221205073553/https://www.didierboelens.com/2018/08/reactive-programming-streams-bloc/) [[1](https://soshace.com/understanding-flutter-bloc-pattern/), [2](https://bloclibrary.dev/)]
+[^2]: MVI: [Model-View-Intent](http://hannesdorfmann.com/android/model-view-intent/)
+[^3]: [MVVM+, orbit-way][orbit-mvvm+]: updated [Model-View-ViewModel](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93viewmodel), aka Redux/MVI with [contextual reduction][contextual-reduction]
+[^4]: Redux: Pattern for predictable managing and updating app state, and [a famous library](https://redux.js.org/)
+[^5]: SAM: [State-Action-Model](https://sam.js.org/)
+[^6]: FSM: [Finite-State Machine](https://en.wikipedia.org/wiki/Finite-state_machine)
+[^7]: [KMP/KMM](https://kotlinlang.org/lp/mobile/): Kotlin Multiplatform, Kotlin Multiplatform for mobile
 
 
 [Store]: fluxo-core/src/commonMain/kotlin/kt/fluxo/core/Store.kt
