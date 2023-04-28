@@ -37,10 +37,10 @@ internal class SideEffectTest {
 
     // TODO: Timeout of 2000ms exceeded
     // js, node/browser
-    // https://github.com/fluxo-kt/fluxo-mvi/actions/runs/3797488660/jobs/6458474871#step:8:897
+    // https://github.com/fluxo-kt/fluxo/actions/runs/3797488660/jobs/6458474871#step:8:897
     // jvm, android
-    //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4018550114/jobs/6904304918#step:8:375
-    //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4018550114/jobs/6904304918#step:8:597
+    //  https://github.com/fluxo-kt/fluxo/actions/runs/4018550114/jobs/6904304918#step:8:375
+    //  https://github.com/fluxo-kt/fluxo/actions/runs/4018550114/jobs/6904304918#step:8:597
     @Test
     fun side_effects_strategies_api() {
         assertEquals("RECEIVE", SideEffectStrategy.RECEIVE.toString())
@@ -155,7 +155,7 @@ internal class SideEffectTest {
 
     // TODO: Timeout of 2000ms exceeded
     //  :jsNodeTest win CI
-    //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4795937502/jobs/8531106215#step:8:1158
+    //  https://github.com/fluxo-kt/fluxo/actions/runs/4795937502/jobs/8531106215#step:8:1158
     @Test
     @IgnoreJs
     fun only_new_side_effects_are_emitted_when_resubscribing() = runUnitTest {
@@ -212,10 +212,10 @@ internal class SideEffectTest {
     // TODO: Expected value to be true.
     // :linuxX64
     // :testReleaseUnit
-    // https://github.com/fluxo-kt/fluxo-mvi/actions/runs/3713049727/jobs/6295263338#step:7:471
+    // https://github.com/fluxo-kt/fluxo/actions/runs/3713049727/jobs/6295263338#step:7:471
     // Expected to have closed effects
     // :testReleaseUnit
-    // https://github.com/fluxo-kt/fluxo-mvi/actions/runs/3713762763/jobs/6296805652#step:6:332
+    // https://github.com/fluxo-kt/fluxo/actions/runs/3713762763/jobs/6296805652#step:6:332
     @Test
     fun unconsumed_side_effects_will_be_closed__consume_strategy() = unconsumed_side_effects_will_be_closed(SideEffectStrategy.CONSUME)
 
@@ -259,11 +259,11 @@ internal class SideEffectTest {
     // js, node/browser
     // macosX64Background
     // jvm, testReleaseUnit
-    // https://github.com/fluxo-kt/fluxo-mvi/actions/runs/3713049727/jobs/6295263119#step:6:593
-    // https://github.com/fluxo-kt/fluxo-mvi/actions/runs/3713049727/jobs/6295263119#step:6:617
-    // https://github.com/fluxo-kt/fluxo-mvi/actions/runs/3713367491/jobs/6295930135#step:6:563
-    // https://github.com/fluxo-kt/fluxo-mvi/actions/runs/3713762763/jobs/6296805652#step:6:291
-    // https://github.com/fluxo-kt/fluxo-mvi/actions/runs/3714168176/jobs/6297720613#step:6:271
+    // https://github.com/fluxo-kt/fluxo/actions/runs/3713049727/jobs/6295263119#step:6:593
+    // https://github.com/fluxo-kt/fluxo/actions/runs/3713049727/jobs/6295263119#step:6:617
+    // https://github.com/fluxo-kt/fluxo/actions/runs/3713367491/jobs/6295930135#step:6:563
+    // https://github.com/fluxo-kt/fluxo/actions/runs/3713762763/jobs/6296805652#step:6:291
+    // https://github.com/fluxo-kt/fluxo/actions/runs/3714168176/jobs/6297720613#step:6:271
     @Test
     @Ignore // TODO: Should be returned after `fluxo-event-stream` will be added
     fun undelivered_side_effects__consume_strategy() = undelivered_side_effects(SideEffectStrategy.CONSUME)

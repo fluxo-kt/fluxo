@@ -120,7 +120,7 @@ setupDefaults(
         val version = libs.versions.fluxo.get()
         val isSnapshot = version.contains("SNAPSHOT", ignoreCase = true)
         val scmTag = if (isSnapshot) scmTag().orNull ?: "main" else "v$version"
-        val url = "https://github.com/fluxo-kt/fluxo-mvi"
+        val url = "https://github.com/fluxo-kt/fluxo"
         val publicationUrl = "$url/tree/$scmTag"
         PublicationConfig(
             // https://central.sonatype.org/publish/publish-gradle/
@@ -134,7 +134,7 @@ setupDefaults(
             projectDescription = "Kotlin Multiplatform MVI / MVVM+ framework",
             projectUrl = url,
             publicationUrl = publicationUrl,
-            scmUrl = "scm:git:git://github.com/fluxo-kt/fluxo-mvi.git",
+            scmUrl = "scm:git:git://github.com/fluxo-kt/fluxo.git",
             scmTag = scmTag,
             developerId = "amal",
             developerName = "Artyom Shendrik",
@@ -254,7 +254,7 @@ allprojects {
 
                     sourceLink {
                         localDirectory.set(rootDir)
-                        remoteUrl.set(URL("https://github.com/fluxo-kt/fluxo-mvi/blob/main"))
+                        remoteUrl.set(URL("https://github.com/fluxo-kt/fluxo/blob/main"))
                         remoteLineSuffix.set("#L")
                     }
                 }

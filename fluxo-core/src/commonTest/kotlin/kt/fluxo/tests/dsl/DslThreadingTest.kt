@@ -66,9 +66,9 @@ internal class DslThreadingTest {
 
     // TODO: Timeout of 2000ms exceeded
     //  js, node
-    //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4756275550/jobs/8451589421#step:8:1260
-    //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4759165968/jobs/8458124296#step:8:1239
-    //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4759202632/jobs/8458210085#step:8:1222
+    //  https://github.com/fluxo-kt/fluxo/actions/runs/4756275550/jobs/8451589421#step:8:1260
+    //  https://github.com/fluxo-kt/fluxo/actions/runs/4759165968/jobs/8458124296#step:8:1239
+    //  https://github.com/fluxo-kt/fluxo/actions/runs/4759202632/jobs/8458210085#step:8:1222
     @Test
     @IgnoreJs
     fun suspending_intent_does_not_block_the_reducer() = test(
@@ -92,7 +92,7 @@ internal class DslThreadingTest {
 
     // TODO: Error: Timeout of 2000ms exceeded.
     //  js, node (local, mac)
-    //   https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4018550114/jobs/6904304918#step:8:1216
+    //   https://github.com/fluxo-kt/fluxo/actions/runs/4018550114/jobs/6904304918#step:8:1216
     @Test
     @IgnoreJs // Shouldn't work in JS because of the busy-waiting in the only thread.
     fun blocking_intent_without_context_switch_does_not_block_the_reducer() = test(

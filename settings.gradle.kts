@@ -36,7 +36,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "fluxo-mvi"
+rootProject.name = "fluxo"
 
 // On modules update, don't forget to update '.github/workflows/deps-submission.yml'!
 

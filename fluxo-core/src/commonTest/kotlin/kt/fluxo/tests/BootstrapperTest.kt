@@ -81,8 +81,8 @@ internal class BootstrapperTest : CoroutineScopeAwareTest() {
     // TODO: After waiting for 5s, the test coroutine is not completing
     //  :jvmTest mac
     //  :testReleaseUnitTest mac
-    //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4797515958/jobs/8534599655#step:8:506
-    //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4797515958/jobs/8534599655#step:8:1030
+    //  https://github.com/fluxo-kt/fluxo/actions/runs/4797515958/jobs/8534599655#step:8:506
+    //  https://github.com/fluxo-kt/fluxo/actions/runs/4797515958/jobs/8534599655#step:8:1030
     @Test
     fun b_intent() = runUnitTest {
         var hadIntent = false
@@ -120,7 +120,7 @@ internal class BootstrapperTest : CoroutineScopeAwareTest() {
     // :mingwX64BackgroundTest
     // :testDebugUnitTest
     //
-    // https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4018550114/jobs/6904304918#step:8:266
+    // https://github.com/fluxo-kt/fluxo/actions/runs/4018550114/jobs/6904304918#step:8:266
     // MacOS :jvmTest
     // Win :testReleaseUnitTest
     //   TimeoutCancellationException: Timed out waiting for 2000 ms
@@ -137,9 +137,9 @@ internal class BootstrapperTest : CoroutineScopeAwareTest() {
 
     // FIXME: UncompletedCoroutinesError: After waiting for 5s, the test coroutine is not completing
     //  jvm
-    //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4756275550/jobs/8451589421#step:8:404
-    //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4759202632/jobs/8458210085#step:8:548
-    //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4600266159/jobs/8126636920#step:8:397
+    //  https://github.com/fluxo-kt/fluxo/actions/runs/4756275550/jobs/8451589421#step:8:404
+    //  https://github.com/fluxo-kt/fluxo/actions/runs/4759202632/jobs/8458210085#step:8:548
+    //  https://github.com/fluxo-kt/fluxo/actions/runs/4600266159/jobs/8126636920#step:8:397
     @Test
     @IgnoreJvm
     fun b_side_job() = runUnitTest {
@@ -157,7 +157,7 @@ internal class BootstrapperTest : CoroutineScopeAwareTest() {
 
     // TODO: Failed on win with "After waiting for 5s, the test coroutine is not completing"
     // jvm, android
-    //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4600266159/jobs/8126636920#step:8:397
+    //  https://github.com/fluxo-kt/fluxo/actions/runs/4600266159/jobs/8126636920#step:8:397
     @Test
     @Ignore // TODO: Should be returned after `fluxo-event-stream` will be added
     fun b_cancellation() = runUnitTest {
@@ -196,9 +196,9 @@ internal class BootstrapperTest : CoroutineScopeAwareTest() {
 
     // TODO: UncompletedCoroutinesError: After waiting for 2000 ms, the test coroutine is not completing
     //  jvm, android
-    //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4018550114/jobs/6904304918#step:8:299
-    //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4018550114/jobs/6904304918#step:8:506
-    //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4018550114/jobs/6904304918#step:8:565
+    //  https://github.com/fluxo-kt/fluxo/actions/runs/4018550114/jobs/6904304918#step:8:299
+    //  https://github.com/fluxo-kt/fluxo/actions/runs/4018550114/jobs/6904304918#step:8:506
+    //  https://github.com/fluxo-kt/fluxo/actions/runs/4018550114/jobs/6904304918#step:8:565
     @Test
     fun b_repeat_on_subscription_no_side_effects() = runUnitTest {
         val store = container(INIT) {

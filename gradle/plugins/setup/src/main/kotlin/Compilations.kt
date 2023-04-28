@@ -15,7 +15,7 @@ import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest
 import org.jetbrains.kotlin.konan.target.Family
 
 // TODO: JS is still initialized on MINGW64 when splitTargets enabled
-//  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/3831771108/jobs/6521297773
+//  https://github.com/fluxo-kt/fluxo/actions/runs/3831771108/jobs/6521297773
 
 object Compilations {
 

@@ -47,7 +47,7 @@ import kotlin.test.assertTrue
 
 // TODO: Timeout of 2000ms exceeded (js, node, win)
 //  is it only for CI win vm?
-//  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4796934259/jobs/8533286094#step:8:1291
+//  https://github.com/fluxo-kt/fluxo/actions/runs/4796934259/jobs/8533286094#step:8:1291
 @IgnoreJs
 @Suppress("SuspendFunctionOnCoroutineScope")
 internal class IntentStrategyTest : CoroutineScopeAwareTest() {
@@ -197,7 +197,7 @@ internal class IntentStrategyTest : CoroutineScopeAwareTest() {
     fun lifo_test_scope_plus_default_dispatcher() = t { (this + Default).lifo_test() }
 
     // TODO: Failed with "Last result should be presented. Expected <999>, actual <867>" :linuxX64Background
-    //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4774084419/jobs/8487545269#step:8:1139
+    //  https://github.com/fluxo-kt/fluxo/actions/runs/4774084419/jobs/8487545269#step:8:1139
     @Test
     @IgnoreJs // TODO: Can we fix it for JS?
     fun lifo_background_scope_plus_default_dispatcher() = t { (backgroundScope + Default).lifo_test() }
@@ -248,7 +248,7 @@ internal class IntentStrategyTest : CoroutineScopeAwareTest() {
 
     // TODO: AssertionError: Last result should be presented. Expected <999>, actual <991>.
     //  :macosX64BackgroundTest
-    //   https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4067858739/jobs/7005714035#step:8:1109
+    //   https://github.com/fluxo-kt/fluxo/actions/runs/4067858739/jobs/7005714035#step:8:1109
     @Test
     @IgnoreJs // TODO: Can we fix it for JS?
     fun ordered_lifo_test_scope_plus_default_dispatcher() = t { (this + Default).ordered_lifo_test() }
@@ -258,13 +258,13 @@ internal class IntentStrategyTest : CoroutineScopeAwareTest() {
     fun ordered_lifo_background_scope_plus_default_dispatcher() = t { (backgroundScope + Default).ordered_lifo_test() }
 
     // TODO: Timeout of 2000ms exceeded (js, node, win)
-    //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4780106427/jobs/8497620699#step:8:1164
+    //  https://github.com/fluxo-kt/fluxo/actions/runs/4780106427/jobs/8497620699#step:8:1164
     @Test
     @IgnoreJs
     fun ordered_lifo_test_scope_plus_unconfined_dispatcher() = t { (this + Unconfined).ordered_lifo_test() }
 
     // TODO: Timeout of 2000ms exceeded (js, node, win)
-    //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4796400068/jobs/8532119942#step:8:1219
+    //  https://github.com/fluxo-kt/fluxo/actions/runs/4796400068/jobs/8532119942#step:8:1219
     @Test
     @IgnoreJs
     fun ordered_lifo_background_scope_plus_unconfined_dispatcher() = t { (backgroundScope + Unconfined).ordered_lifo_test() }
@@ -299,14 +299,14 @@ internal class IntentStrategyTest : CoroutineScopeAwareTest() {
 
     // TODO: AssertionError: Last result should be presented. Expected <999>, actual <987>.
     //  linuxX64
-    //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4773710515/jobs/8486952812#step:10:750
+    //  https://github.com/fluxo-kt/fluxo/actions/runs/4773710515/jobs/8486952812#step:10:750
     @Test
     @IgnoreJs // TODO: Can we fix it for JS?
     fun channel_lifo_test_scope_plus_unconfined_dispatcher() = t { (this + Unconfined).channel_lifo_test() }
 
     // TODO: Timeout of 2000ms exceeded
     //  js, node
-    //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4759165968/jobs/8458124296#step:8:1223
+    //  https://github.com/fluxo-kt/fluxo/actions/runs/4759165968/jobs/8458124296#step:8:1223
     @Test
     @IgnoreJs // TODO: Can we fix it for JS?
     fun channel_lifo_background_scope_plus_unconfined_dispatcher() = t { (backgroundScope + Unconfined).channel_lifo_test() }

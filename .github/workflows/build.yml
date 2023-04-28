@@ -93,7 +93,7 @@ jobs:
 
       - name: 'Publish SNAPSHOT'
         if: success() && matrix.os == 'macos-latest' && matrix.java == '17' && github.event_name == 'push'
-          && github.ref == 'refs/heads/main' && github.repository == 'fluxo-kt/fluxo-mvi'
+          && github.ref == 'refs/heads/main' && github.repository == 'fluxo-kt/fluxo'
         continue-on-error: true
         env:
           OSSRH_USER: ${{ secrets.OSSRH_USER }}
@@ -164,7 +164,7 @@ jobs:
           category: detekt
 
       - name: Publish JUnit test results as a pull request check
-        if: github.repository == 'fluxo-kt/fluxo-mvi' && github.ref == 'refs/heads/main' && matrix.os == 'macos-latest'
+        if: github.repository == 'fluxo-kt/fluxo' && github.ref == 'refs/heads/main' && matrix.os == 'macos-latest'
         uses: mikepenz/action-junit-report@v3
         with:
           report_paths: '**/build/test-results/*/TEST-*.xml'

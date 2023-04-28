@@ -60,7 +60,7 @@ try {
             var units = parts[i++]
 
             // Workaround for Win problems:
-            // https://github.com/fluxo-kt/fluxo-mvi/actions/runs/3840763260#summary-10443174139
+            // https://github.com/fluxo-kt/fluxo/actions/runs/3840763260#summary-10443174139
             if (error == null && splitRegex in units) {
                 val u = units.split(splitRegex, 2)
                 error = u[0].toBigDecimalOrNull()

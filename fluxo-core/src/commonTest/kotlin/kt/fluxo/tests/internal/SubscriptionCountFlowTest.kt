@@ -68,7 +68,7 @@ class SubscriptionCountFlowTest {
 
     // TODO: Timeout of 2000ms exceeded
     //  :jsNodeTest win CI
-    //  https://github.com/fluxo-kt/fluxo-mvi/actions/runs/4795937502/jobs/8531106215#step:8:1185
+    //  https://github.com/fluxo-kt/fluxo/actions/runs/4795937502/jobs/8531106215#step:8:1185
     @Test
     @IgnoreJs
     fun combined_counters() = runUnitTest {
