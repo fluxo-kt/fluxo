@@ -187,13 +187,15 @@ This project is licensed under the Apache License, Version 2.0 — see the
 [license](LICENSE) file for details.
 
 
-[^1]: BLoC stands for [Business Logic Components](https://web.archive.org/web/20221205073553/https://www.didierboelens.com/2018/08/reactive-programming-streams-bloc/) [[1](https://soshace.com/understanding-flutter-bloc-pattern/), [2](https://bloclibrary.dev/)]
-[^2]: MVI: [Model-View-Intent](http://hannesdorfmann.com/android/model-view-intent/)
-[^3]: [MVVM+, orbit-way][orbit-mvvm+]: updated [Model-View-ViewModel](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93viewmodel), aka Redux/MVI with [contextual reduction][contextual-reduction]
-[^4]: Redux: Pattern for predictable managing and updating app state, and [a famous library](https://redux.js.org/)
-[^5]: SAM: [State-Action-Model](https://sam.js.org/)
-[^6]: FSM: [Finite-State Machine](https://en.wikipedia.org/wiki/Finite-state_machine)
-[^7]: [KMP/KMM](https://kotlinlang.org/lp/mobile/): Kotlin Multiplatform, Kotlin Multiplatform for mobile
+[^1]: BLoC stands for [Business Logic Components](https://web.archive.org/web/20221205073553/https://www.didierboelens.com/2018/08/reactive-programming-streams-bloc/),
+architectural pattern [[1](https://soshace.com/understanding-flutter-bloc-pattern/), [2](https://bloclibrary.dev/)]
+[^2]: MVI: [Model-View-Intent](http://hannesdorfmann.com/android/model-view-intent/) architectural pattern.
+[^3]: [MVVM+, orbit-way][orbit-mvvm+]: updated [Model-View-ViewModel](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93viewmodel) pattern,
+aka Redux/MVI with [contextual reduction][contextual-reduction].
+[^4]: Redux: Pattern for predictable managing and updating app state, and [a famous library](https://redux.js.org/).
+[^5]: SAM: [State-Action-Model](https://sam.js.org/) architectural pattern.
+[^6]: FSM: [Finite-State Machine](https://en.wikipedia.org/wiki/Finite-state_machine).
+[^7]: [KMP/KMM](https://kotlinlang.org/lp/mobile/): Kotlin Multiplatform, Kotlin Multiplatform for mobile.
 
 
 [Store]: fluxo-core/src/commonMain/kotlin/kt/fluxo/core/Store.kt
