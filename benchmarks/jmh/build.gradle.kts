@@ -15,6 +15,7 @@ setupKotlin(
 )
 
 dependencies {
+    // JMH, a JVM harness for building, running, and analysing nano/micro/milli/macro benchmarks
     jmh(libs.jmh.core)
     jmh(libs.jmh.generator.annprocess)
 
@@ -60,7 +61,7 @@ jmh {
     fork.set(envOrPropInt("jmh_f") ?: 2)
 
     // Benchmark mode: [Throughput/thrpt, AverageTime/avgt, SampleTime/sample, SingleShotTime/ss, All/all]
-    benchmarkMode.set(envOrPropList("jmh_bm").ifEmpty { listOf("thrpt", "avgt", "ss") })
+    benchmarkMode.set(envOrPropList("jmh_bm").ifEmpty { listOf("thrpt", "avgt") })
 
     // Output time unit. Available time units are: [m, s, ms, us, ns].
     timeUnit.set(envOrPropValue("jmh_tu") ?: "ms")

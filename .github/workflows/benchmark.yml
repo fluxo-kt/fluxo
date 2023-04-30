@@ -23,10 +23,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        # TODO: Benchmark on different JDK distributions?
+        #  https://www.ojalgo.org/2019/02/quick-test-to-compare-hotspot-and-openj9/
         java: [ '17' ]
         os: [ 'macos-latest', 'windows-latest', 'ubuntu-latest' ]
+        benchmark: [ 'IncrementIntent.*' ]
 
-    name: 'Benchmark on ${{ matrix.os }} JDK ${{ matrix.java }}'
+    name: 'Benchmark "${{ matrix.benchmark }}" on ${{ matrix.os }} JDK ${{ matrix.java }}'
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -46,17 +49,17 @@ jobs:
           distribution: 'temurin'
           java-version: '${{ matrix.java }}'
 
-      - name: 'Benchmark on ${{ matrix.os }}'
+      - name: 'Benchmark "${{ matrix.benchmark }}" on ${{ matrix.os }}'
         uses: gradle/gradle-build-action@v2
         env:
           CI: true
-          jmh: 'IncrementIntent.*'
+          jmh: '${{ matrix.benchmark }}'
           jmh_wi: 3
           jmh_i: 6
           jmh_f: 3
         with:
           gradle-home-cache-cleanup: true
-          cache-disabled: ${{ matrix.os == '11' }}
+          cache-disabled: ${{ matrix.java == '11' }}
           cache-read-only: ${{ github.ref != 'refs/heads/main' || matrix.java != '17' }}
           arguments: jmh --stacktrace --no-configuration-cache --scan
 

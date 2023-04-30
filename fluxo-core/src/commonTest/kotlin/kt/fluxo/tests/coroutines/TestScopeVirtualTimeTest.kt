@@ -112,6 +112,8 @@ class TestScopeVirtualTimeTest {
     )
 
     // MutableStateFlow as a locked "Mutex"
+    // TODO: Freezes from time to time
+    //  https://github.com/fluxo-kt/fluxo/actions/runs/4844030808/jobs/8632032170#step:8:987
     @Test
     fun with_timeout_state_flow() = testImplementation(
         // MutableStateFlow as a locked "Mutex"
