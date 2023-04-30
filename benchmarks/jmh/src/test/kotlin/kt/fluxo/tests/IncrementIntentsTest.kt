@@ -18,10 +18,10 @@ class IncrementIntentsTest {
     // region Fluxo
 
     @Test
-    fun fluxo__mvvm_intent() = test(FluxoBenchmark.mvvmpIntentStaticIncrement())
+    fun fluxo__mvvmp_intent() = test(FluxoBenchmark.mvvmpIntentStaticIncrement())
 
     @Test
-    fun fluxo__mvvm_intent__external_arg() = test(FluxoBenchmark.mvvmpIntentAdd())
+    fun fluxo__mvvmp_intent__external_arg() = test(FluxoBenchmark.mvvmpIntentAdd())
 
     @Test
     fun fluxo__mvi_reducer() = test(FluxoBenchmark.mviReducerStaticIncrement())
@@ -60,10 +60,10 @@ class IncrementIntentsTest {
 
 
     @Test
-    fun orbit__mvvm_intent() = test(OrbitBenchmark.mvvmpIntentStaticIncrement())
+    fun orbit__mvvmp_intent() = test(OrbitBenchmark.mvvmpIntentStaticIncrement())
 
     @Test
-    fun orbit__mvvm_intent__external_arg() = test(OrbitBenchmark.mvvmpIntentAdd())
+    fun orbit__mvvmp_intent__external_arg() = test(OrbitBenchmark.mvvmpIntentAdd())
 
 
     @Test

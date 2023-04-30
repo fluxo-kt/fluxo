@@ -52,7 +52,7 @@ internal class SideJobTest {
     }
 
     @Test
-    fun sj_on_mvvm_intent() = runUnitTest {
+    fun sj_on_mvvmp_intent() = runUnitTest {
         val store = backgroundScope.container("a")
 
         fun secondIntent() = store.intent {
