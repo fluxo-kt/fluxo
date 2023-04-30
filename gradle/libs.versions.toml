@@ -13,7 +13,7 @@ fluxo = "0.1.0-SNAPSHOT"
 # For local development to dogfood the lib
 # https://s01.oss.sonatype.org/content/repositories/snapshots/io/github/fluxo-kt/fluxo-core/maven-metadata.xml
 # WARN: Don't forget to update snapshot version example in ../README.md
-fluxoSnapshot = "0.1-50c9fd5-SNAPSHOT"
+fluxoSnapshot = "0.1-7510e0c-SNAPSHOT"
 
 # 21 is default for new projects per May 2021, required for Compose, but we don't need it for core modules
 androidMinSdk = "9"
@@ -28,10 +28,10 @@ kotlinLangVersion = "1.7"
 
 # https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-gradle-plugin
 # WARN: Don't forget to update kotlin version badge in ../README.md
-kotlin = "1.8.20"
+kotlin = "1.8.21"
 
 # https://github.com/google/ksp/releases
-ksp = "1.8.20-1.0.11"
+ksp = "1.8.21-1.0.11"
 
 # https://github.com/arkivanov/Essenty/releases
 essenty = "1.1.0"
@@ -39,7 +39,7 @@ essenty = "1.1.0"
 # Dokka is a documentation engine for Kotlin/Java
 # https://github.com/Kotlin/dokka/releases
 # https://mvnrepository.com/artifact/org.jetbrains.dokka/dokka-gradle-plugin?repo=space-kotlin-dokka-dev
-dokka = "1.8.20-dev-212"
+dokka = "1.8.20-dev-213"
 
 # https://github.com/Kotlin/kotlinx.coroutines/releases
 # https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-coroutines-core
@@ -84,15 +84,15 @@ jmh = "1.36"
 # NPM repo dependencies
 
 # https://www.npmjs.com/package/karma?activeTab=versions
-js-karma = "6.4.1"
+js-karma = "6.4.2"
 # https://www.npmjs.com/package/mocha?activeTab=versions
 js-mocha = "10.2.0"
 # https://www.npmjs.com/package/webpack?activeTab=versions
-js-webpack = "5.77.0"
+js-webpack = "5.81.0"
 # https://www.npmjs.com/package/webpack-cli?activeTab=versions
-js-webpackCli = "5.0.1"
+js-webpackCli = "5.0.2"
 # https://www.npmjs.com/package/webpack-dev-server?activeTab=versions
-js-webpackDevServer = "4.13.2"
+js-webpackDevServer = "4.13.3"
 # https://www.npmjs.com/package/ua-parser-js?activeTab=versions
 js-uaParserJs = "0.7.35"
 
