@@ -57,42 +57,44 @@ jmh {
     // https://github.com/melix/jmh-gradle-plugin#configuration-options
 
     // One! pattern (regular expression) for executed benchmarks
+    var jmhStart = false
     includes.addAll(listOfNotNull(envOrPropValue("jmh")?.also {
         logger.lifecycle("JMH include='$it'")
+        jmhStart = true
     }))
     excludes.addAll(listOfNotNull(envOrPropValue("jmh_e")?.also {
-        logger.lifecycle("JMH exclude='$it'")
+        if (jmhStart) logger.lifecycle("JMH exclude='$it'")
     }))
 
     // Warmup benchmarks to include in the run with already selected.
     warmupBenchmarks.addAll((envOrPropValue("jmh_wmb") ?: ".*Warmup").also {
-        logger.lifecycle("JMH warmup='$it'")
+        if (jmhStart) logger.lifecycle("JMH warmup='$it'")
     })
 
 
     warmupIterations.set((envOrPropInt("jmh_wi") ?: 1).also {
-        logger.lifecycle("JMH warmupIterations='$it'")
+        if (jmhStart) logger.lifecycle("JMH warmupIterations='$it'")
     })
     iterations.set((envOrPropInt("jmh_i") ?: 4).also {
-        logger.lifecycle("JMH iterations='$it'")
+        if (jmhStart) logger.lifecycle("JMH iterations='$it'")
     })
     threads.set((envOrPropInt("jmh_t") ?: 2).let { threads ->
         val totalCpus = Runtime.getRuntime().availableProcessors()
-        logger.lifecycle("JMH threads='$threads' (from $totalCpus possible)")
+        if (jmhStart) logger.lifecycle("JMH threads='$threads' (from $totalCpus possible)")
         threads.coerceIn(1, totalCpus)
     })
     fork.set((envOrPropInt("jmh_f") ?: 1).also {
-        logger.lifecycle("JMH forks='$it'")
+        if (jmhStart) logger.lifecycle("JMH forks='$it'")
     })
 
     // Benchmark mode: [Throughput/thrpt, AverageTime/avgt, SampleTime/sample, SingleShotTime/ss, All/all]
     benchmarkMode.set(envOrPropList("jmh_bm").ifEmpty { listOf("thrpt", "avgt") }.also {
-        logger.lifecycle("JMH benchmarkModes='$it'")
+        if (jmhStart) logger.lifecycle("JMH benchmarkModes='$it'")
     })
 
     // Output time unit. Available time units are: [m, s, ms, us, ns].
     timeUnit.set((envOrPropValue("jmh_tu") ?: "ms").also {
-        logger.lifecycle("JMH timeUnit='$it'")
+        if (jmhStart) logger.lifecycle("JMH timeUnit='$it'")
     })
 
     jmhVersion.set(libs.versions.jmh)

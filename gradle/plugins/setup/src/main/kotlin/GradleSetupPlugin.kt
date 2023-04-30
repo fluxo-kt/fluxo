@@ -43,6 +43,7 @@ class GradleSetupPlugin : Plugin<Project> {
 
         target.logger.lifecycle("> Conf JRE version is ${System.getProperty("java.version")}")
         target.logger.lifecycle("> Conf Gradle version is ${target.gradle.gradleVersion}")
+        target.logger.lifecycle("> Conf CPUs ${Runtime.getRuntime().availableProcessors()}")
 
 
         target.subprojects {
