@@ -56,34 +56,41 @@ import org.openjdk.jmh.infra.Blackhole
 @Suppress("FunctionNaming", "FunctionName", "InjectDispatcher")
 open class IntentStrategyBenchmark {
     @Benchmark
-    fun fifo__dispatcher_default(bh: Blackhole) = bh.consume(FluxoBenchmark.mviReducer(strategy = Fifo, dispatcher = Default))
+    fun fifo__dispatcher_default(bh: Blackhole) =
+        bh.consume(FluxoBenchmark.mviReducerStaticIncrement(strategy = Fifo, dispatcher = Default))
 
     @Benchmark
-    fun fifo__dispatcher_unconfined(bh: Blackhole) = bh.consume(FluxoBenchmark.mviReducer(strategy = Fifo, dispatcher = Unconfined))
+    fun fifo__dispatcher_unconfined(bh: Blackhole) =
+        bh.consume(FluxoBenchmark.mviReducerStaticIncrement(strategy = Fifo, dispatcher = Unconfined))
 
 
     @Benchmark
-    fun lifo__dispatcher_unconfined(bh: Blackhole) = bh.consume(FluxoBenchmark.mviReducer(strategy = Lifo, dispatcher = Unconfined))
+    fun lifo__dispatcher_unconfined(bh: Blackhole) =
+        bh.consume(FluxoBenchmark.mviReducerStaticIncrement(strategy = Lifo, dispatcher = Unconfined))
 
     @Benchmark
     fun channel_lifo_ordered__dispatcher_unconfined(bh: Blackhole) =
-        bh.consume(FluxoBenchmark.mviReducer(strategy = ChannelLifo(ordered = true), dispatcher = Unconfined))
+        bh.consume(FluxoBenchmark.mviReducerStaticIncrement(strategy = ChannelLifo(ordered = true), dispatcher = Unconfined))
 
     @Benchmark
     fun channel_lifo_unordered__dispatcher_unconfined(bh: Blackhole) =
-        bh.consume(FluxoBenchmark.mviReducer(strategy = ChannelLifo(ordered = false), dispatcher = Unconfined))
+        bh.consume(FluxoBenchmark.mviReducerStaticIncrement(strategy = ChannelLifo(ordered = false), dispatcher = Unconfined))
 
 
     @Benchmark
-    fun parallel__dispatcher_default(bh: Blackhole) = bh.consume(FluxoBenchmark.mviReducer(strategy = Parallel, dispatcher = Default))
+    fun parallel__dispatcher_default(bh: Blackhole) =
+        bh.consume(FluxoBenchmark.mviReducerStaticIncrement(strategy = Parallel, dispatcher = Default))
 
     @Benchmark
-    fun parallel__dispatcher_unconfined(bh: Blackhole) = bh.consume(FluxoBenchmark.mviReducer(strategy = Parallel, dispatcher = Unconfined))
+    fun parallel__dispatcher_unconfined(bh: Blackhole) =
+        bh.consume(FluxoBenchmark.mviReducerStaticIncrement(strategy = Parallel, dispatcher = Unconfined))
 
 
     @Benchmark
-    fun direct__dispatcher_default(bh: Blackhole) = bh.consume(FluxoBenchmark.mviReducer(strategy = Direct, dispatcher = Default))
+    fun direct__dispatcher_default(bh: Blackhole) =
+        bh.consume(FluxoBenchmark.mviReducerStaticIncrement(strategy = Direct, dispatcher = Default))
 
     @Benchmark
-    fun direct__dispatcher_unconfined(bh: Blackhole) = bh.consume(FluxoBenchmark.mviReducer(strategy = Direct, dispatcher = Unconfined))
+    fun direct__dispatcher_unconfined(bh: Blackhole) =
+        bh.consume(FluxoBenchmark.mviReducerStaticIncrement(strategy = Direct, dispatcher = Unconfined))
 }

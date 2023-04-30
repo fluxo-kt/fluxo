@@ -31,14 +31,15 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven("https://jitpack.io")
-        maven("https://maven.pkg.jetbrains.space/kotlin/p/dokka/dev/")
+        maven(url = "https://jitpack.io")
+        maven(url = "https://maven.pkg.jetbrains.space/kotlin/p/dokka/dev/")
+        maven(url = "https://s01.oss.sonatype.org/content/repositories/snapshots/")
     }
 }
 
 rootProject.name = "fluxo"
 
-// On modules update, don't forget to update '.github/workflows/deps-submission.yml'!
+// On module update, don't forget to update '.github/workflows/deps-submission.yml'!
 
 include(":fluxo-core")
 include(":fluxo-data")

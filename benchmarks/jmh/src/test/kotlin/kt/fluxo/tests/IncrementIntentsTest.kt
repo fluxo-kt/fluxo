@@ -16,32 +16,32 @@ import kotlin.test.assertEquals
 class IncrementIntentsTest {
 
     @Test
-    fun fluxo__mvvm_intent() = test(FluxoBenchmark.mvvmIntent())
+    fun fluxo__mvvm_intent() = test(FluxoBenchmark.mvvmpIntentStaticIncrement())
 
     @Test
-    fun fluxo__mvi_reducer() = test(FluxoBenchmark.mviReducer())
+    fun fluxo__mvi_reducer() = test(FluxoBenchmark.mviReducerStaticIncrement())
 
     @Test
-    fun fluxo__mvi_handler() = test(FluxoBenchmark.mviHandler())
+    fun fluxo__mvi_handler() = test(FluxoBenchmark.mviHandlerStaticIncrement())
 
     // endregion
 
 
     @Test
-    fun mvicore__mvi_reducer() = test(MviCoreBenchmark.mviReducer())
+    fun mvicore__mvi_reducer() = test(MviCoreBenchmark.mviReducerStaticIncrement())
 
     @Test
-    fun mvikotlin__mvi_reducer() = test(MviKotlinBenchmark.mviReducer())
+    fun mvikotlin__mvi_reducer() = test(MviKotlinBenchmark.mviReducerStaticIncrement())
 
     @Test
-    fun ballast__mvi_handler() = test(BallastBenchmark.mviHandler())
+    fun ballast__mvi_handler() = test(BallastBenchmark.mviHandlerStaticIncrement())
 
     @Test
-    fun orbit__mvvm_intent() = test(OrbitBenchmark.mvvmIntent())
+    fun orbit__mvvm_intent() = test(OrbitBenchmark.mvvmpIntentStaticIncrement())
 
 
     @Test
-    fun naive__state_flow() = test(NaiveBenchmark.stateFlow())
+    fun naive__state_flow() = test(NaiveBenchmark.stateFlowStaticIncrement())
 
 
     private fun test(result: Int) = runTest {

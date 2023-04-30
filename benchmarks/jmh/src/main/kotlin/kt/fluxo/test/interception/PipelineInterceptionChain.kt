@@ -1,7 +1,7 @@
 package kt.fluxo.test.interception
 
 import kotlinx.coroutines.flow.MutableStateFlow
-import kt.fluxo.test.compare.CommonBenchmark.addAndGet
+import kt.fluxo.test.compare.addAndGet
 import kt.fluxo.test.interception.PipelineInterceptionChain.IntentInterceptor
 
 /**

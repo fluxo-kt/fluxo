@@ -37,21 +37,23 @@ import org.openjdk.jmh.infra.Blackhole
 @Suppress("FunctionNaming", "FunctionName", "InjectDispatcher")
 open class CoroutineDispatcherBenchmark {
     @Benchmark
-    fun fluxo__single_thread_context(bh: Blackhole) = bh.consume(FluxoBenchmark.mviReducer(dispatcher = null, strategy = Parallel))
+    fun fluxo__single_thread_context(bh: Blackhole) =
+        bh.consume(FluxoBenchmark.mviReducerStaticIncrement(dispatcher = null, strategy = Parallel))
 
     @Benchmark
     fun fluxo__dispatchers_default(bh: Blackhole) =
-        bh.consume(FluxoBenchmark.mviReducer(dispatcher = Dispatchers.Default, strategy = Parallel))
+        bh.consume(FluxoBenchmark.mviReducerStaticIncrement(dispatcher = Dispatchers.Default, strategy = Parallel))
 
     @Benchmark
     fun fluxo__dispatchers_default_limited2(bh: Blackhole) = bh.consume(
-        FluxoBenchmark.mviReducer(dispatcher = Dispatchers.Default.limitedParallelism(2), strategy = Parallel),
+        FluxoBenchmark.mviReducerStaticIncrement(dispatcher = Dispatchers.Default.limitedParallelism(2), strategy = Parallel),
     )
 
     @Benchmark
-    fun fluxo__dispatchers_io(bh: Blackhole) = bh.consume(FluxoBenchmark.mviReducer(dispatcher = Dispatchers.IO, strategy = Parallel))
+    fun fluxo__dispatchers_io(bh: Blackhole) =
+        bh.consume(FluxoBenchmark.mviReducerStaticIncrement(dispatcher = Dispatchers.IO, strategy = Parallel))
 
     @Benchmark
     fun fluxo__dispatchers_unconfined(bh: Blackhole) =
-        bh.consume(FluxoBenchmark.mviReducer(dispatcher = Dispatchers.Unconfined, strategy = Parallel))
+        bh.consume(FluxoBenchmark.mviReducerStaticIncrement(dispatcher = Dispatchers.Unconfined, strategy = Parallel))
 }

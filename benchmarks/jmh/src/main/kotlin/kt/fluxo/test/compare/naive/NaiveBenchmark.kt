@@ -2,16 +2,16 @@ package kt.fluxo.test.compare.naive
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.runBlocking
-import kt.fluxo.test.compare.CommonBenchmark.consumeCommon
-import kt.fluxo.test.compare.CommonBenchmark.getAndAdd
-import kt.fluxo.test.compare.CommonBenchmark.launchCommon
+import kt.fluxo.test.compare.consumeCommonBenchmark
+import kt.fluxo.test.compare.getAndAdd
+import kt.fluxo.test.compare.launchCommonBenchmarkWithStaticIntent
 
 internal object NaiveBenchmark {
-    fun stateFlow(): Int {
+    fun stateFlowStaticIncrement(): Int {
         val state = MutableStateFlow(0)
         runBlocking {
-            val launchDef = launchCommon(Unit) { state.getAndAdd(1) }
-            state.consumeCommon(launchDef)
+            val launchDef = launchCommonBenchmarkWithStaticIntent(Unit) { state.getAndAdd(1) }
+            state.consumeCommonBenchmark(launchDef)
         }
         return state.value
     }

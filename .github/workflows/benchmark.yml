@@ -54,9 +54,9 @@ jobs:
         env:
           CI: true
           jmh: '${{ matrix.benchmark }}'
-          jmh_wi: 3
+          jmh_wi: 1
           jmh_i: 6
-          jmh_f: 3
+          jmh_f: 2
         with:
           gradle-home-cache-cleanup: true
           cache-disabled: ${{ matrix.java == '11' }}

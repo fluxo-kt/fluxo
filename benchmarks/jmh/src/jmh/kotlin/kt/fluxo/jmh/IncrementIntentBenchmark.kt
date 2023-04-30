@@ -15,67 +15,101 @@ import org.openjdk.jmh.infra.Blackhole
 /**
  * Benchmark for simple incrementing intent throughput.
  *
+ * `external_arg` variants stand for calls with external argument passed.
+ * Others are for static calls with no arguments.
+ *
  * _Example results:_
  * ```
- * Benchmark                Mode  Cnt   Score   Error   Units  Percent
- * naive__state_flow       thrpt  150  42.678 ± 0.316  ops/ms   431.2%
- * mvicore__mvi_reducer    thrpt  150   8.034 ± 0.217  ops/ms     0.0%
- * mvikotlin__mvi_reducer  thrpt  150   4.567 ± 0.565  ops/ms   -43.2%
- * fluxo__mvi_reducer      thrpt  150   0.779 ± 0.017  ops/ms   -90.3%
- * ballast__mvi_handler    thrpt  150   0.695 ± 0.005  ops/ms   -91.3%
- * fluxo__mvvm_intent      thrpt  150   0.673 ± 0.006  ops/ms   -91.6%
- * fluxo__mvi_handler      thrpt  150   0.669 ± 0.010  ops/ms   -91.7%
- * orbit__mvvm_intent      thrpt  150   0.250 ± 0.001  ops/ms   -96.9%
+ * Benchmark                Mode  Cnt   Score    Error   Units  Percent
+ * naive__state_flow       thrpt   18   9.533 ±  0.322  ops/ms    86.7%
+ * mvicore__mvi_reducer    thrpt   18   5.107 ±  0.165  ops/ms     0.0%
+ * fluxo__mvi_reducer      thrpt   18   3.772 ±  0.247  ops/ms   -26.1%
+ * mvikotlin__mvi_reducer  thrpt   18   1.781 ±  0.063  ops/ms   -65.1%
+ * fluxo__mvvm_intent      thrpt   18   1.276 ±  0.164  ops/ms   -75.0%
+ * fluxo__mvi_handler      thrpt   18   1.271 ±  0.100  ops/ms   -75.1%
+ * ballast__mvi_handler    thrpt   18   0.389 ±  0.116  ops/ms   -92.4%
+ * orbit__mvvm_intent      thrpt   18   0.259 ±  0.007  ops/ms   -94.9%
  *
- * naive__state_flow        avgt  150   0.141 ± 0.001   ms/op   -81.0%
- * mvicore__mvi_reducer     avgt  150   0.742 ± 0.022   ms/op     0.0%
- * mvikotlin__mvi_reducer   avgt  150   2.192 ± 0.069   ms/op   195.4%
- * fluxo__mvi_reducer       avgt  150   7.708 ± 0.198   ms/op   938.8%
- * fluxo__mvi_handler       avgt  150   8.774 ± 0.059   ms/op  1082.5%
- * fluxo__mvvm_intent       avgt  150   8.860 ± 0.115   ms/op  1094.1%
- * ballast__mvi_handler     avgt  150   9.092 ± 0.107   ms/op  1125.3%
- * orbit__mvvm_intent       avgt  150  24.336 ± 0.216   ms/op  3179.8%
- *
- * naive__state_flow          ss  150   0.440 ± 0.173   ms/op   -81.3%
- * mvicore__mvi_reducer       ss  150   2.353 ± 0.319   ms/op     0.0%
- * mvikotlin__mvi_reducer     ss  150   2.777 ± 0.145   ms/op    18.0%
- * fluxo__mvi_reducer         ss  150  11.307 ± 0.759   ms/op   380.5%
- * fluxo__mvvm_intent         ss  150  11.351 ± 0.568   ms/op   382.4%
- * fluxo__mvi_handler         ss  150  11.649 ± 0.839   ms/op   395.1%
- * ballast__mvi_handler       ss  150  14.384 ± 1.338   ms/op   511.3%
- * orbit__mvvm_intent         ss  150  35.009 ± 3.054   ms/op  1387.8%
+ * naive__state_flow        avgt   18   0.390 ±  0.026   ms/op   -51.6%
+ * mvicore__mvi_reducer     avgt   18   0.805 ±  0.046   ms/op     0.0%
+ * fluxo__mvi_reducer       avgt   18   0.939 ±  0.041   ms/op    16.6%
+ * mvikotlin__mvi_reducer   avgt   18   2.201 ±  0.066   ms/op   173.4%
+ * fluxo__mvvm_intent       avgt   18   3.222 ±  0.117   ms/op   300.2%
+ * fluxo__mvi_handler       avgt   18   3.329 ±  0.192   ms/op   313.5%
+ * ballast__mvi_handler     avgt   18   7.912 ±  0.365   ms/op   882.9%
+ * orbit__mvvm_intent       avgt   18  14.025 ±  0.478   ms/op  1642.2%
  * ```
  */
 @State(Scope.Benchmark)
-@Suppress("FunctionNaming", "FunctionName")
+@Suppress("FunctionNaming", "FunctionName", "TooManyFunctions")
 open class IncrementIntentBenchmark {
     // region Fluxo
 
     @Benchmark
-    fun fluxo__mvvm_intent(bh: Blackhole) = bh.consume(FluxoBenchmark.mvvmIntent())
+    fun fluxo__mvvm_intent(bh: Blackhole) = bh.consume(FluxoBenchmark.mvvmpIntentStaticIncrement())
 
     @Benchmark
-    fun fluxo__mvi_reducer(bh: Blackhole) = bh.consume(FluxoBenchmark.mviReducer(dispatcher = Unconfined))
+    fun fluxo__mvvm_intent__external_arg(bh: Blackhole) = bh.consume(FluxoBenchmark.mvvmpIntentAdd())
 
     @Benchmark
-    fun fluxo__mvi_handler(bh: Blackhole) = bh.consume(FluxoBenchmark.mviHandler())
+    fun fluxo__mvi_reducer(bh: Blackhole) = bh.consume(FluxoBenchmark.mviReducerStaticIncrement(dispatcher = Unconfined))
+
+    @Benchmark
+    fun fluxo__mvi_reducer__external_arg(bh: Blackhole) = bh.consume(FluxoBenchmark.mviReducerAdd())
+
+    @Benchmark
+    fun fluxo__mvi_handler(bh: Blackhole) = bh.consume(FluxoBenchmark.mviHandlerStaticIncrement())
+
+    @Benchmark
+    fun fluxo__mvi_handler__external_arg(bh: Blackhole) = bh.consume(FluxoBenchmark.mviHandlerAdd())
+
+    // endregion
+
+
+    // region Ballast
+
+    @Benchmark
+    fun mvicore__mvi_reducer(bh: Blackhole) = bh.consume(MviCoreBenchmark.mviReducerStaticIncrement())
+
+    @Benchmark
+    fun mvicore__mvi_reducer__external_arg(bh: Blackhole) = bh.consume(MviCoreBenchmark.mviReducerAdd())
+
+    // endregion
+
+
+    // region MviKotlin
+
+    @Benchmark
+    fun mvikotlin__mvi_reducer(bh: Blackhole) = bh.consume(MviKotlinBenchmark.mviReducerStaticIncrement())
+
+    @Benchmark
+    fun mvikotlin__mvi_reducer__external_arg(bh: Blackhole) = bh.consume(MviKotlinBenchmark.mviReducerAdd())
+
+    // endregion
+
+
+    // region Ballast
+
+    @Benchmark
+    fun ballast__mvi_handler(bh: Blackhole) = bh.consume(BallastBenchmark.mviHandlerStaticIncrement())
+
+    @Benchmark
+    fun ballast__mvi_handler__external_arg(bh: Blackhole) = bh.consume(BallastBenchmark.mviHandlerAdd())
+
+    // endregion
+
+
+    // region Ballast
+
+    @Benchmark
+    fun orbit__mvvm_intent(bh: Blackhole) = bh.consume(OrbitBenchmark.mvvmpIntentStaticIncrement())
+
+    @Benchmark
+    fun orbit__mvvm_intent__external_arg(bh: Blackhole) = bh.consume(OrbitBenchmark.mvvmpIntentAdd())
 
     // endregion
 
 
     @Benchmark
-    fun mvicore__mvi_reducer(bh: Blackhole) = bh.consume(MviCoreBenchmark.mviReducer())
-
-    @Benchmark
-    fun mvikotlin__mvi_reducer(bh: Blackhole) = bh.consume(MviKotlinBenchmark.mviReducer())
-
-    @Benchmark
-    fun ballast__mvi_handler(bh: Blackhole) = bh.consume(BallastBenchmark.mviHandler())
-
-    @Benchmark
-    fun orbit__mvvm_intent(bh: Blackhole) = bh.consume(OrbitBenchmark.mvvmIntent())
-
-
-    @Benchmark
-    fun naive__state_flow(bh: Blackhole) = bh.consume(NaiveBenchmark.stateFlow())
+    fun naive__state_flow(bh: Blackhole) = bh.consume(NaiveBenchmark.stateFlowStaticIncrement())
 }

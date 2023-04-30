@@ -19,28 +19,38 @@ dependencies {
     jmh(libs.jmh.core)
     jmh(libs.jmh.generator.annprocess)
 
-    implementation(projects.fluxoCore)
-    implementation(projects.fluxoData)
+
+    // Use the latest snapshot for local development to dogfood the lib.
+    val isCI by isCI()
+    if (isCI) {
+        implementation(projects.fluxoCore)
+    } else {
+        implementation("io.github.fluxo-kt:fluxo-core:" + libs.versions.fluxoSnapshot.get())
+    }
 
 
-    // Libraries to compare/benchmark with
+    // region Libraries to compare/benchmark with
 
     // Ballast
     implementation("io.github.copper-leaf:ballast-core:" + libs.versions.ballast.get())
 
     // MVICore
-    implementation("com.github.badoo.mvicore:mvicore:" + libs.versions.mvicore.get())
-    implementation("com.github.badoo.mvicore:binder:" + libs.versions.mvicore.get())
+    val mviCoreVersion = libs.versions.mvicore.get()
+    implementation("com.github.badoo.mvicore:mvicore:$mviCoreVersion")
+    implementation("com.github.badoo.mvicore:binder:$mviCoreVersion")
     implementation(libs.kotlinx.coroutines.reactive)
     implementation(libs.rxjava2)
 
     // MVIKotlin
-    implementation("com.arkivanov.mvikotlin:mvikotlin:" + libs.versions.mvikotlin.get())
-    implementation("com.arkivanov.mvikotlin:mvikotlin-main:" + libs.versions.mvikotlin.get())
-    implementation("com.arkivanov.mvikotlin:mvikotlin-extensions-coroutines:" + libs.versions.mvikotlin.get())
+    val mviKotlinVersion = libs.versions.mvikotlin.get()
+    implementation("com.arkivanov.mvikotlin:mvikotlin:$mviKotlinVersion")
+    implementation("com.arkivanov.mvikotlin:mvikotlin-main:$mviKotlinVersion")
+    implementation("com.arkivanov.mvikotlin:mvikotlin-extensions-coroutines:$mviKotlinVersion")
 
     // Orbit MVI
     implementation("org.orbit-mvi:orbit-core:" + libs.versions.orbit.get())
+
+    // endregion
 }
 
 jmh {
@@ -50,21 +60,40 @@ jmh {
     includes.addAll(listOfNotNull(envOrPropValue("jmh")?.also {
         logger.lifecycle("JMH include='$it'")
     }))
-    excludes.addAll(listOfNotNull(envOrPropValue("jmh_e")))
+    excludes.addAll(listOfNotNull(envOrPropValue("jmh_e")?.also {
+        logger.lifecycle("JMH exclude='$it'")
+    }))
 
     // Warmup benchmarks to include in the run with already selected.
-    warmupBenchmarks.addAll(envOrPropValue("jmh_wmb") ?: ".*Warmup")
+    warmupBenchmarks.addAll((envOrPropValue("jmh_wmb") ?: ".*Warmup").also {
+        logger.lifecycle("JMH warmup='$it'")
+    })
 
-    warmupIterations.set(envOrPropInt("jmh_wi") ?: 2)
-    iterations.set(envOrPropInt("jmh_i") ?: 4)
-    threads.set(envOrPropInt("jmh_t") ?: 4)
-    fork.set(envOrPropInt("jmh_f") ?: 2)
+
+    warmupIterations.set((envOrPropInt("jmh_wi") ?: 1).also {
+        logger.lifecycle("JMH warmupIterations='$it'")
+    })
+    iterations.set((envOrPropInt("jmh_i") ?: 4).also {
+        logger.lifecycle("JMH iterations='$it'")
+    })
+    threads.set((envOrPropInt("jmh_t") ?: 4).let { threads ->
+        val totalCpus = Runtime.getRuntime().availableProcessors()
+        logger.lifecycle("JMH threads='$threads' (from $totalCpus possible)")
+        threads.coerceIn(1, totalCpus)
+    })
+    fork.set((envOrPropInt("jmh_f") ?: 1).also {
+        logger.lifecycle("JMH forks='$it'")
+    })
 
     // Benchmark mode: [Throughput/thrpt, AverageTime/avgt, SampleTime/sample, SingleShotTime/ss, All/all]
-    benchmarkMode.set(envOrPropList("jmh_bm").ifEmpty { listOf("thrpt", "avgt") })
+    benchmarkMode.set(envOrPropList("jmh_bm").ifEmpty { listOf("thrpt", "avgt") }.also {
+        logger.lifecycle("JMH benchmarkModes='$it'")
+    })
 
     // Output time unit. Available time units are: [m, s, ms, us, ns].
-    timeUnit.set(envOrPropValue("jmh_tu") ?: "ms")
+    timeUnit.set((envOrPropValue("jmh_tu") ?: "ms").also {
+        logger.lifecycle("JMH timeUnit='$it'")
+    })
 
     jmhVersion.set(libs.versions.jmh)
 

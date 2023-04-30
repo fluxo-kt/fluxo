@@ -19,39 +19,39 @@ class CoroutineDispatcherTest {
 
     @Test
     fun fluxo__single_thread_context() = test {
-        FluxoBenchmark.mviReducer(dispatcher = null, strategy = Parallel)
+        FluxoBenchmark.mviReducerStaticIncrement(dispatcher = null, strategy = Parallel)
     }
 
     @Test
     fun fluxo__dispatchers_default() = test {
-        FluxoBenchmark.mviReducer(dispatcher = Default, strategy = Parallel)
+        FluxoBenchmark.mviReducerStaticIncrement(dispatcher = Default, strategy = Parallel)
     }
 
     @Test
     fun fluxo__dispatchers_default_limited2() = test {
-        FluxoBenchmark.mviReducer(dispatcher = Default.limitedParallelism(2), strategy = Parallel)
+        FluxoBenchmark.mviReducerStaticIncrement(dispatcher = Default.limitedParallelism(2), strategy = Parallel)
     }
 
     @Test
     fun fluxo__dispatchers_io() = test {
-        FluxoBenchmark.mviReducer(dispatcher = IO, strategy = Parallel)
+        FluxoBenchmark.mviReducerStaticIncrement(dispatcher = IO, strategy = Parallel)
     }
 
     @Test
     fun fluxo__dispatchers_unconfined() = test {
-        FluxoBenchmark.mviReducer(dispatcher = Unconfined, strategy = Parallel)
+        FluxoBenchmark.mviReducerStaticIncrement(dispatcher = Unconfined, strategy = Parallel)
     }
 
     @Test
     @Ignore // TODO: fix freeze
     fun fluxo__test_dispatcher() = runTest {
-        FluxoBenchmark.mviReducer(dispatcher = coroutineContext, strategy = Parallel)
+        FluxoBenchmark.mviReducerStaticIncrement(dispatcher = coroutineContext, strategy = Parallel)
     }
 
     @Test
     @Ignore // TODO: fix freeze
     fun fluxo__background_test_dispatcher() = runTest {
-        FluxoBenchmark.mviReducer(dispatcher = backgroundScope.coroutineContext, strategy = Parallel)
+        FluxoBenchmark.mviReducerStaticIncrement(dispatcher = backgroundScope.coroutineContext, strategy = Parallel)
     }
 
 
