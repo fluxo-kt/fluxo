@@ -98,10 +98,11 @@ js-uaParserJs = "0.7.35"
 
 
 # Libraries to compare/benchmark against
-ballast = "2.3.0"   # https://mvnrepository.com/artifact/io.github.copper-leaf/ballast-core
-mvicore = "1.4.0"   # https://github.com/badoo/MVICore/releases
-mvikotlin = "3.2.0" # https://mvnrepository.com/artifact/com.arkivanov.mvikotlin/mvikotlin
-orbit = "4.6.1"     # https://mvnrepository.com/artifact/org.orbit-mvi/orbit-core
+ballast = "2.3.0"                   # https://mvnrepository.com/artifact/io.github.copper-leaf/ballast-core
+mvicore = "1.4.0"                   # https://github.com/badoo/MVICore/releases
+mvikotlin = "3.2.0"                 # https://mvnrepository.com/artifact/com.arkivanov.mvikotlin/mvikotlin
+orbit = "4.6.1"                     # https://mvnrepository.com/artifact/org.orbit-mvi/orbit-core
+respawnFlowMVI = "1.2.0-alpha01"    # https://mvnrepository.com/artifact/pro.respawn.flowmvi/core
 
 
 [libraries]

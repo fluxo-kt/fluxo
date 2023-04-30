@@ -8,6 +8,7 @@ import kt.fluxo.test.compare.mvicore.MviCoreBenchmark
 import kt.fluxo.test.compare.mvikotlin.MviKotlinBenchmark
 import kt.fluxo.test.compare.naive.NaiveBenchmark
 import kt.fluxo.test.compare.orbit.OrbitBenchmark
+import kt.fluxo.test.compare.respawnflowmvi.RespawnFlowMviBenchmark
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -57,6 +58,13 @@ class IncrementIntentsTest {
 
     @Test
     fun ballast__mvi_handler__external_arg() = test(BallastBenchmark.mviHandlerAdd())
+
+
+    @Test
+    fun flowmvi__mvi_handler() = test(RespawnFlowMviBenchmark.mviHandlerStaticIncrement())
+
+    @Test
+    fun flowmvi__mvi_handler__external_arg() = test(RespawnFlowMviBenchmark.mviHandlerAdd())
 
 
     @Test

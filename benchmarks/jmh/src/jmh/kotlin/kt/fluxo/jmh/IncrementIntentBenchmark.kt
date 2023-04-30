@@ -6,6 +6,7 @@ import kt.fluxo.test.compare.mvicore.MviCoreBenchmark
 import kt.fluxo.test.compare.mvikotlin.MviKotlinBenchmark
 import kt.fluxo.test.compare.naive.NaiveBenchmark
 import kt.fluxo.test.compare.orbit.OrbitBenchmark
+import kt.fluxo.test.compare.respawnflowmvi.RespawnFlowMviBenchmark
 import org.openjdk.jmh.annotations.Benchmark
 import org.openjdk.jmh.annotations.Scope
 import org.openjdk.jmh.annotations.State
@@ -64,6 +65,9 @@ open class IncrementIntentBenchmark {
 
     @Benchmark
     fun ballast__mvi_handler(bh: Blackhole) = bh.consume(BallastBenchmark.mviHandlerAdd())
+
+    @Benchmark
+    fun flowmvi__mvi_handler(bh: Blackhole) = bh.consume(RespawnFlowMviBenchmark.mviHandlerAdd())
 
     @Benchmark
     fun orbit__mvvmp_intent(bh: Blackhole) = bh.consume(OrbitBenchmark.mvvmpIntentAdd())

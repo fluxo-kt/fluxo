@@ -30,6 +30,21 @@ internal inline fun CoroutineScope.launchCommonBenchmark(
     }
 }
 
+internal suspend fun <T> Flow<T>.consumeCommonBenchmark(
+    launchDef: Job,
+    parentJob: Job? = null,
+    closeable: Closeable? = null,
+    transform: (T) -> Int,
+): Int {
+    val state = transform(first { transform(it) >= BENCHMARK_REPETITIONS })
+
+    launchDef.join()
+    parentJob?.cancelAndJoin()
+    @Suppress("BlockingMethodInNonBlockingContext")
+    closeable?.close()
+    return state
+}
+
 internal suspend fun Flow<Int>.consumeCommonBenchmark(launchDef: Job, parentJob: Job? = null, closeable: Closeable? = null): Int {
     val state = first { it >= BENCHMARK_REPETITIONS }
 

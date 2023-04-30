@@ -3,6 +3,5 @@
   <ManuallySuppressedIssues/>
   <CurrentIssues>
     <ID>ForbiddenComment:CoroutineDispatcherTest.kt$CoroutineDispatcherTest$// TODO: fix freeze</ID>
-    <ID>InjectDispatcher:IncrementIntentBenchmark.kt$IncrementIntentBenchmark$Unconfined</ID>
   </CurrentIssues>
 </SmellBaseline>

@@ -50,7 +50,7 @@ internal object MviKotlinBenchmark {
 
     private inline fun devNullErrorOutput(block: () -> Int): Int {
         contract {
-            callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+            callsInPlace(block, InvocationKind.AT_MOST_ONCE)
         }
 
         // Override stderr to get rid of `[MVIKotlin]: Main thread ID is undefined, main thread assert is disabled`.

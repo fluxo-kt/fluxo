@@ -50,6 +50,9 @@ dependencies {
     // Orbit MVI
     implementation("org.orbit-mvi:orbit-core:" + libs.versions.orbit.get())
 
+    // Respawn FlowMVI
+    implementation("pro.respawn.flowmvi:core:" + libs.versions.respawnFlowMVI.get())
+
     // endregion
 }
 

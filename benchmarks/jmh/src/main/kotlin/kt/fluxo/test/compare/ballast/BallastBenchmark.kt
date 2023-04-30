@@ -20,10 +20,10 @@ import kt.fluxo.test.compare.consumeCommonBenchmark
 import kt.fluxo.test.compare.launchCommonBenchmark
 import kt.fluxo.test.compare.launchCommonBenchmarkWithStaticIntent
 
-@Suppress("InjectDispatcher")
 internal object BallastBenchmark {
+    @Suppress("InjectDispatcher")
     private fun <I : Any> createVmAndJob(
-        reducer: suspend InputHandlerScope<I, Nothing, Int>.(input: I) -> Unit
+        reducer: suspend InputHandlerScope<I, Nothing, Int>.(input: I) -> Unit,
     ): Pair<BasicViewModel<I, Nothing, Int>, Job> {
         val dispatcher = Dispatchers.Unconfined
         val job = SupervisorJob()
