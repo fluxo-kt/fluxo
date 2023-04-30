@@ -343,9 +343,11 @@ fun NamedDomainObjectContainer<out KotlinSourceSet>.bundle(name: String): Source
     )
 }
 
-fun NamedDomainObjectContainer<out KotlinSourceSet>.bundle(): PropertyDelegateProvider<Any?, ReadOnlyProperty<Any?, SourceSetBundle>> =
+fun NamedDomainObjectContainer<out KotlinSourceSet>.bundle(
+    name: String? = null,
+): PropertyDelegateProvider<Any?, ReadOnlyProperty<Any?, SourceSetBundle>> =
     PropertyDelegateProvider { _, property ->
-        val bundle = bundle(property.name)
+        val bundle = bundle(name = name ?: property.name)
         ReadOnlyProperty { _, _ -> bundle }
     }
 
