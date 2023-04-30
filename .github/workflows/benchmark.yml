@@ -11,6 +11,7 @@ on:
 
 env:
   TRIGGER_COUNTER: 8
+  JMH_THREADS: 2
   GRADLE_BUILD_ACTION_CACHE_DEBUG_ENABLED: true
   GRADLE_OPTS: "-Dorg.gradle.daemon=false \
   -Dorg.gradle.configuration-cache=false \
@@ -49,13 +50,9 @@ jobs:
           distribution: 'temurin'
           java-version: '${{ matrix.java }}'
 
-      # Set the number of threads from previos detection of available CPU cores.
+      # macos runner provides more CPU cores.
       - if: matrix.os == 'macos'
-        run: export JMH_THREADS=3
-      - if: matrix.os == 'ubuntu'
-        run: export JMH_THREADS=2
-      - if: matrix.os == 'windows'
-        run: echo "::set-env name=JMH_THREADS::2"
+        run: echo "JMH_THREADS=3" >> $GITHUB_ENV
 
       - name: 'Benchmark "${{ matrix.benchmark }}" on ${{ matrix.os }} JDK${{ matrix.java }}'
         uses: gradle/gradle-build-action@v2
