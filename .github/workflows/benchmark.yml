@@ -49,6 +49,16 @@ jobs:
           distribution: 'temurin'
           java-version: '${{ matrix.java }}'
 
+      - name: Set number of threads (from previos detection of available CPU core)
+        run: |
+          if [[ "$MATRIX_OS" == "macos" ]]; then
+            export JMH_THREADS=3
+          else
+            export JMH_THREADS=2
+          fi
+        env:
+          JMH_THREADS: ${{ env.JMH_THREADS }}
+
       - name: 'Benchmark "${{ matrix.benchmark }}" on ${{ matrix.os }} JDK${{ matrix.java }}'
         uses: gradle/gradle-build-action@v2
         env:
@@ -57,6 +67,7 @@ jobs:
           jmh_wi: 1
           jmh_i: 6
           jmh_f: 2
+          jmh_t: '${{ env.JMH_THREADS }}'
         with:
           gradle-home-cache-cleanup: true
           cache-disabled: ${{ matrix.java == '11' }}

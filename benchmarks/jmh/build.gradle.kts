@@ -76,7 +76,7 @@ jmh {
     iterations.set((envOrPropInt("jmh_i") ?: 4).also {
         logger.lifecycle("JMH iterations='$it'")
     })
-    threads.set((envOrPropInt("jmh_t") ?: 4).let { threads ->
+    threads.set((envOrPropInt("jmh_t") ?: 2).let { threads ->
         val totalCpus = Runtime.getRuntime().availableProcessors()
         logger.lifecycle("JMH threads='$threads' (from $totalCpus possible)")
         threads.coerceIn(1, totalCpus)
