@@ -18,6 +18,9 @@ import org.openjdk.jmh.infra.Blackhole
  * `external_arg` variants stand for calls with external argument passed.
  * Others are for static calls with no arguments.
  *
+ * Don't try comparing dispatching here,
+ * only maximum direct performance possible with state-container.
+ *
  * _Example results:_
  * ```
  * Benchmark                Mode  Cnt   Score    Error   Units  Percent
