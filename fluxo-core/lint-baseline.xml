@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.1.0-alpha11" type="baseline" client="gradle" dependencies="false" name="AGP (8.0.0)" variant="all" version="8.1.0-alpha11">
+<issues format="6" by="lint 8.2.0-alpha01" type="baseline" client="gradle" dependencies="false" name="AGP (8.0.0)" variant="all" version="8.2.0-alpha01">
 
     <issue
-        id="GradleDependency"
-        message="A newer version of org.jetbrains.kotlinx:binary-compatibility-validator than 0.12.1 is available: 0.13.0">
+        id="NewerVersionAvailable"
+        message="A newer version of org.jetbrains.kotlinx:binary-compatibility-validator than 0.12.1 is available: 0.13.1">
         <location
             file="../gradle/libs.versions.toml"
-            line="45"
+            line="51"
             column="24"/>
     </issue>
 
     <issue
-        id="GradleDependency"
-        message="A newer version of com.fasterxml.jackson.core:jackson-databind than 2.12.7.1 is available: 2.14.2">
+        id="NewerVersionAvailable"
+        message="A newer version of org.jsoup:jsoup than 1.15.4 is available: 1.16.1">
         <location
             file="../gradle/libs.versions.toml"
-            line="184"
-            column="88"/>
+            line="189"
+            column="49"/>
     </issue>
 
 </issues>
