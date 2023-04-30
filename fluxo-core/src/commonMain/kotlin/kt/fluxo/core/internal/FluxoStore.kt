@@ -83,6 +83,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
     private val closeOnExceptions = conf.closeOnExceptions
     private val exceptionHandler: CoroutineExceptionHandler?
 
+    private val hasReducerIntentHandler = intentHandler is ReducerHandler
     private lateinit var decorator: StoreDecorator<Intent, State, SideEffect>
     private lateinit var startJob: Job
 
@@ -105,7 +106,6 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
 
         // Side jobs handling
         // Minor optimization as side jobs are off when bootstrapper is null and ReducerIntentHandler set.
-        val hasReducerIntentHandler = intentHandler is ReducerHandler
         sideJobScope = if (!hasReducerIntentHandler || conf.bootstrapper != null) {
             sideJobsMap = ConcurrentHashMap()
             sideJobsMutex = Mutex()
@@ -337,10 +337,15 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         }
         val scope = guardedScope ?: decorator
         with(intentHandler) {
-            // Await all children completions with coroutineScope
-            // TODO: Can we awoid lambda creation?
-            coroutineScope {
+            // ReducerIntentHandler isn't suspendable
+            if (hasReducerIntentHandler) {
                 scope.handleIntent(intent)
+            } else {
+                // Await all children completions with coroutineScope
+                // TODO: Can we awoid lambda creation?
+                coroutineScope {
+                    scope.handleIntent(intent)
+                }
             }
         }
         guardedScope?.close()
