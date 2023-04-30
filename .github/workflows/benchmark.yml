@@ -26,15 +26,15 @@ jobs:
         # TODO: Benchmark on different JDK distributions?
         #  https://www.ojalgo.org/2019/02/quick-test-to-compare-hotspot-and-openj9/
         java: [ '17' ]
-        os: [ 'macos-latest', 'windows-latest', 'ubuntu-latest' ]
+        os: [ 'macos', 'windows', 'ubuntu' ]
         benchmark: [ 'IncrementIntent.*' ]
 
-    name: 'Benchmark "${{ matrix.benchmark }}" on ${{ matrix.os }} JDK ${{ matrix.java }}'
-    runs-on: ${{ matrix.os }}
+    name: '${{ matrix.os }} JDK${{ matrix.java }} "${{ matrix.benchmark }}" benchmark'
+    runs-on: '${{ matrix.os }}-latest'
 
     steps:
       - name: Harden Runner
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu'
         uses: step-security/harden-runner@5d5d34225d930d298d52ae60999ca9b617dd2e3a
         with:
           disable-sudo: true
@@ -49,7 +49,7 @@ jobs:
           distribution: 'temurin'
           java-version: '${{ matrix.java }}'
 
-      - name: 'Benchmark "${{ matrix.benchmark }}" on ${{ matrix.os }}'
+      - name: 'Benchmark "${{ matrix.benchmark }}" on ${{ matrix.os }} JDK${{ matrix.java }}'
         uses: gradle/gradle-build-action@v2
         env:
           CI: true
