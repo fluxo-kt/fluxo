@@ -438,6 +438,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         key: String,
         context: CoroutineContext,
         start: CoroutineStart,
+        onError: ((error: Throwable) -> Unit)?,
         block: SideJob<Intent, State, SideEffect>,
     ): Job {
         val map = checkNotNull(sideJobsMap) { "Side jobs are disabled for the current store: $name" }
@@ -484,7 +485,16 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
                     // rethrow, cancel the job and all children
                     throw ce
                 } catch (e: Throwable) {
-                    handleException(currentCoroutineContext(), e)
+                    if (onError != null) {
+                        try {
+                            onError(e)
+                        } catch (e2: Throwable) {
+                            e2.addSuppressed(e)
+                            handleException(currentCoroutineContext(), e2)
+                        }
+                    } else {
+                        handleException(currentCoroutineContext(), e)
+                    }
                 }
             }
             map[key] = RunningSideJob(job = job)

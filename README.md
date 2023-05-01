@@ -28,7 +28,7 @@ If you need predictable unidirectional data flow (`UDF`) or deterministic contro
 ### TLDR: Use SNAPSHOT artefact in Gradle (in a safe and reproducible way)
 [![Latest snapshot](https://img.shields.io/badge/dynamic/xml?color=f68244&logo=gradle&label=Latest%20snapshot&query=%2F%2Fversion%5Blast%28%29%5D&url=https%3A%2F%2Fs01.oss.sonatype.org%2Fcontent%2Frepositories%2Fsnapshots%2Fio%2Fgithub%2Ffluxo-kt%2Ffluxo-core%2Fmaven-metadata.xml)](https://s01.oss.sonatype.org/content/repositories/snapshots/io/github/fluxo-kt/fluxo-core/maven-metadata.xml)
 <br>Select a snapshot for the preferred commit using a scheme: `0.1-<SHORT_COMMIT_SHA>-SNAPSHOT`.
-<br>For example: `0.1-7510e0c-SNAPSHOT`
+<br>For example: `0.1-2306082-SNAPSHOT`
 
 ```kotlin
 implementation("io.github.fluxo-kt:fluxo-core:0.1-<SHORT_COMMIT_SHA>-SNAPSHOT")
@@ -71,6 +71,11 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super p
   * Flexible **MVVM+**[^3] (intuitively readable, may be easier to maintain, has support for every feature and more :)
   * Redux-style discrete intents with MVVM+ style reduction DSL (hybrid way)
   * _More is coming…_
+* Side jobs for long-running tasks (MVVM+ DSL).
+  * For example, start a long-going task safely on intent. Jobs with the same name auto cancel earlier started ones.
+  * Run something only when listeners are attached using [`repeatOnSubscription`][repeatOnSubscription].
+  * Recover from any error within the side job with an `onError` handler.
+* Bootstrap, kind of initialization side job, can be declared and starts on the `Store` launch.
 * **Side effect** support (sometimes called **news** or **one-off event**).
   * **Note that using side effects is generally considered as antipattern!**[^a][^b][^c].<br>
     But it can still be useful sometimes, especially when migrating an old codebase.<br>
@@ -96,14 +101,15 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super p
     * _ChannelLifo_. Special `Channel`-based Lifo implementation that provides extra customization compared to _Lifo_.
     * Create your own!
   * Eager or lazy initialization of the store.
-  * Error handling and exception behavior control.
   * Global default settings for easier setup of state stores swarm.
     * Change settings once and for all at one place (`FluxoSettings.DEFAULT`).
     * Provide a prepared settings object for the group of your stores.
     * Or configure each store individually.
 * Common data states in a [`fluxo-data`](fluxo-data) module *(Success, Failure, Loading, Cached, Empty, Not Loaded)*.
-* Side jobs for long-running tasks (MVVM+ DSL).
-* Bootstrap (initialization side job).
+* Error handling and exception behavior control.
+  * On the level of `StoreFactory` (for many `Store`s).
+  * For each `Store`.
+  * For the separate `sideJob`.
 * Leak-free transfer, delivery guarantees[^el1][^el2] for intents and side effects.
 * Strictly not recommended, but JVM `Closeable` resources are experimentally supported as a state and side effects.
   * The previous state is closed on change.

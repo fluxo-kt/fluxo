@@ -41,7 +41,11 @@ class StoreDecoratorTest {
                 set(@Suppress("UNUSED_PARAMETER") value) = TODO()
 
             override suspend fun sideJob(
-                key: String, context: CoroutineContext, start: CoroutineStart, block: SideJob<Any, Any, Any>,
+                key: String,
+                context: CoroutineContext,
+                start: CoroutineStart,
+                onError: ((error: Throwable) -> Unit)?,
+                block: SideJob<Any, Any, Any>,
             ) = TODO()
 
             override suspend fun postSideEffect(sideEffect: Any) = TODO()

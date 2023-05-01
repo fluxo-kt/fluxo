@@ -46,10 +46,11 @@ internal class GuardedStoreDecorator<Intent, State, SideEffect : Any>(
         key: String,
         context: CoroutineContext,
         start: CoroutineStart,
+        onError: ((error: Throwable) -> Unit)?,
         block: SideJob<Intent, State, SideEffect>,
     ): Job {
         guardian.checkSideJob()
-        return super.sideJob(key = key, context = context, start = start, block = block)
+        return super.sideJob(key = key, context = context, start = start, onError = onError, block = block)
     }
 
     override fun noOp() {

@@ -87,6 +87,7 @@ public interface StoreScope<in Intent, State, SideEffect : Any> : StoreSE<Intent
         key: String = DEFAULT_SIDE_JOB,
         context: CoroutineContext = EmptyCoroutineContext,
         start: CoroutineStart = CoroutineStart.DEFAULT,
+        onError: ((error: Throwable) -> Unit)? = null,
         block: SideJob<Intent, State, SideEffect>,
     ): Job
 

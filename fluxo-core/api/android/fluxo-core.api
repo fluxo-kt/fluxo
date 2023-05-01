@@ -17,8 +17,8 @@ public class kt/fluxo/core/FluxoRuntimeException : java/lang/RuntimeException, k
 public final class kt/fluxo/core/FluxoSettings {
 	public static final field DEFAULT Lkt/fluxo/core/FluxoSettings;
 	public static final field Factory Lkt/fluxo/core/FluxoSettings$Factory;
-	public final fun bootstrapperJob (Ljava/lang/String;Lkotlin/coroutines/CoroutineContext;Lkotlinx/coroutines/CoroutineStart;Lkotlin/jvm/functions/Function3;)V
-	public static synthetic fun bootstrapperJob$default (Lkt/fluxo/core/FluxoSettings;Ljava/lang/String;Lkotlin/coroutines/CoroutineContext;Lkotlinx/coroutines/CoroutineStart;Lkotlin/jvm/functions/Function3;ILjava/lang/Object;)V
+	public final fun bootstrapperJob (Ljava/lang/String;Lkotlin/coroutines/CoroutineContext;Lkotlinx/coroutines/CoroutineStart;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function3;)V
+	public static synthetic fun bootstrapperJob$default (Lkt/fluxo/core/FluxoSettings;Ljava/lang/String;Lkotlin/coroutines/CoroutineContext;Lkotlinx/coroutines/CoroutineStart;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function3;ILjava/lang/Object;)V
 	public final fun copy ()Lkt/fluxo/core/FluxoSettings;
 	public final fun getBootstrapper ()Lkotlin/jvm/functions/Function2;
 	public final fun getCoroutineContext ()Lkotlin/coroutines/CoroutineContext;
@@ -131,8 +131,8 @@ public abstract interface class kt/fluxo/core/dsl/StoreScope : kt/fluxo/core/Sto
 	public abstract fun postSideEffect (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public synthetic fun reduce (Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
 	public abstract fun setValue (Ljava/lang/Object;)V
-	public abstract fun sideJob (Ljava/lang/String;Lkotlin/coroutines/CoroutineContext;Lkotlinx/coroutines/CoroutineStart;Lkotlin/jvm/functions/Function3;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun sideJob$default (Lkt/fluxo/core/dsl/StoreScope;Ljava/lang/String;Lkotlin/coroutines/CoroutineContext;Lkotlinx/coroutines/CoroutineStart;Lkotlin/jvm/functions/Function3;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public abstract fun sideJob (Ljava/lang/String;Lkotlin/coroutines/CoroutineContext;Lkotlinx/coroutines/CoroutineStart;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function3;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun sideJob$default (Lkt/fluxo/core/dsl/StoreScope;Ljava/lang/String;Lkotlin/coroutines/CoroutineContext;Lkotlinx/coroutines/CoroutineStart;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function3;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public synthetic fun updateState (Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
 }
 
@@ -179,7 +179,7 @@ public abstract class kt/fluxo/core/factory/StoreDecoratorBase : kt/fluxo/core/f
 	public fun postSideEffect (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun send (Ljava/lang/Object;)Lkotlinx/coroutines/Job;
 	public fun setValue (Ljava/lang/Object;)V
-	public fun sideJob (Ljava/lang/String;Lkotlin/coroutines/CoroutineContext;Lkotlinx/coroutines/CoroutineStart;Lkotlin/jvm/functions/Function3;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun sideJob (Ljava/lang/String;Lkotlin/coroutines/CoroutineContext;Lkotlinx/coroutines/CoroutineStart;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function3;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun start ()Lkotlinx/coroutines/Job;
 	public fun toString ()Ljava/lang/String;
 }

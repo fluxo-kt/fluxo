@@ -105,9 +105,10 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
         key: String = BOOTSTRAPPER_SIDE_JOB,
         context: CoroutineContext = EmptyCoroutineContext,
         start: CoroutineStart = CoroutineStart.DEFAULT,
+        onError: ((error: Throwable) -> Unit)? = null,
         block: SideJob<Intent, State, SideEffect>,
     ) {
-        this.bootstrapper = { sideJob(key, context, start, block) }
+        this.bootstrapper = { sideJob(key, context, start, onError, block) }
     }
 
 

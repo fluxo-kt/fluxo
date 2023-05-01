@@ -22,7 +22,7 @@ class TestLoggingStoreFactory(
     override fun <Intent, State, SideEffect : Any> createForDecoration(
         initialState: State,
         handler: IntentHandler<Intent, State, SideEffect>,
-        settings: FluxoSettings<Intent, State, SideEffect>
+        settings: FluxoSettings<Intent, State, SideEffect>,
     ): StoreDecorator<Intent, State, SideEffect> {
         return TestLoggingStoreDecorato(delegate.createForDecoration(initialState, handler, settings))
     }
@@ -94,7 +94,7 @@ class TestLoggingStoreFactory(
 
         override fun onUndeliveredIntent(intent: Intent, wasResent: Boolean) {
             testLog("[$name] onUndeliveredIntent(wasResent=$wasResent): $intent")
-            super.onUndeliveredIntent(intent, wasResent)
+            super.onUndeliveredIntent(intent = intent, wasResent = wasResent)
         }
 
 
@@ -105,7 +105,7 @@ class TestLoggingStoreFactory(
 
         override fun onUndeliveredSideEffect(sideEffect: SideEffect, wasResent: Boolean) {
             testLog("[$name] onUndeliveredSideEffect(wasResent=$wasResent): $sideEffect")
-            super.onUndeliveredSideEffect(sideEffect, wasResent)
+            super.onUndeliveredSideEffect(sideEffect = sideEffect, wasResent = wasResent)
         }
 
 
@@ -113,10 +113,11 @@ class TestLoggingStoreFactory(
             key: String,
             context: CoroutineContext,
             start: CoroutineStart,
-            block: SideJob<Intent, State, SideEffect>
+            onError: ((error: Throwable) -> Unit)?,
+            block: SideJob<Intent, State, SideEffect>,
         ): Job {
             testLog("[$name] onSideJobQueuing: $key")
-            return super.sideJob(key, context, start, block)
+            return super.sideJob(key = key, context = context, start = start, onError = onError, block = block)
         }
 
         override suspend fun onSideJob(key: String, wasRestarted: Boolean, sideJob: SideJob<Intent, State, SideEffect>) {

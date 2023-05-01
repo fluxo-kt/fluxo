@@ -92,8 +92,9 @@ public abstract class StoreDecoratorBase<Intent, State, SideEffect : Any>(
         key: String,
         context: CoroutineContext,
         start: CoroutineStart,
+        onError: ((error: Throwable) -> Unit)?,
         block: SideJob<Intent, State, SideEffect>,
-    ): Job = store.sideJob(key = key, context = context, start = start, block = block)
+    ): Job = store.sideJob(key = key, context = context, start = start, onError = onError, block = block)
 
     @CallSuper
     override suspend fun onSideJob(key: String, wasRestarted: Boolean, sideJob: SideJob<Intent, State, SideEffect>): Unit =
