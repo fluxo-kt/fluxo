@@ -42,6 +42,86 @@ repositories {
 }
 ```
 
+
+### Code examples
+
+MVVM+ container with lambda intents.
+```kotlin
+import kotlinx.coroutines.*
+import kt.fluxo.core.*
+import kotlin.coroutines.coroutineContext
+
+suspend fun main() {
+  // State here is an Int value. One-liner creation! Type inference is automatic!
+  val container = container(initialState = 0)
+  repeat(100) {
+    container.intent {
+      // `updateState {}` used to access the previous value safely.
+      // Use `value = ...` if previous value isn't needed.
+      updateState { prev -> prev + it }
+
+      // suspendable lambda intent, it can start long-running side jobs and send side effects!
+    }
+  }
+
+  // Listen to reactive state updates somewhere. Container is a `StateFlow`!
+  // Supports cooperative cancellation on container close.
+  CoroutineScope(coroutineContext).launch {
+    container.collect(::println)
+  }
+
+  // You can wait for the full completion,
+  // but it's optional, `container.close()` is also available.
+  container.closeAndWait()
+}
+```
+
+<details>
+<summary>Strict Redux/MVI store with pure non-suspendable reducer.</summary>
+
+```kotlin
+import kt.fluxo.core.*
+
+suspend fun main() {
+  // Type inference is automatic if the reducer argument type is specified!
+  val store = store<Int /* Intent */, Int /* State */>(
+    initialState = 0,
+    // pure non-suspendable reducer
+    // `State.(Intent) -> State`
+    reducer = { this + it }
+  )
+  repeat(100) {
+    // emit is suspendable
+    // use `send` methods for intents from non-suspend contexts.
+    store.emit(it)
+  }
+}
+```
+</details>
+
+<details>
+<summary>Strict MVI intents with powerful MVVM+ DSL in suspendable handler.</summary>
+
+```kotlin
+import kt.fluxo.core.*
+
+suspend fun main() {
+  // Type inference is automatic if the handler argument type is specified!
+  val store = store(
+    initialState = 0,
+    // suspendable handler, it can start long-running side jobs and send side effects!
+    handler = { intent: Int ->
+      updateState { prev -> prev + intent }
+    }
+  )
+  // emit is suspendable
+  // use `send` methods for intents from non-suspend contexts.
+  repeat(100) { store.emit(it) }
+}
+```
+</details>
+
+
 ## Overview
 
 > **Fluxo** was started as a test for the hypothesis:
@@ -75,7 +155,7 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super p
   * For example, start a long-going task safely on intent. Jobs with the same name auto cancel earlier started ones.
   * Run something only when listeners are attached using [`repeatOnSubscription`][repeatOnSubscription].
   * Recover from any error within the side job with an `onError` handler.
-* Bootstrap, kind of initialization side job, can be declared and starts on the `Store` launch.
+* Bootstrap, kind of optional initialization side job that starts on the `Store` launch.
 * **Side effect** support (sometimes called **news** or **one-off event**).
   * **Note that using side effects is generally considered as antipattern!**[^a][^b][^c].<br>
     But it can still be useful sometimes, especially when migrating an old codebase.<br>
@@ -91,7 +171,9 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super p
   * Side effects can have consumption guarantees with `GuaranteedEffect` (effect handled and exactly
     once)[^e1][^e2].
 * **Lifecycle-awareness** with full control based on coroutine scopes.
-* Subscription lifecycle with convenience API (`repeatOnSubscription`). Do something in store when subscriber connects or disconnects.
+* Subscription lifecycle with convenience API ([`repeatOnSubscription`][repeatOnSubscription]).
+  * Do something in store when subscriber connects or disconnects.
+  * Listen to the number of subscribers with [`subscriptionCount`][subscriptionCount] `StateFlow`.
 * Forceful customization:
   * Pluggable **intent strategies**:
     * _First In, First Out_ (Fifo). Default, predictable, and intuitive, ordered processing with good performance.
@@ -111,6 +193,7 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super p
   * For each `Store`.
   * For the separate `sideJob`.
 * Leak-free transfer, delivery guarantees[^el1][^el2] for intents and side effects.
+* Complete interception for any possible event (like in OkHttp, etc.)
 * Strictly not recommended, but JVM `Closeable` resources are experimentally supported as a state and side effects.
   * The previous state is closed on change.
   * Side effects are closed when not delivered.
@@ -130,7 +213,6 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super p
 * [ ] Support new Kotlin `AutoCloseable` interface
   ([since Kotlin 1.8.20](https://kotlinlang.org/docs/whatsnew-eap.html#experimental-support-for-autocloseable-interface-in-standard-library),
   [Android API level 19](https://developer.android.com/reference/java/lang/AutoCloseable))
-* [ ] Complete pipeline interception (as with OkHttp, etc.)
 * [ ] sideJob helpers for logic called on a specific state or side effect (see _Kotlin-Bloc_).
 * [ ] [SAM: State-Action-Model](https://sam.js.org/), composable
   * [ ] functions as first-class citizens
@@ -215,6 +297,9 @@ aka Redux/MVI with [contextual reduction][contextual-reduction].
 
 
 [Store]: fluxo-core/src/commonMain/kotlin/kt/fluxo/core/Store.kt
+[repeatOnSubscription]: fluxo-core/src/commonMain/kotlin/kt/fluxo/core/FluxoDsl.kt#L50
+[subscriptionCount]: fluxo-core/src/commonMain/kotlin/kt/fluxo/core/Store.kt#L55
+
 [StateFlow]: https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-state-flow/
 [FlowCollector]: https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-flow-collector/
 [CoroutineScope]: https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines/-coroutine-scope/
