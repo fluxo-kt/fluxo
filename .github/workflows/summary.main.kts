@@ -1,6 +1,6 @@
 #!/usr/bin/env kotlin
 
-@file:DependsOn("org.jsoup:jsoup:1.15.3")
+@file:DependsOn("org.jsoup:jsoup:1.16.1")
 
 import org.jsoup.parser.Parser
 import java.io.File

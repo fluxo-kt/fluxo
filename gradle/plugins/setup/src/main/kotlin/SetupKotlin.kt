@@ -17,6 +17,7 @@ import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.kotlin.dsl.exclude
+import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.kotlin
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -34,15 +35,17 @@ import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
 
 fun Project.setupKotlin(
     config: KotlinConfigSetup = requireDefaults(),
+    setupKsp: Boolean = hasKsp,
     optIns: List<String> = emptyList(),
     body: (KotlinSingleTargetExtension<*>.() -> Unit)? = null,
 ) {
-    setupKotlin0(config, optIns, body)
+    setupKotlin0(config = config, setupKsp = setupKsp, optIns = optIns, body = body)
     kotlinExtension.disableCompilationsOfNeeded(project)
 }
 
 internal fun Project.setupKotlin0(
     config: KotlinConfigSetup = requireDefaults(),
+    setupKsp: Boolean = hasKsp,
     optIns: List<String> = emptyList(),
     body: (KotlinSingleTargetExtension<*>.() -> Unit)? = null,
 ) {
@@ -57,14 +60,15 @@ internal fun Project.setupKotlin0(
             else -> "unexpected KotlinProjectExtension: $kotlin"
         }
     }
-    setupKotlinExtension(kotlin, config, optIns)
-    dependencies.setupKotlinDependencies(project = this, config)
+    setupKotlinExtension(kotlin = kotlin, setupKsp = setupKsp, config = config, optIns = optIns)
+    dependencies.setupKotlinDependencies(project = this, config = config)
 
     body?.invoke(kotlin as KotlinSingleTargetExtension<*>)
 }
 
 internal fun Project.setupKotlinExtension(
     kotlin: KotlinProjectExtension,
+    setupKsp: Boolean = hasKsp,
     config: KotlinConfigSetup = requireDefaults(),
     optIns: List<String> = emptyList(),
 ) {
@@ -94,7 +98,8 @@ internal fun Project.setupKotlinExtension(
     // Duplicate languageSettings here as the IDE doesn't catch settings from compile tasks.
     val kotlinLangVersion = config.getKotlinLangVersion(libs)
     logger.lifecycle("> Conf Kotlin language and API ${kotlinLangVersion.version}")
-    kotlin.sourceSets.all {
+    val sourceSets = kotlin.sourceSets
+    sourceSets.all {
         val isTestSet = "Test" in name
         languageSettings {
             // https://kotlinlang.org/docs/compatibility-modes.html
@@ -109,6 +114,14 @@ internal fun Project.setupKotlinExtension(
                 progressiveMode = true
             }
         }
+    }
+
+    if (setupKsp && kotlin is KotlinJvmProjectExtension) {
+        sourceSets["main"].apply {
+            this.kotlin.srcDir("build/generated/ksp/main/kotlin")
+            resources.srcDir("build/generated/ksp/main/resources")
+        }
+        sourceSets["test"].kotlin.srcDir("build/generated/ksp/test/kotlin")
     }
 
     setupKotlinTasks(config, optIns)

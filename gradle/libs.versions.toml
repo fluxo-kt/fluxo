@@ -13,7 +13,7 @@ fluxo = "0.1.0-SNAPSHOT"
 # For local development to dogfood the lib
 # https://s01.oss.sonatype.org/content/repositories/snapshots/io/github/fluxo-kt/fluxo-core/maven-metadata.xml
 # WARN: Don't forget to update snapshot version example in ../README.md
-fluxoSnapshot = "0.1-2306082-SNAPSHOT"
+fluxoSnapshot = "0.1-46a9b97-SNAPSHOT"
 
 # 21 is default for new projects per May 2021, required for Compose, but we don't need it for core modules
 androidMinSdk = "9"

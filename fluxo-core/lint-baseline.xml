@@ -10,13 +10,4 @@
             column="24"/>
     </issue>
 
-    <issue
-        id="NewerVersionAvailable"
-        message="A newer version of org.jsoup:jsoup than 1.15.4 is available: 1.16.1">
-        <location
-            file="../gradle/libs.versions.toml"
-            line="189"
-            column="49"/>
-    </issue>
-
 </issues>

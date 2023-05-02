@@ -48,7 +48,7 @@ fun Project.setupMultiplatform(
     multiplatformExtension.apply {
         logger.lifecycle("> Conf :setupMultiplatform")
 
-        setupKotlinExtension(this, config, optIns)
+        setupKotlinExtension(kotlin = this, config = config, optIns = optIns)
         setupMultiplatformDependencies(config, project)
 
         configurator?.invoke(this)
