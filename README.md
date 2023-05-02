@@ -200,6 +200,9 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super p
   * However, no clear guarantees!
 * Intentionally unopinionated, extensible API: you can follow guides or use it as you want.
 * Well tested.
+* Great performance.
+  * See the [updated JMH benchmark results](../../actions/workflows/benchmark.yml), comparing different state-managing libs,
+    e.g. [this one](../../actions/runs/4858515852#summary-13163908795).
 * Reactive streams compatibility
   through [coroutine wrappers](https://github.com/Kotlin/kotlinx.coroutines/tree/master/reactive):
   * RxJava 2.x, RxJava 3.x
@@ -207,6 +210,36 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super p
   * Project Reactor
 * [LiveData](https://developer.android.com/topic/libraries/architecture/coroutines#livedata) compatibility with
   AndroidX.
+
+
+### JMH Benchmark results
+
+Compares different MVI libraries in terms of performance.<br>
+Deep feature comparison is in-progress.
+Write [me](https://t.me/samally) if you want an early access!
+
+> Single-thread simple incrementing intents (9 tests in 2 modes, [2023-05-02](../../actions/runs/4858515852#summary-13163908795)), [updates on CI](../../actions/workflows/benchmark.yml)
+
+| Benchmark |       Mode       | Score | Units             | Percent |
+|-----------|:----------------:|------:|:------------------|--------:|
+| mvicore__mvi_reducer | <sub>thrpt</sub> | <b>2.358</b><sub><i> &#177; 0.307</i></sub> | <sub>ops/ms</sub> | <sub><i>0.0%</i></sub> |
+| fluxo__mvi_reducer | <sub>thrpt</sub> | <b>2.312</b><sub><i> &#177; 0.386</i></sub> | <sub>ops/ms</sub> | <sub><i>-2.0%</i></sub> |
+| mvikotlin__mvi_reducer | <sub>thrpt</sub> | <b>1.745</b><sub><i> &#177; 0.128</i></sub> | <sub>ops/ms</sub> | <sub><i>-26.0%</i></sub> |
+| fluxo__mvi_handler | <sub>thrpt</sub> | <b>0.792</b><sub><i> &#177; 0.116</i></sub> | <sub>ops/ms</sub> | <sub><i>-66.4%</i></sub> |
+| fluxo__mvvmp_intent | <sub>thrpt</sub> | <b>0.678</b><sub><i> &#177; 0.054</i></sub> | <sub>ops/ms</sub> | <sub><i>-71.2%</i></sub> |
+| orbit__mvvmp_intent | <sub>thrpt</sub> | <b>0.511</b><sub><i> &#177; 0.032</i></sub> | <sub>ops/ms</sub> | <sub><i>-78.3%</i></sub> |
+| ballast__mvi_handler | <sub>thrpt</sub> | <b>0.314</b><sub><i> &#177; 0.108</i></sub> | <sub>ops/ms</sub> | <sub><i>-86.7%</i></sub> |
+| flowmvi__mvi_handler | <sub>thrpt</sub> | <b>0.204</b><sub><i> &#177; 0.029</i></sub> | <sub>ops/ms</sub> | <sub><i>-91.3%</i></sub> |
+|  |                  |  |                   |  |
+| mvicore__mvi_reducer | <sub>avgt</sub>  | <b>0.568</b><sub><i> &#177; 0.015</i></sub> | <sub>ms/op</sub>  | <sub><i>0.0%</i></sub> |
+| fluxo__mvi_reducer | <sub>avgt</sub>  | <b>0.808</b><sub><i> &#177; 0.189</i></sub> | <sub>ms/op</sub>  | <sub><i>42.3%</i></sub> |
+| mvikotlin__mvi_reducer | <sub>avgt</sub>  | <b>1.465</b><sub><i> &#177; 0.141</i></sub> | <sub>ms/op</sub>  | <sub><i>157.9%</i></sub> |
+| fluxo__mvvmp_intent | <sub>avgt</sub>  | <b>2.444</b><sub><i> &#177; 0.186</i></sub> | <sub>ms/op</sub>  | <sub><i>330.3%</i></sub> |
+| fluxo__mvi_handler | <sub>avgt</sub>  | <b>2.620</b><sub><i> &#177; 0.505</i></sub> | <sub>ms/op</sub>  | <sub><i>361.3%</i></sub> |
+| orbit__mvvmp_intent | <sub>avgt</sub>  | <b>5.381</b><sub><i> &#177; 0.189</i></sub> | <sub>ms/op</sub>  | <sub><i>847.4%</i></sub> |
+| ballast__mvi_handler | <sub>avgt</sub>  | <b>6.017</b><sub><i> &#177; 0.470</i></sub> | <sub>ms/op</sub>  | <sub><i>959.3%</i></sub> |
+| flowmvi__mvi_handler | <sub>avgt</sub>  | <b>8.049</b><sub><i> &#177; 1.634</i></sub> | <sub>ms/op</sub>  | <sub><i>1317.1%</i></sub> |
+
 
 ### Roadmap
 
@@ -245,7 +278,7 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super p
 * [ ] \(Optional) Undo/Redo
 * [ ] \(Optional) Stores synchronization
 
-### Heavily inspired by:
+### Heavily inspired by
 
 * [Ballast](https://github.com/copper-leaf/ballast)
 * [Orbit MVI](https://github.com/orbit-mvi/orbit-mvi)
