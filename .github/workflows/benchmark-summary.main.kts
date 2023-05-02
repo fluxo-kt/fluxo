@@ -112,26 +112,28 @@ try {
         val mdTitles = titles.filter { it != errTitle }.toTypedArray()
         for ((clazz, results) in resultsByClass) {
             val modes = results.distinctBy { it.mode }.size
-            val modesInfo = " in " + modes.enPlural(
-                if (isCI) "<u>one<u> mode" else "one mode",
-                if (isCI) "<u>%d<u> modes" else "%d modes",
+            val modeInfo = " in " + modes.enPlural(
+                if (isCI) "<u>one</u> mode" else "one mode",
+                if (isCI) "<u>%d</u> modes" else "%d modes",
             )
 
             val iterInfo = results.distinctBy { it.cnt }.let {
-                if (it.size == 1) {
-                    " with " + it[0].cnt.enPlural(
-                        if (isCI) "<u>one<u> iteration" else "one iteration",
-                        if (isCI) "<u>%d<u> iterations" else "%d iterations",
+                when (it.size) {
+                    1 -> " with " + it[0].cnt.enPlural(
+                        if (isCI) "<u>one</u> iteration" else "one iteration",
+                        if (isCI) "<u>%d</u> iterations" else "%d iterations",
                     )
-                } else ""
+
+                    else -> ""
+                }
             }
             val skipCnt = iterInfo.isNotEmpty()
 
             val testsInfo = (results.size / modes).enPlural(
-                if (isCI) "<u>%d<u> test" else "%d test",
-                if (isCI) "<u>%d<u> tests" else "%d tests",
+                if (isCI) "<u>%d</u> test" else "%d test",
+                if (isCI) "<u>%d</u> tests" else "%d tests",
             )
-            println("#### ${clazz.ifEmpty { "<not set>" }} ($testsInfo$modesInfo$iterInfo)")
+            println("#### ${clazz.ifEmpty { "<not set>" }} ($testsInfo$modeInfo$iterInfo)")
 
             // Table header
             val mdTitles0 = if (skipCnt) mdTitles.filter { it != cntTitle }.toTypedArray() else mdTitles
@@ -217,15 +219,17 @@ try {
 
                 // ❌ Mark huge error
                 val errorMark = r.error.let {
-                    if (it == null || it < r.score / bdTwo) "" else when {
+                    when {
+                        it == null || it < r.score / bdTwo -> ""
                         isCI -> " &#10060;"
                         else -> " ❌"
                     }
                 }
 
-                print(r.asRawArray
+                val resultText = r.asRawArray
                     .mapIndexed { i, v -> i.f(v, entity = true) }
-                    .joinToString(" ", postfix = errorMark + '\n'))
+                    .joinToString(" ", postfix = errorMark + '\n')
+                print(resultText)
             }
             if (isCI) {
                 print("</pre></p></details>\n")
