@@ -3,6 +3,7 @@ package kt.fluxo.tests
 import kotlinx.coroutines.test.runTest
 import kt.fluxo.test.compare.BENCHMARK_REPETITIONS
 import kt.fluxo.test.compare.ballast.BallastBenchmark
+import kt.fluxo.test.compare.flowredux.FlowReduxBenchmark
 import kt.fluxo.test.compare.fluxo.FluxoBenchmark
 import kt.fluxo.test.compare.mvicore.MviCoreBenchmark
 import kt.fluxo.test.compare.mvikotlin.MviKotlinBenchmark
@@ -66,6 +67,13 @@ class IncrementIntentsTest {
 
     @Test
     fun ballast__mvi_handler__external_arg() = test(BallastBenchmark.mviHandlerAdd())
+
+
+    @Test
+    fun flowredux__mvi_handler() = test(FlowReduxBenchmark.mviHandlerStaticIncrement())
+
+    @Test
+    fun flowredux__mvi_handler__external_arg() = test(FlowReduxBenchmark.mviHandlerAdd())
 
 
     @Test

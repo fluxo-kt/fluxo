@@ -56,6 +56,9 @@ dependencies {
     // Respawn FlowMVI
     implementation("ru.kontur.mobile.visualfsm:visualfsm-core:" + libs.versions.visualfsm.get())
 
+    // Freeletics FlowRedux
+    implementation("com.freeletics.flowredux:flowredux:" + libs.versions.flowredux.get())
+
     // endregion
 }
 

@@ -1,6 +1,7 @@
 package kt.fluxo.jmh
 
 import kt.fluxo.test.compare.ballast.BallastBenchmark
+import kt.fluxo.test.compare.flowredux.FlowReduxBenchmark
 import kt.fluxo.test.compare.fluxo.FluxoBenchmark
 import kt.fluxo.test.compare.mvicore.MviCoreBenchmark
 import kt.fluxo.test.compare.mvikotlin.MviKotlinBenchmark
@@ -69,6 +70,9 @@ open class IncrementIntentBenchmark {
 
     @Benchmark
     fun ballast__mvi_handler(bh: Blackhole) = bh.consume(BallastBenchmark.mviHandlerAdd())
+
+    @Benchmark
+    fun flowredux__mvi_handler(bh: Blackhole) = bh.consume(FlowReduxBenchmark.mviHandlerAdd())
 
     @Benchmark
     fun flowmvi__mvi_handler(bh: Blackhole) = bh.consume(RespawnFlowMviBenchmark.mviHandlerAdd())
