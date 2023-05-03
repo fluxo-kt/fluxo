@@ -5,6 +5,7 @@ import kt.fluxo.test.compare.BENCHMARK_REPETITIONS
 import kt.fluxo.test.compare.ballast.BallastBenchmark
 import kt.fluxo.test.compare.flowredux.FlowReduxBenchmark
 import kt.fluxo.test.compare.fluxo.FluxoBenchmark
+import kt.fluxo.test.compare.genakureduce.GenakuReduceBenchmark
 import kt.fluxo.test.compare.mvicore.MviCoreBenchmark
 import kt.fluxo.test.compare.mvikotlin.MviKotlinBenchmark
 import kt.fluxo.test.compare.naive.NaiveBenchmark
@@ -81,6 +82,13 @@ class IncrementIntentsTest {
 
     @Test
     fun flowmvi__mvi_handler__external_arg() = test(RespawnFlowMviBenchmark.mviHandlerAdd())
+
+
+    @Test
+    fun genakureduce__mvi_handler() = test(GenakuReduceBenchmark.mviHandlerStaticIncrement())
+
+    @Test
+    fun genakureduce__mvi_handler__external_arg() = test(GenakuReduceBenchmark.mviHandlerAdd())
 
 
     @Test

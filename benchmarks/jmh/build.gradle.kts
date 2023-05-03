@@ -59,6 +59,10 @@ dependencies {
     // Freeletics FlowRedux
     implementation("com.freeletics.flowredux:flowredux:" + libs.versions.flowredux.get())
 
+    // genaku Reduce
+    implementation("com.github.genaku.reduce:reduce-core:" + libs.versions.genakuReduce.get())
+    implementation(enforcedPlatform(libs.kotlinx.coroutines.bom))
+
     // endregion
 }
 
