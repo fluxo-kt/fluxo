@@ -53,6 +53,9 @@ dependencies {
     // Respawn FlowMVI
     implementation("pro.respawn.flowmvi:core:" + libs.versions.respawnFlowMVI.get())
 
+    // Respawn FlowMVI
+    implementation("ru.kontur.mobile.visualfsm:visualfsm-core:" + libs.versions.visualfsm.get())
+
     // endregion
 }
 

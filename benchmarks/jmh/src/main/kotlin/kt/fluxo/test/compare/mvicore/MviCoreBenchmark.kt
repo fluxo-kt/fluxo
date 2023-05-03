@@ -25,7 +25,7 @@ internal object MviCoreBenchmark {
         )
         runBlocking {
             val launchDef = launchCommonBenchmarkWithStaticIntent(IntentIncrement.Increment) { feature.accept(it) }
-            consumeBallastBenchmark(feature)
+            consumeMviCoreBenchmark(feature)
             launchDef.join()
         }
         feature.dispose()
@@ -43,14 +43,14 @@ internal object MviCoreBenchmark {
         )
         runBlocking {
             val launchDef = launchCommonBenchmark { feature.accept(IntentAdd.Add(value = value)) }
-            consumeBallastBenchmark(feature)
+            consumeMviCoreBenchmark(feature)
             launchDef.join()
         }
         feature.dispose()
         return feature.state
     }
 
-    private suspend fun consumeBallastBenchmark(feature: ReducerFeature<*, Int, Nothing>) {
+    private suspend fun consumeMviCoreBenchmark(feature: ReducerFeature<*, Int, Nothing>) {
         suspendCoroutine { cont ->
             @Suppress("TrailingCommaOnCallSite")
             feature.subscribe(

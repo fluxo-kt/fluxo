@@ -9,6 +9,7 @@ import kt.fluxo.test.compare.mvikotlin.MviKotlinBenchmark
 import kt.fluxo.test.compare.naive.NaiveBenchmark
 import kt.fluxo.test.compare.orbit.OrbitBenchmark
 import kt.fluxo.test.compare.respawnflowmvi.RespawnFlowMviBenchmark
+import kt.fluxo.test.compare.visualfsm.VisualFsmBenchmark
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -51,6 +52,13 @@ class IncrementIntentsTest {
 
     @Test
     fun mvikotlin__mvi_reducer__external_arg() = test(MviKotlinBenchmark.mviReducerAdd())
+
+
+    @Test
+    fun visualfsm__sm_reducer() = test(VisualFsmBenchmark.smReducerStaticIncrement())
+
+    @Test
+    fun visualfsm__sm_reducer__external_arg() = test(VisualFsmBenchmark.smReducerAdd())
 
 
     @Test
