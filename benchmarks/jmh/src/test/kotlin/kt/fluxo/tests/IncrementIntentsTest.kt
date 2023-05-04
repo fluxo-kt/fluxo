@@ -11,6 +11,7 @@ import kt.fluxo.test.compare.mvicore.MviCoreBenchmark
 import kt.fluxo.test.compare.mvikotlin.MviKotlinBenchmark
 import kt.fluxo.test.compare.naive.NaiveBenchmark
 import kt.fluxo.test.compare.orbit.OrbitBenchmark
+import kt.fluxo.test.compare.reduxkotlin.ReduxKotlinBenchmark
 import kt.fluxo.test.compare.respawnflowmvi.RespawnFlowMviBenchmark
 import kt.fluxo.test.compare.visualfsm.VisualFsmBenchmark
 import kotlin.test.Test
@@ -41,6 +42,13 @@ class IncrementIntentsTest {
     fun fluxo__mvi_handler__external_arg() = test(FluxoBenchmark.mviHandlerAdd())
 
     // endregion
+
+
+    @Test
+    fun reduxkotlin__mvi_reducer() = test(ReduxKotlinBenchmark.mviReducerStaticIncrement())
+
+    @Test
+    fun reduxkotlin__mvi_reducer__external_arg() = test(ReduxKotlinBenchmark.mviReducerAdd())
 
 
     @Test

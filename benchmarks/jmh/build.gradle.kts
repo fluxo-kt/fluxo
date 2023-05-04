@@ -68,6 +68,9 @@ dependencies {
     implementation("com.motorro.commonstatemachine:commonstatemachine:$motorroCsmVersion")
     implementation("com.motorro.commonstatemachine:coroutines:$motorroCsmVersion")
 
+    // Redux Kotlin
+    implementation("org.reduxkotlin:redux-kotlin-threadsafe:" + libs.versions.reduxkotlin.get())
+
     // endregion
 }
 
