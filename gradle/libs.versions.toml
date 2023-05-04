@@ -101,6 +101,7 @@ js-uaParserJs = "0.7.35"
 ballast = "2.3.0"                   # https://mvnrepository.com/artifact/io.github.copper-leaf/ballast-core
 flowredux = "1.0.3-SNAPSHOT"        # https://mvnrepository.com/artifact/com.freeletics.flowredux/flowredux
 genakuReduce = "0.9.8"              # https://github.com/genaku/Reduce/tags
+motorroCommonStateMachine = "3.0.1" # https://mvnrepository.com/artifact/com.motorro.commonstatemachine/commonstatemachine
 mvicore = "1.4.0"                   # https://github.com/badoo/MVICore/releases
 mvikotlin = "3.2.0"                 # https://mvnrepository.com/artifact/com.arkivanov.mvikotlin/mvikotlin
 orbit = "4.6.1"                     # https://mvnrepository.com/artifact/org.orbit-mvi/orbit-core

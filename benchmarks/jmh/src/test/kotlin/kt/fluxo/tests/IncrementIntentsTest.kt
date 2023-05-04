@@ -6,6 +6,7 @@ import kt.fluxo.test.compare.ballast.BallastBenchmark
 import kt.fluxo.test.compare.flowredux.FlowReduxBenchmark
 import kt.fluxo.test.compare.fluxo.FluxoBenchmark
 import kt.fluxo.test.compare.genakureduce.GenakuReduceBenchmark
+import kt.fluxo.test.compare.motorrocsm.MotorroCommonStateMachineBenchmark
 import kt.fluxo.test.compare.mvicore.MviCoreBenchmark
 import kt.fluxo.test.compare.mvikotlin.MviKotlinBenchmark
 import kt.fluxo.test.compare.naive.NaiveBenchmark
@@ -96,6 +97,13 @@ class IncrementIntentsTest {
 
     @Test
     fun orbit__mvvmp_intent__external_arg() = test(OrbitBenchmark.mvvmpIntentAdd())
+
+
+    @Test
+    fun motorrocsm__sm_reducer() = test(MotorroCommonStateMachineBenchmark.smReducerStaticIncrement())
+
+    @Test
+    fun motorrocsm__sm_reducer__external_arg() = test(MotorroCommonStateMachineBenchmark.smReducerAdd())
 
 
     @Test

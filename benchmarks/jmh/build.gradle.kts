@@ -63,6 +63,11 @@ dependencies {
     implementation("com.github.genaku.reduce:reduce-core:" + libs.versions.genakuReduce.get())
     implementation(enforcedPlatform(libs.kotlinx.coroutines.bom))
 
+    // motorro CommonStateMachine
+    val motorroCsmVersion = libs.versions.motorroCommonStateMachine.get()
+    implementation("com.motorro.commonstatemachine:commonstatemachine:$motorroCsmVersion")
+    implementation("com.motorro.commonstatemachine:coroutines:$motorroCsmVersion")
+
     // endregion
 }
 
