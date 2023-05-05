@@ -43,7 +43,7 @@ dokka = "1.8.20-dev-213"
 
 # https://github.com/Kotlin/kotlinx.coroutines/releases
 # https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-coroutines-core
-coroutines = "1.7.0-RC"
+coroutines = "1.7.0"
 
 # Public API management tool
 # https://github.com/Kotlin/binary-compatibility-validator/releases
