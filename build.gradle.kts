@@ -68,15 +68,6 @@ setupDefaults(
             macosCompat()
         }
 
-        // Duplicate opt-ins here as the IDE doesn't catch settings from compile tasks.
-        sourceSets.all {
-            languageSettings {
-                optIn("kotlin.contracts.ExperimentalContracts")
-                optIn("kotlin.experimental.ExperimentalObjCName")
-                optIn("kotlin.js.ExperimentalJsExport")
-            }
-        }
-
         // Configure a separate test where code runs in worker thread
         // https://kotlinlang.org/docs/compiler-reference.html#generate-worker-test-runner-trw
         targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithTests<*>>().all {
@@ -115,6 +106,9 @@ setupDefaults(
         optInInternal = true,
         warningsAsErrors = true,
         alwaysIndyLambdas = false,
+        optIns = listOf(
+            "kotlin.js.ExperimentalJsExport",
+        ),
     ),
     publicationConfig = run {
         val version = libs.versions.fluxo.get()
