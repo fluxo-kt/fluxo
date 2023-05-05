@@ -146,7 +146,7 @@ arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
 
 test-junit = { module = "junit:junit" }
 # https://mvnrepository.com/artifact/org.robolectric/robolectric
-test-robolectric = { module = "org.robolectric:robolectric", version = "4.10" }
+test-robolectric = { module = "org.robolectric:robolectric", version = "4.10.2" }
 # https://github.com/cashapp/turbine/releases
 test-turbine = { module = "app.cash.turbine:turbine", version = "0.12.3" }
 
