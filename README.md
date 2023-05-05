@@ -28,7 +28,7 @@ If you need predictable unidirectional data flow (`UDF`) or deterministic contro
 ### TLDR: Use SNAPSHOT artefact in Gradle (in a safe and reproducible way)
 [![Latest snapshot](https://img.shields.io/badge/dynamic/xml?color=f68244&logo=gradle&label=Latest%20snapshot&query=%2F%2Fversion%5Blast%28%29%5D&url=https%3A%2F%2Fs01.oss.sonatype.org%2Fcontent%2Frepositories%2Fsnapshots%2Fio%2Fgithub%2Ffluxo-kt%2Ffluxo-core%2Fmaven-metadata.xml)](https://s01.oss.sonatype.org/content/repositories/snapshots/io/github/fluxo-kt/fluxo-core/maven-metadata.xml)
 <br>Select a snapshot for the preferred commit using a scheme: `0.1-<SHORT_COMMIT_SHA>-SNAPSHOT`.
-<br>For example: `0.1-46a9b97-SNAPSHOT`
+<br>For example: `0.1-389443b-SNAPSHOT`
 
 ```kotlin
 implementation("io.github.fluxo-kt:fluxo-core:0.1-<SHORT_COMMIT_SHA>-SNAPSHOT")
@@ -202,7 +202,7 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super p
 * Well tested.
 * Great performance.
   * See the [updated JMH benchmark results](../../actions/workflows/benchmark.yml), comparing different state-managing libs,
-    e.g. [this one](../../actions/runs/4858515852#summary-13163908795).
+    e.g. [this one](../../actions/runs/4884981661#summary-13239135090).
 * Reactive streams compatibility
   through [coroutine wrappers](https://github.com/Kotlin/kotlinx.coroutines/tree/master/reactive):
   * RxJava 2.x, RxJava 3.x
@@ -214,31 +214,37 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super p
 
 ### JMH Benchmark results
 
-Compares different MVI libraries in terms of performance.<br>
+Compares the performance of different MVI or state-management libraries.<br>
 Deep feature comparison is in-progress.
-Write [me](https://t.me/samally) if you want an early access!
+Write [me](https://t.me/samally) if you want early access!
 
-> Single-thread simple incrementing intents (9 tests in 2 modes, [2023-05-02](../../actions/runs/4858515852#summary-13163908795)), [updates on CI](../../actions/workflows/benchmark.yml)
+> Single-thread simple incrementing intents (12 tests in 2 modes, [2023-05-04](../../actions/runs/4884981661#summary-13239135090)), [updates on CI](../../actions/workflows/benchmark.yml)
 
 | Benchmark |       Mode       | Score | Units             | Percent |
 |-----------|:----------------:|------:|:------------------|--------:|
-| mvicore__mvi_reducer | <sub>thrpt</sub> | <b>2.358</b><sub><i> &#177; 0.307</i></sub> | <sub>ops/ms</sub> | <sub><i>0.0%</i></sub> |
-| fluxo__mvi_reducer | <sub>thrpt</sub> | <b>2.312</b><sub><i> &#177; 0.386</i></sub> | <sub>ops/ms</sub> | <sub><i>-2.0%</i></sub> |
-| mvikotlin__mvi_reducer | <sub>thrpt</sub> | <b>1.745</b><sub><i> &#177; 0.128</i></sub> | <sub>ops/ms</sub> | <sub><i>-26.0%</i></sub> |
-| fluxo__mvi_handler | <sub>thrpt</sub> | <b>0.792</b><sub><i> &#177; 0.116</i></sub> | <sub>ops/ms</sub> | <sub><i>-66.4%</i></sub> |
-| fluxo__mvvmp_intent | <sub>thrpt</sub> | <b>0.678</b><sub><i> &#177; 0.054</i></sub> | <sub>ops/ms</sub> | <sub><i>-71.2%</i></sub> |
-| orbit__mvvmp_intent | <sub>thrpt</sub> | <b>0.511</b><sub><i> &#177; 0.032</i></sub> | <sub>ops/ms</sub> | <sub><i>-78.3%</i></sub> |
-| ballast__mvi_handler | <sub>thrpt</sub> | <b>0.314</b><sub><i> &#177; 0.108</i></sub> | <sub>ops/ms</sub> | <sub><i>-86.7%</i></sub> |
-| flowmvi__mvi_handler | <sub>thrpt</sub> | <b>0.204</b><sub><i> &#177; 0.029</i></sub> | <sub>ops/ms</sub> | <sub><i>-91.3%</i></sub> |
+| visualfsm__sm_reducer | <sub>thrpt</sub> | <b>5.043</b><sub><i> &#177; 0.159</i></sub> | <sub>ops/ms</sub> | <sub><i>0.0%</i></sub> |
+| mvicore__mvi_reducer | <sub>thrpt</sub> | <b>4.774</b><sub><i> &#177; 0.250</i></sub> | <sub>ops/ms</sub> | <sub><i>-5.3%</i></sub> |
+| fluxo__mvi_reducer | <sub>thrpt</sub> | <b>4.063</b><sub><i> &#177; 0.144</i></sub> | <sub>ops/ms</sub> | <sub><i>-19.4%</i></sub> |
+| mvikotlin__mvi_reducer | <sub>thrpt</sub> | <b>1.921</b><sub><i> &#177; 0.273</i></sub> | <sub>ops/ms</sub> | <sub><i>-61.9%</i></sub> |
+| fluxo__mvvmp_intent | <sub>thrpt</sub> | <b>1.350</b><sub><i> &#177; 0.185</i></sub> | <sub>ops/ms</sub> | <sub><i>-73.2%</i></sub> |
+| fluxo__mvi_handler | <sub>thrpt</sub> | <b>1.302</b><sub><i> &#177; 0.034</i></sub> | <sub>ops/ms</sub> | <sub><i>-74.2%</i></sub> |
+| genakureduce__mvi_handler | <sub>thrpt</sub> | <b>1.149</b><sub><i> &#177; 0.045</i></sub> | <sub>ops/ms</sub> | <sub><i>-77.2%</i></sub> |
+| orbit__mvvmp_intent | <sub>thrpt</sub> | <b>0.576</b><sub><i> &#177; 0.087</i></sub> | <sub>ops/ms</sub> | <sub><i>-88.6%</i></sub> |
+| ballast__mvi_handler | <sub>thrpt</sub> | <b>0.444</b><sub><i> &#177; 0.096</i></sub> | <sub>ops/ms</sub> | <sub><i>-91.2%</i></sub> |
+| flowmvi__mvi_handler | <sub>thrpt</sub> | <b>0.385</b><sub><i> &#177; 0.073</i></sub> | <sub>ops/ms</sub> | <sub><i>-92.4%</i></sub> |
+| flowredux__mvi_handler | <sub>thrpt</sub> | <b>0.104</b><sub><i> &#177; 0.006</i></sub> | <sub>ops/ms</sub> | <sub><i>-97.9%</i></sub> |
 |  |                  |  |                   |  |
-| mvicore__mvi_reducer | <sub>avgt</sub>  | <b>0.568</b><sub><i> &#177; 0.015</i></sub> | <sub>ms/op</sub>  | <sub><i>0.0%</i></sub> |
-| fluxo__mvi_reducer | <sub>avgt</sub>  | <b>0.808</b><sub><i> &#177; 0.189</i></sub> | <sub>ms/op</sub>  | <sub><i>42.3%</i></sub> |
-| mvikotlin__mvi_reducer | <sub>avgt</sub>  | <b>1.465</b><sub><i> &#177; 0.141</i></sub> | <sub>ms/op</sub>  | <sub><i>157.9%</i></sub> |
-| fluxo__mvvmp_intent | <sub>avgt</sub>  | <b>2.444</b><sub><i> &#177; 0.186</i></sub> | <sub>ms/op</sub>  | <sub><i>330.3%</i></sub> |
-| fluxo__mvi_handler | <sub>avgt</sub>  | <b>2.620</b><sub><i> &#177; 0.505</i></sub> | <sub>ms/op</sub>  | <sub><i>361.3%</i></sub> |
-| orbit__mvvmp_intent | <sub>avgt</sub>  | <b>5.381</b><sub><i> &#177; 0.189</i></sub> | <sub>ms/op</sub>  | <sub><i>847.4%</i></sub> |
-| ballast__mvi_handler | <sub>avgt</sub>  | <b>6.017</b><sub><i> &#177; 0.470</i></sub> | <sub>ms/op</sub>  | <sub><i>959.3%</i></sub> |
-| flowmvi__mvi_handler | <sub>avgt</sub>  | <b>8.049</b><sub><i> &#177; 1.634</i></sub> | <sub>ms/op</sub>  | <sub><i>1317.1%</i></sub> |
+| mvicore__mvi_reducer | <sub>avgt</sub>  | <b>0.522</b><sub><i> &#177; 0.016</i></sub> | <sub>ms/op</sub>  | <sub><i>0.0%</i></sub> |
+| visualfsm__sm_reducer | <sub>avgt</sub>  | <b>0.595</b><sub><i> &#177; 0.025</i></sub> | <sub>ms/op</sub>  | <sub><i>14.0%</i></sub> |
+| fluxo__mvi_reducer | <sub>avgt</sub>  | <b>0.627</b><sub><i> &#177; 0.014</i></sub> | <sub>ms/op</sub>  | <sub><i>20.1%</i></sub> |
+| mvikotlin__mvi_reducer | <sub>avgt</sub>  | <b>1.549</b><sub><i> &#177; 0.058</i></sub> | <sub>ms/op</sub>  | <sub><i>196.7%</i></sub> |
+| fluxo__mvi_handler | <sub>avgt</sub>  | <b>2.101</b><sub><i> &#177; 0.055</i></sub> | <sub>ms/op</sub>  | <sub><i>302.5%</i></sub> |
+| genakureduce__mvi_handler | <sub>avgt</sub>  | <b>2.183</b><sub><i> &#177; 0.038</i></sub> | <sub>ms/op</sub>  | <sub><i>318.2%</i></sub> |
+| fluxo__mvvmp_intent | <sub>avgt</sub>  | <b>2.236</b><sub><i> &#177; 0.189</i></sub> | <sub>ms/op</sub>  | <sub><i>328.4%</i></sub> |
+| orbit__mvvmp_intent | <sub>avgt</sub>  | <b>4.938</b><sub><i> &#177; 0.231</i></sub> | <sub>ms/op</sub>  | <sub><i>846.0%</i></sub> |
+| ballast__mvi_handler | <sub>avgt</sub>  | <b>5.269</b><sub><i> &#177; 0.178</i></sub> | <sub>ms/op</sub>  | <sub><i>909.4%</i></sub> |
+| flowmvi__mvi_handler | <sub>avgt</sub>  | <b>6.928</b><sub><i> &#177; 0.086</i></sub> | <sub>ms/op</sub>  | <sub><i>1227.2%</i></sub> |
+| flowredux__mvi_handler | <sub>avgt</sub>  | <b>26.605</b><sub><i> &#177; 1.190</i></sub> | <sub>ms/op</sub>  | <sub><i>4996.7%</i></sub> |
 
 
 ### Roadmap

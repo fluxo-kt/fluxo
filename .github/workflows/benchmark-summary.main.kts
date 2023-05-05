@@ -104,10 +104,15 @@ try {
             println()
         }
 
+        val bnchmrkTitle = "Benchmark"
+        val modeTitle = "Mode"
         val cntTitle = "Cnt"
         val errTitle = "Error"
+        val unitTitle = "Units"
         val bdTwo = BigDecimal.valueOf(2)
-        val titles = arrayOf("Benchmark", "Mode", cntTitle, "Score", errTitle, "Units", "Percent")
+        val titles = arrayOf(bnchmrkTitle, modeTitle, cntTitle, "Score", errTitle, unitTitle, "Percent")
+        val leftAlign = hashSetOf(bnchmrkTitle, unitTitle)
+        val centerAlign = hashSetOf(modeTitle)
         val errIndex = titles.indexOf(errTitle)
         val mdTitles = titles.filter { it != errTitle }.toTypedArray()
         for ((clazz, results) in resultsByClass) {
@@ -140,11 +145,15 @@ try {
 
             if (isCI) {
                 println(mdTitles0.joinToString(" | ", "| ", " |"))
-                println(mdTitles0.mapIndexed { i, s ->
-                    val dashes = "-".repeat(s.length)
-                    // GFM Markdown sort cols to the right for 2nd+ columns
-                    if (i == 0) "-$dashes-" else "-$dashes:"
-                }.joinToString("|", "|", "|"))
+                println(mdTitles0.joinToString("|", "|", "|") { title ->
+                    val dashes = "-".repeat(title.length)
+                    // GFM cols sort
+                    when (title) {
+                        in leftAlign -> "-$dashes-"
+                        in centerAlign -> ":$dashes:"
+                        else -> "-$dashes:" // right align
+                    }
+                })
             } else {
                 println()
             }
