@@ -79,6 +79,8 @@ class GradleSetupPlugin : Plugin<Project> {
                     val libs = target.libsCatalog
                     target.the<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension>().apply {
                         lockFileDirectory = project.rootDir.resolve(".kotlin-js-store")
+                        libs.onVersion("js-engineIo") { resolution("engine.io", it) }
+                        libs.onVersion("js-socketIo") { resolution("socket.io", it) }
                         libs.onVersion("js-uaParserJs") { resolution("ua-parser-js", it) }
                     }
                     target.the<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension>().apply {
