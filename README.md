@@ -214,7 +214,7 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super p
 
 ### JMH Benchmark results
 
-Compares the performance of different MVI or state-management libraries.<br>
+Compares the performance of different MVI libraries (state-management libraries).<br>
 Deep feature comparison is in-progress.
 Write [me](https://t.me/samally) if you want early access!
 

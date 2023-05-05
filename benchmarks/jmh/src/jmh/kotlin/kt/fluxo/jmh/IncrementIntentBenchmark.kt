@@ -4,7 +4,6 @@ import kt.fluxo.test.compare.ballast.BallastBenchmark
 import kt.fluxo.test.compare.flowredux.FlowReduxBenchmark
 import kt.fluxo.test.compare.fluxo.FluxoBenchmark
 import kt.fluxo.test.compare.genakureduce.GenakuReduceBenchmark
-import kt.fluxo.test.compare.motorrocsm.MotorroCommonStateMachineBenchmark
 import kt.fluxo.test.compare.mvicore.MviCoreBenchmark
 import kt.fluxo.test.compare.mvikotlin.MviKotlinBenchmark
 import kt.fluxo.test.compare.naive.NaiveBenchmark
@@ -84,9 +83,6 @@ open class IncrementIntentBenchmark {
 
     @Benchmark
     fun orbit__mvvmp_intent(bh: Blackhole) = bh.consume(OrbitBenchmark.mvvmpIntentAdd())
-
-    @Benchmark
-    fun motorrocsm__sm_reducer(bh: Blackhole) = bh.consume(MotorroCommonStateMachineBenchmark.smReducerAdd())
 
 
     @Benchmark
