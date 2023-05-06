@@ -71,6 +71,11 @@ dependencies {
     // Redux Kotlin
     implementation("org.reduxkotlin:redux-kotlin-threadsafe:" + libs.versions.reduxkotlin.get())
 
+    // Reduktor
+    val reduktorVersion = libs.versions.reduktor.get()
+    implementation("com.github.g000sha256.reduktor:coroutines:$reduktorVersion")
+    implementation("com.github.g000sha256.reduktor:core:$reduktorVersion")
+
     // endregion
 }
 

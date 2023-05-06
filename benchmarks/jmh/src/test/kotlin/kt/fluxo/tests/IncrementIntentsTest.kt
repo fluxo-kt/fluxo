@@ -11,6 +11,7 @@ import kt.fluxo.test.compare.mvicore.MviCoreBenchmark
 import kt.fluxo.test.compare.mvikotlin.MviKotlinBenchmark
 import kt.fluxo.test.compare.naive.NaiveBenchmark
 import kt.fluxo.test.compare.orbit.OrbitBenchmark
+import kt.fluxo.test.compare.reduktor.ReduktorBenchmark
 import kt.fluxo.test.compare.reduxkotlin.ReduxKotlinBenchmark
 import kt.fluxo.test.compare.respawnflowmvi.RespawnFlowMviBenchmark
 import kt.fluxo.test.compare.visualfsm.VisualFsmBenchmark
@@ -63,6 +64,13 @@ class IncrementIntentsTest {
 
     @Test
     fun mvikotlin__mvi_reducer__external_arg() = test(MviKotlinBenchmark.mviReducerAdd())
+
+
+    @Test
+    fun reduktor__mvi_reducer() = test(ReduktorBenchmark.mviReducerStaticIncrement())
+
+    @Test
+    fun reduktor__mvi_reducer__external_arg() = test(ReduktorBenchmark.mviReducerAdd())
 
 
     @Test

@@ -8,6 +8,7 @@ import kt.fluxo.test.compare.mvicore.MviCoreBenchmark
 import kt.fluxo.test.compare.mvikotlin.MviKotlinBenchmark
 import kt.fluxo.test.compare.naive.NaiveBenchmark
 import kt.fluxo.test.compare.orbit.OrbitBenchmark
+import kt.fluxo.test.compare.reduktor.ReduktorBenchmark
 import kt.fluxo.test.compare.reduxkotlin.ReduxKotlinBenchmark
 import kt.fluxo.test.compare.respawnflowmvi.RespawnFlowMviBenchmark
 import kt.fluxo.test.compare.visualfsm.VisualFsmBenchmark
@@ -69,6 +70,9 @@ open class IncrementIntentBenchmark {
 
     @Benchmark
     fun mvikotlin__mvi_reducer(bh: Blackhole) = bh.consume(MviKotlinBenchmark.mviReducerAdd())
+
+    @Benchmark
+    fun reduktor__mvi_reducer(bh: Blackhole) = bh.consume(ReduktorBenchmark.mviReducerAdd())
 
     @Benchmark
     fun visualfsm__sm_reducer(bh: Blackhole) = bh.consume(VisualFsmBenchmark.smReducerAdd())
