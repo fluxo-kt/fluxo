@@ -13,7 +13,7 @@
     <ID>ForbiddenComment:FluxoStore.kt$FluxoStore$// TODO: Move the intent filter before queing or completely replace with decorators?</ID>
     <ID>ForbiddenComment:FluxoStore.kt$FluxoStore$// TODO: Test if job awaits for all potential children completions when join</ID>
     <ID>ForbiddenComment:IntentStrategyGuardian.kt$IntentStrategyGuardian$// TODO: Should be fixed somehow as compareAndSet call will access state twice or more times even in normal situation</ID>
-    <ID>ForbiddenComment:ParallelIntentStrategy.kt$ParallelIntentStrategy.Parallel$// TODO: Separate the DIRECT implementation form Parallel to remove the ambiguity?</ID>
+    <ID>ForbiddenComment:ParallelIntentStrategy.kt$ParallelIntentStrategy.Parallel$// TODO: Separate DIRECT implementation from Parallel to remove the ambiguity</ID>
     <ID>ForbiddenComment:Store.kt$Store$// @SubclassOptInRequired(ExperimentalFluxoApi::class) // TODO: Kotlin API version 1.8</ID>
     <ID>ForbiddenComment:StoreSE.kt$StoreSE$// @SubclassOptInRequired(ExperimentalFluxoApi::class) // TODO: Kotlin API version 1.8</ID>
     <ID>ForbiddenComment:StoreScope.kt$StoreScope$// FIXME: More options for a side job restarting or start-avoidance. SideJobs registry/management API</ID>
