@@ -218,7 +218,7 @@ Compares the performance of different MVI libraries (state-management libraries
 Deep feature comparison is in-progress.
 Write [me](https://t.me/samally) if you want early access!
 
-> Single-thread simple incrementing intents (14 tests in 2 modes, [2023-05-06](../../actions/runs/4903037483#summary-13285740233)), [updates on CI](../../actions/workflows/benchmark.yml).
+> Single-thread simple incrementing intents (14 tests, [2023-05-06](../../actions/runs/4903037483#summary-13285740233)), [updates on CI](../../actions/workflows/benchmark.yml).
 > <br>Each operation creates a state store, sends 5000 intents with reduction, and checks state updates.
 
 | Benchmark | Mode | Score | Units | Percent |
@@ -236,20 +236,6 @@ Write [me](https://t.me/samally) if you want early access!
 | ballast__mvi_handler | <sub>thrpt</sub> | <b>0.597</b><sub><i> &#177; 0.016</i></sub> | <sub>ops/ms</sub> | <sub><i>-94.0%</i></sub> |
 | flowmvi__mvi_handler | <sub>thrpt</sub> | <b>0.445</b><sub><i> &#177; 0.013</i></sub> | <sub>ops/ms</sub> | <sub><i>-95.5%</i></sub> |
 | flowredux__mvi_handler | <sub>thrpt</sub> | <b>0.112</b><sub><i> &#177; 0.003</i></sub> | <sub>ops/ms</sub> | <sub><i>-98.9%</i></sub> |
-|  |  |  |  |  |
-| reduxkotlin__mvi_reducer | <sub>avgt</sub> | <b>0.309</b><sub><i> &#177; 0.004</i></sub> | <sub>ms/op</sub> | <sub><i>0.0%</i></sub> |
-| mvicore__mvi_reducer | <sub>avgt</sub> | <b>0.510</b><sub><i> &#177; 0.002</i></sub> | <sub>ms/op</sub> | <sub><i>65.0%</i></sub> |
-| visualfsm__sm_reducer | <sub>avgt</sub> | <b>0.564</b><sub><i> &#177; 0.003</i></sub> | <sub>ms/op</sub> | <sub><i>82.5%</i></sub> |
-| fluxo__mvi_reducer | <sub>avgt</sub> | <b>0.612</b><sub><i> &#177; 0.004</i></sub> | <sub>ms/op</sub> | <sub><i>98.1%</i></sub> |
-| mvikotlin__mvi_reducer | <sub>avgt</sub> | <b>1.449</b><sub><i> &#177; 0.070</i></sub> | <sub>ms/op</sub> | <sub><i>368.9%</i></sub> |
-| reduktor__mvi_reducer | <sub>avgt</sub> | <b>1.593</b><sub><i> &#177; 0.018</i></sub> | <sub>ms/op</sub> | <sub><i>415.5%</i></sub> |
-| fluxo__mvi_handler | <sub>avgt</sub> | <b>1.960</b><sub><i> &#177; 0.363</i></sub> | <sub>ms/op</sub> | <sub><i>534.3%</i></sub> |
-| fluxo__mvvmp_intent | <sub>avgt</sub> | <b>2.051</b><sub><i> &#177; 0.017</i></sub> | <sub>ms/op</sub> | <sub><i>563.8%</i></sub> |
-| genakureduce__mvi_handler | <sub>avgt</sub> | <b>2.052</b><sub><i> &#177; 0.023</i></sub> | <sub>ms/op</sub> | <sub><i>564.1%</i></sub> |
-| orbit__mvvmp_intent | <sub>avgt</sub> | <b>4.590</b><sub><i> &#177; 0.111</i></sub> | <sub>ms/op</sub> | <sub><i>1385.4%</i></sub> |
-| ballast__mvi_handler | <sub>avgt</sub> | <b>5.088</b><sub><i> &#177; 0.346</i></sub> | <sub>ms/op</sub> | <sub><i>1546.6%</i></sub> |
-| flowmvi__mvi_handler | <sub>avgt</sub> | <b>6.611</b><sub><i> &#177; 0.468</i></sub> | <sub>ms/op</sub> | <sub><i>2039.5%</i></sub> |
-| flowredux__mvi_handler | <sub>avgt</sub> | <b>25.454</b><sub><i> &#177; 0.459</i></sub> | <sub>ms/op</sub> | <sub><i>8137.5%</i></sub> |
 
 
 ### Roadmap
