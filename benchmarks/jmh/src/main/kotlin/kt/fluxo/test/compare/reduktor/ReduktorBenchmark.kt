@@ -19,7 +19,9 @@ internal object ReduktorBenchmark {
             }
         }
         runBlocking {
-            val launchDef = launchCommonBenchmarkWithStaticIntent(IntentIncrement.Increment) { actionsInitializer.actions.post(it) }
+            val launchDef = launchCommonBenchmarkWithStaticIntent(IntentIncrement.Increment) {
+                actionsInitializer.actions.post(it)
+            }
             store.states.consumeCommonBenchmark(launchDef)
         }
         store.release()
@@ -33,14 +35,18 @@ internal object ReduktorBenchmark {
             }
         }
         runBlocking {
-            val launchDef = launchCommonBenchmark { actionsInitializer.actions.post(IntentAdd.Add(value = value)) }
+            val launchDef = launchCommonBenchmark {
+                actionsInitializer.actions.post(IntentAdd.Add(value = value))
+            }
             store.states.consumeCommonBenchmark(launchDef)
         }
         store.release()
         return store.states.value
     }
 
-    private fun <Action> createStore(reducer: Reducer<Action, Int>): Pair<Store<Action, Int>, ActionsInitializer<Action, Int>> {
+    private fun <Action> createStore(
+        reducer: Reducer<Action, Int>,
+    ): Pair<Store<Action, Int>, ActionsInitializer<Action, Int>> {
         val actionsInitializer = ActionsInitializer<Action, Int>()
         val store = Store(
             initialState = 0,
