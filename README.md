@@ -14,21 +14,21 @@
 
 ---
 
-**Fluxo** *\[ˈfluksu]* is a simple yet super powerful state management library for Kotlin Multiplatform.
+**Fluxo** *\[ˈfluksu]* is a simple yet super powerful state management library for Kotlin Multiplatform.
 
-> Approach is best known as `BLoC`[^1], `MVI`[^2], `MVVM+`[^3], `Redux`[^4], SAM[^5], or even `State Machine`/`FSM`[^6].
-Often used in the UI or presentation layers of the architecture.
-But suitable and proven useful for any architectural layer of the app for any platform.
+> Approach is best known as `BLoC`[^1], `MVI`[^2], `MVVM+`[^3], `Redux`[^4], SAM[^5], or even `State Machine`/`FSM`[^6].
+Often used in the UI or presentation layers of the architecture.
+But suitable and proven useful for any architectural layer of the app for any platform.
 
-If you need predictable unidirectional data flow (`UDF`) or deterministic control over your state changes,
+If you need predictable unidirectional data flow (`UDF`) or deterministic control over your state changes,
 **Fluxo** will get you covered!
 
-**Work-In-Progress**, first release is coming. **API isn't stable yet!**
+**Work-In-Progress**, first release is coming. **API isn’t stable yet!**
 
-### TLDR: Use SNAPSHOT artefact in Gradle (in a safe and reproducible way)
+### TLDR: Use SNAPSHOT artefact in Gradle (in a safe and reproducible way)
 [![Latest snapshot](https://img.shields.io/badge/dynamic/xml?color=f68244&logo=gradle&label=Latest%20snapshot&query=%2F%2Fversion%5Blast%28%29%5D&url=https%3A%2F%2Fs01.oss.sonatype.org%2Fcontent%2Frepositories%2Fsnapshots%2Fio%2Fgithub%2Ffluxo-kt%2Ffluxo-core%2Fmaven-metadata.xml)](https://s01.oss.sonatype.org/content/repositories/snapshots/io/github/fluxo-kt/fluxo-core/maven-metadata.xml)
-<br>Select a snapshot for the preferred commit using a scheme: `0.1-<SHORT_COMMIT_SHA>-SNAPSHOT`.
-<br>For example: `0.1-389443b-SNAPSHOT`
+<br>Select a snapshot for the preferred commit using a scheme: `0.1-<SHORT_COMMIT_SHA>-SNAPSHOT`.
+<br>For example: `0.1-6e31fde-SNAPSHOT`
 
 ```kotlin
 implementation("io.github.fluxo-kt:fluxo-core:0.1-<SHORT_COMMIT_SHA>-SNAPSHOT")
@@ -52,26 +52,26 @@ import kt.fluxo.core.*
 import kotlin.coroutines.coroutineContext
 
 suspend fun main() {
-  // State here is an Int value. One-liner creation! Type inference is automatic!
+  // State here is an Int value. One-liner creation! Type inference is automatic!
   val container = container(initialState = 0)
   repeat(100) {
     container.intent {
-      // `updateState {}` used to access the previous value safely.
-      // Use `value = ...` if previous value isn't needed.
+      // `updateState {}` used to access the previous value safely.
+      // Use `value = ...` if previous value isn’t needed.
       updateState { prev -> prev + it }
 
-      // suspendable lambda intent, it can start long-running side jobs and send side effects!
+      // suspendable lambda intent, it can start long-running side jobs and send side effects!
     }
   }
 
-  // Listen to reactive state updates somewhere. Container is a `StateFlow`!
-  // Supports cooperative cancellation on container close.
+  // Listen to reactive state updates somewhere. Container is a `StateFlow`!
+  // Supports cooperative cancellation on container close.
   CoroutineScope(coroutineContext).launch {
     container.collect(::println)
   }
 
   // You can wait for the full completion,
-  // but it's optional, `container.close()` is also available.
+  // but it’s optional, `container.close()` is also available.
   container.closeAndWait()
 }
 ```
@@ -83,7 +83,7 @@ suspend fun main() {
 import kt.fluxo.core.*
 
 suspend fun main() {
-  // Type inference is automatic if the reducer argument type is specified!
+  // Type inference is automatic if the reducer argument type is specified!
   val store = store<Int /* Intent */, Int /* State */>(
     initialState = 0,
     // pure non-suspendable reducer
@@ -91,7 +91,7 @@ suspend fun main() {
     reducer = { this + it }
   )
   repeat(100) {
-    // emit is suspendable
+    // emit is suspendable
     // use `send` methods for intents from non-suspend contexts.
     store.emit(it)
   }
@@ -100,21 +100,21 @@ suspend fun main() {
 </details>
 
 <details>
-<summary>Strict MVI intents with powerful MVVM+ DSL in suspendable handler.</summary>
+<summary>Strict MVI intents with powerful MVVM+ DSL in suspendable handler.</summary>
 
 ```kotlin
 import kt.fluxo.core.*
 
 suspend fun main() {
-  // Type inference is automatic if the handler argument type is specified!
+  // Type inference is automatic if the handler argument type is specified!
   val store = store(
     initialState = 0,
-    // suspendable handler, it can start long-running side jobs and send side effects!
+    // suspendable handler, it can start long-running side jobs and send side effects!
     handler = { intent: Int ->
       updateState { prev -> prev + intent }
     }
   )
-  // emit is suspendable
+  // emit is suspendable
   // use `send` methods for intents from non-suspend contexts.
   repeat(100) { store.emit(it) }
 }
@@ -124,89 +124,89 @@ suspend fun main() {
 
 ## Overview
 
-> **Fluxo** was started as a test for the hypothesis:
-_it should be possible to combine all the strong sides of strict **Redux/MVI**[^4] with flexibility,
-ease of readability, and maintainability of the **MVVM+**[^3]._
+> **Fluxo** was started as a test for the hypothesis:
+_it should be possible to combine all the strong sides of strict **Redux/MVI**[^4] with flexibility,
+ease of readability, and maintainability of the **MVVM+**[^3]._
 >
 > The experiment paid off!
-It is possible to combine **MVVM+** with great performance, high-quality time-travel, logging,
-auto analysis of the transition graph and much more.
-A long list of features is implemented gradually in this library (see the [Roadmap](#roadmap) for details).
+It is possible to combine **MVVM+** with great performance, high-quality time-travel, logging,
+auto analysis of the transition graph and much more.
+A long list of features is implemented gradually in this library (see the [Roadmap](#roadmap) for details).
 
-Basic usage is elementary, yet you can take advantage of fine-tuning and super powerful features when you need them.
+Basic usage is elementary, yet you can take advantage of fine-tuning and super powerful features when you need them.
 
 * Kotlin **coroutine-based** state container.
 * One-liner creation, simple usage, type-safe, no-boilerplate!
-* Use Fluxo for the UI, business, or data tasks with the same ease.
+* Use Fluxo for the UI, business, or data tasks with the same ease.
 * Native integration with coroutines:
-  * Each Fluxo [`Store`][Store] is a [`StateFlow`][StateFlow] with **states** and a [`FlowCollector`][FlowCollector]
+  * Each Fluxo [`Store`][Store] is a [`StateFlow`][StateFlow] with **states** and a [`FlowCollector`][FlowCollector]
     for **intents**.
     You can easily combine stores with each other and with any other flows, flow operators, and collectors.
-  * Also, Fluxo [`Store`][Store] is a [`CoroutineScope`][CoroutineScope] itself, so you can integrate it with
-    any existing coroutine workflow and treat just as a usual coroutine scope.
+  * Also, Fluxo [`Store`][Store] is a [`CoroutineScope`][CoroutineScope] itself, so you can integrate it with
+    any existing coroutine workflow and treat just as a usual coroutine scope.
 * **Multiplatform**, supports all KMP/KMM[^7] targets (**Android**, **iOS**, **JVM**,
   **JS**, **Linux**, **Windows/MinGW**, **macOS**, **watchOS**, **tvOS**).
 * Different usage styles:
-  * Strict **Redux/MVI**[^4] (the highest correctness guarantees, but may be subjectively less readable and intuitive)
-  * Flexible **MVVM+**[^3] (intuitively readable, may be easier to maintain, has support for every feature and more :)
+  * Strict **Redux/MVI**[^4] (the highest correctness guarantees, but may be subjectively less readable and intuitive)
+  * Flexible **MVVM+**[^3] (intuitively readable, may be easier to maintain, has support for every feature and more :)
   * Redux-style discrete intents with MVVM+ style reduction DSL (hybrid way)
-  * _More is coming…_
-* Side jobs for long-running tasks (MVVM+ DSL).
-  * For example, start a long-going task safely on intent. Jobs with the same name auto cancel earlier started ones.
+  * _More is coming..._
+* Side jobs for long-running tasks (MVVM+ DSL).
+  * For example, start a long-going task safely on intent. Jobs with the same name auto cancel earlier started ones.
   * Run something only when listeners are attached using [`repeatOnSubscription`][repeatOnSubscription].
   * Recover from any error within the side job with an `onError` handler.
-* Bootstrap, kind of optional initialization side job that starts on the `Store` launch.
-* **Side effect** support (sometimes called **news** or **one-off event**).
-  * **Note that using side effects is generally considered as antipattern!**[^a][^b][^c].<br>
-    But it can still be useful sometimes, especially when migrating an old codebase.<br>
-    *However, if you find yourself in one of these situations,
+* Bootstrap, kind of optional initialization side job that starts on the `Store` launch.
+* **Side effect** support (sometimes called **news** or **one-off event**).
+  * **Note that using side effects is generally considered as antipattern!**[^a][^b][^c].<br>
+    But it can still be useful sometimes, especially when migrating an old codebase.<br>
+    *However, if you find yourself in one of these situations,
     reconsider what this one-time event actually means for your app.
-    Handle events immediately and reduce them to state.
-    State is a better representation of the given point in time,
-    and it gives you more delivery and processing guarantees.
-    State is usually easier to test, and it integrates consistently with the rest of your app.*
-  * Fluxo has four strategies to fully control how side effects are shared from the store
+    Handle events immediately and reduce them to state.
+    State is a better representation of the given point in time,
+    and it gives you more delivery and processing guarantees.
+    State is usually easier to test, and it integrates consistently with the rest of your app.*
+  * Fluxo has four strategies to fully control how side effects are shared from the store
     (_RECEIVE_, _CONSUME_, _SHARE_, _DISABLE_).
-  * Side effects are cached while the subscriber (e.g., view) isn't attached.
+  * Side effects are cached while the subscriber (e.g., view) isn’t attached.
   * Side effects can have consumption guarantees with `GuaranteedEffect` (effect handled and exactly
     once)[^e1][^e2].
-* **Lifecycle-awareness** with full control based on coroutine scopes.
+* **Lifecycle-awareness** with full control based on coroutine scopes.
 * Subscription lifecycle with convenience API ([`repeatOnSubscription`][repeatOnSubscription]).
-  * Do something in store when subscriber connects or disconnects.
-  * Listen to the number of subscribers with [`subscriptionCount`][subscriptionCount] `StateFlow`.
+  * Do anything when store subscriber connects or disconnects.
+  * Listen to the number of subscribers with [`subscriptionCount`][subscriptionCount] `StateFlow`.
 * Forceful customization:
   * Pluggable **intent strategies**:
     * _First In, First Out_ (Fifo). Default, predictable, and intuitive, ordered processing with good performance.
-    * _Last In, First Out_ (Lifo). Can improve responsiveness, e.g. UI events processing, but may lose some intents!
-    * _Parallel_. No processing order guarantees, can provide better performance and responsiveness compared to _Fifo_.
-    * _Direct_. No pipeline. Immediately executes every intent until the first suspension point in the current thread.
+    * _Last In, First Out_ (Lifo). Can improve responsiveness, e.g. UI events processing, but may lose some intents!
+    * _Parallel_. No processing order guarantees, can provide better performance and responsiveness compared to _Fifo_.
+    * _Direct_. No pipeline. Immediately executes every intent until the first suspension point in the current thread.
     * _ChannelLifo_. Special `Channel`-based Lifo implementation that provides extra customization compared to _Lifo_.
     * Create your own!
-  * Eager or lazy initialization of the store.
-  * Global default settings for easier setup of state stores swarm.
-    * Change settings once and for all at one place (`FluxoSettings.DEFAULT`).
-    * Provide a prepared settings object for the group of your stores.
-    * Or configure each store individually.
-* Common data states in a [`fluxo-data`](fluxo-data) module *(Success, Failure, Loading, Cached, Empty, Not Loaded)*.
+  * Eager or lazy initialization of the store (lazy by default).
+  * Global default settings for easier setup of state stores swarm.
+    * Change settings once and for all at one place (`FluxoSettings.DEFAULT`).
+    * Provide a prepared settings object for the group of your stores.
+    * Or configure each store individually.
+* Common data states in a [`fluxo-data`](fluxo-data) module *(Success, Failure, Loading, Cached, Empty, Not Loaded)*.
 * Error handling and exception behavior control.
-  * On the level of `StoreFactory` (for many `Store`s).
+  * On the level of `StoreFactory` (for many `Store`s).
   * For each `Store`.
-  * For the separate `sideJob`.
+  * For each launched `sideJob`.
 * Leak-free transfer, delivery guarantees[^el1][^el2] for intents and side effects.
-* Complete interception for any possible event (like in OkHttp, etc.)
-* Strictly not recommended, but JVM `Closeable` resources are experimentally supported as a state and side effects.
-  * The previous state is closed on change.
+* Complete interception for any possible event (like in OkHttp, etc.)
+* Strictly not recommended, but `Closeable` resources are experimentally supported as a state and side effects.
+  * The previous state is closed on change.
   * Side effects are closed when not delivered.
-  * However, no clear guarantees!
-* Intentionally unopinionated, extensible API: you can follow guides or use it as you want.
+  * However, no clear guarantees!
+* Intentionally unopinionated, extensible API: you can follow guides or use it as you want.
 * Well tested.
 * Great performance.
   * See the [updated JMH benchmark results](../../actions/workflows/benchmark.yml), comparing different state-managing libs,
-    e.g. [this one](../../actions/runs/4884981661#summary-13239135090).
+    e.g. [this one](../../actions/runs/4903037483#summary-13285740233).
 * Reactive streams compatibility
   through [coroutine wrappers](https://github.com/Kotlin/kotlinx.coroutines/tree/master/reactive):
   * RxJava 2.x, RxJava 3.x
-  * Flow (JDK 9), Reactive Streams
+  * JDK 9 Flow, Reactive Streams
   * Project Reactor
 * [LiveData](https://developer.android.com/topic/libraries/architecture/coroutines#livedata) compatibility with
   AndroidX.
@@ -214,37 +214,42 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super p
 
 ### JMH Benchmark results
 
-Compares the performance of different MVI libraries (state-management libraries).<br>
-Deep feature comparison is in-progress.
-Write [me](https://t.me/samally) if you want early access!
+Compares the performance of different MVI libraries (state-management libraries).<br>
+Deep feature comparison is in-progress.
+Write [me](https://t.me/samally) if you want early access!
 
-> Single-thread simple incrementing intents (12 tests in 2 modes, [2023-05-04](../../actions/runs/4884981661#summary-13239135090)), [updates on CI](../../actions/workflows/benchmark.yml)
+> Single-thread simple incrementing intents (14 tests in 2 modes, [2023-05-06](../../actions/runs/4903037483#summary-13285740233)), [updates on CI](../../actions/workflows/benchmark.yml).
+> <br>Each operation creates a state store, sends 5000 intents with reduction, and checks state updates.
 
-| Benchmark |       Mode       | Score | Units             | Percent |
-|-----------|:----------------:|------:|:------------------|--------:|
-| visualfsm__sm_reducer | <sub>thrpt</sub> | <b>5.043</b><sub><i> &#177; 0.159</i></sub> | <sub>ops/ms</sub> | <sub><i>0.0%</i></sub> |
-| mvicore__mvi_reducer | <sub>thrpt</sub> | <b>4.774</b><sub><i> &#177; 0.250</i></sub> | <sub>ops/ms</sub> | <sub><i>-5.3%</i></sub> |
-| fluxo__mvi_reducer | <sub>thrpt</sub> | <b>4.063</b><sub><i> &#177; 0.144</i></sub> | <sub>ops/ms</sub> | <sub><i>-19.4%</i></sub> |
-| mvikotlin__mvi_reducer | <sub>thrpt</sub> | <b>1.921</b><sub><i> &#177; 0.273</i></sub> | <sub>ops/ms</sub> | <sub><i>-61.9%</i></sub> |
-| fluxo__mvvmp_intent | <sub>thrpt</sub> | <b>1.350</b><sub><i> &#177; 0.185</i></sub> | <sub>ops/ms</sub> | <sub><i>-73.2%</i></sub> |
-| fluxo__mvi_handler | <sub>thrpt</sub> | <b>1.302</b><sub><i> &#177; 0.034</i></sub> | <sub>ops/ms</sub> | <sub><i>-74.2%</i></sub> |
-| genakureduce__mvi_handler | <sub>thrpt</sub> | <b>1.149</b><sub><i> &#177; 0.045</i></sub> | <sub>ops/ms</sub> | <sub><i>-77.2%</i></sub> |
-| orbit__mvvmp_intent | <sub>thrpt</sub> | <b>0.576</b><sub><i> &#177; 0.087</i></sub> | <sub>ops/ms</sub> | <sub><i>-88.6%</i></sub> |
-| ballast__mvi_handler | <sub>thrpt</sub> | <b>0.444</b><sub><i> &#177; 0.096</i></sub> | <sub>ops/ms</sub> | <sub><i>-91.2%</i></sub> |
-| flowmvi__mvi_handler | <sub>thrpt</sub> | <b>0.385</b><sub><i> &#177; 0.073</i></sub> | <sub>ops/ms</sub> | <sub><i>-92.4%</i></sub> |
-| flowredux__mvi_handler | <sub>thrpt</sub> | <b>0.104</b><sub><i> &#177; 0.006</i></sub> | <sub>ops/ms</sub> | <sub><i>-97.9%</i></sub> |
-|  |                  |  |                   |  |
-| mvicore__mvi_reducer | <sub>avgt</sub>  | <b>0.522</b><sub><i> &#177; 0.016</i></sub> | <sub>ms/op</sub>  | <sub><i>0.0%</i></sub> |
-| visualfsm__sm_reducer | <sub>avgt</sub>  | <b>0.595</b><sub><i> &#177; 0.025</i></sub> | <sub>ms/op</sub>  | <sub><i>14.0%</i></sub> |
-| fluxo__mvi_reducer | <sub>avgt</sub>  | <b>0.627</b><sub><i> &#177; 0.014</i></sub> | <sub>ms/op</sub>  | <sub><i>20.1%</i></sub> |
-| mvikotlin__mvi_reducer | <sub>avgt</sub>  | <b>1.549</b><sub><i> &#177; 0.058</i></sub> | <sub>ms/op</sub>  | <sub><i>196.7%</i></sub> |
-| fluxo__mvi_handler | <sub>avgt</sub>  | <b>2.101</b><sub><i> &#177; 0.055</i></sub> | <sub>ms/op</sub>  | <sub><i>302.5%</i></sub> |
-| genakureduce__mvi_handler | <sub>avgt</sub>  | <b>2.183</b><sub><i> &#177; 0.038</i></sub> | <sub>ms/op</sub>  | <sub><i>318.2%</i></sub> |
-| fluxo__mvvmp_intent | <sub>avgt</sub>  | <b>2.236</b><sub><i> &#177; 0.189</i></sub> | <sub>ms/op</sub>  | <sub><i>328.4%</i></sub> |
-| orbit__mvvmp_intent | <sub>avgt</sub>  | <b>4.938</b><sub><i> &#177; 0.231</i></sub> | <sub>ms/op</sub>  | <sub><i>846.0%</i></sub> |
-| ballast__mvi_handler | <sub>avgt</sub>  | <b>5.269</b><sub><i> &#177; 0.178</i></sub> | <sub>ms/op</sub>  | <sub><i>909.4%</i></sub> |
-| flowmvi__mvi_handler | <sub>avgt</sub>  | <b>6.928</b><sub><i> &#177; 0.086</i></sub> | <sub>ms/op</sub>  | <sub><i>1227.2%</i></sub> |
-| flowredux__mvi_handler | <sub>avgt</sub>  | <b>26.605</b><sub><i> &#177; 1.190</i></sub> | <sub>ms/op</sub>  | <sub><i>4996.7%</i></sub> |
+| Benchmark | Mode | Score | Units | Percent |
+|-----------|:----:|------:|-------|--------:|
+| reduxkotlin__mvi_reducer | <sub>thrpt</sub> | <b>9.949</b><sub><i> &#177; 0.105</i></sub> | <sub>ops/ms</sub> | <sub><i>0.0%</i></sub> |
+| mvicore__mvi_reducer | <sub>thrpt</sub> | <b>5.787</b><sub><i> &#177; 0.029</i></sub> | <sub>ops/ms</sub> | <sub><i>-41.8%</i></sub> |
+| visualfsm__sm_reducer | <sub>thrpt</sub> | <b>5.239</b><sub><i> &#177; 0.037</i></sub> | <sub>ops/ms</sub> | <sub><i>-47.3%</i></sub> |
+| fluxo__mvi_reducer | <sub>thrpt</sub> | <b>5.106</b><sub><i> &#177; 0.089</i></sub> | <sub>ops/ms</sub> | <sub><i>-48.7%</i></sub> |
+| mvikotlin__mvi_reducer | <sub>thrpt</sub> | <b>2.074</b><sub><i> &#177; 0.049</i></sub> | <sub>ops/ms</sub> | <sub><i>-79.2%</i></sub> |
+| reduktor__mvi_reducer | <sub>thrpt</sub> | <b>1.869</b><sub><i> &#177; 0.021</i></sub> | <sub>ops/ms</sub> | <sub><i>-81.2%</i></sub> |
+| fluxo__mvvmp_intent | <sub>thrpt</sub> | <b>1.457</b><sub><i> &#177; 0.025</i></sub> | <sub>ops/ms</sub> | <sub><i>-85.4%</i></sub> |
+| genakureduce__mvi_handler | <sub>thrpt</sub> | <b>1.443</b><sub><i> &#177; 0.018</i></sub> | <sub>ops/ms</sub> | <sub><i>-85.5%</i></sub> |
+| fluxo__mvi_handler | <sub>thrpt</sub> | <b>1.438</b><sub><i> &#177; 0.036</i></sub> | <sub>ops/ms</sub> | <sub><i>-85.5%</i></sub> |
+| orbit__mvvmp_intent | <sub>thrpt</sub> | <b>0.639</b><sub><i> &#177; 0.021</i></sub> | <sub>ops/ms</sub> | <sub><i>-93.6%</i></sub> |
+| ballast__mvi_handler | <sub>thrpt</sub> | <b>0.597</b><sub><i> &#177; 0.016</i></sub> | <sub>ops/ms</sub> | <sub><i>-94.0%</i></sub> |
+| flowmvi__mvi_handler | <sub>thrpt</sub> | <b>0.445</b><sub><i> &#177; 0.013</i></sub> | <sub>ops/ms</sub> | <sub><i>-95.5%</i></sub> |
+| flowredux__mvi_handler | <sub>thrpt</sub> | <b>0.112</b><sub><i> &#177; 0.003</i></sub> | <sub>ops/ms</sub> | <sub><i>-98.9%</i></sub> |
+|  |  |  |  |  |
+| reduxkotlin__mvi_reducer | <sub>avgt</sub> | <b>0.309</b><sub><i> &#177; 0.004</i></sub> | <sub>ms/op</sub> | <sub><i>0.0%</i></sub> |
+| mvicore__mvi_reducer | <sub>avgt</sub> | <b>0.510</b><sub><i> &#177; 0.002</i></sub> | <sub>ms/op</sub> | <sub><i>65.0%</i></sub> |
+| visualfsm__sm_reducer | <sub>avgt</sub> | <b>0.564</b><sub><i> &#177; 0.003</i></sub> | <sub>ms/op</sub> | <sub><i>82.5%</i></sub> |
+| fluxo__mvi_reducer | <sub>avgt</sub> | <b>0.612</b><sub><i> &#177; 0.004</i></sub> | <sub>ms/op</sub> | <sub><i>98.1%</i></sub> |
+| mvikotlin__mvi_reducer | <sub>avgt</sub> | <b>1.449</b><sub><i> &#177; 0.070</i></sub> | <sub>ms/op</sub> | <sub><i>368.9%</i></sub> |
+| reduktor__mvi_reducer | <sub>avgt</sub> | <b>1.593</b><sub><i> &#177; 0.018</i></sub> | <sub>ms/op</sub> | <sub><i>415.5%</i></sub> |
+| fluxo__mvi_handler | <sub>avgt</sub> | <b>1.960</b><sub><i> &#177; 0.363</i></sub> | <sub>ms/op</sub> | <sub><i>534.3%</i></sub> |
+| fluxo__mvvmp_intent | <sub>avgt</sub> | <b>2.051</b><sub><i> &#177; 0.017</i></sub> | <sub>ms/op</sub> | <sub><i>563.8%</i></sub> |
+| genakureduce__mvi_handler | <sub>avgt</sub> | <b>2.052</b><sub><i> &#177; 0.023</i></sub> | <sub>ms/op</sub> | <sub><i>564.1%</i></sub> |
+| orbit__mvvmp_intent | <sub>avgt</sub> | <b>4.590</b><sub><i> &#177; 0.111</i></sub> | <sub>ms/op</sub> | <sub><i>1385.4%</i></sub> |
+| ballast__mvi_handler | <sub>avgt</sub> | <b>5.088</b><sub><i> &#177; 0.346</i></sub> | <sub>ms/op</sub> | <sub><i>1546.6%</i></sub> |
+| flowmvi__mvi_handler | <sub>avgt</sub> | <b>6.611</b><sub><i> &#177; 0.468</i></sub> | <sub>ms/op</sub> | <sub><i>2039.5%</i></sub> |
+| flowredux__mvi_handler | <sub>avgt</sub> | <b>25.454</b><sub><i> &#177; 0.459</i></sub> | <sub>ms/op</sub> | <sub><i>8137.5%</i></sub> |
 
 
 ### Roadmap
@@ -284,7 +289,7 @@ Write [me](https://t.me/samally) if you want early access!
 * [ ] \(Optional) Undo/Redo
 * [ ] \(Optional) Stores synchronization
 
-### Heavily inspired by
+### Heavily inspired by
 
 * [Ballast](https://github.com/copper-leaf/ballast)
 * [Orbit MVI](https://github.com/orbit-mvi/orbit-mvi)
@@ -293,7 +298,7 @@ Write [me](https://t.me/samally) if you want early access!
 ### Versioning
 
 **Fluxo** uses [SemVer](http://semver.org/) for versioning.
-For the versions available, see the [tags on this repository](../../tags).
+For the versions available, see the [tags on this repository](../../tags).
 
 ### Code quality checks
 
@@ -316,23 +321,23 @@ This project is licensed under the Apache License, Version 2.0 — see the
 architectural pattern [[1](https://soshace.com/understanding-flutter-bloc-pattern/), [2](https://bloclibrary.dev/)]
 [^2]: MVI: [Model-View-Intent](http://hannesdorfmann.com/android/model-view-intent/) architectural pattern.
 [^3]: [MVVM+, orbit-way][orbit-mvvm+]: updated [Model-View-ViewModel](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93viewmodel) pattern,
-aka Redux/MVI with [contextual reduction][contextual-reduction].
-[^4]: Redux: Pattern for predictable managing and updating app state, and [a famous library](https://redux.js.org/).
+aka Redux/MVI with [contextual reduction][contextual-reduction].
+[^4]: Redux: Pattern for predictable managing and updating app state, and [a famous library](https://redux.js.org/).
 [^5]: SAM: [State-Action-Model](https://sam.js.org/) architectural pattern.
 [^6]: FSM: [Finite-State Machine](https://en.wikipedia.org/wiki/Finite-state_machine).
 [^7]: [KMP/KMM](https://kotlinlang.org/lp/mobile/): Kotlin Multiplatform, Kotlin Multiplatform for mobile.
 
 [^a]: [ViewModel: One-off event antipatterns](https://medium.com/androiddevelopers/viewmodel-one-off-event-antipatterns-16a1da869b95)
-(2022, by Manuel Vivo from Google)
-[^b]: [Google Guide to app architecture, UI events > Other use cases > Note](https://developer.android.com/topic/architecture/ui-layer/events#other-use-cases) (Apr 2023)
-[^c]: [How To Handle ViewModel One-Time Events In Jetpack Compose, One-Time-Event Anti-Pattern](https://proandroiddev.com/how-to-handle-viewmodel-one-time-events-in-jetpack-compose-a01af0678b76#0009)] (2022, by Yanneck Reiß)
+(2022, by Manuel Vivo from Google)
+[^b]: [Google Guide to app architecture, UI events > Other use cases > Note](https://developer.android.com/topic/architecture/ui-layer/events#other-use-cases) (Apr 2023)
+[^c]: [How To Handle ViewModel One-Time Events In Jetpack Compose, One-Time-Event Anti-Pattern](https://proandroiddev.com/how-to-handle-viewmodel-one-time-events-in-jetpack-compose-a01af0678b76#0009)] (2022, by Yanneck Reiß)
 
-[^e1]: \[Proposal] Primitive or Channel that guarantees the delivery and processing of items (Kotlin/kotlinx.coroutines#2886)
-[^e2]: [SingleLiveEvent case with an Event wrapper](https://medium.com/androiddevelopers/livedata-with-snackbar-navigation-and-other-events-the-singleliveevent-case-ac2622673150#0e87).
+[^e1]: \[Proposal] Primitive or Channel that guarantees the delivery and processing of items (Kotlin/kotlinx.coroutines#2886)
+[^e2]: [SingleLiveEvent case with an Event wrapper](https://medium.com/androiddevelopers/livedata-with-snackbar-navigation-and-other-events-the-singleliveevent-case-ac2622673150#0e87).
 
 [^el1]: Leak-free closeable resources transfer via Channel (Kotlin/kotlinx.coroutines#1936)
-[^el2]: [Unfortunately events may be dropped from `kotlinx.coroutines` Channel](https://gmk57.medium.com/unfortunately-events-may-be-dropped-if-channel-receiveasflow-cfe78ae29004)
-[^el3]: [Migrate from LiveData to Flow > Hints](https://github.com/EventFahrplan/EventFahrplan/issues/519)
+[^el2]: [Unfortunately events may be dropped from `kotlinx.coroutines` Channel](https://gmk57.medium.com/unfortunately-events-may-be-dropped-if-channel-receiveasflow-cfe78ae29004)
+[^el3]: [Migrate from LiveData to Flow > Hints](https://github.com/EventFahrplan/EventFahrplan/issues/519)
 
 
 [Store]: fluxo-core/src/commonMain/kotlin/kt/fluxo/core/Store.kt
