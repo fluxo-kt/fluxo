@@ -212,6 +212,11 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super
   AndroidX.
 
 
+### Known IDE issues
+
+* IDE actions «Go to declaration» and «Quick Documentation» don’t work for `container` builders due to [KT-58512](https://youtrack.jetbrains.com/issue/KT-58512/).
+
+
 ### JMH Benchmark results
 
 Compares the performance of different MVI libraries (state-management libraries).<br>
