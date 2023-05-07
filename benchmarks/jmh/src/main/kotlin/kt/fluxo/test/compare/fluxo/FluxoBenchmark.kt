@@ -33,12 +33,7 @@ internal object FluxoBenchmark {
 
 
     fun mvvmpIntentStaticIncrement(): Int {
-        val container = container(0) {
-            coroutineContext = Dispatchers.Unconfined
-            intentStrategy = Direct
-            debugChecks = false
-            lazy = false
-        }
+        val container = container(initialState = 0, setup = storeBenchmarkSettings)
         val intent: FluxoIntentS<Int> = { updateState { it + 1 } }
         return container.consumeFluxoWithStaticIntent(intent)
     }
