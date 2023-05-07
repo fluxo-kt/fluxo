@@ -16,9 +16,10 @@
 
 **Fluxo** *\[ˈfluksu]* is a simple yet super powerful state management library for Kotlin Multiplatform.
 
-> Approach is best known as `BLoC`[^1], `MVI`[^2], `MVVM+`[^3], `Redux`[^4], SAM[^5], or even `State Machine`/`FSM`[^6].
-Often used in the UI or presentation layers of the architecture.
-But suitable and proven useful for any architectural layer of the app for any platform.
+> Approach is best known as `BLoC`[^1], `MVI`[^2], `MVVM+`[^3], `Redux`[^4],
+> `TEA/Elm`/`MVU`[^5], `SAM`[^6], or even `State Machine`/`FSM`[^7].<br>
+> Often used in the UI or presentation layers of the architecture.<br>
+> Suitable and proven useful for any architectural layer of the app for any platform.
 
 If you need predictable unidirectional data flow (`UDF`) or deterministic control over your state changes,
 **Fluxo** will get you covered!
@@ -330,9 +331,10 @@ architectural pattern [[1](https://soshace.com/understanding-flutter-bloc-patter
 [^3]: [MVVM+, orbit-way][orbit-mvvm+]: updated [Model-View-ViewModel](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93viewmodel) pattern,
 aka Redux/MVI with [contextual reduction][contextual-reduction].
 [^4]: Redux: Pattern for predictable managing and updating app state, and [a famous library](https://redux.js.org/).
-[^5]: SAM: [State-Action-Model](https://sam.js.org/) architectural pattern.
-[^6]: FSM: [Finite-State Machine](https://en.wikipedia.org/wiki/Finite-state_machine).
-[^7]: [KMP/KMM](https://kotlinlang.org/lp/mobile/): Kotlin Multiplatform, Kotlin Multiplatform for mobile.
+[^5]: [TEA: The Elm Architecture](https://guide.elm-lang.org/architecture/). MVU (Model-View-Update) is a core of it.
+[^6]: SAM: [State-Action-Model](https://sam.js.org/) architectural pattern.
+[^7]: FSM: [Finite-State Machine](https://en.wikipedia.org/wiki/Finite-state_machine).
+[^8]: [KMP/KMM](https://kotlinlang.org/lp/mobile/): Kotlin Multiplatform, Kotlin Multiplatform for mobile.
 
 [^a]: [ViewModel: One-off event antipatterns](https://medium.com/androiddevelopers/viewmodel-one-off-event-antipatterns-16a1da869b95)
 (2022, by Manuel Vivo from Google)
