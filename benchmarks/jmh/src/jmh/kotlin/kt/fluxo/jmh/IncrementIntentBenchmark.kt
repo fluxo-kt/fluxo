@@ -4,6 +4,7 @@ import kt.fluxo.test.compare.ballast.BallastBenchmark
 import kt.fluxo.test.compare.flowredux.FlowReduxBenchmark
 import kt.fluxo.test.compare.fluxo.FluxoBenchmark
 import kt.fluxo.test.compare.genakureduce.GenakuReduceBenchmark
+import kt.fluxo.test.compare.mobiuskt.MobiusKtBenchmark
 import kt.fluxo.test.compare.mvicore.MviCoreBenchmark
 import kt.fluxo.test.compare.mvikotlin.MviKotlinBenchmark
 import kt.fluxo.test.compare.naive.NaiveBenchmark
@@ -94,6 +95,9 @@ open class IncrementIntentBenchmark {
 
     @Benchmark
     fun tindersm__sm_reducer(bh: Blackhole) = bh.consume(TinderStateMachineBenchmark.smReducerAdd())
+
+    @Benchmark
+    fun mobiuskt__sm_reducer(bh: Blackhole) = bh.consume(MobiusKtBenchmark.smReducerAdd())
 
     @Benchmark
     fun ballast__mvi_handler(bh: Blackhole) = bh.consume(BallastBenchmark.mviHandlerAdd())

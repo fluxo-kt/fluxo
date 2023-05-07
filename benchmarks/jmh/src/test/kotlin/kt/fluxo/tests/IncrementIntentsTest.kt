@@ -6,6 +6,7 @@ import kt.fluxo.test.compare.ballast.BallastBenchmark
 import kt.fluxo.test.compare.flowredux.FlowReduxBenchmark
 import kt.fluxo.test.compare.fluxo.FluxoBenchmark
 import kt.fluxo.test.compare.genakureduce.GenakuReduceBenchmark
+import kt.fluxo.test.compare.mobiuskt.MobiusKtBenchmark
 import kt.fluxo.test.compare.motorrocsm.MotorroCommonStateMachineBenchmark
 import kt.fluxo.test.compare.mvicore.MviCoreBenchmark
 import kt.fluxo.test.compare.mvikotlin.MviKotlinBenchmark
@@ -86,6 +87,13 @@ class IncrementIntentsTest {
 
     @Test
     fun tindersm__sm_reducer__external_arg() = test(TinderStateMachineBenchmark.smReducerAdd())
+
+
+    @Test
+    fun mobiuskt__sm_reducer() = test(MobiusKtBenchmark.smReducerStaticIncrement())
+
+    @Test
+    fun mobiuskt__sm_reducer__external_arg() = test(MobiusKtBenchmark.smReducerAdd())
 
 
     @Test

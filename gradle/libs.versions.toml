@@ -105,6 +105,7 @@ reduktor = "0.4"                    # https://github.com/g000sha256/reduktor/tag
 reduxkotlin = "0.6.1"               # https://mvnrepository.com/artifact/org.reduxkotlin/redux-kotlin-threadsafe
 respawnFlowMVI = "1.2.0-alpha01"    # https://mvnrepository.com/artifact/pro.respawn.flowmvi/core
 tinderStateMachine = "0.3.0"        # https://github.com/Tinder/StateMachine/releases
+mobiusKt = "1.0.0-rc05"             # https://mvnrepository.com/artifact/org.drewcarlson/mobiuskt-coroutines
 visualfsm = "1.3.3"                 # https://mvnrepository.com/artifact/ru.kontur.mobile.visualfsm/visualfsm-core
 
 

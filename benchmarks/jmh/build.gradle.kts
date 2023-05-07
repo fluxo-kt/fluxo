@@ -79,6 +79,12 @@ dependencies {
     // Tinder StateMachine
     implementation("com.github.Tinder:StateMachine:" + libs.versions.tinderStateMachine.get())
 
+    // Mobius.kt
+    val mobiusKtVersion = libs.versions.mobiusKt.get()
+    implementation("org.drewcarlson:mobiuskt-core:$mobiusKtVersion")
+    implementation("org.drewcarlson:mobiuskt-coroutines:$mobiusKtVersion")
+    implementation("org.drewcarlson:mobiuskt-extras:$mobiusKtVersion")
+
     // endregion
 }
 
