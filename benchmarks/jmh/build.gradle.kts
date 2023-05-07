@@ -76,6 +76,9 @@ dependencies {
     implementation("com.github.g000sha256.reduktor:coroutines:$reduktorVersion")
     implementation("com.github.g000sha256.reduktor:core:$reduktorVersion")
 
+    // Tinder StateMachine
+    implementation("com.github.Tinder:StateMachine:" + libs.versions.tinderStateMachine.get())
+
     // endregion
 }
 

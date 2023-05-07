@@ -11,6 +11,7 @@ import kt.fluxo.test.compare.orbit.OrbitBenchmark
 import kt.fluxo.test.compare.reduktor.ReduktorBenchmark
 import kt.fluxo.test.compare.reduxkotlin.ReduxKotlinBenchmark
 import kt.fluxo.test.compare.respawnflowmvi.RespawnFlowMviBenchmark
+import kt.fluxo.test.compare.tindersm.TinderStateMachineBenchmark
 import kt.fluxo.test.compare.visualfsm.VisualFsmBenchmark
 import org.openjdk.jmh.annotations.Benchmark
 import org.openjdk.jmh.annotations.Scope
@@ -90,6 +91,9 @@ open class IncrementIntentBenchmark {
 
     @Benchmark
     fun visualfsm__sm_reducer(bh: Blackhole) = bh.consume(VisualFsmBenchmark.smReducerAdd())
+
+    @Benchmark
+    fun tindersm__sm_reducer(bh: Blackhole) = bh.consume(TinderStateMachineBenchmark.smReducerAdd())
 
     @Benchmark
     fun ballast__mvi_handler(bh: Blackhole) = bh.consume(BallastBenchmark.mviHandlerAdd())

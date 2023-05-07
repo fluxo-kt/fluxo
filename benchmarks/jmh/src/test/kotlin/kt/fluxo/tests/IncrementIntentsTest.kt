@@ -14,6 +14,7 @@ import kt.fluxo.test.compare.orbit.OrbitBenchmark
 import kt.fluxo.test.compare.reduktor.ReduktorBenchmark
 import kt.fluxo.test.compare.reduxkotlin.ReduxKotlinBenchmark
 import kt.fluxo.test.compare.respawnflowmvi.RespawnFlowMviBenchmark
+import kt.fluxo.test.compare.tindersm.TinderStateMachineBenchmark
 import kt.fluxo.test.compare.visualfsm.VisualFsmBenchmark
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -78,6 +79,13 @@ class IncrementIntentsTest {
 
     @Test
     fun visualfsm__sm_reducer__external_arg() = test(VisualFsmBenchmark.smReducerAdd())
+
+
+    @Test
+    fun tindersm__sm_reducer() = test(TinderStateMachineBenchmark.smReducerStaticIncrement())
+
+    @Test
+    fun tindersm__sm_reducer__external_arg() = test(TinderStateMachineBenchmark.smReducerAdd())
 
 
     @Test
