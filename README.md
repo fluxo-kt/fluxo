@@ -149,6 +149,9 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super
 * Different usage styles:
   * Strict **Redux/MVI**[^4] (the highest correctness guarantees, but may be subjectively less readable and intuitive)
   * Flexible **MVVM+**[^3] (intuitively readable, may be easier to maintain, has support for every feature and more :)
+    * Fluxo provides unique, pretty logging and debugging capabilities for **MVVM+**[^3] lambda intents.
+      You can use them with almost the same convenience as discrete MVI intents.
+      And it opens up the possibility of time travel and many other features on the roadmap.
   * Redux-style discrete intents with MVVM+ style reduction DSL (hybrid way)
   * _More is coming..._
 * Side jobs for long-running tasks (MVVM+ DSL).
