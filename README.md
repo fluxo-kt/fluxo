@@ -41,6 +41,19 @@ repositories {
   maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
 }
 ```
+<details>
+<summary>Toml</summary>
+
+```toml
+[versions]
+fluxo = "0.1-<SHORT_COMMIT_SHA>-SNAPSHOT"
+
+[libraries]
+fluxo-core = { module = "io.github.fluxo-kt:fluxo-core", version.ref = "fluxo" }
+fluxo-data = { module = "io.github.fluxo-kt:fluxo-data", version.ref = "fluxo" }
+```
+</details>
+
 
 
 ### Code examples
