@@ -1,6 +1,7 @@
 package kt.fluxo.jmh
 
 import kt.fluxo.test.compare.ballast.BallastBenchmark
+import kt.fluxo.test.compare.elmslie.ElmslieBenchmark
 import kt.fluxo.test.compare.flowredux.FlowReduxBenchmark
 import kt.fluxo.test.compare.fluxo.FluxoBenchmark
 import kt.fluxo.test.compare.genakureduce.GenakuReduceBenchmark
@@ -89,6 +90,9 @@ open class IncrementIntentBenchmark {
 
     @Benchmark
     fun reduktor__mvi_reducer(bh: Blackhole) = bh.consume(ReduktorBenchmark.mviReducerAdd())
+
+    @Benchmark
+    fun elmslie__elm_reducer(bh: Blackhole) = bh.consume(ElmslieBenchmark.elmReducerAdd())
 
     @Benchmark
     fun visualfsm__sm_reducer(bh: Blackhole) = bh.consume(VisualFsmBenchmark.smReducerAdd())

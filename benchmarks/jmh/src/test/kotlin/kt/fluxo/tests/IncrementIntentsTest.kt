@@ -3,6 +3,7 @@ package kt.fluxo.tests
 import kotlinx.coroutines.test.runTest
 import kt.fluxo.test.compare.BENCHMARK_REPETITIONS
 import kt.fluxo.test.compare.ballast.BallastBenchmark
+import kt.fluxo.test.compare.elmslie.ElmslieBenchmark
 import kt.fluxo.test.compare.flowredux.FlowReduxBenchmark
 import kt.fluxo.test.compare.fluxo.FluxoBenchmark
 import kt.fluxo.test.compare.genakureduce.GenakuReduceBenchmark
@@ -73,6 +74,13 @@ class IncrementIntentsTest {
 
     @Test
     fun reduktor__mvi_reducer__external_arg() = test(ReduktorBenchmark.mviReducerAdd())
+
+
+    @Test
+    fun elmslie__elm_reducer() = test(ElmslieBenchmark.elmReducerStaticIncrement())
+
+    @Test
+    fun elmslie__elm_reducer__external_arg() = test(ElmslieBenchmark.elmReducerAdd())
 
 
     @Test

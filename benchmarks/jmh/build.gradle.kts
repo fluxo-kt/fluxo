@@ -85,6 +85,11 @@ dependencies {
     implementation("org.drewcarlson:mobiuskt-coroutines:$mobiusKtVersion")
     implementation("org.drewcarlson:mobiuskt-extras:$mobiusKtVersion")
 
+    // Elmslie
+    val elmslieVersion = libs.versions.elmslie.get()
+    implementation("com.github.vivid-money.elmslie:elmslie-core:$elmslieVersion")
+    implementation("com.github.vivid-money.elmslie:elmslie-coroutines:$elmslieVersion")
+
     // endregion
 }
 
