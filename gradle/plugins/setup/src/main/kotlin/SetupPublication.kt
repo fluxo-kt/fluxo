@@ -8,6 +8,7 @@ import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.publish.PublicationContainer
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.api.tasks.bundling.AbstractArchiveTask
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.create
@@ -57,6 +58,13 @@ fun Project.setupPublication() {
         hasExtension<KotlinJvmProjectExtension>() -> setupPublicationKotlinJvm(config)
         hasExtension { JavaPluginExtension::class } -> setupPublicationJava(config)
         else -> error("Unsupported project type for publication")
+    }
+
+    // Reproducible builds setup
+    // https://docs.gradle.org/current/userguide/working_with_files.html#sec:reproducible_archives
+    tasks.withType<AbstractArchiveTask>().configureEach {
+        isPreserveFileTimestamps = false
+        isReproducibleFileOrder = true
     }
 }
 
