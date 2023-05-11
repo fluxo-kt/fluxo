@@ -24,10 +24,10 @@ class TestLoggingStoreFactory(
         handler: IntentHandler<Intent, State, SideEffect>,
         settings: FluxoSettings<Intent, State, SideEffect>,
     ): StoreDecorator<Intent, State, SideEffect> {
-        return TestLoggingStoreDecorato(delegate.createForDecoration(initialState, handler, settings))
+        return TestLoggingStoreDecorator(delegate.createForDecoration(initialState, handler, settings))
     }
 
-    private class TestLoggingStoreDecorato<Intent, State, SideEffect : Any>(
+    private class TestLoggingStoreDecorator<Intent, State, SideEffect : Any>(
         store: StoreDecorator<Intent, State, SideEffect>,
     ) : StoreDecoratorBase<Intent, State, SideEffect>(store) {
 

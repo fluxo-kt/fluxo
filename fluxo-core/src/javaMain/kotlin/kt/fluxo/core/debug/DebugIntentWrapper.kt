@@ -17,11 +17,15 @@ internal actual fun <I> debugIntentWrapper(intent: I): I {
 
     @Suppress("ThrowingExceptionsWithoutMessageOrCause")
     val traceElement = Throwable().stackTrace.getOrNull(2)
-    val methodName = traceElement?.methodName.let {
+    var methodName = traceElement?.methodName.let {
         when {
             !it.isNullOrEmpty() && it != "invoke" && it != "invokeSuspend" -> it // function name
             else -> traceElement?.className?.substringAfterLast('.') // class name
         }
+    }
+
+    if (methodName != null && '$' in methodName) {
+        methodName = methodName.split('$').lastOrNull { it.any { c -> !c.isDigit() } }
     }
 
     // Kotlin stores values captured by lambda in `$<name>` fields, let's get values
