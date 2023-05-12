@@ -2,5 +2,5 @@ org.jetbrains.kotlin:kotlin-stdlib-js:1.8.21
 org.jetbrains.kotlin:kotlin-stdlib:1.8.21
 org.jetbrains.kotlin:kotlinx-atomicfu-runtime:1.8.21
 org.jetbrains.kotlinx:atomicfu-js:0.20.2
-org.jetbrains.kotlinx:kotlinx-coroutines-core-js:1.7.0
-org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.0
+org.jetbrains.kotlinx:kotlinx-coroutines-core-js:1.7.1
+org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1
