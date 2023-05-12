@@ -52,7 +52,6 @@ internal object MviCoreBenchmark {
 
     private suspend fun consumeMviCoreBenchmark(feature: ReducerFeature<*, Int, Nothing>) {
         suspendCoroutine { cont ->
-            @Suppress("TrailingCommaOnCallSite")
             feature.subscribe(
                 observer = object : Observer<Int> {
                     override fun onNext(state: Int) {

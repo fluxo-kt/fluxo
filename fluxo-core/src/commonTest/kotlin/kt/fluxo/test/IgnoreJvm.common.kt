@@ -1,5 +1,3 @@
-@file:Suppress("MatchingDeclarationName")
-
 package kt.fluxo.test
 
 /**

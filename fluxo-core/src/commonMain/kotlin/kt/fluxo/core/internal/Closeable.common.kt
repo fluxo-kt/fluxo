@@ -1,5 +1,3 @@
-@file:Suppress("MatchingDeclarationName")
-
 package kt.fluxo.core.internal
 
 import kt.fluxo.core.annotation.CallSuper
