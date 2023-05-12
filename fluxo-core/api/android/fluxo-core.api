@@ -98,13 +98,7 @@ public abstract interface class kt/fluxo/core/StoreSE : kt/fluxo/core/Store {
 	public abstract fun getSideEffectFlow ()Lkotlinx/coroutines/flow/Flow;
 }
 
-public abstract interface annotation class kt/fluxo/core/annotation/ExperimentalFluxoApi : java/lang/annotation/Annotation {
-}
-
 public abstract interface annotation class kt/fluxo/core/annotation/FluxoDsl : java/lang/annotation/Annotation {
-}
-
-public abstract interface annotation class kt/fluxo/core/annotation/InternalFluxoApi : java/lang/annotation/Annotation {
 }
 
 public class kt/fluxo/core/data/GuaranteedEffect : java/io/Closeable {

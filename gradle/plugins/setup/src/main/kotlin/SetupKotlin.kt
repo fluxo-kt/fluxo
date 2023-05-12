@@ -34,7 +34,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
 
 fun Project.setupKotlin(
-    config: KotlinConfigSetup = requireDefaults(),
+    config: KotlinConfigSetup = requireDefaultKotlinConfigSetup(),
     setupKsp: Boolean = hasKsp,
     optIns: List<String> = emptyList(),
     body: (KotlinSingleTargetExtension<*>.() -> Unit)? = null,
@@ -44,7 +44,7 @@ fun Project.setupKotlin(
 }
 
 internal fun Project.setupKotlin0(
-    config: KotlinConfigSetup = requireDefaults(),
+    config: KotlinConfigSetup = requireDefaultKotlinConfigSetup(),
     setupKsp: Boolean = hasKsp,
     optIns: List<String> = emptyList(),
     body: (KotlinSingleTargetExtension<*>.() -> Unit)? = null,
@@ -69,7 +69,7 @@ internal fun Project.setupKotlin0(
 internal fun Project.setupKotlinExtension(
     kotlin: KotlinProjectExtension,
     setupKsp: Boolean = hasKsp,
-    config: KotlinConfigSetup = requireDefaults(),
+    config: KotlinConfigSetup = requireDefaultKotlinConfigSetup(),
     optIns: List<String> = emptyList(),
 ) {
     val libs = libsCatalog
@@ -155,9 +155,13 @@ private fun Project.setupKotlinTasks(config: KotlinConfigSetup, optIns: List<Str
 
 internal fun DependencyHandler.setupKotlinDependencies(
     project: Project,
-    config: KotlinConfigSetup = project.requireDefaults(),
+    config: KotlinConfigSetup = project.requireDefaultKotlinConfigSetup(),
 ) {
     val libs = project.libsCatalog
+
+    if (config.addStdlibDependency) {
+        implementation(kotlin("stdlib", libs.optionalVersion("kotlin")))
+    }
 
     compileOnlyWithConstraint(JSR305_DEPENDENCY)
     libs.onLibrary("jetbrains-annotation") { compileOnlyWithConstraint(it) }

@@ -1,7 +1,7 @@
 package kt.fluxo.core.intent
 
 import kotlinx.coroutines.CompletableDeferred
-import kt.fluxo.core.annotation.ExperimentalFluxoApi
+import kt.fluxo.common.annotation.ExperimentalFluxoApi
 import kotlin.jvm.JvmField
 
 /**

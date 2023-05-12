@@ -1,9 +1,9 @@
 package kt.fluxo.core.internal
 
 import kotlinx.atomicfu.atomic
+import kt.fluxo.common.annotation.InternalFluxoApi
 import kt.fluxo.core.FluxoRuntimeException
 import kt.fluxo.core.Store
-import kt.fluxo.core.annotation.InternalFluxoApi
 import kt.fluxo.core.debug.debugClassName
 import kotlin.contracts.contract
 

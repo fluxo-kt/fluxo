@@ -11,6 +11,7 @@ find . -name "lint-baseline.xml" -type f -print -delete
 # 3) Build cache is disabled for the precise API dump
 
 export CI=true
+export RELEASE=true
 
 # Update only Lint baselines
 #./gradlew lint lintDebug lintRelease -Dlint.baselines.continue=true \

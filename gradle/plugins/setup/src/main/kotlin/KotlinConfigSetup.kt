@@ -1,7 +1,8 @@
+import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompilerOptions
 
 @Suppress("LongParameterList")
-class KotlinConfigSetup(
+data class KotlinConfigSetup(
     /**
      * Override for the Kotlin lang version used.
      * Use "latest" for the latest value.
@@ -75,9 +76,9 @@ class KotlinConfigSetup(
     val progressive: Boolean = true,
 
     /**
-     * Don't use `compileOnly` dependencies in KMP setup
+     * Add Kotlin `stdlib` dependency explicitly to the project.
      */
-    val noMultiplatformCompileOnly: Boolean = false,
+    val addStdlibDependency: Boolean = false,
 
     /**
      * Use it only for an actual app, not libraries.
@@ -93,3 +94,5 @@ class KotlinConfigSetup(
 
     val configurator: (KotlinCommonCompilerOptions.() -> Unit)? = null,
 )
+
+fun Project.requireDefaultKotlinConfigSetup(): KotlinConfigSetup = requireDefaults()

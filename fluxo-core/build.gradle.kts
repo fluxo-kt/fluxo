@@ -10,11 +10,20 @@ apply<kotlinx.atomicfu.plugin.gradle.AtomicFUGradlePlugin>()
 
 setupMultiplatform(
     namespace = "kt.fluxo.core",
-    optIns = listOf(
-        "kt.fluxo.core.annotation.ExperimentalFluxoApi",
-        "kt.fluxo.core.annotation.InternalFluxoApi",
+    config = requireDefaultKotlinConfigSetup().copy(
+        setupCoroutines = true,
     ),
-)
+    optIns = listOf(
+        "kt.fluxo.common.annotation.ExperimentalFluxoApi",
+        "kt.fluxo.common.annotation.InternalFluxoApi",
+    ),
+) {
+    setupSourceSets {
+        common.main.dependencies {
+            api(projects.fluxoCommon)
+        }
+    }
+}
 setupPublication()
 setupBinaryCompatibilityValidator()
 

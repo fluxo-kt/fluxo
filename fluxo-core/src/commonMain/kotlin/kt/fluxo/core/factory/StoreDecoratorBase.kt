@@ -5,11 +5,11 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.StateFlow
+import kt.fluxo.common.annotation.ExperimentalFluxoApi
 import kt.fluxo.core.Bootstrapper
 import kt.fluxo.core.FluxoSettings
 import kt.fluxo.core.SideJob
 import kt.fluxo.core.annotation.CallSuper
-import kt.fluxo.core.annotation.ExperimentalFluxoApi
 import kotlin.coroutines.CoroutineContext
 
 /**

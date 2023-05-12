@@ -1,15 +1,21 @@
-@file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE", "NO_EXPLICIT_RETURN_TYPE_IN_API_MODE")
+@file:Suppress(
+    "INVISIBLE_MEMBER",
+    "INVISIBLE_REFERENCE",
+    "KotlinRedundantDiagnosticSuppress",
+    "NOTHING_TO_INLINE",
+    "NO_EXPLICIT_RETURN_TYPE_IN_API_MODE",
+)
 
 package kt.fluxo.core.dsl
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kt.fluxo.common.annotation.InlineOnly
 import kt.fluxo.core.Container
 import kt.fluxo.core.FluxoIntent
 import kt.fluxo.core.FluxoSettings
 import kt.fluxo.core.Store
-import kotlin.internal.InlineOnly
 
 @InlineOnly
 @Deprecated(message = "Please use container instead", replaceWith = ReplaceWith("container"))

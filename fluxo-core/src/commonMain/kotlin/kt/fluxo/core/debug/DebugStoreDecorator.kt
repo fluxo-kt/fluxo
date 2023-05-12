@@ -1,7 +1,7 @@
 package kt.fluxo.core.debug
 
+import kt.fluxo.common.annotation.ExperimentalFluxoApi
 import kt.fluxo.core.Store
-import kt.fluxo.core.annotation.ExperimentalFluxoApi
 import kt.fluxo.core.factory.StoreDecorator
 import kt.fluxo.core.factory.StoreDecoratorBase
 

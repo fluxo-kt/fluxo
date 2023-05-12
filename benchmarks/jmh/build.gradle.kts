@@ -10,7 +10,7 @@ setupKotlin(
         kotlinLangVersion = "latest",
         javaLangTarget = "11",
         optInInternal = true,
-        optIns = listOf("kt.fluxo.core.annotation.ExperimentalFluxoApi"),
+        optIns = listOf("kt.fluxo.common.annotation.ExperimentalFluxoApi"),
     )
 )
 
@@ -21,8 +21,7 @@ dependencies {
 
 
     // Use the latest snapshot for local development to dogfood the lib.
-    val isCI by isCI()
-    if (isCI) {
+    if (isCI().get() || isRelease().get()) {
         implementation(projects.fluxoCore)
     } else {
         implementation("io.github.fluxo-kt:fluxo-core:" + libs.versions.fluxoSnapshot.get())

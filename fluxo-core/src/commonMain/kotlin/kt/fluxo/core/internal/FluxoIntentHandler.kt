@@ -2,9 +2,9 @@
 
 package kt.fluxo.core.internal
 
+import kt.fluxo.common.annotation.InternalFluxoApi
 import kt.fluxo.core.FluxoIntent
 import kt.fluxo.core.IntentHandler
-import kt.fluxo.core.annotation.InternalFluxoApi
 import kt.fluxo.core.dsl.StoreScope
 import kotlin.js.JsName
 import kotlin.jvm.JvmName

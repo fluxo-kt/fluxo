@@ -3,9 +3,9 @@
 
 package kt.fluxo.core.internal
 
+import kt.fluxo.common.annotation.InternalFluxoApi
 import kt.fluxo.core.IntentHandler
 import kt.fluxo.core.Reducer
-import kt.fluxo.core.annotation.InternalFluxoApi
 import kt.fluxo.core.dsl.StoreScope
 import kt.fluxo.core.updateState
 import kotlin.js.JsName

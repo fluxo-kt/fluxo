@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
-import kt.fluxo.core.annotation.ExperimentalFluxoApi
+import kt.fluxo.common.annotation.ExperimentalFluxoApi
 import kt.fluxo.core.annotation.FluxoDsl
 import kt.fluxo.core.dsl.StoreScope
 import kt.fluxo.core.internal.RunningSideJob.Companion.DEFAULT_REPEAT_ON_SUBSCRIPTION_JOB

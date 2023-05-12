@@ -1,8 +1,8 @@
 package kt.fluxo.core.factory
 
+import kt.fluxo.common.annotation.ExperimentalFluxoApi
 import kt.fluxo.core.FluxoSettings
 import kt.fluxo.core.IntentHandler
-import kt.fluxo.core.annotation.ExperimentalFluxoApi
 import kt.fluxo.core.internal.FluxoStore
 
 @ExperimentalFluxoApi

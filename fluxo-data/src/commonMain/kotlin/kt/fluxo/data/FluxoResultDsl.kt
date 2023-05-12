@@ -1,13 +1,20 @@
-@file:Suppress("INVISIBLE_REFERENCE", "INVISIBLE_MEMBER", "TooManyFunctions")
+@file:Suppress(
+    "INVISIBLE_MEMBER",
+    "INVISIBLE_REFERENCE",
+    "KotlinRedundantDiagnosticSuppress",
+    "NOTHING_TO_INLINE",
+    "TooManyFunctions",
+)
 
 package kt.fluxo.data
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
+import kt.fluxo.common.annotation.InlineOnly
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 import kotlin.coroutines.cancellation.CancellationException
-import kotlin.internal.InlineOnly
+import kotlin.internal.LowPriorityInOverloadResolution
 import kotlin.js.JsExport
 
 
@@ -15,7 +22,7 @@ import kotlin.js.JsExport
 
 /**
  * Calls the specified function [block] and returns its encapsulated result if invocation was successful,
- * catching any [Exception] that was thrown from the [block] function execution (except [CancellationException]!) and
+ * catching any [Throwable] that was thrown from the [block] function execution (except [CancellationException]!) and
  * encapsulating it as a failure.
  *
  * @see kotlin.runCatching
@@ -29,19 +36,21 @@ public inline fun <R> resultOf(block: () -> R): FluxoResult<R?> {
         // Don't break cooperative concurrency
         // https://github.com/Kotlin/kotlinx.coroutines/issues/1814
         throw ce
-    } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+    } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
         FluxoResult.failure(e)
     }
 }
 
 /**
- * Calls the specified function [block] with `this` value as its receiver and returns its encapsulated result if invocation was successful,
- * catching any [Exception] exception that was thrown from the [block] function execution (except [CancellationException]!) and
- * encapsulating it as a failure.
+ * Calls the specified function [block] with `this` value as its receiver.
+ * Returns an encapsulated result if invocation was successful.
+ * Catches any [Throwable] from the [block] function execution (except [CancellationException]!) and
+ * encapsulating it as a [failure].
  *
  * @see kotlin.runCatching
  */
 @InlineOnly
+@LowPriorityInOverloadResolution
 public inline fun <T, R> T.resultOf(block: T.() -> R): FluxoResult<R?> {
     return try {
         FluxoResult.success(block())
@@ -49,7 +58,7 @@ public inline fun <T, R> T.resultOf(block: T.() -> R): FluxoResult<R?> {
         // Don't break cooperative concurrency
         // https://github.com/Kotlin/kotlinx.coroutines/issues/1814
         throw ce
-    } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+    } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
         (this as? FluxoResult<*>)?.error?.let { e.addSuppressed(it) }
         FluxoResult.failure(e)
     }
@@ -72,7 +81,7 @@ internal fun FluxoResult<*>.throwOnFailure() {
 
 /**
  * Returns the encapsulated value if this instance represents [non-failure][FluxoResult.isFailure]
- * otherwise throws the encapsulated [Throwable] exception.
+ * otherwise throws the encapsulated [Throwable].
  *
  * This function is a shorthand for `getOrElse { throw it }` (see [getOrElse]).
  *
@@ -87,9 +96,9 @@ public inline fun <T> FluxoResult<T>.getOrThrow(): T {
 
 /**
  * Returns the encapsulated value if this instance represents [success][FluxoResult.isSuccess] or the
- * result of [onFailure] function for the encapsulated [Throwable] exception if it is [failure][FluxoResult.isFailure].
+ * result of [onFailure] for the encapsulated [Throwable] if it is a [failure][FluxoResult.isFailure].
  *
- * Note, that this function rethrows any [Throwable] exception thrown by [onFailure] function.
+ * Note that this function rethrows any [Throwable] thrown by [onFailure] function.
  *
  * This function is a shorthand for `fold(onSuccess = { it }, onFailure = onFailure)` (see [fold]).
  *
@@ -108,7 +117,7 @@ public inline fun <R, T : R> FluxoResult<T>.getOrElse(onFailure: (exception: Thr
  * Returns the encapsulated value if this instance represents [non-empty state][FluxoResult.isEmpty] or the
  * result of [defaultValue] otherwise. *
  *
- * Note, that this function rethrows any [Throwable] exception thrown by [defaultValue] function.
+ * Note that this function rethrows any [Throwable] thrown by [defaultValue] function.
  *
  * @see kotlin.getOrDefault
  */
@@ -123,9 +132,9 @@ public inline fun <R, T : R> FluxoResult<T?>.getOrDefault(defaultValue: () -> R)
 
 /**
  * Returns the result of [onSuccess] for the encapsulated value if this instance represents [success][FluxoResult.isSuccess]
- * or the result of [onFailure] function for the encapsulated [Throwable] exception if it is [failure][FluxoResult.isFailure].
+ * or the result of [onFailure] function for the encapsulated [Throwable] if it is [failure][FluxoResult.isFailure].
  *
- * Note, that this function rethrows any [Throwable] exception thrown by [onSuccess] or by [onFailure] function.
+ * Note that this function rethrows any [Throwable] thrown by [onSuccess] or by [onFailure] function.
  *
  * @see kotlin.fold
  */
@@ -164,7 +173,7 @@ public inline fun <T> FluxoResult<T>.isValid(predicate: (T) -> Boolean): Boolean
  * Returns the encapsulated result of the given [transform] function applied to the encapsulated value,
  * non-value state of the original result is saved.
  *
- * Note, that this function rethrows any [Throwable] exception thrown by [transform] function.
+ * Note that this function rethrows any [Throwable] thrown by [transform] function.
  *
  * See [mapCatching] for encapsulating exceptions alternative.
  *
@@ -183,7 +192,7 @@ public inline fun <R, T : R> FluxoResult<T>.map(transform: (T) -> R): FluxoResul
  * Returns the encapsulated result of the given [transform] function applied to the encapsulated value,
  * non-value state of the original result is saved.
  *
- * This function catches any [Exception] that was thrown by [transform] function (except [CancellationException]!) and it as a failure.
+ * This function catches any [Throwable] that was thrown by [transform] function (except [CancellationException]!) and it as a failure.
  *
  * See [map] for rethrowing exceptions alternative.
  *
@@ -202,7 +211,7 @@ public inline fun <R, T : R> FluxoResult<T>.mapCatching(transform: (value: T) ->
         // Don't break cooperative concurrency
         // https://github.com/Kotlin/kotlinx.coroutines/issues/1814
         throw ce
-    } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+    } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
         error?.let { e.addSuppressed(it) }
         FluxoResult.failure(e)
     }
@@ -210,10 +219,10 @@ public inline fun <R, T : R> FluxoResult<T>.mapCatching(transform: (value: T) ->
 
 
 /**
- * Returns the encapsulated result of the given [transform] function applied to the encapsulated [Throwable] exception
+ * Returns the encapsulated result of the given [transform] function applied to the encapsulated [Throwable]
  * if this instance represents [failure][FluxoResult.isFailure] or the original encapsulated value otherwise.
  *
- * Note, that this function rethrows any [Throwable] exception thrown by [transform] function.
+ * Note that this function rethrows any [Throwable] thrown by [transform] function.
  *
  * See [recoverCatching] for encapsulating exceptions alternative.
  *
@@ -229,10 +238,10 @@ public inline fun <R, T : R> FluxoResult<T>.recover(transform: (exception: Throw
 }
 
 /**
- * Returns the encapsulated result of the given [transform] function applied to the encapsulated [Throwable] exception
+ * Returns the encapsulated result of the given [transform] function applied to the encapsulated [Throwable]
  * if this instance represents [failure][FluxoResult.isFailure] or the original encapsulated value otherwise.
  *
- * This function catches any [Exception] that was thrown by [transform] function (except [CancellationException]!) and it as a failure.
+ * This function catches any [Throwable] that was thrown by [transform] function (except [CancellationException]!) and it as a failure.
  *
  * See [recover] for rethrowing exceptions alternative.
  */
@@ -248,7 +257,7 @@ public inline fun <R, T : R> FluxoResult<T>.recoverCatching(transform: (exceptio
         // Don't break cooperative concurrency
         // https://github.com/Kotlin/kotlinx.coroutines/issues/1814
         throw ce
-    } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+    } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
         error?.let { e.addSuppressed(it) }
         FluxoResult.failure(e)
     }
@@ -299,7 +308,7 @@ public inline fun <T> FluxoResult<T>.onSuccess(action: (T) -> Unit): FluxoResult
 }
 
 /**
- * Performs the given [action] on the encapsulated [Throwable] exception if this instance represents [failure][FluxoResult.isFailure].
+ * Performs the given [action] on the encapsulated [Throwable] if this instance represents [failure][FluxoResult.isFailure].
  * Returns the original result unchanged.
  *
  * @see kotlin.onFailure

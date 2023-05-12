@@ -1,4 +1,10 @@
-@file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE", "TooManyFunctions", "TrailingCommaOnCallSite")
+@file:Suppress(
+    "INVISIBLE_MEMBER",
+    "INVISIBLE_REFERENCE",
+    "KotlinRedundantDiagnosticSuppress",
+    "NOTHING_TO_INLINE",
+    "TooManyFunctions",
+)
 
 package kt.fluxo.core
 
@@ -6,6 +12,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import kt.fluxo.common.annotation.InlineOnly
 import kt.fluxo.core.annotation.FluxoDsl
 import kt.fluxo.core.dsl.ContainerHost
 import kt.fluxo.core.dsl.StoreScope
@@ -15,7 +22,6 @@ import kt.fluxo.core.internal.FluxoIntentHandler
 import kt.fluxo.core.internal.ReducerIntentHandler
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
-import kotlin.internal.InlineOnly
 import kotlin.internal.LowPriorityInOverloadResolution
 import kotlin.js.JsName
 import kotlin.jvm.JvmName

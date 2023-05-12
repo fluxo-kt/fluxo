@@ -10,7 +10,7 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.cancelConsumed
 import kotlinx.coroutines.launch
-import kt.fluxo.core.annotation.ExperimentalFluxoApi
+import kt.fluxo.common.annotation.ExperimentalFluxoApi
 import kt.fluxo.core.internal.toCancellationException
 import kotlin.coroutines.EmptyCoroutineContext
 

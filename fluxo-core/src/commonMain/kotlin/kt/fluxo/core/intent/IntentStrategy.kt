@@ -9,8 +9,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.currentCoroutineContext
+import kt.fluxo.common.annotation.ExperimentalFluxoApi
 import kt.fluxo.core.FluxoSettings
-import kt.fluxo.core.annotation.ExperimentalFluxoApi
 import kt.fluxo.core.internal.Closeable
 import kotlin.js.JsName
 import kotlin.jvm.JvmField

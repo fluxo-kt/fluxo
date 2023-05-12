@@ -62,6 +62,7 @@ jobs:
         with:
           gradle-build-module: |-
             :
+            :fluxo-common
             :fluxo-core
             :fluxo-data
             :plugins

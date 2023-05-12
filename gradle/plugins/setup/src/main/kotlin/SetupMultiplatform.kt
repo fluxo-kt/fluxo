@@ -10,7 +10,9 @@ import org.gradle.api.NamedDomainObjectCollection
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
+import org.gradle.api.artifacts.MinimalExternalModuleDependency
 import org.gradle.api.plugins.ExtensionAware
+import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.kotlin
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
@@ -23,6 +25,7 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.DefaultKotlinDependencyHandler
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.konan.target.Family
 import org.jetbrains.kotlin.utils.addToStdlib.ifNotEmpty
+import kotlin.jvm.optionals.getOrNull
 import kotlin.properties.PropertyDelegateProvider
 import kotlin.properties.ReadOnlyProperty
 
@@ -36,7 +39,7 @@ internal val Project.multiplatformExtension: KotlinMultiplatformExtension
 
 @Suppress("LongParameterList")
 fun Project.setupMultiplatform(
-    config: KotlinConfigSetup = requireDefaults(),
+    config: KotlinConfigSetup = requireDefaultKotlinConfigSetup(),
     namespace: String? = null,
     setupCompose: Boolean = false,
     enableBuildConfig: Boolean? = null,
@@ -72,7 +75,7 @@ fun Project.setupMultiplatform(
         }
 
         if (setupCompose) {
-            setupCompose(project, jbCompose, config)
+            setupCompose(project, jbCompose)
         }
 
         body?.invoke(this)
@@ -87,27 +90,30 @@ private fun KotlinMultiplatformExtension.setupMultiplatformDependencies(config: 
 
         val kotlinVersion = libs.optionalVersion("kotlin")
         project.dependencies.apply {
-            val kotlinBom = enforcedPlatform(kotlin("bom", kotlinVersion))
-            when {
-                config.allowGradlePlatform -> implementation(kotlinBom)
-                else -> testImplementation(kotlinBom)
+            enforcedPlatform(kotlin("bom", kotlinVersion)).let {
+                if (config.allowGradlePlatform) implementation(it) else testImplementation(it)
             }
 
             if (config.setupCoroutines) {
-                libs.onLibrary("kotlinx-coroutines-bom") {
-                    when {
-                        config.allowGradlePlatform -> implementation(enforcedPlatform(it))
-                        else -> testImplementation(enforcedPlatform(it))
-                    }
+                val enforcedPlatformImplementation: (Provider<MinimalExternalModuleDependency>) -> Unit = {
+                    val platform = enforcedPlatform(it)
+                    if (config.allowGradlePlatform) implementation(platform) else testImplementation(platform)
                 }
+                libs.onLibrary("kotlinx-coroutines-bom", enforcedPlatformImplementation)
             }
 
-            libs.onLibrary("square-okio-bom") { implementation(platform(it)) }
-            libs.onLibrary("square-okhttp-bom") { implementation(platform(it)) }
+            val platformImplementation: (Provider<MinimalExternalModuleDependency>) -> Unit = {
+                val platform = platform(it)
+                if (config.allowGradlePlatform) implementation(platform) else testImplementation(platform)
+            }
+            libs.onLibrary("square-okio-bom", platformImplementation)
+            libs.onLibrary("square-okhttp-bom", platformImplementation)
         }
 
         common.main.dependencies {
-            implementation(kotlin("stdlib", kotlinVersion), excludeAnnotations)
+            if (config.addStdlibDependency) {
+                implementation(kotlin("stdlib", kotlinVersion), excludeAnnotations)
+            }
 
             if (config.setupCoroutines) {
                 libs.onLibrary("kotlinx-coroutines-core") { implementation(it) }
@@ -207,11 +213,13 @@ private fun MultiplatformSourceSets.setupCommonJavaSourceSets(project: Project, 
 
     // Help with https://youtrack.jetbrains.com/issue/KT-29341
     javaCommon.test.dependencies {
-        compileOnly("junit:junit:4.13.2")
+        val junit = libs.findLibrary("test-junit")
+            .or { libs.findLibrary("junit") }
+        compileOnly(junit.getOrNull() ?: "junit:junit:4.13.2")
     }
 }
 
-private fun KotlinMultiplatformExtension.setupCompose(project: Project, jbCompose: Any?, config: KotlinConfigSetup) {
+private fun KotlinMultiplatformExtension.setupCompose(project: Project, jbCompose: Any?) {
     setupSourceSets {
         val libs = project.libsCatalog
 
@@ -229,19 +237,9 @@ private fun KotlinMultiplatformExtension.setupCompose(project: Project, jbCompos
 
         // Jetbrains KMP Compose
         else {
+            // Support compose @Stable and @Immutable annotations
             val composeDependency = jbCompose as org.jetbrains.compose.ComposePlugin.Dependencies
-            val composeRuntime = composeDependency.runtime
-
-            common.main.dependencies {
-                // Support compose @Stable and @Immutable annotations
-                if (config.noMultiplatformCompileOnly) {
-                    // A compileOnly dependencies aren't applicable for Kotlin/Native.
-                    // Use 'implementation' or 'api' dependency type instead.
-                    implementation(composeRuntime)
-                } else {
-                    compileOnly(composeRuntime)
-                }
-            }
+            commonCompileOnly(composeDependency.runtime)
         }
     }
 }
@@ -331,6 +329,18 @@ internal constructor(
             main = compilations.getByName("main").defaultSourceSet,
             test = compilations.getByName("test").defaultSourceSet,
         )
+    }
+
+
+    fun commonCompileOnly(dependencyNotation: Any) {
+        // A compileOnly dependencies aren't applicable for Kotlin/Native.
+        // Use 'implementation' or 'api' dependency type instead.
+        common.main.dependencies {
+            compileOnly(dependencyNotation)
+        }
+        nativeSet.main.dependencies {
+            implementation(dependencyNotation)
+        }
     }
 }
 

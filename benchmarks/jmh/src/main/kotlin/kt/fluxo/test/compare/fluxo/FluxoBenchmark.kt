@@ -4,10 +4,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExecutorCoroutineDispatcher
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
+import kt.fluxo.common.annotation.ExperimentalFluxoApi
 import kt.fluxo.core.FluxoIntentS
 import kt.fluxo.core.FluxoSettings
 import kt.fluxo.core.Store
-import kt.fluxo.core.annotation.ExperimentalFluxoApi
 import kt.fluxo.core.closeAndWait
 import kt.fluxo.core.container
 import kt.fluxo.core.intent.IntentStrategy

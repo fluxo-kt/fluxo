@@ -8,11 +8,11 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.StateFlow
+import kt.fluxo.common.annotation.ExperimentalFluxoApi
+import kt.fluxo.common.annotation.InlineOnly
 import kt.fluxo.core.annotation.CallSuper
-import kt.fluxo.core.annotation.ExperimentalFluxoApi
 import kt.fluxo.core.annotation.ThreadSafe
 import kt.fluxo.core.internal.Closeable
-import kotlin.internal.InlineOnly
 import kotlin.js.JsName
 import kotlin.jvm.JvmSynthetic
 

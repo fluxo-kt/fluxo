@@ -11,8 +11,8 @@ import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
+import kt.fluxo.common.annotation.ExperimentalFluxoApi
 import kt.fluxo.core.annotation.CallSuper
-import kt.fluxo.core.annotation.ExperimentalFluxoApi
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.js.JsName
 import kotlin.jvm.JvmField

@@ -1,0 +1,6 @@
+public abstract interface annotation class kt/fluxo/common/annotation/ExperimentalFluxoApi : java/lang/annotation/Annotation {
+}
+
+public abstract interface annotation class kt/fluxo/common/annotation/InternalFluxoApi : java/lang/annotation/Annotation {
+}
+

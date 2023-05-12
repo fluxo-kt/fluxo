@@ -109,6 +109,8 @@ setupDefaults(
         optInInternal = true,
         warningsAsErrors = true,
         alwaysIndyLambdas = false,
+        addStdlibDependency = true,
+        setupCoroutines = false,
         optIns = listOf(
             "kotlin.js.ExperimentalJsExport",
         ),
@@ -154,6 +156,7 @@ dependencyGuard {
 
 koverReport {
     dependencies {
+        kover(projects.fluxoCommon)
         kover(projects.fluxoCore)
         kover(projects.fluxoData)
     }
@@ -202,16 +205,9 @@ koverReport {
                 // Test classes
                 "kt.fluxo.test.*",
                 "kt.fluxo.tests.*",
-                // Inline DSL, coverage not detected (still everything covered!)
-                "kt.fluxo.core.FluxoKt*",
-                "kt.fluxo.core.dsl.MigrationKt*",
             )
             annotatedBy(
-                // Coverage is invalid for inline and InlineOnly methods (still everything covered!)
-                "*Inline*",
-                // JvmSynthetic used as a marker for migration helpers and inline-only DSL hidden from non-kotlin usage
-                "*Synthetic*",
-                // No need for a deprecated methods coverage
+                // No need to cover deprecated methods
                 "*Deprecated*",
             )
         }

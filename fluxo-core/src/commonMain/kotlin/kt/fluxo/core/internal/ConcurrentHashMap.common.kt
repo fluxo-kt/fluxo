@@ -1,6 +1,6 @@
 package kt.fluxo.core.internal
 
-import kt.fluxo.core.annotation.InternalFluxoApi
+import kt.fluxo.common.annotation.InternalFluxoApi
 
 @InternalFluxoApi
 @Suppress("FunctionName")

@@ -1,25 +1,9 @@
 package kt.fluxo.core.annotation
 
-/**
- * Marks **experimental** parts in Fluxo API. Such APIs may be changed in the future without notice.
- */
-@MustBeDocumented
-@Retention(AnnotationRetention.BINARY)
-@Target(
-    AnnotationTarget.ANNOTATION_CLASS,
-    AnnotationTarget.CLASS,
-    AnnotationTarget.CONSTRUCTOR,
-    AnnotationTarget.FIELD,
-    AnnotationTarget.FUNCTION,
-    AnnotationTarget.LOCAL_VARIABLE,
-    AnnotationTarget.PROPERTY,
-    AnnotationTarget.PROPERTY_GETTER,
-    AnnotationTarget.PROPERTY_SETTER,
-    AnnotationTarget.TYPEALIAS,
-    AnnotationTarget.VALUE_PARAMETER,
-)
-@RequiresOptIn(
+/** @see kt.fluxo.common.annotation.ExperimentalFluxoApi */
+@Deprecated(
     message = "This is experimental Fluxo API. It may be changed in the future without notice.",
-    level = RequiresOptIn.Level.WARNING,
+    replaceWith = ReplaceWith("kt.fluxo.common.annotation.ExperimentalFluxoApi"),
 )
-public annotation class ExperimentalFluxoApi
+@Suppress("OPT_IN_MARKER_CAN_ONLY_BE_USED_AS_ANNOTATION_OR_ARGUMENT_IN_OPT_IN")
+public typealias ExperimentalFluxoApi = kt.fluxo.common.annotation.ExperimentalFluxoApi

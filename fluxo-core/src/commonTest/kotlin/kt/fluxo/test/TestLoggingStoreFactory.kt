@@ -3,11 +3,11 @@ package kt.fluxo.test
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
+import kt.fluxo.common.annotation.ExperimentalFluxoApi
 import kt.fluxo.core.Bootstrapper
 import kt.fluxo.core.FluxoSettings
 import kt.fluxo.core.IntentHandler
 import kt.fluxo.core.SideJob
-import kt.fluxo.core.annotation.ExperimentalFluxoApi
 import kt.fluxo.core.factory.FluxoStoreFactory
 import kt.fluxo.core.factory.StoreDecorator
 import kt.fluxo.core.factory.StoreDecoratorBase

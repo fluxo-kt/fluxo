@@ -1,14 +1,9 @@
 package kt.fluxo.core.annotation
 
-/**
- * Marks declarations that are **internal** in Fluxo, and should not be used outside the library.
- * Their signatures and semantics may change between future releases without any warnings and without providing any migration aids.
- */
-@MustBeDocumented
-@Retention(AnnotationRetention.BINARY)
-@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.TYPEALIAS, AnnotationTarget.PROPERTY)
-@RequiresOptIn(
-    message = "This is an internal Fluxo API and should not be used from outside. No compatibility guarantees are provided.",
-    level = RequiresOptIn.Level.ERROR,
+/** @see kt.fluxo.common.annotation.InternalFluxoApi */
+@Deprecated(
+    message = "This is experimental Fluxo API. It may be changed in the future without notice.",
+    replaceWith = ReplaceWith("kt.fluxo.common.annotation.ExperimentalFluxoApi"),
 )
-public annotation class InternalFluxoApi
+@Suppress("OPT_IN_MARKER_CAN_ONLY_BE_USED_AS_ANNOTATION_OR_ARGUMENT_IN_OPT_IN")
+public typealias InternalFluxoApi = kt.fluxo.common.annotation.InternalFluxoApi

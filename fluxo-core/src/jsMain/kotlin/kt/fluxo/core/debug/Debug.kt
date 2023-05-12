@@ -1,8 +1,13 @@
-@file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
+@file:Suppress(
+    "INVISIBLE_MEMBER",
+    "INVISIBLE_REFERENCE",
+    "KotlinRedundantDiagnosticSuppress",
+    "NOTHING_TO_INLINE",
+)
 
 package kt.fluxo.core.debug
 
-import kotlin.internal.InlineOnly
+import kt.fluxo.common.annotation.InlineOnly
 
 
 // this::class.qualifiedName reflection API is not supported yet in JavaScript.

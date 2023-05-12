@@ -7,12 +7,13 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.internal.value
+import kt.fluxo.common.annotation.ExperimentalFluxoApi
+import kt.fluxo.common.annotation.InlineOnly
 import kt.fluxo.core.IntentHandler
 import kt.fluxo.core.SideJob
 import kt.fluxo.core.Store
 import kt.fluxo.core.StoreSE
 import kt.fluxo.core.annotation.CallSuper
-import kt.fluxo.core.annotation.ExperimentalFluxoApi
 import kt.fluxo.core.annotation.FluxoDsl
 import kt.fluxo.core.annotation.ThreadSafe
 import kt.fluxo.core.factory.StoreDecorator
@@ -20,7 +21,6 @@ import kt.fluxo.core.internal.RunningSideJob.Companion.DEFAULT_SIDE_JOB
 import kt.fluxo.core.updateState
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
-import kotlin.internal.InlineOnly
 import kotlin.internal.LowPriorityInOverloadResolution
 import kotlin.js.JsName
 import kotlin.jvm.JvmSynthetic

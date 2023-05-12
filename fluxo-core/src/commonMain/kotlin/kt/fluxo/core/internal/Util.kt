@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kt.fluxo.core.annotation.ExperimentalFluxoApi
+import kt.fluxo.common.annotation.ExperimentalFluxoApi
 
 internal fun Throwable?.toCancellationException() = when (this) {
     null -> null

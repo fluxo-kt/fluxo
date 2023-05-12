@@ -74,7 +74,7 @@ jetbrains-compose = "1.4.0"
 # https://developer.android.com/jetpack/androidx/versions/all-channel#latest_release
 
 # https://developer.android.com/jetpack/androidx/releases/annotation
-androidx-annotation = "1.6.0"
+androidx-annotation = "1.7.0-alpha02"
 
 # Java Microbenchmark Harness (JMH)
 # https://github.com/openjdk/jmh/tags
@@ -131,7 +131,7 @@ kotlinx-coroutines-reactive = { module = "org.jetbrains.kotlinx:kotlinx-coroutin
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 
 # https://mvnrepository.com/artifact/org.jetbrains/annotations
-jetbrains-annotation = { module = "org.jetbrains:annotations", version.strictly = "24.0.1" }
+jetbrains-annotation = { module = "org.jetbrains:annotations", version = "24.0.1" }
 
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
 
@@ -145,7 +145,8 @@ essenty-lifecycle = { module = "com.arkivanov.essenty:lifecycle", version.ref = 
 arrow-bom = { module = "io.arrow-kt:arrow-stack", version.ref = "arrow" }
 arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
 
-test-junit = { module = "junit:junit" }
+# https://mvnrepository.com/artifact/junit/junit
+test-junit = { module = "junit:junit", version = "4.13.2"  }
 # https://mvnrepository.com/artifact/org.robolectric/robolectric
 test-robolectric = { module = "org.robolectric:robolectric", version = "4.10.2" }
 # https://github.com/cashapp/turbine/releases
@@ -201,6 +202,10 @@ woodstox-core = { module = "com.fasterxml.woodstox:woodstox-core", version = "6.
 [bundles]
 # List of deps with forced versions
 pinned = [
+    "androidx-annotation",
+    "jetbrains-annotation",
+    "jsr305",
+
     # security recommendations
     "jackson-databind",
     "jsoup",

@@ -1,13 +1,18 @@
-@file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
+@file:Suppress(
+    "INVISIBLE_MEMBER",
+    "INVISIBLE_REFERENCE",
+    "KotlinRedundantDiagnosticSuppress",
+    "NOTHING_TO_INLINE",
+)
 
 package kt.fluxo.core.debug
 
+import kt.fluxo.common.annotation.InlineOnly
 import kt.fluxo.core.FluxoIntent
 import java.lang.reflect.AccessibleObject
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.internal.InlineOnly
 
 // TODO: Only for test/debug variants?
 @Suppress("UNCHECKED_CAST", "ReturnCount")

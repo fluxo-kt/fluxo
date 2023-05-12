@@ -2,7 +2,7 @@
 
 package kt.fluxo.core.debug
 
-import kotlin.internal.InlineOnly
+import kt.fluxo.common.annotation.InlineOnly
 
 @InlineOnly
 internal actual inline fun Any.debugClassName(): String? = this::class.qualifiedName

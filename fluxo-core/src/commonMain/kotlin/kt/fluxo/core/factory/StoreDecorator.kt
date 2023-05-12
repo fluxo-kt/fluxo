@@ -2,11 +2,11 @@
 
 package kt.fluxo.core.factory
 
+import kt.fluxo.common.annotation.ExperimentalFluxoApi
 import kt.fluxo.core.Bootstrapper
 import kt.fluxo.core.FluxoSettings
 import kt.fluxo.core.SideJob
 import kt.fluxo.core.annotation.CallSuper
-import kt.fluxo.core.annotation.ExperimentalFluxoApi
 import kt.fluxo.core.annotation.ThreadSafe
 import kt.fluxo.core.dsl.StoreScope
 import kotlin.js.JsName

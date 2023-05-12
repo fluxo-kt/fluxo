@@ -7,6 +7,21 @@ plugins {
     id("fluxo-setup")
 }
 
+setupMultiplatform(
+    namespace = "kt.fluxo.data",
+    optIns = listOf(
+        "kt.fluxo.common.annotation.InternalFluxoApi",
+    ),
+) {
+    setupSourceSets {
+        commonCompileOnly(projects.fluxoCommon)
+        commonCompileOnly(libs.kotlinx.coroutines.core)
+
+        common.test.dependencies {
+            implementation(libs.kotlinx.coroutines.test)
+        }
+    }
+}
 setupMultiplatform(namespace = "kt.fluxo.data")
 setupPublication()
 setupBinaryCompatibilityValidator()

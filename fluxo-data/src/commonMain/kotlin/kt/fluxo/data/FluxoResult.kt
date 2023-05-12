@@ -1,16 +1,23 @@
-@file:Suppress("INVISIBLE_REFERENCE", "INVISIBLE_MEMBER", "CANNOT_OVERRIDE_INVISIBLE_MEMBER", "TooManyFunctions")
+@file:Suppress(
+    "CANNOT_OVERRIDE_INVISIBLE_MEMBER",
+    "INVISIBLE_MEMBER",
+    "INVISIBLE_REFERENCE",
+    "KotlinRedundantDiagnosticSuppress",
+    "NOTHING_TO_INLINE",
+    "TooManyFunctions",
+)
 
 package kt.fluxo.data
 
-import kotlin.internal.InlineOnly
+import kt.fluxo.common.annotation.InlineOnly
 import kotlin.js.JsExport
 import kotlin.js.JsName
 
 /**
  * A wrapper type designed to represent the result of data fetching from any source or some calculations.
- * When the data refreshed, the previous values can be kept around for a nicer end-user experience.
+ * On data refresh, the earlier values can be kept around for a nicer end-user experience.
  *
- * [FluxoResult] can represent state in a mixed condition, like *"cached empty value"* or *"loading with some default data"*, etc.
+ * [FluxoResult] can represent state in a mixed condition, like *"cached empty value"* or *"loading with some default data"*, and so on.
  *
  * [Emptiness][isEmpty] detected automatically for [Collection], [CharSequence], and `null` values.
  *
@@ -60,12 +67,12 @@ public data class FluxoResult<out T> internal constructor(
 
 
         /**
-         * Loading data state, no previous value.
+         * Loading data state with no earlier value.
          */
         public fun loading(): FluxoResult<Nothing?> = LOADING
 
         /**
-         * Loading data state with previous [value]. Considers as successful if [value] is not empty!
+         * Loading data state with earlier [value]. Considers as successful if [value] isn't empty!
          */
         @JsName("loadingWithValue")
         public fun <T> loading(value: T): FluxoResult<T> {

@@ -2,6 +2,8 @@
 
 package kt.fluxo.core.factory
 
+import kt.fluxo.common.annotation.ExperimentalFluxoApi
+import kt.fluxo.common.annotation.InlineOnly
 import kt.fluxo.core.Container
 import kt.fluxo.core.ContainerS
 import kt.fluxo.core.FluxoIntent
@@ -12,7 +14,6 @@ import kt.fluxo.core.Reducer
 import kt.fluxo.core.SideEffectStrategy
 import kt.fluxo.core.Store
 import kt.fluxo.core.StoreSE
-import kt.fluxo.core.annotation.ExperimentalFluxoApi
 import kt.fluxo.core.annotation.ThreadSafe
 import kt.fluxo.core.container
 import kt.fluxo.core.debug.DEBUG
@@ -21,7 +22,6 @@ import kt.fluxo.core.internal.ReducerIntentHandler
 import kt.fluxo.core.store
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
-import kotlin.internal.InlineOnly
 import kotlin.internal.LowPriorityInOverloadResolution
 import kotlin.js.JsName
 import kotlin.jvm.JvmName

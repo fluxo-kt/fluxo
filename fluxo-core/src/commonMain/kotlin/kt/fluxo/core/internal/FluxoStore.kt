@@ -31,13 +31,13 @@ import kotlinx.coroutines.plus
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import kt.fluxo.common.annotation.InternalFluxoApi
 import kt.fluxo.core.Bootstrapper
 import kt.fluxo.core.FluxoClosedException
 import kt.fluxo.core.FluxoSettings
 import kt.fluxo.core.IntentHandler
 import kt.fluxo.core.SideEffectStrategy
 import kt.fluxo.core.SideJob
-import kt.fluxo.core.annotation.InternalFluxoApi
 import kt.fluxo.core.data.GuaranteedEffect
 import kt.fluxo.core.dsl.StoreScope
 import kt.fluxo.core.factory.StoreDecorator

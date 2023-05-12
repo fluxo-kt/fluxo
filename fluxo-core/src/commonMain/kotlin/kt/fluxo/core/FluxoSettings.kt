@@ -1,4 +1,12 @@
-@file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE", "NON_EXPORTABLE_TYPE", "PropertyName", "VariableNaming")
+@file:Suppress(
+    "INVISIBLE_MEMBER",
+    "INVISIBLE_REFERENCE",
+    "KotlinRedundantDiagnosticSuppress",
+    "NON_EXPORTABLE_TYPE",
+    "NOTHING_TO_INLINE",
+    "PropertyName",
+    "VariableNaming",
+)
 
 package kt.fluxo.core
 
@@ -9,7 +17,8 @@ import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kt.fluxo.core.annotation.ExperimentalFluxoApi
+import kt.fluxo.common.annotation.ExperimentalFluxoApi
+import kt.fluxo.common.annotation.InlineOnly
 import kt.fluxo.core.annotation.FluxoDsl
 import kt.fluxo.core.annotation.NotThreadSafe
 import kt.fluxo.core.debug.DEBUG
@@ -18,7 +27,6 @@ import kt.fluxo.core.internal.IntentStrategyGuardian
 import kt.fluxo.core.internal.RunningSideJob.Companion.BOOTSTRAPPER_SIDE_JOB
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
-import kotlin.internal.InlineOnly
 import kotlin.js.JsExport
 import kotlin.js.JsName
 import kotlin.jvm.JvmField

@@ -42,6 +42,7 @@ rootProject.name = "fluxo"
 
 // On module update, don't forget to update '.github/workflows/deps-submission.yml'!
 
+include(":fluxo-common")
 include(":fluxo-core")
 include(":fluxo-data")
 

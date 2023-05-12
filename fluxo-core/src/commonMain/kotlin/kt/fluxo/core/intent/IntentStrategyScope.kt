@@ -2,8 +2,8 @@ package kt.fluxo.core.intent
 
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
+import kt.fluxo.common.annotation.ExperimentalFluxoApi
 import kt.fluxo.core.annotation.CallSuper
-import kt.fluxo.core.annotation.ExperimentalFluxoApi
 import kt.fluxo.core.dsl.StoreScope
 import kt.fluxo.core.factory.StoreDecorator
 import kotlin.coroutines.CoroutineContext

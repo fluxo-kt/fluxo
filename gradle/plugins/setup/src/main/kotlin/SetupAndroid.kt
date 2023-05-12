@@ -22,6 +22,7 @@ import impl.libsCatalog
 import impl.onBundle
 import impl.onLibrary
 import impl.onVersion
+import impl.optionalVersion
 import impl.runtimeOnly
 import impl.testImplementation
 import org.gradle.api.Action
@@ -48,7 +49,7 @@ fun Project.setupAndroidLibrary(
     setupKsp: Boolean = setupRoom || hasKsp,
     setupCompose: Boolean = false,
     config: AndroidConfigSetup = requireDefaults(),
-    kotlinConfig: KotlinConfigSetup = requireDefaults(),
+    kotlinConfig: KotlinConfigSetup = requireDefaultKotlinConfigSetup(),
     body: (LibraryExtension.() -> Unit)? = null,
 ) {
     /** @see com.android.build.api.dsl.LibraryExtension */
@@ -82,7 +83,7 @@ fun Project.setupAndroidApp(
     setupKsp: Boolean = setupRoom || hasKsp,
     setupCompose: Boolean = false,
     config: AndroidConfigSetup = requireDefaults(),
-    kotlinConfig: KotlinConfigSetup = requireDefaults(),
+    kotlinConfig: KotlinConfigSetup = requireDefaultKotlinConfigSetup(),
     body: (BaseAppModuleExtension.() -> Unit)? = null,
 ) {
     extensions.configure<BaseAppModuleExtension>("android") {
@@ -124,7 +125,7 @@ internal fun Project.setupAndroidCommon(
     setupRoom: Boolean = false,
     setupKsp: Boolean = setupRoom || hasKsp,
     setupCompose: Boolean = false,
-    kotlinConfig: KotlinConfigSetup = requireDefaults(),
+    kotlinConfig: KotlinConfigSetup = requireDefaultKotlinConfigSetup(),
 ) {
     // https://developer.android.com/studio/build/extend-agp
     val androidComponents = extensions.getByType(AndroidComponentsExtension::class.java)
@@ -524,7 +525,9 @@ internal fun DependencyHandler.setupAndroidDependencies(
     libs.onLibrary("androidx-annotation-experimental") { compileOnlyWithConstraint(it) }
     libs.onLibrary("jetbrains-annotation") { compileOnlyWithConstraint(it) }
 
-    implementation(kotlin("stdlib"))
+    if (kotlinConfig.addStdlibDependency) {
+        implementation(kotlin("stdlib", libs.optionalVersion("kotlin")))
+    }
     androidTestImplementation(kotlin("test-junit"))
 
     if (kotlinConfig.setupCoroutines) {
