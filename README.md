@@ -360,7 +360,7 @@ aka Redux/MVI with [contextual reduction][contextual-reduction].
 [orbit-mvvm+]: https://github.com/orbit-mvi/orbit-mvi/blob/6b6f290/README.md#what-is-orbit
 [contextual-reduction]: https://dev.to/feresr/a-case-against-the-mvi-architecture-pattern-1add
 
-[badge-kotlin]: http://img.shields.io/badge/Kotlin-1.8.21-7F52FF?logo=kotlin&logoColor=7F52FF&labelColor=2B2B2B
+[badge-kotlin]: http://img.shields.io/badge/Kotlin-1.8.21-7F52FF?logo=kotlin&logoWidth=10&logoColor=7F52FF&labelColor=2B2B2B
 [badge-kotlin-link]: https://github.com/JetBrains/kotlin/releases
 
 [badge-kmp]: http://img.shields.io/badge/Kotlin-Multiplatform-7F52FF?logo=kotlin&logoColor=7F52FF&labelColor=2B2B2B

@@ -203,7 +203,7 @@ public inline fun <R, T : R> FluxoResult<T>.map(transform: (T) -> R): FluxoResul
 @InlineOnly
 public inline fun <R, T : R> FluxoResult<T>.mapCatching(transform: (value: T) -> R): FluxoResult<R?> {
     contract {
-        callsInPlace(transform, InvocationKind.EXACTLY_ONCE)
+        callsInPlace(transform, InvocationKind.AT_MOST_ONCE)
     }
     return try {
         map(transform)

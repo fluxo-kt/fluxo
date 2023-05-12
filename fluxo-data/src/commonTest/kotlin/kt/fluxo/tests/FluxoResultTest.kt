@@ -325,4 +325,11 @@ class FluxoResultTest {
         f.let { (data) -> assertEquals("", data) }
         f.let { (_, exc) -> assertNull(exc) }
     }
+
+
+    @Test
+    fun flags() = with(FluxoResult.Companion) {
+        assertTrue(0x1.hasFlag(0x1))
+        assertFalse(0x1.minusFlag(0x1).hasFlag(0x1))
+    }
 }
