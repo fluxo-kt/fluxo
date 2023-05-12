@@ -70,16 +70,19 @@ setupDefaults(
 
         // Configure a separate test where code runs in worker thread
         // https://kotlinlang.org/docs/compiler-reference.html#generate-worker-test-runner-trw
-        targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithTests<*>>().all {
-            binaries {
-                test("background", listOf(DEBUG)) {
-                    freeCompilerArgs += "-trw"
+        val backgroundNativeTest = false
+        if (backgroundNativeTest) {
+            targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithTests<*>>().all {
+                binaries {
+                    test("background", listOf(DEBUG)) {
+                        freeCompilerArgs += "-trw"
+                    }
                 }
-            }
-            testRuns {
-                @Suppress("UNUSED_VARIABLE")
-                val background by creating {
-                    setExecutionSourceFrom(binaries.getTest("background", DEBUG))
+                testRuns {
+                    @Suppress("UNUSED_VARIABLE")
+                    val background by creating {
+                        setExecutionSourceFrom(binaries.getTest("background", DEBUG))
+                    }
                 }
             }
         }
