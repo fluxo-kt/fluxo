@@ -163,13 +163,14 @@ koverReport {
 
     defaults {
         val isCI by isCI()
+        val isRelease by isCI()
         xml {
-            onCheck = true
+            onCheck = isRelease
             setReportFile(layout.buildDirectory.file("reports/kover-merged-report.xml"))
         }
         if (!isCI) {
             html {
-                onCheck = true
+                onCheck = isRelease
                 setReportDir(layout.buildDirectory.dir("reports/kover-merged-report-html")) // change report directory
             }
         }

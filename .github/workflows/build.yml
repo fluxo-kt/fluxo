@@ -109,6 +109,15 @@ jobs:
           cache-read-only: ${{ github.ref != 'refs/heads/main' || matrix.java != '17' }}
           arguments: publish -DDISABLE_TESTS --stacktrace --scan
 
+      - name: 'Calculate code coverage on ${{ matrix.os }}'
+        if: success() && matrix.os != 'windows-latest'
+        timeout-minutes: 25
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-home-cache-cleanup: true
+          cache-read-only: ${{ github.ref != 'refs/heads/main' || matrix.java != '17' }}
+          arguments: cleanJvmTest jvmTest koverXmlReport --stacktrace --no-build-cache --scan
+
       - name: 'Build and check on ${{ matrix.os }} (split_targets)'
         if: matrix.os == 'windows-latest'
         timeout-minutes: 35
@@ -119,17 +128,6 @@ jobs:
           gradle-home-cache-cleanup: true
           cache-read-only: ${{ github.ref != 'refs/heads/main' || matrix.java != '17' }}
           arguments: build assemble check -Dsplit_targets --stacktrace --continue --scan --no-daemon
-
-      - name: 'Calculate code coverage on ${{ matrix.os }}'
-        if: matrix.os != 'windows-latest'
-        timeout-minutes: 25
-        uses: gradle/gradle-build-action@v2
-        env:
-          RELEASE: false
-        with:
-          gradle-home-cache-cleanup: true
-          cache-read-only: ${{ github.ref != 'refs/heads/main' || matrix.java != '17' }}
-          arguments: koverXmlReport --stacktrace --stacktrace --scan
 
       - name: Summary
         if: success() || failure()
