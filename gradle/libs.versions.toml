@@ -95,7 +95,7 @@ js-webpackDevServer = "4.13.3"  # https://www.npmjs.com/package/webpack-dev-serv
 
 # Libraries to compare/benchmark against
 ballast = "3.0.0"                   # https://mvnrepository.com/artifact/io.github.copper-leaf/ballast-core
-elmslie = "2.1.1"                   # https://github.com/vivid-money/elmslie/tags
+elmslie = "3.0.0-alpha06"           # https://github.com/vivid-money/elmslie/tags
 flowredux = "1.1.0"                 # https://mvnrepository.com/artifact/com.freeletics.flowredux/flowredux
 genakuReduce = "0.9.8"              # https://github.com/genaku/Reduce/tags
 mobiusKt = "1.0.0-rc05"             # https://mvnrepository.com/artifact/org.drewcarlson/mobiuskt-coroutines

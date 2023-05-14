@@ -1,10 +1,10 @@
 package kt.fluxo.test.compare.elmslie
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kt.fluxo.test.compare.BENCHMARK_ARG
 import kt.fluxo.test.compare.IntentAdd
 import kt.fluxo.test.compare.IntentIncrement
-import kt.fluxo.test.compare.SameThreadScheduledExecutorService
 import kt.fluxo.test.compare.consumeCommonBenchmark
 import kt.fluxo.test.compare.launchCommonBenchmark
 import kt.fluxo.test.compare.launchCommonBenchmarkWithStaticIntent
@@ -13,12 +13,14 @@ import vivid.money.elmslie.core.store.ElmStore
 import vivid.money.elmslie.core.store.NoOpActor
 import vivid.money.elmslie.core.store.Result
 import vivid.money.elmslie.core.store.StateReducer
+import vivid.money.elmslie.core.store.Store
 import vivid.money.elmslie.coroutines.states
 
 internal object ElmslieBenchmark {
 
-    private fun <Event : Any> createStore(reducer: StateReducer<Event, Int, Nothing, Nothing>): ElmStore<Event, Int, Nothing, Nothing> {
-        ElmslieConfig.backgroundExecutor { SameThreadScheduledExecutorService }
+    @Suppress("InjectDispatcher")
+    private fun <Event : Any> createStore(reducer: StateReducer<Event, Int, Nothing, Nothing>): Store<Event, Nothing, Int> {
+        ElmslieConfig.ioDispatchers { Dispatchers.Unconfined }
         return ElmStore(
             initialState = 0,
             reducer = reducer,
