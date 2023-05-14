@@ -82,34 +82,17 @@ jobs:
             ${{ runner.os }}-konan-${{ hashFiles('**/*.versions.toml') }}
             ${{ runner.os }}-konan-
 
-      - name: 'Build and check on ${{ matrix.os }} (complete)'
+      - name: 'Build and check on ${{ matrix.os }} (complete, non-release)'
+        id: check
         if: matrix.os != 'windows-latest'
         timeout-minutes: 50
         uses: gradle/gradle-build-action@v2
-        env:
-          RELEASE: true
         with:
           gradle-home-cache-cleanup: true
           cache-read-only: ${{ github.ref != 'refs/heads/main' || matrix.java != '17' }}
           arguments: build assemble check --stacktrace --continue --scan
 
-      - name: 'Publish SNAPSHOT'
-        if: success() && matrix.os == 'macos-latest' && matrix.java == '17' && github.event_name == 'push'
-          && github.ref == 'refs/heads/main' && github.repository == 'fluxo-kt/fluxo'
-        continue-on-error: true
-        env:
-          OSSRH_USER: ${{ secrets.OSSRH_USER }}
-          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
-          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
-          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
-          RELEASE: true
-        uses: gradle/gradle-build-action@v2
-        with:
-          gradle-home-cache-cleanup: true
-          cache-read-only: ${{ github.ref != 'refs/heads/main' || matrix.java != '17' }}
-          arguments: publish -DDISABLE_TESTS --stacktrace --scan
-
-      - name: 'Build and check on ${{ matrix.os }} (split_targets)'
+      - name: 'Build and check on ${{ matrix.os }} (split_targets, release)'
         if: matrix.os == 'windows-latest'
         timeout-minutes: 35
         uses: gradle/gradle-build-action@v2
@@ -119,17 +102,6 @@ jobs:
           gradle-home-cache-cleanup: true
           cache-read-only: ${{ github.ref != 'refs/heads/main' || matrix.java != '17' }}
           arguments: build assemble check -Dsplit_targets --stacktrace --continue --scan --no-daemon
-
-      - name: 'Calculate code coverage on ${{ matrix.os }}'
-        if: matrix.os != 'windows-latest'
-        timeout-minutes: 25
-        uses: gradle/gradle-build-action@v2
-        env:
-          RELEASE: false
-        with:
-          gradle-home-cache-cleanup: true
-          cache-read-only: ${{ github.ref != 'refs/heads/main' || matrix.java != '17' }}
-          arguments: koverXmlReport --stacktrace --stacktrace --scan
 
       - name: Summary
         if: success() || failure()
@@ -184,3 +156,19 @@ jobs:
         uses: mikepenz/action-junit-report@v3
         with:
           report_paths: '**/build/test-results/*/TEST-*.xml'
+
+      - name: 'Check release API and publish SNAPSHOT'
+        if: steps.check.outcome != 'success'
+          && matrix.os == 'macos-latest' && matrix.java == '17'
+          && github.event_name == 'push' && github.ref == 'refs/heads/main' && github.repository == 'fluxo-kt/fluxo'
+        env:
+          OSSRH_USER: ${{ secrets.OSSRH_USER }}
+          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+          RELEASE: true
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-home-cache-cleanup: true
+          cache-read-only: ${{ github.ref != 'refs/heads/main' || matrix.java != '17' }}
+          arguments: apiCheck androidApiCheck publish -DDISABLE_TESTS --rerun-tasks --stacktrace --scan

@@ -10,6 +10,10 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 private const val PLUGIN_ID = "org.jetbrains.kotlinx.binary-compatibility-validator"
 
 fun Project.setupBinaryCompatibilityValidator() {
+    val config = getDefaults<BinaryCompatibilityValidatorConfig>()
+    if (config?.disableForNonRelease == true && !isRelease().get()) {
+        return
+    }
     when {
         hasExtension<KotlinMultiplatformExtension>() -> setupBinaryCompatibilityValidatorMultiplatform()
         hasExtension<LibraryExtension>() -> setupBinaryCompatibilityValidatorAndroidLibrary()

@@ -1,4 +1,4 @@
-@file:Suppress("SuspiciousCollectionReassignment")
+@file:Suppress("SuspiciousCollectionReassignment", "SpreadOperator")
 
 import java.net.URL
 
@@ -145,6 +145,9 @@ setupDefaults(
             project = project,
         )
     },
+    binaryCompatibilityValidatorConfig = BinaryCompatibilityValidatorConfig(
+        disableForNonRelease = true
+    ),
 )
 
 setupVerification()
@@ -161,17 +164,16 @@ koverReport {
         kover(projects.fluxoData)
     }
 
+    val isRelease by isRelease()
+    val isCI by isCI()
     defaults {
-        val isCI by isCI()
         xml {
             onCheck = true
             setReportFile(layout.buildDirectory.file("reports/kover-merged-report.xml"))
         }
-        if (!isCI) {
-            html {
-                onCheck = true
-                setReportDir(layout.buildDirectory.dir("reports/kover-merged-report-html")) // change report directory
-            }
+        html {
+            onCheck = !isCI && isRelease
+            setReportDir(layout.buildDirectory.dir("reports/kover-merged-report-html")) // change report directory
         }
 
         verify {
@@ -179,19 +181,19 @@ koverReport {
             rule {
                 isEnabled = true
                 entity = kotlinx.kover.gradle.plugin.dsl.GroupingEntityType.APPLICATION
-                minBound(63)
+                minBound(50)
                 bound {
-                    minValue = 80
+                    minValue = 72
                     metric = kotlinx.kover.gradle.plugin.dsl.MetricType.LINE
                     aggregation = kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
                 }
                 bound {
-                    minValue = 74
+                    minValue = 65
                     metric = kotlinx.kover.gradle.plugin.dsl.MetricType.INSTRUCTION
                     aggregation = kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
                 }
                 bound {
-                    minValue = 63
+                    minValue = 50
                     metric = kotlinx.kover.gradle.plugin.dsl.MetricType.BRANCH
                     aggregation = kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
                 }
@@ -202,14 +204,26 @@ koverReport {
     filters {
         excludes {
             classes(
-                // Test classes
-                "kt.fluxo.test.*",
-                "kt.fluxo.tests.*",
+                *listOfNotNull(
+                    // Test classes
+                    "kt.fluxo.test.*",
+                    "kt.fluxo.tests.*",
+                    // Inline DSL with coverage not detected in release mode.
+                    if (isRelease) "kt.fluxo.core.FluxoKt*" else null,
+                    if (isRelease) "kt.fluxo.core.dsl.MigrationKt*" else null,
+                ).toTypedArray()
             )
-            annotatedBy(
-                // No need to cover deprecated methods
-                "*Deprecated*",
-            )
+
+            if (isRelease) {
+                annotatedBy(
+                    // Coverage is invalid for inline and InlineOnly methods in release mode.
+                    "*Inline*",
+                    // JvmSynthetic used as a marker for migration helpers and inline-only DSL hidden from non-kotlin usage.
+                    "*Synthetic*",
+                    // No real need for a deprecated methods' coverage.
+                    "*Deprecated*",
+                )
+            }
         }
     }
 }

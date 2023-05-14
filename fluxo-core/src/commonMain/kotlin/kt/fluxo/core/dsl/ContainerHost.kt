@@ -23,5 +23,6 @@ public interface ContainerHost<State, SideEffect : Any> {
      * override val store = scope.container<State, SideEffect>(initialState)
      * ```
      */
+    @Suppress("NON_EXPORTABLE_TYPE")
     public val container: Container<State, SideEffect>
 }

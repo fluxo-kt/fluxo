@@ -26,4 +26,12 @@ class BinaryCompatibilityValidatorConfig(
      * @see kotlinx.validation.ApiValidationExtension.ignoredClasses
      */
     val ignoredClasses: List<String> = emptyList(),
+
+    /**
+     * Whether to turn off validation for non-release builds.
+     *
+     * @see isRelease
+     * @see kotlinx.validation.ApiValidationExtension.validationDisabled
+     */
+    val disableForNonRelease: Boolean = false,
 )
