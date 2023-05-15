@@ -5,8 +5,6 @@
 [![Kotlin Version][badge-kotlin]][badge-kotlin-link]
 [![Build](../../actions/workflows/build.yml/badge.svg)](../../actions/workflows/build.yml)
 [![codecov](https://codecov.io/gh/fluxo-kt/fluxo/branch/main/graph/badge.svg?token=LKCNVWR8QC)](https://codecov.io/gh/fluxo-kt/fluxo)
-[![Lines-of-Code](https://tokei.rs/b1/github/fluxo-kt/fluxo?category=code)](https://github.com/XAMPPRocky/tokei).
-[![Hits-of-Code, number of lines changed over time](https://hitsofcode.com/github/fluxo-kt/fluxo?branch=main)](https://hitsofcode.com/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue)](LICENSE)
 
 ![Kotlin Multiplatform][badge-kmp]
@@ -310,8 +308,11 @@ Write [me](https://t.me/samally) if you want early access!
 **Fluxo** uses [SemVer](http://semver.org/) for versioning.
 For the versions available, see the [tags on this repository](../../tags).
 
-### Code quality checks
+### Code quality and more
 
+[![Lines-of-Code](https://tokei.rs/b1/github/fluxo-kt/fluxo?category=code&label=LoC&logo=kotlin&logoColor=7F52FF&labelColor=2B2B2B)](https://github.com/XAMPPRocky/tokei)
+[![Hits-of-Code, number of lines changed over time](https://hitsofcode.com/github/fluxo-kt/fluxo?branch=main)](https://hitsofcode.com/)
+<br>
 [![CodeFactor](https://www.codefactor.io/repository/github/fluxo-kt/fluxo/badge/main)](https://www.codefactor.io/repository/github/fluxo-kt/fluxo/overview/main)
 [![CodeBeat](https://codebeat.co/badges/5ed83de6-f399-4880-9a94-d42d1ab43b89)](https://codebeat.co/projects/github-com-fluxo-kt-fluxo-main)
 [![Codacy](https://app.codacy.com/project/badge/Grade/ea7dfbbaf83441eea468f4f083604280)](https://www.codacy.com/gh/fluxo-kt/fluxo/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=fluxo-kt/fluxo&amp;utm_campaign=Badge_Grade)
