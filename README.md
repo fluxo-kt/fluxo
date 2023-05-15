@@ -5,6 +5,7 @@
 [![Kotlin Version][badge-kotlin]][badge-kotlin-link]
 [![Build](../../actions/workflows/build.yml/badge.svg)](../../actions/workflows/build.yml)
 [![codecov](https://codecov.io/gh/fluxo-kt/fluxo/branch/main/graph/badge.svg?token=LKCNVWR8QC)](https://codecov.io/gh/fluxo-kt/fluxo)
+[![Hits-of-Code, number of lines changed over time](https://hitsofcode.com/github/fluxo-kt/fluxo?branch=main)](https://hitsofcode.com/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue)](LICENSE)
 
 ![Kotlin Multiplatform][badge-kmp]
