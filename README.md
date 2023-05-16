@@ -310,7 +310,8 @@ For the versions available, see the [tags on this repository](../../tags).
 
 ### Code quality and more
 
-[![Lines-of-Code](https://tokei.rs/b1/github/fluxo-kt/fluxo?category=code&label=LoC&logo=kotlin&logoColor=7F52FF&labelColor=2B2B2B)](https://github.com/XAMPPRocky/tokei)
+<!-- Update Lines-of-Code value manually from https://codecov.io/gh/fluxo-kt/fluxo -->
+[![Lines-of-Code](https://img.shields.io/badge/Lines--of--Code-1005-blue)](https://codecov.io/gh/fluxo-kt/fluxo)
 [![Hits-of-Code, number of lines changed over time](https://hitsofcode.com/github/fluxo-kt/fluxo?branch=main)](https://hitsofcode.com/)
 <br>
 [![CodeFactor](https://www.codefactor.io/repository/github/fluxo-kt/fluxo/badge/main)](https://www.codefactor.io/repository/github/fluxo-kt/fluxo/overview/main)
