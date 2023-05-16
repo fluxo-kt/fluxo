@@ -11,6 +11,7 @@
 *.txt
 *.xml
 *.yml
+*Test/
 .*
 .github/
 LICENSE*
@@ -18,3 +19,5 @@ benchmarks/
 gradle/
 gradlew*
 samples/
+test/
+tests/
