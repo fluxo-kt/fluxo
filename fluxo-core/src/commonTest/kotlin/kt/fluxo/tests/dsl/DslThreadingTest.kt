@@ -291,7 +291,7 @@ internal class DslThreadingTest {
         fun blockingReducer() = send {
             if (DBG > 0) testLog("blockingReducer start")
             val context = currentCoroutineContext()
-            reduce {
+            updateState {
                 reducerMutex.doUnlock()
                 if (DBG > 0) testLog("blockingReducer busy work")
                 while (context.isActive) {
