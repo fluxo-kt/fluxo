@@ -18,8 +18,8 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
-import kt.fluxo.test.IgnoreJs
 import kt.fluxo.test.runUnitTest
+import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
@@ -28,8 +28,10 @@ import kotlin.test.fail
 
 /**
  * Test to be sure that [kotlinx.coroutines] work as expected.
+ *
+ * @TODO: Make more stable (see [with_timeout_state_flow] for details).
  */
-@IgnoreJs
+@Ignore
 class TestScopeVirtualTimeTest {
 
     private companion object {
@@ -115,6 +117,7 @@ class TestScopeVirtualTimeTest {
     // TODO: Freezes from time to time
     //  https://github.com/fluxo-kt/fluxo/actions/runs/4844030808/jobs/8632032170#step:8:987
     //  https://github.com/fluxo-kt/fluxo/actions/runs/4951937809/jobs/8857593016#step:8:977
+    //  https://github.com/fluxo-kt/fluxo/actions/runs/4986573207/jobs/8927479089#step:8:1326
     @Test
     fun with_timeout_state_flow() = testImplementation(
         // MutableStateFlow as a locked "Mutex"
