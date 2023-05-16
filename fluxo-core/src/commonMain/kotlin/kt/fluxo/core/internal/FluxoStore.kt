@@ -583,7 +583,9 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
             close(cancellation.cause)
         }
 
-        decorator.onClosed(cause)
+        if (::decorator.isInitialized) {
+            decorator.onClosed(cause)
+        }
     }
 
     override fun toString(): String {

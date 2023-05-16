@@ -17,6 +17,7 @@ import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.TestScope
 import kt.fluxo.core.FluxoIntent
 import kt.fluxo.core.FluxoRuntimeException
+import kt.fluxo.core.FluxoSettings
 import kt.fluxo.core.closeAndWait
 import kt.fluxo.core.container
 import kt.fluxo.core.intent
@@ -28,6 +29,7 @@ import kt.fluxo.core.intent.IntentStrategy.InBox.Fifo
 import kt.fluxo.core.intent.IntentStrategy.InBox.Lifo
 import kt.fluxo.core.intent.IntentStrategy.InBox.Parallel
 import kt.fluxo.core.intent.IntentStrategyScope
+import kt.fluxo.core.internal.FluxoStore
 import kt.fluxo.core.store
 import kt.fluxo.core.updateState
 import kt.fluxo.test.CoroutineScopeAwareTest
@@ -483,5 +485,26 @@ internal class IntentStrategyTest : CoroutineScopeAwareTest() {
         container.intent(intent)
         container.first { it == 2 }
         container.closeAndWait()
+    }
+
+
+    @Test
+    fun strategy_launch_throws_error_if_not_implemented() = t {
+        val handler = FluxoStore<Int, Int, Nothing>(
+            initialState = 0,
+            intentHandler = { value = it },
+            conf = FluxoSettings.invoke(),
+        )
+
+        val strategy = object : IntentStrategy<Int, Int>(handler, isLaunchNeeded = false, parallelProcessing = false) {
+            override fun queueIntent(intent: Int) = TODO()
+        }
+
+        assertFailsWith<NotImplementedError> {
+            strategy.launch()
+        }
+
+        strategy.close()
+        handler.close()
     }
 }
