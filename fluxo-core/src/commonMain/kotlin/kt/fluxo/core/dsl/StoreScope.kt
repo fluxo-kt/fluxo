@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.internal.value
 import kt.fluxo.common.annotation.ExperimentalFluxoApi
-import kt.fluxo.common.annotation.InlineOnly
 import kt.fluxo.core.IntentHandler
 import kt.fluxo.core.SideJob
 import kt.fluxo.core.Store
@@ -104,8 +103,6 @@ public interface StoreScope<in Intent, State, SideEffect : Any> : StoreSE<Intent
 
 
     /** @see kt.fluxo.core.updateState */
-    @InlineOnly
-    @JvmSynthetic
     @JsName("updateState")
     @LowPriorityInOverloadResolution
     @Deprecated(
@@ -116,8 +113,6 @@ public interface StoreScope<in Intent, State, SideEffect : Any> : StoreSE<Intent
     public fun updateState(reducer: (State) -> State): State = updateState(reducer)
 
     /** @see kt.fluxo.core.updateState */
-    @InlineOnly
-    @JvmSynthetic
     @JsName("reduce")
     @Deprecated(
         message = "Please use updateState extension instead",
@@ -133,7 +128,6 @@ public interface StoreScope<in Intent, State, SideEffect : Any> : StoreSE<Intent
      * @see sideJob
      * @see kotlinx.coroutines.launch
      */
-    @InlineOnly
     @JvmSynthetic
     @Deprecated(
         message = "Use the sideJob function to launch long-running jobs in the StoreScope",
@@ -153,7 +147,6 @@ public interface StoreScope<in Intent, State, SideEffect : Any> : StoreSE<Intent
      * @see sideJob
      * @see kotlinx.coroutines.launch
      */
-    @InlineOnly
     @JvmSynthetic
     @Deprecated(
         message = "Use the sideJob function to launch long-running jobs in the StoreScope",

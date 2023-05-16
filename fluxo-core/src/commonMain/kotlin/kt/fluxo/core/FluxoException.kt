@@ -2,7 +2,6 @@ package kt.fluxo.core
 
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.js.JsExport
-import kotlin.jvm.JvmSynthetic
 
 @JsExport
 public sealed interface FluxoException
@@ -12,7 +11,7 @@ public sealed interface FluxoException
  */
 @JsExport
 public class FluxoClosedException
-internal constructor(message: String, @get:JvmSynthetic override val cause: Throwable?) : CancellationException(message), FluxoException
+internal constructor(message: String, override val cause: Throwable?) : CancellationException(message), FluxoException
 
 @JsExport
 public open class FluxoRuntimeException

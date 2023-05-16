@@ -214,14 +214,19 @@ koverReport {
                 ).toTypedArray()
             )
 
+            annotatedBy(
+                *listOfNotNull(
+                    // Coverage is invalid for inline and InlineOnly methods in release mode.
+                    if (isRelease) "*Inline*" else null,
+                    // No real need for a deprecated methods' coverage.
+                    if (isRelease) "*Deprecated*" else null,
+                    // JvmSynthetic used as a marker for migration helpers hidden from non-kotlin usage and not supposed for coverage.
+                    "*Synthetic*",
+                ).toTypedArray()
+            )
+
             if (isRelease) {
                 annotatedBy(
-                    // Coverage is invalid for inline and InlineOnly methods in release mode.
-                    "*Inline*",
-                    // JvmSynthetic used as a marker for migration helpers and inline-only DSL hidden from non-kotlin usage.
-                    "*Synthetic*",
-                    // No real need for a deprecated methods' coverage.
-                    "*Deprecated*",
                 )
             }
         }

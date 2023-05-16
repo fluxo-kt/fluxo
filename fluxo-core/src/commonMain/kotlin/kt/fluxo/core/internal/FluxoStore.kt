@@ -47,7 +47,6 @@ import kt.fluxo.core.updateState
 import kotlin.coroutines.AbstractCoroutineContextElement
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
-import kotlin.jvm.JvmSynthetic
 
 @InternalFluxoApi
 internal class FluxoStore<Intent, State, SideEffect : Any>(
@@ -602,10 +601,8 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
 
     // region StateFlow methods
 
-    @get:JvmSynthetic
     override val replayCache: List<State> get() = mutableState.replayCache
 
-    @JvmSynthetic
     override suspend fun collect(collector: FlowCollector<State>): Nothing {
         // Cancel the collecting Job if the store closed during the collection.
         val handle = currentCoroutineContext()[Job]?.dependOn(coroutineContext[Job])

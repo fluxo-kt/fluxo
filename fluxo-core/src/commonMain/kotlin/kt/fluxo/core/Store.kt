@@ -116,7 +116,6 @@ public interface Store<in Intent, out State> : StateFlow<State>, FlowCollector<I
      *
      * @see state
      */
-    @InlineOnly
     @get:JvmSynthetic
     @Deprecated("Use store itself", ReplaceWith("this"), level = DeprecationLevel.ERROR)
     public val stateFlow: StateFlow<State> get() = this
@@ -127,7 +126,6 @@ public interface Store<in Intent, out State> : StateFlow<State>, FlowCollector<I
      * @see value
      * @see stateFlow
      */
-    @InlineOnly
     @get:JvmSynthetic
     @Deprecated("Use value directly", ReplaceWith("value"), level = DeprecationLevel.ERROR)
     public val state: State get() = value
