@@ -158,8 +158,8 @@ jobs:
           report_paths: '**/build/test-results/*/TEST-*.xml'
 
       - name: 'Check release API and publish SNAPSHOT'
-        if: steps.check.outcome != 'success'
-          && matrix.os == 'macos-latest' && matrix.java == '17'
+        if: matrix.os == 'macos-latest' && matrix.java == '17'
+          && steps.check.outcome == 'success'
           && github.event_name == 'push' && github.ref == 'refs/heads/main' && github.repository == 'fluxo-kt/fluxo'
         env:
           OSSRH_USER: ${{ secrets.OSSRH_USER }}
