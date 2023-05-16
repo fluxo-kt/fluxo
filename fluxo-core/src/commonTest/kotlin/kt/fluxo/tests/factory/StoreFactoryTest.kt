@@ -3,7 +3,6 @@ package kt.fluxo.tests.factory
 import kt.fluxo.core.FluxoIntentS
 import kt.fluxo.core.FluxoSettings
 import kt.fluxo.core.SideEffectStrategy
-import kt.fluxo.core.container
 import kt.fluxo.core.debug.DEBUG
 import kt.fluxo.core.debug.DebugStoreDecorator
 import kt.fluxo.core.factory.FluxoStoreFactory
@@ -17,7 +16,7 @@ import kotlin.test.assertIs
 class StoreFactoryTest {
     @Test
     fun debug_decorator() {
-        val container = container<Int, Int>(0) {
+        val container = FluxoStoreFactory.container<Int, Int>(0) {
             debugChecks = true
         }
         if (DEBUG) {
@@ -28,7 +27,7 @@ class StoreFactoryTest {
         container.close()
 
 
-        val container2 = container(0) {
+        val container2 = FluxoStoreFactory.container(0) {
             debugChecks = true
         }
         if (DEBUG) {
@@ -55,5 +54,14 @@ class StoreFactoryTest {
     @Test
     fun default_params() {
         FluxoStoreFactory.create(0, FluxoIntentHandler()).close()
+    }
+
+    @Test
+    fun dsl() {
+        FluxoStoreFactory.container(0).close()
+        FluxoStoreFactory.container<Int, Int>(0).close()
+        FluxoStoreFactory.store<Int, Int>(0, reducer = { it }).close()
+        FluxoStoreFactory.store<Int, Int>(0, handler = { value = it }).close()
+        FluxoStoreFactory.store<Int, Int, Int>(0, handler = { value = it }).close()
     }
 }
