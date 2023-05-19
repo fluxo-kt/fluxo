@@ -9,22 +9,23 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 private const val PLUGIN_ID = "org.jetbrains.kotlinx.binary-compatibility-validator"
 
-fun Project.setupBinaryCompatibilityValidator() {
-    val config = getDefaults<BinaryCompatibilityValidatorConfig>()
+fun Project.setupBinaryCompatibilityValidator(
+    config: BinaryCompatibilityValidatorConfig? = getDefaults<BinaryCompatibilityValidatorConfig>(),
+) {
     if (config?.disableForNonRelease == true && !isRelease().get()) {
         return
     }
     when {
-        hasExtension<KotlinMultiplatformExtension>() -> setupBinaryCompatibilityValidatorMultiplatform()
-        hasExtension<LibraryExtension>() -> setupBinaryCompatibilityValidatorAndroidLibrary()
+        hasExtension<KotlinMultiplatformExtension>() -> setupBinaryCompatibilityValidatorMultiplatform(config)
+        hasExtension<LibraryExtension>() -> setupBinaryCompatibilityValidatorAndroidLibrary(config)
         else -> error("Unsupported project type for API checks")
     }
 }
 
-private fun Project.setupBinaryCompatibilityValidatorMultiplatform() {
+private fun Project.setupBinaryCompatibilityValidatorMultiplatform(config: BinaryCompatibilityValidatorConfig?) {
     plugins.apply(PLUGIN_ID)
 
-    applyBinaryCompatibilityValidatorConfig()
+    applyBinaryCompatibilityValidatorConfig(config)
 
     afterEvaluate {
         tasks.withType<KotlinApiCompareTask> {
@@ -39,16 +40,15 @@ private fun Project.setupBinaryCompatibilityValidatorMultiplatform() {
     }
 }
 
-private fun Project.setupBinaryCompatibilityValidatorAndroidLibrary() {
+private fun Project.setupBinaryCompatibilityValidatorAndroidLibrary(config: BinaryCompatibilityValidatorConfig?) {
     if (isGenericCompilationEnabled) {
         plugins.apply(PLUGIN_ID)
-        applyBinaryCompatibilityValidatorConfig()
+        applyBinaryCompatibilityValidatorConfig(config)
     }
 }
 
-private fun Project.applyBinaryCompatibilityValidatorConfig() {
-    val config = getDefaults<BinaryCompatibilityValidatorConfig>() ?: return
-
+private fun Project.applyBinaryCompatibilityValidatorConfig(config: BinaryCompatibilityValidatorConfig?) {
+    config ?: return
     extensions.configure<ApiValidationExtension> {
         ignoredPackages += config.ignoredPackages
         nonPublicMarkers += config.nonPublicMarkers
