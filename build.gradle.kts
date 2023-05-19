@@ -146,7 +146,7 @@ setupDefaults(
         )
     },
     binaryCompatibilityValidatorConfig = BinaryCompatibilityValidatorConfig(
-        disableForNonRelease = true
+        disableForNonRelease = true,
     ),
 )
 

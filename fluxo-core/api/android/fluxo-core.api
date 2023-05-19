@@ -1,5 +1,5 @@
 public final class kt/fluxo/core/FluxoClosedException : java/util/concurrent/CancellationException, kt/fluxo/core/FluxoException {
-	public synthetic fun getCause ()Ljava/lang/Throwable;
+	public fun getCause ()Ljava/lang/Throwable;
 }
 
 public final class kt/fluxo/core/FluxoDsl {
@@ -89,6 +89,8 @@ public abstract interface class kt/fluxo/core/Store : java/io/Closeable, kotlinx
 	public fun close ()V
 	public abstract fun emit (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun getName ()Ljava/lang/String;
+	public synthetic fun getState ()Ljava/lang/Object;
+	public synthetic fun getStateFlow ()Lkotlinx/coroutines/flow/StateFlow;
 	public abstract fun getSubscriptionCount ()Lkotlinx/coroutines/flow/StateFlow;
 	public abstract fun send (Ljava/lang/Object;)Lkotlinx/coroutines/Job;
 	public abstract fun start ()Lkotlinx/coroutines/Job;
@@ -123,11 +125,11 @@ public abstract interface class kt/fluxo/core/dsl/StoreScope : kt/fluxo/core/Sto
 	public static synthetic fun launch$default (Lkt/fluxo/core/dsl/StoreScope;Lkotlin/coroutines/CoroutineContext;Lkotlinx/coroutines/CoroutineStart;Ljava/lang/String;Lkotlin/jvm/functions/Function3;ILjava/lang/Object;)Lkotlinx/coroutines/Job;
 	public fun noOp ()V
 	public abstract fun postSideEffect (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public synthetic fun reduce (Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
+	public fun reduce (Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
 	public abstract fun setValue (Ljava/lang/Object;)V
 	public abstract fun sideJob (Ljava/lang/String;Lkotlin/coroutines/CoroutineContext;Lkotlinx/coroutines/CoroutineStart;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function3;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun sideJob$default (Lkt/fluxo/core/dsl/StoreScope;Ljava/lang/String;Lkotlin/coroutines/CoroutineContext;Lkotlinx/coroutines/CoroutineStart;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function3;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public synthetic fun updateState (Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
+	public fun updateState (Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
 }
 
 public final class kt/fluxo/core/factory/FluxoStoreFactory : kt/fluxo/core/factory/StoreFactory {

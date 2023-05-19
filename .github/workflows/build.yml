@@ -82,26 +82,37 @@ jobs:
             ${{ runner.os }}-konan-${{ hashFiles('**/*.versions.toml') }}
             ${{ runner.os }}-konan-
 
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-home-cache-cleanup: true
+          cache-read-only: ${{ (github.ref != 'refs/heads/main' && github.ref != 'refs/heads/dev') || matrix.java != '17' }}
+
       - name: 'Build and check on ${{ matrix.os }} (complete, non-release)'
         id: check
         if: matrix.os != 'windows-latest'
         timeout-minutes: 50
-        uses: gradle/gradle-build-action@v2
-        with:
-          gradle-home-cache-cleanup: true
-          cache-read-only: ${{ github.ref != 'refs/heads/main' || matrix.java != '17' }}
-          arguments: build assemble check --stacktrace --continue --scan
+        run: ./gradlew build assemble check --stacktrace --continue --scan
 
       - name: 'Build and check on ${{ matrix.os }} (split_targets, release)'
         if: matrix.os == 'windows-latest'
         timeout-minutes: 35
-        uses: gradle/gradle-build-action@v2
         env:
           RELEASE: true
+        run: ./gradlew build assemble check -Dsplit_targets --stacktrace --continue --scan --no-daemon
+
+      - name: "Add build scan URL as PR comment"
+        uses: actions/github-script@v6
+        if: github.event_name == 'pull_request' && failure()
         with:
-          gradle-home-cache-cleanup: true
-          cache-read-only: ${{ github.ref != 'refs/heads/main' || matrix.java != '17' }}
-          arguments: build assemble check -Dsplit_targets --stacktrace --continue --scan --no-daemon
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '❌ ${{ github.workflow }} failed: ${{ steps.gradle.outputs.build-scan-url }}'
+            })
 
       - name: Summary
         if: success() || failure()
@@ -136,7 +147,8 @@ jobs:
             !**/build/reports/dependency-analysis/
 
       - name: Upload merged sarif (Lint)
-        if: (success() || failure()) && matrix.os == 'macos-latest' && (github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev')
+        if: (success() || failure()) && matrix.os == 'macos-latest'
+          && (github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev')
         uses: github/codeql-action/upload-sarif@v2
         continue-on-error: true
         with:
@@ -144,7 +156,8 @@ jobs:
           category: lint
 
       - name: Upload merged sarif (Detekt)
-        if: (success() || failure()) && matrix.os == 'macos-latest' && (github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev')
+        if: (success() || failure()) && matrix.os == 'macos-latest'
+          && (github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev')
         uses: github/codeql-action/upload-sarif@v2
         continue-on-error: true
         with:
@@ -152,12 +165,14 @@ jobs:
           category: detekt
 
       - name: Publish JUnit test results as a pull request check
-        if: github.repository == 'fluxo-kt/fluxo' && github.ref == 'refs/heads/main' && matrix.os == 'macos-latest'
+        if: (success() || failure()) && matrix.os == 'macos-latest'
+          && github.repository == 'fluxo-kt/fluxo' && github.ref == 'refs/heads/main'
         uses: mikepenz/action-junit-report@v3
         with:
           report_paths: '**/build/test-results/*/TEST-*.xml'
 
       - name: 'Check release API and publish SNAPSHOT'
+        id: snapshot
         if: matrix.os == 'macos-latest' && matrix.java == '17'
           && steps.check.outcome == 'success'
           && github.event_name == 'push' && github.ref == 'refs/heads/main' && github.repository == 'fluxo-kt/fluxo'
@@ -167,8 +182,10 @@ jobs:
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
           RELEASE: true
-        uses: gradle/gradle-build-action@v2
-        with:
-          gradle-home-cache-cleanup: true
-          cache-read-only: ${{ github.ref != 'refs/heads/main' || matrix.java != '17' }}
-          arguments: apiCheck androidApiCheck publish -DDISABLE_TESTS --rerun-tasks --stacktrace --scan
+        run: ./gradlew apiCheck androidApiCheck publish -DDISABLE_TESTS --rerun-tasks --stacktrace --scan
+
+      - name: 'Check release API on ${{ matrix.os }}'
+        if: matrix.os != 'windows-latest' && steps.snapshot.outcome == 'skipped'
+        env:
+          RELEASE: true
+        run: ./gradlew apiCheck androidApiCheck --stacktrace --scan
