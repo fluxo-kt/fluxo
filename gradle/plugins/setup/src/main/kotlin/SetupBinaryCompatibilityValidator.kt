@@ -12,7 +12,8 @@ private const val PLUGIN_ID = "org.jetbrains.kotlinx.binary-compatibility-valida
 fun Project.setupBinaryCompatibilityValidator(
     config: BinaryCompatibilityValidatorConfig? = getDefaults<BinaryCompatibilityValidatorConfig>(),
 ) {
-    if (config?.disableForNonRelease == true && !isRelease().get()) {
+    val disabledByRelease = config?.disableForNonRelease == true && !isRelease().get()
+    if (disabledByRelease || disableTests().get() || !isGenericCompilationEnabled) {
         return
     }
     when {
@@ -23,31 +24,25 @@ fun Project.setupBinaryCompatibilityValidator(
 }
 
 private fun Project.setupBinaryCompatibilityValidatorMultiplatform(config: BinaryCompatibilityValidatorConfig?) {
-    plugins.apply(PLUGIN_ID)
+    applyBinaryCompatibilityValidator(config)
 
-    applyBinaryCompatibilityValidatorConfig(config)
-
-    afterEvaluate {
-        tasks.withType<KotlinApiCompareTask> {
-            val target = getTargetForTaskName(taskName = name)
-            if (target != null) {
-                enabled = isMultiplatformApiTargetAllowed(target)
-                if (!enabled) {
-                    println("API check $this disabled!")
-                }
+    tasks.withType<KotlinApiCompareTask> {
+        val target = getTargetForTaskName(taskName = name)
+        if (target != null) {
+            enabled = isMultiplatformApiTargetAllowed(target)
+            if (!enabled) {
+                println("API check $this disabled!")
             }
         }
     }
 }
 
 private fun Project.setupBinaryCompatibilityValidatorAndroidLibrary(config: BinaryCompatibilityValidatorConfig?) {
-    if (isGenericCompilationEnabled) {
-        plugins.apply(PLUGIN_ID)
-        applyBinaryCompatibilityValidatorConfig(config)
-    }
+    applyBinaryCompatibilityValidator(config)
 }
 
-private fun Project.applyBinaryCompatibilityValidatorConfig(config: BinaryCompatibilityValidatorConfig?) {
+private fun Project.applyBinaryCompatibilityValidator(config: BinaryCompatibilityValidatorConfig?) {
+    plugins.apply(PLUGIN_ID)
     config ?: return
     extensions.configure<ApiValidationExtension> {
         ignoredPackages += config.ignoredPackages
@@ -67,8 +62,8 @@ private fun getTargetForTaskName(taskName: String): ApiTarget? {
 }
 
 private fun Project.isMultiplatformApiTargetAllowed(target: ApiTarget): Boolean = when (target) {
-    ApiTarget.ANDROID -> isMultiplatformTargetEnabled(Target.ANDROID) && isGenericCompilationEnabled
-    ApiTarget.JVM -> isMultiplatformTargetEnabled(Target.JVM) && isGenericCompilationEnabled
+    ApiTarget.ANDROID -> isMultiplatformTargetEnabled(Target.ANDROID)
+    ApiTarget.JVM -> isMultiplatformTargetEnabled(Target.JVM)
 }
 
 private enum class ApiTarget {

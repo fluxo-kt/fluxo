@@ -32,6 +32,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinSingleTargetExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
+import org.jetbrains.kotlin.gradle.plugin.sources.AbstractKotlinSourceSet
 
 fun Project.setupKotlin(
     config: KotlinConfigSetup = requireDefaultKotlinConfigSetup(),
@@ -96,11 +97,17 @@ internal fun Project.setupKotlinExtension(
     }
 
     // Duplicate languageSettings here as the IDE doesn't catch settings from compile tasks.
+    val disableTests by disableTests()
     val kotlinLangVersion = config.getKotlinLangVersion(libs)
     logger.lifecycle("> Conf Kotlin language and API ${kotlinLangVersion.version}")
     val sourceSets = kotlin.sourceSets
     sourceSets.all {
         val isTestSet = "Test" in name
+
+        if (isTestSet && disableTests && this is AbstractKotlinSourceSet) {
+            compilations.forEach { it.disableCompilation() }
+        }
+
         languageSettings {
             // https://kotlinlang.org/docs/compatibility-modes.html
             languageVersion = kotlinLangVersion.version
@@ -128,8 +135,9 @@ internal fun Project.setupKotlinExtension(
 }
 
 private fun Project.setupKotlinTasks(config: KotlinConfigSetup, optIns: List<String>) = afterEvaluate {
-    val isCI by project.isCI()
-    val isRelease by project.isRelease()
+    val isCI by isCI()
+    val isRelease by isRelease()
+    val disableTests by disableTests()
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask<*>>().configureEach {
         val taskName = name
         val isJsTask = "Js" in taskName
@@ -137,6 +145,11 @@ private fun Project.setupKotlinTasks(config: KotlinConfigSetup, optIns: List<Str
         val isReleaseTask = "Release" in taskName
         val warningsAsErrors = config.warningsAsErrors &&
             !isJsTask && !isTestTask && (isCI || isRelease)
+
+        if (isTestTask && disableTests) {
+            enabled = false
+        }
+
         compilerOptions {
             if (warningsAsErrors) {
                 allWarningsAsErrors.set(true)

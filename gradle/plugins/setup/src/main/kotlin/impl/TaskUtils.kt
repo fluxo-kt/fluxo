@@ -1,8 +1,10 @@
 package impl
 
+import Compilations
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.DetektPlugin
 import isGenericCompilationEnabled
+import org.gradle.api.Named
 import org.gradle.api.Project
 import org.gradle.api.Task
 
@@ -11,6 +13,10 @@ internal fun Detekt.isDetektTaskAllowed(): Boolean = getTaskDetailsFromName(name
 
 internal fun Task.isTaskAllowedBasedByName(): Boolean {
     return getTaskDetailsFromName(name, allowNonDetekt = true).platform.isTaskAllowed(project)
+}
+
+internal fun Named.isTestRelated(): Boolean {
+    return getTaskDetailsFromName(name, allowNonDetekt = true).isTest
 }
 
 private fun DetectedTaskPlatform?.isTaskAllowed(project: Project): Boolean = when (this) {
@@ -72,8 +78,8 @@ private fun getTaskDetailsFromName(name: String, allowNonDetekt: Boolean = false
 @Suppress("CyclomaticComplexMethod")
 private fun detectPlatformFromString(platform: String?): DetectedTaskPlatform? = when {
     platform.isNullOrEmpty() ||
-            platform.equals("Common", ignoreCase = true) ||
-            platform.equals("Native", ignoreCase = true)
+        platform.equals("Common", ignoreCase = true) ||
+        platform.equals("Native", ignoreCase = true)
     -> null
 
     platform.equals("Js", ignoreCase = true) -> DetectedTaskPlatform.JS
@@ -81,26 +87,26 @@ private fun detectPlatformFromString(platform: String?): DetectedTaskPlatform? =
     platform.equals("Linux", ignoreCase = true) -> DetectedTaskPlatform.LINUX
 
     platform.equals("Android", ignoreCase = true) ||
-            platform.equals("bundle", ignoreCase = true) // Android AAR build tasks
+        platform.equals("bundle", ignoreCase = true) // Android AAR build tasks
     -> DetectedTaskPlatform.ANDROID
 
     platform.equals("Mingw", ignoreCase = true) ||
-            platform.equals("Win", ignoreCase = true) ||
-            platform.equals("Windows", ignoreCase = true)
+        platform.equals("Win", ignoreCase = true) ||
+        platform.equals("Windows", ignoreCase = true)
     -> DetectedTaskPlatform.WIN
 
     platform.equals("Jvm", ignoreCase = true) ||
-            platform.equals("Jmh", ignoreCase = true) ||
-            platform.equals("Dokka", ignoreCase = true) ||
-            platform.equals("Java", ignoreCase = true)
+        platform.equals("Jmh", ignoreCase = true) ||
+        platform.equals("Dokka", ignoreCase = true) ||
+        platform.equals("Java", ignoreCase = true)
     -> DetectedTaskPlatform.JVM
 
     platform.equals("Darwin", ignoreCase = true) ||
-            platform.equals("Apple", ignoreCase = true) ||
-            platform.equals("Ios", ignoreCase = true) ||
-            platform.equals("Watchos", ignoreCase = true) ||
-            platform.equals("Tvos", ignoreCase = true) ||
-            platform.equals("Macos", ignoreCase = true)
+        platform.equals("Apple", ignoreCase = true) ||
+        platform.equals("Ios", ignoreCase = true) ||
+        platform.equals("Watchos", ignoreCase = true) ||
+        platform.equals("Tvos", ignoreCase = true) ||
+        platform.equals("Macos", ignoreCase = true)
     -> DetectedTaskPlatform.DARWIN
 
     else -> DetectedTaskPlatform.UNKNOWN
@@ -133,5 +139,4 @@ private enum class DetectedTaskPlatform {
 
 internal fun String.splitCamelCase(limit: Int = 0): List<String> = split(CAMEL_CASE_REGEX, limit)
 
-@Suppress("PrivatePropertyName")
 private val CAMEL_CASE_REGEX = Regex("(?<![A-Z])\\B(?=[A-Z])")
