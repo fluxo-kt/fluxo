@@ -71,19 +71,21 @@ internal fun KotlinProjectExtension.disableCompilationsOfNeeded(project: Project
         }
 
         if (!project.isGenericCompilationEnabled) {
-            arrayOf(
-                org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsSetupTask::class.java,
-                org.jetbrains.kotlin.gradle.targets.js.npm.PublicPackageJsonTask::class.java,
-                org.jetbrains.kotlin.gradle.targets.js.npm.tasks.KotlinNpmInstallTask::class.java,
-                org.jetbrains.kotlin.gradle.targets.js.yarn.YarnLockStoreTask::class.java,
-            ).forEach { type ->
-                project.tasks.withType(type) {
+            /**
+             * @see org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsSetupTask
+             * @see org.jetbrains.kotlin.gradle.targets.js.npm.PublicPackageJsonTask
+             * @see org.jetbrains.kotlin.gradle.targets.js.npm.tasks.KotlinNpmInstallTask
+             * @see org.jetbrains.kotlin.gradle.targets.js.typescript.TypeScriptValidationTask
+             * @see org.jetbrains.kotlin.gradle.targets.js.yarn.YarnLockStoreTask
+             */
+            project.tasks
+                .matching { it::class.java.name.startsWith("org.jetbrains.kotlin.gradle.targets.js.") }
+                .configureEach {
                     if (enabled) {
                         logger.info("{}, {}, task disabled", project, this)
                         enabled = false
                     }
                 }
-            }
         }
     }
 }
@@ -165,8 +167,8 @@ private fun nativeFamilyFromString(platform: String?): Family = when {
     platform.equals("ios", ignoreCase = true) -> Family.IOS
 
     platform.equals("darwin", ignoreCase = true) ||
-        platform.equals("apple", ignoreCase = true) ||
-        platform.equals("macos", ignoreCase = true)
+            platform.equals("apple", ignoreCase = true) ||
+            platform.equals("macos", ignoreCase = true)
     -> Family.OSX
 
     platform.equals("android", ignoreCase = true) -> Family.ANDROID
@@ -174,8 +176,8 @@ private fun nativeFamilyFromString(platform: String?): Family = when {
     platform.equals("wasm", ignoreCase = true) -> Family.WASM
 
     platform.equals("mingw", ignoreCase = true) ||
-        platform.equals("win", ignoreCase = true) ||
-        platform.equals("windows", ignoreCase = true)
+            platform.equals("win", ignoreCase = true) ||
+            platform.equals("windows", ignoreCase = true)
     -> Family.MINGW
 
     else -> throw IllegalArgumentException("Unsupported family: $platform")
