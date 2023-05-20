@@ -6,7 +6,7 @@ plugins {
 setupKotlin(
     config = KotlinConfigSetup(
         kotlinLangVersion = "latest",
-        javaLangTarget = "11",
+        javaLangTarget = "17",
         optInInternal = true,
         optIns = listOf("kt.fluxo.common.annotation.ExperimentalFluxoApi"),
     )
