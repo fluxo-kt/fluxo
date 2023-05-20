@@ -48,7 +48,7 @@ fun Project.setupAndroidLibrary(
     setupRoom: Boolean = false,
     setupKsp: Boolean = setupRoom || hasKsp,
     setupCompose: Boolean = false,
-    config: AndroidConfigSetup = requireDefaults(),
+    config: AndroidConfigSetup = requireDefaultAndroidConfigSetup(),
     kotlinConfig: KotlinConfigSetup = requireDefaultKotlinConfigSetup(),
     body: (LibraryExtension.() -> Unit)? = null,
 ) {
@@ -82,7 +82,7 @@ fun Project.setupAndroidApp(
     setupRoom: Boolean = false,
     setupKsp: Boolean = setupRoom || hasKsp,
     setupCompose: Boolean = false,
-    config: AndroidConfigSetup = requireDefaults(),
+    config: AndroidConfigSetup = requireDefaultAndroidConfigSetup(),
     kotlinConfig: KotlinConfigSetup = requireDefaultKotlinConfigSetup(),
     body: (BaseAppModuleExtension.() -> Unit)? = null,
 ) {
@@ -120,7 +120,7 @@ fun Project.setupAndroidApp(
 @Suppress("UnstableApiUsage", "LongParameterList")
 internal fun Project.setupAndroidCommon(
     namespace: String,
-    config: AndroidConfigSetup = requireDefaults(),
+    config: AndroidConfigSetup = requireDefaultAndroidConfigSetup(),
     enableBuildConfig: Boolean? = null,
     setupRoom: Boolean = false,
     setupKsp: Boolean = setupRoom || hasKsp,

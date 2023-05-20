@@ -2,7 +2,7 @@ import com.android.build.api.dsl.CommonExtension
 import org.gradle.api.Project
 
 @Suppress("LongParameterList")
-class AndroidConfigSetup(
+data class AndroidConfigSetup(
     val compileSdkVersion: Int,
     val minSdkVersion: Int = 15,
     val targetSdkVersion: Int = compileSdkVersion,
@@ -24,3 +24,5 @@ class AndroidConfigSetup(
 
     val configurator: (CommonExtension<*, *, *, *>.(Project) -> Unit)? = null,
 )
+
+fun Project.requireDefaultAndroidConfigSetup(): AndroidConfigSetup = requireDefaults()
