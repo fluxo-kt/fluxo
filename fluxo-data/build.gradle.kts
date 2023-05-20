@@ -22,7 +22,6 @@ setupMultiplatform(
         }
     }
 }
-setupMultiplatform(namespace = "kt.fluxo.data")
 setupPublication()
 setupBinaryCompatibilityValidator()
 
