@@ -1,6 +1,6 @@
 import com.android.build.gradle.LibraryExtension
 import impl.hasExtension
-import js.api.KotlinJsApiBuildTask
+import js.api.configureJsApiTasks
 import kotlinx.validation.ApiValidationExtension
 import kotlinx.validation.KotlinApiCompareTask
 import org.gradle.api.Project
@@ -28,7 +28,7 @@ private fun Project.setupBinaryCompatibilityValidatorMultiplatform(config: Binar
     applyBinaryCompatibilityValidator(config)
 
     if (config?.jsApiChecks != false) {
-        KotlinJsApiBuildTask.setupTask(project = this, multiplatformExtension)
+        configureJsApiTasks(multiplatformExtension)
     }
 
     tasks.withType<KotlinApiCompareTask> {
@@ -62,6 +62,7 @@ private fun getTargetForTaskName(taskName: String): ApiTarget? {
     return when (targetName) {
         "android" -> ApiTarget.ANDROID
         "jvm" -> ApiTarget.JVM
+        "js" -> ApiTarget.JS
         else -> error("Unsupported API check task name: $taskName")
     }
 }
@@ -69,9 +70,11 @@ private fun getTargetForTaskName(taskName: String): ApiTarget? {
 private fun Project.isMultiplatformApiTargetAllowed(target: ApiTarget): Boolean = when (target) {
     ApiTarget.ANDROID -> isMultiplatformTargetEnabled(Target.ANDROID)
     ApiTarget.JVM -> isMultiplatformTargetEnabled(Target.JVM)
+    ApiTarget.JS -> isMultiplatformTargetEnabled(Target.JS)
 }
 
 private enum class ApiTarget {
     ANDROID,
     JVM,
+    JS,
 }

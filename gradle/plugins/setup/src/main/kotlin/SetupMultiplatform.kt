@@ -252,6 +252,7 @@ fun KotlinMultiplatformExtension.setupSourceSets(block: MultiplatformSourceSets.
 internal enum class Target {
     ANDROID,
     JVM,
+    JS,
 }
 
 internal fun Project.isMultiplatformTargetEnabled(target: Target): Boolean =
@@ -262,8 +263,8 @@ internal fun KotlinTargetsContainer.isMultiplatformTargetEnabled(target: Target)
         when (it.platformType) {
             KotlinPlatformType.androidJvm -> target == Target.ANDROID
             KotlinPlatformType.jvm -> target == Target.JVM
+            KotlinPlatformType.js -> target == Target.JS
             KotlinPlatformType.common,
-            KotlinPlatformType.js,
             KotlinPlatformType.native,
             KotlinPlatformType.wasm,
             -> false
