@@ -34,4 +34,9 @@ class BinaryCompatibilityValidatorConfig(
      * @see kotlinx.validation.ApiValidationExtension.validationDisabled
      */
     val disableForNonRelease: Boolean = false,
+
+    /**
+     * Whether to verify JS API. Uses compiled TypeScript definitions.
+     */
+    val jsApiChecks: Boolean = true,
 )

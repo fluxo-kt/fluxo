@@ -1,5 +1,6 @@
 import com.android.build.gradle.LibraryExtension
 import impl.hasExtension
+import js.api.KotlinJsApiBuildTask
 import kotlinx.validation.ApiValidationExtension
 import kotlinx.validation.KotlinApiCompareTask
 import org.gradle.api.Project
@@ -25,6 +26,10 @@ fun Project.setupBinaryCompatibilityValidator(
 
 private fun Project.setupBinaryCompatibilityValidatorMultiplatform(config: BinaryCompatibilityValidatorConfig?) {
     applyBinaryCompatibilityValidator(config)
+
+    if (config?.jsApiChecks != false) {
+        KotlinJsApiBuildTask.setupTask(project = this, multiplatformExtension)
+    }
 
     tasks.withType<KotlinApiCompareTask> {
         val target = getTargetForTaskName(taskName = name)
