@@ -13,10 +13,16 @@ private const val PLUGIN_ID = "org.jetbrains.kotlinx.binary-compatibility-valida
 fun Project.setupBinaryCompatibilityValidator(
     config: BinaryCompatibilityValidatorConfig? = getDefaults<BinaryCompatibilityValidatorConfig>(),
 ) {
-    val disabledByRelease = config?.disableForNonRelease == true && !isRelease().get()
-    if (disabledByRelease || disableTests().get() || !isGenericCompilationEnabled) {
-        return
+    val calledExplicitly = gradle.startParameter.taskNames
+        .any { it.endsWith("apiCheck", ignoreCase = true) }
+
+    if (!calledExplicitly) {
+        val disabledByRelease = config?.disableForNonRelease == true && !isRelease().get()
+        if (disabledByRelease || disableTests().get() || !isGenericCompilationEnabled) {
+            return
+        }
     }
+
     when {
         hasExtension<KotlinMultiplatformExtension>() -> setupBinaryCompatibilityValidatorMultiplatform(config)
         hasExtension<LibraryExtension>() -> setupBinaryCompatibilityValidatorAndroidLibrary(config)
