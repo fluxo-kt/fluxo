@@ -24,12 +24,12 @@
 If you need predictable unidirectional data flow (`UDF`) or deterministic control over your state changes,
 **Fluxo** will get you covered!
 
-**Work-In-Progress**, first release is coming. **API isn’t stable yet!**
+**⚠ Work-In-Progress**, first release is coming. **API isn’t stable yet!**
 
 ### TLDR: Use SNAPSHOT artefact in Gradle (in a safe and reproducible way)
 [![Latest snapshot](https://img.shields.io/badge/dynamic/xml?color=f68244&logo=gradle&label=Latest%20snapshot&query=%2F%2Fversion%5Blast%28%29%5D&url=https%3A%2F%2Fs01.oss.sonatype.org%2Fcontent%2Frepositories%2Fsnapshots%2Fio%2Fgithub%2Ffluxo-kt%2Ffluxo-core%2Fmaven-metadata.xml)](https://s01.oss.sonatype.org/content/repositories/snapshots/io/github/fluxo-kt/fluxo-core/maven-metadata.xml)
 <br>Select a snapshot for the preferred commit using a scheme: `0.1-<SHORT_COMMIT_SHA>-SNAPSHOT`.
-<br>For example: `0.1-3aa8d38-SNAPSHOT`
+<br>For example: `0.1-140e32d-SNAPSHOT`
 
 ```kotlin
 implementation("io.github.fluxo-kt:fluxo-core:0.1-<SHORT_COMMIT_SHA>-SNAPSHOT")
@@ -219,7 +219,7 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super
 * Well tested.
 * Great performance.
   * See the [updated JMH benchmark results](../../actions/workflows/benchmark.yml), comparing different state-managing libs,
-    e.g. [this one](../../actions/runs/4903037483#summary-13285740233).
+    e.g. [this one](../../actions/runs/5034001997#summary-13632216961).
 * Reactive streams compatibility
   through [coroutine wrappers](https://github.com/Kotlin/kotlinx.coroutines/tree/master/reactive):
   * RxJava 2.x, RxJava 3.x
@@ -231,33 +231,35 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super
 
 ### Known IDE issues
 
-* IDE actions «Go to declaration» and «Quick Documentation» don’t work for `container` builders due to [KT-58512](https://youtrack.jetbrains.com/issue/KT-58512/).
+* ⚠ IDE actions «Go to declaration» and «Quick Documentation» don’t work for `container` builders due to [KT-58512](https://youtrack.jetbrains.com/issue/KT-58512/).
 
 
-### JMH Benchmark results
+### Benchmarks and research
 
-Compares the performance of different MVI libraries (state-management libraries).<br>
-Deep feature comparison is in-progress.
-Write [me](https://t.me/samally) if you want early access!
+Compares the performance of different MVI state-management libraries.<br>
+**[Deep feature comparison research](https://docs.google.com/spreadsheets/d/1gbwXU5Vp9QGvph1rLu0hv90KqrHNhkZyKTxk_I_yBJk) is in-progress.**
 
-> Single-thread simple incrementing intents (14 tests, [2023-05-06](../../actions/runs/4903037483#summary-13285740233)), [updates on CI](../../actions/workflows/benchmark.yml).
+> Single-thread simple incrementing intents (14 tests, [2023-05-06](../../actions/runs/5034001997#summary-13632216961)), [updates on CI](../../actions/workflows/benchmark.yml).
 > <br>Each operation creates a state store, sends 5000 intents with reduction, and checks state updates.
 
 | Benchmark | Mode | Score | Units | Percent |
 |-----------|:----:|------:|-------|--------:|
-| reduxkotlin__mvi_reducer | <sub>thrpt</sub> | <b>9.949</b><sub><i> &#177; 0.105</i></sub> | <sub>ops/ms</sub> | <sub><i>0.0%</i></sub> |
-| mvicore__mvi_reducer | <sub>thrpt</sub> | <b>5.787</b><sub><i> &#177; 0.029</i></sub> | <sub>ops/ms</sub> | <sub><i>-41.8%</i></sub> |
-| visualfsm__sm_reducer | <sub>thrpt</sub> | <b>5.239</b><sub><i> &#177; 0.037</i></sub> | <sub>ops/ms</sub> | <sub><i>-47.3%</i></sub> |
-| fluxo__mvi_reducer | <sub>thrpt</sub> | <b>5.106</b><sub><i> &#177; 0.089</i></sub> | <sub>ops/ms</sub> | <sub><i>-48.7%</i></sub> |
-| mvikotlin__mvi_reducer | <sub>thrpt</sub> | <b>2.074</b><sub><i> &#177; 0.049</i></sub> | <sub>ops/ms</sub> | <sub><i>-79.2%</i></sub> |
-| reduktor__mvi_reducer | <sub>thrpt</sub> | <b>1.869</b><sub><i> &#177; 0.021</i></sub> | <sub>ops/ms</sub> | <sub><i>-81.2%</i></sub> |
-| fluxo__mvvmp_intent | <sub>thrpt</sub> | <b>1.457</b><sub><i> &#177; 0.025</i></sub> | <sub>ops/ms</sub> | <sub><i>-85.4%</i></sub> |
-| genakureduce__mvi_handler | <sub>thrpt</sub> | <b>1.443</b><sub><i> &#177; 0.018</i></sub> | <sub>ops/ms</sub> | <sub><i>-85.5%</i></sub> |
-| fluxo__mvi_handler | <sub>thrpt</sub> | <b>1.438</b><sub><i> &#177; 0.036</i></sub> | <sub>ops/ms</sub> | <sub><i>-85.5%</i></sub> |
-| orbit__mvvmp_intent | <sub>thrpt</sub> | <b>0.639</b><sub><i> &#177; 0.021</i></sub> | <sub>ops/ms</sub> | <sub><i>-93.6%</i></sub> |
-| ballast__mvi_handler | <sub>thrpt</sub> | <b>0.597</b><sub><i> &#177; 0.016</i></sub> | <sub>ops/ms</sub> | <sub><i>-94.0%</i></sub> |
-| flowmvi__mvi_handler | <sub>thrpt</sub> | <b>0.445</b><sub><i> &#177; 0.013</i></sub> | <sub>ops/ms</sub> | <sub><i>-95.5%</i></sub> |
-| flowredux__mvi_handler | <sub>thrpt</sub> | <b>0.112</b><sub><i> &#177; 0.003</i></sub> | <sub>ops/ms</sub> | <sub><i>-98.9%</i></sub> |
+| reduxkotlin__mvi_reducer | <sub>thrpt</sub> | <b>8.650</b><sub><i> &#177; 0.139</i></sub> | <sub>ops/ms</sub> | <sub><i>0.0%</i></sub> |
+| mvicore__mvi_reducer | <sub>thrpt</sub> | <b>5.014</b><sub><i> &#177; 0.036</i></sub> | <sub>ops/ms</sub> | <sub><i>-42.0%</i></sub> |
+| visualfsm__sm_reducer | <sub>thrpt</sub> | <b>4.573</b><sub><i> &#177; 0.106</i></sub> | <sub>ops/ms</sub> | <sub><i>-47.1%</i></sub> |
+| fluxo__mvi_reducer | <sub>thrpt</sub> | <b>4.336</b><sub><i> &#177; 0.099</i></sub> | <sub>ops/ms</sub> | <sub><i>-49.9%</i></sub> |
+| tindersm__sm_reducer | <sub>thrpt</sub> | <b>1.963</b><sub><i> &#177; 0.026</i></sub> | <sub>ops/ms</sub> | <sub><i>-77.3%</i></sub> |
+| mvikotlin__mvi_reducer | <sub>thrpt</sub> | <b>1.678</b><sub><i> &#177; 0.114</i></sub> | <sub>ops/ms</sub> | <sub><i>-80.6%</i></sub> |
+| reduktor__mvi_reducer | <sub>thrpt</sub> | <b>1.616</b><sub><i> &#177; 0.012</i></sub> | <sub>ops/ms</sub> | <sub><i>-81.3%</i></sub> |
+| fluxo__mvvmp_intent | <sub>thrpt</sub> | <b>1.198</b><sub><i> &#177; 0.057</i></sub> | <sub>ops/ms</sub> | <sub><i>-86.2%</i></sub> |
+| genakureduce__mvi_handler | <sub>thrpt</sub> | <b>1.178</b><sub><i> &#177; 0.027</i></sub> | <sub>ops/ms</sub> | <sub><i>-86.4%</i></sub> |
+| fluxo__mvi_handler | <sub>thrpt</sub> | <b>1.099</b><sub><i> &#177; 0.110</i></sub> | <sub>ops/ms</sub> | <sub><i>-87.3%</i></sub> |
+| mobiuskt__sm_reducer | <sub>thrpt</sub> | <b>0.782</b><sub><i> &#177; 0.033</i></sub> | <sub>ops/ms</sub> | <sub><i>-91.0%</i></sub> |
+| elmslie__elm_reducer | <sub>thrpt</sub> | <b>0.543</b><sub><i> &#177; 0.127</i></sub> | <sub>ops/ms</sub> | <sub><i>-93.7%</i></sub> |
+| orbit__mvvmp_intent | <sub>thrpt</sub> | <b>0.482</b><sub><i> &#177; 0.012</i></sub> | <sub>ops/ms</sub> | <sub><i>-94.4%</i></sub> |
+| ballast__mvi_handler | <sub>thrpt</sub> | <b>0.390</b><sub><i> &#177; 0.024</i></sub> | <sub>ops/ms</sub> | <sub><i>-95.5%</i></sub> |
+| flowmvi__mvi_handler | <sub>thrpt</sub> | <b>0.353</b><sub><i> &#177; 0.005</i></sub> | <sub>ops/ms</sub> | <sub><i>-95.9%</i></sub> |
+| flowredux__mvi_handler | <sub>thrpt</sub> | <b>0.096</b><sub><i> &#177; 0.005</i></sub> | <sub>ops/ms</sub> | <sub><i>-98.9%</i></sub> |
 
 
 ### Roadmap
