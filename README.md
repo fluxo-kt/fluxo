@@ -301,9 +301,10 @@ Compares the performance of different MVI state-management libraries.<br>
 
 ### Heavily inspired by
 
-* [Ballast](https://github.com/copper-leaf/ballast)
+* [Ballast](https://github.com/copper-leaf/ballast) state management
 * [Orbit MVI](https://github.com/orbit-mvi/orbit-mvi)
 * [MVIKotlin](https://github.com/arkivanov/MVIKotlin)
+* [FlowMVI](https://github.com/respawn-app/FlowMVI)
 
 ### Versioning
 
@@ -313,7 +314,7 @@ For the versions available, see the [tags on this repository](../../tags).
 ### Code quality and more
 
 <!-- Update Lines-of-Code value manually from https://codecov.io/gh/fluxo-kt/fluxo -->
-[![Lines-of-Code](https://img.shields.io/badge/Lines--of--Code-1005-blue)](https://codecov.io/gh/fluxo-kt/fluxo)
+[![Lines-of-Code](https://img.shields.io/badge/Lines--of--Code-1009-blue)](https://codecov.io/gh/fluxo-kt/fluxo)
 [![Hits-of-Code, number of lines changed over time](https://hitsofcode.com/github/fluxo-kt/fluxo?branch=main)](https://hitsofcode.com/)
 <br>
 [![CodeFactor](https://www.codefactor.io/repository/github/fluxo-kt/fluxo/badge/main)](https://www.codefactor.io/repository/github/fluxo-kt/fluxo/overview/main)
