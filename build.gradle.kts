@@ -12,6 +12,7 @@ buildscript {
 
 plugins {
     id("fluxo-setup")
+    id("io.github.fluxo-kt.binary-compatibility-validator-js") apply false
     alias(libs.plugins.android.lib) apply false
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.kotlin.dokka) apply false

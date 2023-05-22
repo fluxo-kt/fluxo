@@ -262,10 +262,10 @@ private val signingKeyNotificationLogged = AtomicBoolean()
 internal fun Project.setupPublicationRepository(config: PublicationConfig) {
     val notify = signingKeyNotificationLogged.compareAndSet(false, true)
     if (config.isSigningEnabled) {
-        if (notify) logger.lifecycle("> Conf SIGNING KEY SET, applying signing configuration")
+        if (notify) logger.lifecycle("> Conf SIGNING_KEY SET, applying signing configuration")
         plugins.apply("signing")
     } else if (notify) {
-        logger.warn("> Conf SIGNING KEY IS NOT SET! Publications are unsigned")
+        logger.warn("> Conf SIGNING_KEY IS NOT SET! Publications are unsigned")
     }
 
     extensions.configure<PublishingExtension> {

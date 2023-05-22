@@ -54,6 +54,7 @@ com.fasterxml.jackson:jackson-bom:2.12.7
 com.fasterxml.woodstox:woodstox-core:6.2.4
 com.github.ben-manes.versions:com.github.ben-manes.versions.gradle.plugin:0.46.0
 com.github.ben-manes:gradle-versions-plugin:0.46.0
+com.github.fluxo-kt.fluxo-bcv-js:fluxo-bcv-js:d29a9564b4
 com.google.android:annotations:4.1.1.4
 com.google.api.grpc:proto-google-common-protos:2.0.1
 com.google.auto.value:auto-value-annotations:1.6.2
