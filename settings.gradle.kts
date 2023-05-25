@@ -9,11 +9,6 @@ pluginManagement {
         maven("https://maven.pkg.jetbrains.space/kotlin/p/dokka/dev/")
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
-    resolutionStrategy.eachPlugin {
-        if (requested.id.toString() == "io.github.fluxo-kt.binary-compatibility-validator-js") {
-            useModule("com.github.fluxo-kt.fluxo-bcv-js:fluxo-bcv-js:d29a9564b4")
-        }
-    }
     plugins {
         // Gradle Plugin to enable auto-completion and symbol resolution for all Kotlin/Native platforms.
         // Does project repo addition, but can be enabled disabled once required libs downloaded and saved

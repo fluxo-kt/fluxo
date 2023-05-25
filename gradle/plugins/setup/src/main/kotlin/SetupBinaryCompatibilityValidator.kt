@@ -1,5 +1,7 @@
 import com.android.build.gradle.LibraryExtension
 import impl.hasExtension
+import impl.libsCatalog
+import impl.onPlugin
 import kotlinx.validation.ApiValidationExtension
 import kotlinx.validation.KotlinApiCompareTask
 import org.gradle.api.Project
@@ -33,7 +35,9 @@ private fun Project.setupBinaryCompatibilityValidatorMultiplatform(config: Binar
     applyBinaryCompatibilityValidator(config)
 
     if (config?.jsApiChecks != false) {
-        plugins.apply("io.github.fluxo-kt.binary-compatibility-validator-js")
+        if (!libsCatalog.onPlugin("fluxo-bcv-js") { plugins.apply(it.pluginId) }) {
+            plugins.apply("io.github.fluxo-kt.binary-compatibility-validator-js")
+        }
     }
 
     tasks.withType<KotlinApiCompareTask> {

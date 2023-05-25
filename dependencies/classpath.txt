@@ -54,7 +54,6 @@ com.fasterxml.jackson:jackson-bom:2.12.7
 com.fasterxml.woodstox:woodstox-core:6.2.4
 com.github.ben-manes.versions:com.github.ben-manes.versions.gradle.plugin:0.46.0
 com.github.ben-manes:gradle-versions-plugin:0.46.0
-com.github.fluxo-kt.fluxo-bcv-js:fluxo-bcv-js:d29a9564b4
 com.google.android:annotations:4.1.1.4
 com.google.api.grpc:proto-google-common-protos:2.0.1
 com.google.auto.value:auto-value-annotations:1.6.2
@@ -89,6 +88,8 @@ commons-io:commons-io:2.4
 commons-logging:commons-logging:1.2
 io.github.davidburstrom.contester:contester-breakpoint:0.2.0
 io.github.detekt.sarif4k:sarif4k:0.2.0
+io.github.fluxo-kt.binary-compatibility-validator-js:io.github.fluxo-kt.binary-compatibility-validator-js.gradle.plugin:0.1.0
+io.github.fluxo-kt:fluxo-bcv-js:0.1.0
 io.github.x-stream:mxparser:1.2.2
 io.gitlab.arturbosch.detekt:detekt-api:1.23.0-RC3
 io.gitlab.arturbosch.detekt:detekt-core:1.23.0-RC3

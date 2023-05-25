@@ -53,6 +53,15 @@ internal fun VersionCatalog.plugin(alias: String): Provider<PluginDependency> {
     return findPlugin(alias).get()
 }
 
+internal fun VersionCatalog.onPlugin(alias: String, body: (PluginDependency) -> Unit): Boolean {
+    val opt = findPlugin(alias)
+    if (opt.isPresent) {
+        body(opt.get().get())
+        return true
+    }
+    return false
+}
+
 
 internal fun VersionCatalog.onVersion(alias: String, body: (String) -> Unit): Boolean {
     val opt = findVersion(alias)
