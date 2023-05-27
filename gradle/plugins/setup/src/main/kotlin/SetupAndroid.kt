@@ -124,7 +124,7 @@ internal fun Project.setupAndroidCommon(
     enableBuildConfig: Boolean? = null,
     setupRoom: Boolean = false,
     setupKsp: Boolean = setupRoom || hasKsp,
-    setupCompose: Boolean = false,
+    setupCompose: Boolean = config.setupCompose,
     kotlinConfig: KotlinConfigSetup = requireDefaultKotlinConfigSetup(),
 ) {
     // https://developer.android.com/studio/build/extend-agp
