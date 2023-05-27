@@ -44,7 +44,8 @@ setupDefaults(
 
                 compilations.all {
                     kotlinOptions {
-                        // moduleKind = "es"
+                        moduleKind = "es"
+                        useEsClasses = true
                         sourceMap = true
                         metaInfo = true
                     }
