@@ -1,5 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.2.0-alpha01" type="baseline" client="gradle" dependencies="false" name="AGP (8.0.1)" variant="all" version="8.2.0-alpha01">
+<issues format="6" by="lint 8.2.0-alpha05" type="baseline" client="gradle" dependencies="false" name="AGP (8.0.2)" variant="all" version="8.2.0-alpha05">
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of io.arrow-kt:arrow-core than 1.2.0-RC is available: 2.0.0-SNAPSHOT">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="58"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of io.arrow-kt:arrow-stack than 1.2.0-RC is available: 2.0.0-SNAPSHOT">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="58"
+            column="9"/>
+    </issue>
 
     <issue
         id="NewerVersionAvailable"
