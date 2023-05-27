@@ -55,7 +55,7 @@ android-gradle-plugin = "8.0.1"
 
 # Λrrow - Functional companion to Kotlin's Standard Library
 # https://mvnrepository.com/artifact/io.arrow-kt/arrow-core
-arrow = "1.1.5"
+arrow = "1.2.0-RC"
 
 # https://github.com/detekt/detekt/releases
 detekt = "1.23.0-RC3"
