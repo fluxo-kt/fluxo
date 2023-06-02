@@ -86,11 +86,11 @@ jmh = "1.36"
 js-engineIo = "6.4.2"           # https://www.npmjs.com/package/engine.io?activeTab=versions
 js-karma = "6.4.2"              # https://www.npmjs.com/package/karma?activeTab=versions
 js-mocha = "10.2.0"             # https://www.npmjs.com/package/mocha?activeTab=versions
-js-socketIo = "4.6.1"           # https://www.npmjs.com/package/socket.io?activeTab=versions
+js-socketIo = "4.6.2"           # https://www.npmjs.com/package/socket.io?activeTab=versions
 js-uaParserJs = "0.7.35"        # https://www.npmjs.com/package/ua-parser-js?activeTab=versions
-js-webpack = "5.81.0"           # https://www.npmjs.com/package/webpack?activeTab=versions
-js-webpackCli = "5.0.2"         # https://www.npmjs.com/package/webpack-cli?activeTab=versions
-js-webpackDevServer = "4.13.3"  # https://www.npmjs.com/package/webpack-dev-server?activeTab=versions
+js-webpack = "5.85.0"           # https://www.npmjs.com/package/webpack?activeTab=versions
+js-webpackCli = "5.1.1"         # https://www.npmjs.com/package/webpack-cli?activeTab=versions
+js-webpackDevServer = "4.15.0"  # https://www.npmjs.com/package/webpack-dev-server?activeTab=versions
 
 
 # Libraries to compare/benchmark against
