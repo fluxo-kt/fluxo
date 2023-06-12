@@ -28,7 +28,7 @@ kotlinLangVersion = "1.7"
 
 # https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-gradle-plugin
 # WARN: Don't forget to update kotlin version badge in ../README.md
-kotlin = "1.8.21"
+kotlin = "1.8.22"
 
 # https://github.com/google/ksp/releases
 ksp = "1.8.21-1.0.11"
