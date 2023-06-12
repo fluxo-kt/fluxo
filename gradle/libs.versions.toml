@@ -235,8 +235,8 @@ fluxo-bcv-js = { id = "io.github.fluxo-kt.binary-compatibility-validator-js", ve
 
 # Gradle Versions Plugin: provides a task to determine which dependencies have updates
 # https://github.com/ben-manes/gradle-versions-plugin
-# https://mvnrepository.com/artifact/com.github.ben-manes/gradle-versions-plugin?repo=gradle-plugins
-deps-versions = { id = "com.github.ben-manes.versions", version = "0.46.0" }
+# https://plugins.gradle.org/plugin/com.github.ben-manes.versions
+deps-versions = { id = "com.github.ben-manes.versions", version = "0.48.0" }
 
 # Detect unused and misused dependencies
 # https://github.com/autonomousapps/dependency-analysis-android-gradle-plugin/tags
