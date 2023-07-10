@@ -160,7 +160,7 @@ plugin-jetbrains-compose = { group = "org.jetbrains.compose", name = "compose-gr
 
 # https://github.com/mrmans0n/compose-rules/releases
 # https://mvnrepository.com/artifact/io.nlopez.compose.rules/detekt
-detekt-compose = { module = "io.nlopez.compose.rules:detekt", version = "0.1.7" }
+detekt-compose = { module = "io.nlopez.compose.rules:detekt", version = "0.1.12" }
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 detekt-core = { module = "io.gitlab.arturbosch.detekt:detekt-core", version.ref = "detekt" }
 
