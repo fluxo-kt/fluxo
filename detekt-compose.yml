@@ -4,9 +4,15 @@ Compose:
     active: true
   ContentEmitterReturningValues:
     active: true
+  DefaultsVisibility:
+    active: true
   ModifierComposable:
     active: true
   ModifierMissing:
+    active: true
+  ModifierNaming:
+    active: true
+  ModifierNotUsedAtRoot:
     active: true
   ModifierReused:
     active: true
