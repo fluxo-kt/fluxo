@@ -194,7 +194,7 @@ jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", ver
 # https://mvnrepository.com/artifact/org.jsoup/jsoup
 jsoup = { module = "org.jsoup:jsoup", version = "1.16.1" }
 # https://mvnrepository.com/artifact/org.json/json
-org-json = { module = "org.json:json", version = "20230227" }
+org-json = { module = "org.json:json", version = "20230618" }
 # https://mvnrepository.com/artifact/com.fasterxml.woodstox/woodstox-core
 woodstox-core = { module = "com.fasterxml.woodstox:woodstox-core", version = "6.5.1" }
 
