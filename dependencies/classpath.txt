@@ -185,7 +185,7 @@ org.jetbrains.kotlin:kotlin-tooling-core:1.8.21
 org.jetbrains.kotlin:kotlin-util-io:1.8.21
 org.jetbrains.kotlin:kotlin-util-klib:1.8.21
 org.jetbrains.kotlinx.binary-compatibility-validator:org.jetbrains.kotlinx.binary-compatibility-validator.gradle.plugin:0.12.1
-org.jetbrains.kotlinx.kover:org.jetbrains.kotlinx.kover.gradle.plugin:0.7.1
+org.jetbrains.kotlinx.kover:org.jetbrains.kotlinx.kover.gradle.plugin:0.7.3
 org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.20.2
 org.jetbrains.kotlinx:atomicfu-transformer:0.20.2
 org.jetbrains.kotlinx:binary-compatibility-validator:0.12.1
@@ -198,7 +198,7 @@ org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.4.1
 org.jetbrains.kotlinx:kotlinx-serialization-core:1.4.1
 org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.4.1
 org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1
-org.jetbrains.kotlinx:kover-gradle-plugin:0.7.1
+org.jetbrains.kotlinx:kover-gradle-plugin:0.7.3
 org.jetbrains:annotations:13.0
 org.jetbrains:markdown-jvm:0.3.1
 org.jetbrains:markdown:0.3.1

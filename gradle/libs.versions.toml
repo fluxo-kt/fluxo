@@ -63,7 +63,7 @@ detekt = "1.23.0"
 # Kotlin code coverage plugin
 # https://github.com/Kotlin/kotlinx-kover/releases
 # https://mvnrepository.com/artifact/org.jetbrains.kotlinx.kover/org.jetbrains.kotlinx.kover.gradle.plugin
-kover = "0.7.1"
+kover = "0.7.3"
 
 # Compose Multiplatform
 # https://github.com/JetBrains/compose-multiplatform/releases
