@@ -133,7 +133,7 @@ internal fun Project.setupAndroidCommon(
         it.onFinalizeDsl(project)
     }
 
-    extensions.configure<CommonExtension<*, *, *, *>>("android") {
+    extensions.configure<CommonExtension<*, *, *, *, *>>("android") {
         val ns = namespace.replace('-', '.').lowercase()
         logger.lifecycle("> Conf Android namespace '$ns'")
         this.namespace = ns
@@ -227,7 +227,7 @@ internal fun Project.setupAndroidCommon(
     }
 }
 
-private fun CommonExtension<*, *, *, *>.setupAndroidBasic(
+private fun CommonExtension<*, *, *, *, *>.setupAndroidBasic(
     config: AndroidConfigSetup,
     project: Project,
     setupRoom: Boolean,
@@ -274,7 +274,7 @@ private fun CommonExtension<*, *, *, *>.setupAndroidBasic(
     }
 }
 
-private fun CommonExtension<*, *, *, *>.setupDefaultConfig(
+private fun CommonExtension<*, *, *, *, *>.setupDefaultConfig(
     config: AndroidConfigSetup,
     project: Project,
     setupRoom: Boolean,
@@ -340,7 +340,7 @@ private fun CommonExtension<*, *, *, *>.setupDefaultConfig(
     }
 }
 
-private fun CommonExtension<*, *, *, *>.setupPackagingOptions(project: Project) {
+private fun CommonExtension<*, *, *, *, *>.setupPackagingOptions(project: Project) {
     packaging {
         val isCI by project.isCI()
         val isRelease by project.isRelease()
@@ -407,7 +407,7 @@ private fun CommonExtension<*, *, *, *>.setupPackagingOptions(project: Project) 
     }
 }
 
-private fun CommonExtension<*, *, *, *>.kotlinOptions(
+private fun CommonExtension<*, *, *, *, *>.kotlinOptions(
     project: Project,
     configure: Action<KotlinJvmOptions>,
 ) {
@@ -621,7 +621,7 @@ internal fun DependencyHandler.setupAndroidDependencies(
     }
 }
 
-private fun CommonExtension<*, *, *, *>.onFinalizeDsl(project: Project) {
+private fun CommonExtension<*, *, *, *, *>.onFinalizeDsl(project: Project) {
     val buildConfigIsRequired = buildFeatures.buildConfig == true || buildTypes.any {
         /** @see com.android.build.gradle.internal.dsl.BuildType */
         (it as BaseConfig).buildConfigFields.isNotEmpty()

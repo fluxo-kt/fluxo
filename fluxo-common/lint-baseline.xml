@@ -1,31 +1,229 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.2.0-alpha05" type="baseline" client="gradle" dependencies="false" name="AGP (8.0.2)" variant="all" version="8.2.0-alpha05">
+<issues format="6" by="lint 8.3.0-alpha04" type="baseline" client="gradle" dependencies="false" name="AGP (8.1.1)" variant="all" version="8.3.0-alpha04">
 
     <issue
         id="GradleDependency"
-        message="A newer version of io.arrow-kt:arrow-core than 1.2.0-RC is available: 2.0.0-SNAPSHOT">
+        message="A newer version of org.jetbrains.kotlin:atomicfu than 1.8.21 is available: 1.9.10">
         <location
             file="../gradle/libs.versions.toml"
-            line="58"
-            column="9"/>
+            line="31"
+            column="10"/>
     </issue>
 
     <issue
         id="GradleDependency"
-        message="A newer version of io.arrow-kt:arrow-stack than 1.2.0-RC is available: 2.0.0-SNAPSHOT">
+        message="A newer version of org.jetbrains.kotlin:kotlin-gradle-plugin-api than 1.8.21 is available: 1.9.10">
         <location
             file="../gradle/libs.versions.toml"
-            line="58"
+            line="31"
+            column="10"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of org.jetbrains.kotlin:kotlinx-atomicfu-runtime than 1.8.21 is available: 1.9.10">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="31"
+            column="10"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of com.google.devtools.ksp:symbol-processing-gradle-plugin than 1.8.21-1.0.11 is available: 1.9.10-1.0.13">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="34"
+            column="7"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.annotation:annotation than 1.7.0-alpha02 is available: 1.7.0">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="81"
+            column="23"/>
+    </issue>
+
+    <issue
+        id="NewerVersionAvailable"
+        message="A newer version of org.jetbrains.kotlin.android than 1.8.21 is available: 1.9.10">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="31"
+            column="10"/>
+    </issue>
+
+    <issue
+        id="NewerVersionAvailable"
+        message="A newer version of org.jetbrains.kotlin.jvm than 1.8.21 is available: 1.9.10">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="31"
+            column="10"/>
+    </issue>
+
+    <issue
+        id="NewerVersionAvailable"
+        message="A newer version of org.jetbrains.kotlin.multiplatform than 1.8.21 is available: 1.9.10">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="31"
+            column="10"/>
+    </issue>
+
+    <issue
+        id="NewerVersionAvailable"
+        message="A newer version of org.jetbrains.dokka than 1.8.20 is available: 1.9.0">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="42"
             column="9"/>
     </issue>
 
     <issue
         id="NewerVersionAvailable"
-        message="A newer version of org.jetbrains.kotlinx:binary-compatibility-validator than 0.12.1 is available: 0.13.1">
+        message="A newer version of org.jetbrains.dokka:dokka-gradle-plugin than 1.8.20 is available: 1.9.0">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="42"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="NewerVersionAvailable"
+        message="A newer version of org.jetbrains.kotlinx:kotlinx-coroutines-bom than 1.7.1 is available: 1.7.3">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="46"
+            column="14"/>
+    </issue>
+
+    <issue
+        id="NewerVersionAvailable"
+        message="A newer version of org.jetbrains.kotlinx:kotlinx-coroutines-core than 1.7.1 is available: 1.7.3">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="46"
+            column="14"/>
+    </issue>
+
+    <issue
+        id="NewerVersionAvailable"
+        message="A newer version of org.jetbrains.kotlinx:kotlinx-coroutines-debug than 1.7.1 is available: 1.7.3">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="46"
+            column="14"/>
+    </issue>
+
+    <issue
+        id="NewerVersionAvailable"
+        message="A newer version of org.jetbrains.kotlinx:kotlinx-coroutines-reactive than 1.7.1 is available: 1.7.3">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="46"
+            column="14"/>
+    </issue>
+
+    <issue
+        id="NewerVersionAvailable"
+        message="A newer version of org.jetbrains.kotlinx:kotlinx-coroutines-test than 1.7.1 is available: 1.7.3">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="46"
+            column="14"/>
+    </issue>
+
+    <issue
+        id="NewerVersionAvailable"
+        message="A newer version of org.jetbrains.kotlinx.binary-compatibility-validator than 0.12.1 is available: 0.13.2">
         <location
             file="../gradle/libs.versions.toml"
             line="51"
             column="24"/>
+    </issue>
+
+    <issue
+        id="NewerVersionAvailable"
+        message="A newer version of org.jetbrains.kotlinx:binary-compatibility-validator than 0.12.1 is available: 0.13.2">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="51"
+            column="24"/>
+    </issue>
+
+    <issue
+        id="NewerVersionAvailable"
+        message="A newer version of io.gitlab.arturbosch.detekt than 1.23.0 is available: 1.23.1">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="65"
+            column="10"/>
+    </issue>
+
+    <issue
+        id="NewerVersionAvailable"
+        message="A newer version of io.gitlab.arturbosch.detekt:detekt-core than 1.23.0 is available: 1.23.1">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="65"
+            column="10"/>
+    </issue>
+
+    <issue
+        id="NewerVersionAvailable"
+        message="A newer version of io.gitlab.arturbosch.detekt:detekt-formatting than 1.23.0 is available: 1.23.1">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="65"
+            column="10"/>
+    </issue>
+
+    <issue
+        id="NewerVersionAvailable"
+        message="A newer version of io.gitlab.arturbosch.detekt:detekt-gradle-plugin than 1.23.0 is available: 1.23.1">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="65"
+            column="10"/>
+    </issue>
+
+    <issue
+        id="NewerVersionAvailable"
+        message="A newer version of org.jetbrains.compose:compose-gradle-plugin than 1.4.0 is available: 1.5.1">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="74"
+            column="21"/>
+    </issue>
+
+    <issue
+        id="NewerVersionAvailable"
+        message="A newer version of org.jetbrains.kotlinx:kotlinx-datetime than 0.4.0 is available: 0.4.1">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="129"
+            column="83"/>
+    </issue>
+
+    <issue
+        id="NewerVersionAvailable"
+        message="A newer version of app.cash.turbine:turbine than 0.13.0 is available: 1.0.0">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="157"
+            column="65"/>
+    </issue>
+
+    <issue
+        id="NewerVersionAvailable"
+        message="A newer version of org.jetbrains.kotlinx:atomicfu-gradle-plugin than 0.20.2 is available: 0.22.0">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="178"
+            column="96"/>
     </issue>
 
 </issues>

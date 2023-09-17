@@ -22,7 +22,7 @@ data class AndroidConfigSetup(
      */
     val languages: List<String> = listOf("en"),
 
-    val configurator: (CommonExtension<*, *, *, *>.(Project) -> Unit)? = null,
+    val configurator: (CommonExtension<*, *, *, *, *>.(Project) -> Unit)? = null,
 )
 
 fun Project.requireDefaultAndroidConfigSetup(): AndroidConfigSetup = requireDefaults()

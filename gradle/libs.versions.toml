@@ -50,8 +50,12 @@ coroutines = "1.7.1"
 # Can't be updated to 0.13+ vefore Kotlin metadata 0.6.0 support in AtomicFU
 bin-compat-validator = "0.12.1"
 
+# Android Plugin for Gradle
+# Note: R8 version can be updated independently in settings.gradle.kts
+# https://maven.google.com/web/index.html#com.android.tools.build:gradle
 # https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google
-android-gradle-plugin = "8.0.2"
+# https://developer.android.com/build/releases/gradle-plugin#updating-plugin
+android-gradle-plugin = "8.1.1"
 
 # Λrrow - Functional companion to Kotlin's Standard Library
 # https://mvnrepository.com/artifact/io.arrow-kt/arrow-core

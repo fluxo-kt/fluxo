@@ -168,7 +168,7 @@ private fun Project.setupLint(
     ignoredFlavors: List<String>,
 ) {
     val disableLint = !isGenericCompilationEnabled || disableTests().get()
-    extensions.configure<CommonExtension<*, *, *, *>>("android") {
+    extensions.configure<CommonExtension<*, *, *, *, *>>("android") {
         lint {
             sarifReport = !disableLint
             htmlReport = !disableLint
