@@ -78,7 +78,7 @@ androidx-annotation = "1.7.0-alpha02"
 
 # Java Microbenchmark Harness (JMH)
 # https://github.com/openjdk/jmh/tags
-jmh = "1.36"
+jmh = "1.37"
 
 
 # NPM repo dependencies
