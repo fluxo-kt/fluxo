@@ -231,7 +231,7 @@ android-lib = { id = "com.android.library", version.ref = "android-gradle-plugin
 
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 
-fluxo-bcv-js = { id = "io.github.fluxo-kt.binary-compatibility-validator-js", version = "0.1.0" }
+fluxo-bcv-js = { id = "io.github.fluxo-kt.binary-compatibility-validator-js", version = "0.2.0" }
 
 # Gradle Versions Plugin: provides a task to determine which dependencies have updates
 # https://github.com/ben-manes/gradle-versions-plugin
