@@ -178,7 +178,7 @@ plugin-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref
 
 # Gradle plugin for building plugins for IntelliJ-based IDEs
 # https://github.com/JetBrains/gradle-intellij-plugin/releases
-plugin-intellij = { module = "org.jetbrains.intellij.plugins:gradle-intellij-plugin", version = "1.12.0" }
+plugin-intellij = { module = "org.jetbrains.intellij.plugins:gradle-intellij-plugin", version = "1.15.0" }
 
 
 # Benchmark dependencies
