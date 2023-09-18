@@ -167,7 +167,7 @@ jobs:
       - name: Publish JUnit test results as a pull request check
         if: (success() || failure()) && matrix.os == 'macos-latest'
           && github.repository == 'fluxo-kt/fluxo' && github.ref == 'refs/heads/main'
-        uses: mikepenz/action-junit-report@v3
+        uses: mikepenz/action-junit-report@v4
         with:
           report_paths: '**/build/test-results/*/TEST-*.xml'
 
