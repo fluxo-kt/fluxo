@@ -35,5 +35,5 @@ jobs:
             github.com:443
             services.gradle.org:443
             downloads.gradle.org:443
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: gradle/wrapper-validation-action@v1
