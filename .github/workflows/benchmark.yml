@@ -36,7 +36,7 @@ jobs:
     steps:
       - name: Harden Runner
         if: matrix.os == 'ubuntu'
-        uses: step-security/harden-runner@4a1e83c9ef6b0e39b16f17b2734e08cdfbeea46c
+        uses: step-security/harden-runner@0c6ab70129fa3660acd9cd2b51e8685d619cd613
         with:
           disable-sudo: true
           egress-policy: audit
