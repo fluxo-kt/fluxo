@@ -9,23 +9,29 @@ import kt.fluxo.test.compare.BENCHMARK_ARG
 import kt.fluxo.test.compare.consumeCommonBenchmark
 import kt.fluxo.test.compare.launchCommonBenchmark
 import kt.fluxo.test.compare.launchCommonBenchmarkWithStaticIntent
-import pro.respawn.flowmvi.MVIIntent
-import pro.respawn.flowmvi.MVIState
-import pro.respawn.flowmvi.MVIStore
-import pro.respawn.flowmvi.Reduce
+import pro.respawn.flowmvi.api.ActionShareBehavior
+import pro.respawn.flowmvi.api.MVIIntent
+import pro.respawn.flowmvi.api.MVIState
+import pro.respawn.flowmvi.api.Store
+import pro.respawn.flowmvi.dsl.store
+import pro.respawn.flowmvi.plugins.Reduce
+import pro.respawn.flowmvi.plugins.reduce
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 internal object RespawnFlowMviBenchmark {
 
     @Suppress("InjectDispatcher")
     private fun <I : MVIIntent> createStoreAndJob(
         @BuilderInference reduce: Reduce<RespawnFlowMviState, I, Nothing>,
-    ): Pair<MVIStore<RespawnFlowMviState, I, Nothing>, Job> {
+    ): Pair<Store<RespawnFlowMviState, I, Nothing>, Job> {
         val job = SupervisorJob()
         val scope = CoroutineScope(Dispatchers.Unconfined + job)
-        val store = MVIStore(
-            initial = RespawnFlowMviState(),
-            reduce = reduce,
-        )
+        val store = store(RespawnFlowMviState()) {
+            actionShareBehavior = ActionShareBehavior.Disabled
+            debuggable = false
+            reduce(reduce = reduce)
+        }
         store.start(scope)
         return store to job
     }
@@ -39,7 +45,13 @@ internal object RespawnFlowMviBenchmark {
         }
         return runBlocking {
             val launchDef = launchCommonBenchmarkWithStaticIntent(IntentIncrement.Increment) { store.send(it) }
-            store.states.consumeCommonBenchmark(launchDef, job) { it.value }
+            suspendCoroutine { cont ->
+                with(store) {
+                    subscribe {
+                        cont.resume(states.consumeCommonBenchmark(launchDef, job) { it.value })
+                    }
+                }
+            }
         }
     }
 
@@ -51,7 +63,13 @@ internal object RespawnFlowMviBenchmark {
         }
         return runBlocking {
             val launchDef = launchCommonBenchmark { store.send(IntentAdd.Add(value = value)) }
-            store.states.consumeCommonBenchmark(launchDef, job) { it.value }
+            suspendCoroutine { cont ->
+                with(store) {
+                    subscribe {
+                        cont.resume(states.consumeCommonBenchmark(launchDef, job) { it.value })
+                    }
+                }
+            }
         }
     }
 
