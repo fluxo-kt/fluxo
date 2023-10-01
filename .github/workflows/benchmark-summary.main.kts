@@ -141,7 +141,7 @@ try {
             println("#### ${clazz.ifEmpty { "<not set>" }} ($testsInfo$modeInfo$iterInfo)")
 
             if (clazz.equals("IncrementIntentBenchmark", ignoreCase = true)) {
-                println("> _Each **operation** creates a state store, sends 5000 intents with reduction, and checks state updates!_")
+                println("\n> _Each **operation** creates a state store, sends 5000 intents with reduction, and checks state updates!_\n")
             }
 
             // Table header
