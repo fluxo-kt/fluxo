@@ -140,6 +140,10 @@ try {
             )
             println("#### ${clazz.ifEmpty { "<not set>" }} ($testsInfo$modeInfo$iterInfo)")
 
+            if (clazz.equals("IncrementIntentBenchmark", ignoreCase = true)) {
+                println("> _Each **operation** creates a state store, sends 5000 intents with reduction, and checks state updates!_")
+            }
+
             // Table header
             val mdTitles0 = if (skipCnt) mdTitles.filter { it != cntTitle }.toTypedArray() else mdTitles
 

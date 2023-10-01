@@ -10,7 +10,7 @@ on:
       - '**/benchmark.yml'
 
 env:
-  TRIGGER_COUNTER: 14
+  TRIGGER_COUNTER: 15
   JMH_THREADS: 2
   GRADLE_BUILD_ACTION_CACHE_DEBUG_ENABLED: true
   GRADLE_OPTS: "-Dorg.gradle.daemon=false \

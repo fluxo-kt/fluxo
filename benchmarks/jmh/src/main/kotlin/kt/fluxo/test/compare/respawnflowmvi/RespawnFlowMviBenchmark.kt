@@ -10,6 +10,7 @@ import kt.fluxo.test.compare.consumeCommonBenchmark
 import kt.fluxo.test.compare.launchCommonBenchmark
 import kt.fluxo.test.compare.launchCommonBenchmarkWithStaticIntent
 import pro.respawn.flowmvi.api.ActionShareBehavior
+import pro.respawn.flowmvi.api.DelicateStoreApi
 import pro.respawn.flowmvi.api.MVIIntent
 import pro.respawn.flowmvi.api.MVIState
 import pro.respawn.flowmvi.api.Store
@@ -39,8 +40,11 @@ internal object RespawnFlowMviBenchmark {
 
     fun mviHandlerStaticIncrement(): Int {
         val (store, job) = createStoreAndJob<IntentIncrement> {
+            @OptIn(DelicateStoreApi::class)
             when (it) {
-                IntentIncrement.Increment -> updateState { copy(value = value + 1) }
+                // The default option is to use updateState, but it's pretty slow (uses lock, calls plugins, etc.).
+                // `useState` is exactly for performance-critical cases.
+                IntentIncrement.Increment -> useState { copy(value = value + 1) }
             }
         }
         return runBlocking {

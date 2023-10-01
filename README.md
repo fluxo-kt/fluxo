@@ -239,27 +239,27 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super
 Compares the performance of different MVI state-management libraries.<br>
 **[Deep feature comparison research](https://docs.google.com/spreadsheets/d/1gbwXU5Vp9QGvph1rLu0hv90KqrHNhkZyKTxk_I_yBJk) is in-progress.**
 
-> Single-thread simple incrementing intents (14 tests, [2023-05-06](../../actions/runs/5034001997#summary-13632216961)), [updates on CI](../../actions/workflows/benchmark.yml).
-> <br>Each operation creates a state store, sends 5000 intents with reduction, and checks state updates.
+> Single-thread simple incrementing intents (16 tests, [2023-09-30](../../actions/runs/6365805466#summary-17283087030)), [updates on CI](../../actions/workflows/benchmark.yml).
+> <br>_Each **operation** creates a state store, sends 5000 intents with reduction, and checks state updates!_
 
-| Benchmark | Mode | Score | Units | Percent |
-|-----------|:----:|------:|-------|--------:|
-| reduxkotlin__mvi_reducer | <sub>thrpt</sub> | <b>8.650</b><sub><i> &#177; 0.139</i></sub> | <sub>ops/ms</sub> | <sub><i>0.0%</i></sub> |
-| mvicore__mvi_reducer | <sub>thrpt</sub> | <b>5.014</b><sub><i> &#177; 0.036</i></sub> | <sub>ops/ms</sub> | <sub><i>-42.0%</i></sub> |
-| visualfsm__sm_reducer | <sub>thrpt</sub> | <b>4.573</b><sub><i> &#177; 0.106</i></sub> | <sub>ops/ms</sub> | <sub><i>-47.1%</i></sub> |
-| fluxo__mvi_reducer | <sub>thrpt</sub> | <b>4.336</b><sub><i> &#177; 0.099</i></sub> | <sub>ops/ms</sub> | <sub><i>-49.9%</i></sub> |
-| tindersm__sm_reducer | <sub>thrpt</sub> | <b>1.963</b><sub><i> &#177; 0.026</i></sub> | <sub>ops/ms</sub> | <sub><i>-77.3%</i></sub> |
-| mvikotlin__mvi_reducer | <sub>thrpt</sub> | <b>1.678</b><sub><i> &#177; 0.114</i></sub> | <sub>ops/ms</sub> | <sub><i>-80.6%</i></sub> |
-| reduktor__mvi_reducer | <sub>thrpt</sub> | <b>1.616</b><sub><i> &#177; 0.012</i></sub> | <sub>ops/ms</sub> | <sub><i>-81.3%</i></sub> |
-| fluxo__mvvmp_intent | <sub>thrpt</sub> | <b>1.198</b><sub><i> &#177; 0.057</i></sub> | <sub>ops/ms</sub> | <sub><i>-86.2%</i></sub> |
-| genakureduce__mvi_handler | <sub>thrpt</sub> | <b>1.178</b><sub><i> &#177; 0.027</i></sub> | <sub>ops/ms</sub> | <sub><i>-86.4%</i></sub> |
-| fluxo__mvi_handler | <sub>thrpt</sub> | <b>1.099</b><sub><i> &#177; 0.110</i></sub> | <sub>ops/ms</sub> | <sub><i>-87.3%</i></sub> |
-| mobiuskt__sm_reducer | <sub>thrpt</sub> | <b>0.782</b><sub><i> &#177; 0.033</i></sub> | <sub>ops/ms</sub> | <sub><i>-91.0%</i></sub> |
-| elmslie__elm_reducer | <sub>thrpt</sub> | <b>0.543</b><sub><i> &#177; 0.127</i></sub> | <sub>ops/ms</sub> | <sub><i>-93.7%</i></sub> |
-| orbit__mvvmp_intent | <sub>thrpt</sub> | <b>0.482</b><sub><i> &#177; 0.012</i></sub> | <sub>ops/ms</sub> | <sub><i>-94.4%</i></sub> |
-| ballast__mvi_handler | <sub>thrpt</sub> | <b>0.390</b><sub><i> &#177; 0.024</i></sub> | <sub>ops/ms</sub> | <sub><i>-95.5%</i></sub> |
-| flowmvi__mvi_handler | <sub>thrpt</sub> | <b>0.353</b><sub><i> &#177; 0.005</i></sub> | <sub>ops/ms</sub> | <sub><i>-95.9%</i></sub> |
-| flowredux__mvi_handler | <sub>thrpt</sub> | <b>0.096</b><sub><i> &#177; 0.005</i></sub> | <sub>ops/ms</sub> | <sub><i>-98.9%</i></sub> |
+| Benchmark                                     | Score | Units | Percent |
+|-----------------------------------------------|------:|-------|--------:|
+| reduxkotlin__mvi_reducer                      | <b>10.077</b><sub><i> &#177; 0.099</i></sub> | <sub>ops/ms</sub> | <sub><i>0.0%</i></sub> |
+| [mvicore__mvi_reducer][MVICore]               | <b>6.071</b><sub><i> &#177; 0.066</i></sub> | <sub>ops/ms</sub> | <sub><i>-39.8%</i></sub> |
+| [visualfsm__sm_reducer][visualfsm]            | <b>5.536</b><sub><i> &#177; 0.044</i></sub> | <sub>ops/ms</sub> | <sub><i>-45.1%</i></sub> |
+| **fluxo__mvi_reducer** ([*](#code-examples))  | <b>5.268</b><sub><i> &#177; 0.047</i></sub> | <sub>ops/ms</sub> | <sub><i>-47.7%</i></sub> |
+| tindersm__sm_reducer                          | <b>2.383</b><sub><i> &#177; 0.040</i></sub> | <sub>ops/ms</sub> | <sub><i>-76.4%</i></sub> |
+| [mvikotlin__mvi_reducer][MVIKotlin]           | <b>2.144</b><sub><i> &#177; 0.030</i></sub> | <sub>ops/ms</sub> | <sub><i>-78.7%</i></sub> |
+| reduktor__mvi_reducer                         | <b>1.982</b><sub><i> &#177; 0.024</i></sub> | <sub>ops/ms</sub> | <sub><i>-80.3%</i></sub> |
+| **fluxo__mvi_handler** ([*](#code-examples))  | <b>1.460</b><sub><i> &#177; 0.088</i></sub> | <sub>ops/ms</sub> | <sub><i>-85.5%</i></sub> |
+| genakureduce__mvi_handler                     | <b>1.441</b><sub><i> &#177; 0.048</i></sub> | <sub>ops/ms</sub> | <sub><i>-85.7%</i></sub> |
+| **fluxo__mvvmp_intent** ([*](#code-examples)) | <b>1.407</b><sub><i> &#177; 0.113</i></sub> | <sub>ops/ms</sub> | <sub><i>-86.0%</i></sub> |
+| mobiuskt__sm_reducer                          | <b>1.037</b><sub><i> &#177; 0.081</i></sub> | <sub>ops/ms</sub> | <sub><i>-89.7%</i></sub> |
+| elmslie__elm_reducer                          | <b>0.669</b><sub><i> &#177; 0.016</i></sub> | <sub>ops/ms</sub> | <sub><i>-93.4%</i></sub> |
+| [orbit__mvvmp_intent][OrbitMVI]               | <b>0.640</b><sub><i> &#177; 0.014</i></sub> | <sub>ops/ms</sub> | <sub><i>-93.6%</i></sub> |
+| [ballast__mvi_handler][ballast]               | <b>0.467</b><sub><i> &#177; 0.014</i></sub> | <sub>ops/ms</sub> | <sub><i>-95.4%</i></sub> |
+| [flowmvi__mvi_handler][FlowMVI]               | <b>0.329</b><sub><i> &#177; 0.008</i></sub> | <sub>ops/ms</sub> | <sub><i>-96.7%</i></sub> |
+| flowredux__mvi_handler                        | <b>0.138</b><sub><i> &#177; 0.002</i></sub> | <sub>ops/ms</sub> | <sub><i>-98.6%</i></sub> |
 
 
 ### Roadmap
@@ -301,10 +301,10 @@ Compares the performance of different MVI state-management libraries.<br>
 
 ### Heavily inspired by
 
-* [Ballast](https://github.com/copper-leaf/ballast) state management
-* [Orbit MVI](https://github.com/orbit-mvi/orbit-mvi)
-* [MVIKotlin](https://github.com/arkivanov/MVIKotlin)
-* [FlowMVI](https://github.com/respawn-app/FlowMVI)
+* [Ballast][ballast] state management
+* [Orbit MVI][OrbitMVI]
+* [MVIKotlin][MVIKotlin]
+* [FlowMVI][FlowMVI]
 
 ### Versioning
 
@@ -382,3 +382,10 @@ aka Redux/MVI with [contextual reduction][contextual-reduction].
 [badge-win]: http://img.shields.io/badge/-Windows-00ADEF?logo=windows&logoColor=FCFDFD
 [badge-linux]: http://img.shields.io/badge/-Linux-6E1F7C?logo=linux&logoColor=FFF6DB
 [badge-js]: http://img.shields.io/badge/-JavaScript-F8DB5D?logo=javascript&logoColor=312C02
+
+[visualfsm]: https://github.com/Kontur-Mobile/visualfsm
+[MVIKotlin]: https://github.com/arkivanov/MVIKotlin
+[MVICore]: https://github.com/badoo/MVICore
+[OrbitMVI]: https://github.com/orbit-mvi/orbit-mvi
+[ballast]: https://github.com/copper-leaf/ballast
+[FlowMVI]: https://github.com/respawn-app/FlowMVI
