@@ -48,7 +48,7 @@ coroutines = "1.7.1"
 # Public API management tool
 # https://github.com/Kotlin/binary-compatibility-validator/releases
 # Can't be updated to 0.13+ vefore Kotlin metadata 0.6.0 support in AtomicFU
-bin-compat-validator = "0.12.1"
+bin-compat-validator = "0.13.2"
 
 # Android Plugin for Gradle
 # Note: R8 version can be updated independently in settings.gradle.kts
