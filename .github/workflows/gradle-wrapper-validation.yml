@@ -26,7 +26,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@0c6ab70129fa3660acd9cd2b51e8685d619cd613
+        uses: step-security/harden-runner@2579b52abd08b0a4c3ad0e4476ddb0f2036e3b67
         with:
           disable-sudo: true
           egress-policy: block
