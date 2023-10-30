@@ -65,7 +65,7 @@ jobs:
 
       - name: 'Set up NodeJS 18 (LTS)'
         if: matrix.os != 'windows-latest'
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 18
 
