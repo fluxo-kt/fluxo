@@ -71,7 +71,7 @@ kover = "0.7.3"
 
 # Compose Multiplatform
 # https://github.com/JetBrains/compose-multiplatform/releases
-jetbrains-compose = "1.4.0"
+jetbrains-compose = "1.5.10"
 
 # Android Jetpack
 # https://developer.android.com/jetpack/androidx/versions
