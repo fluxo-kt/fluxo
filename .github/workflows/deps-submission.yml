@@ -28,7 +28,7 @@ jobs:
       contents: write
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@0c6ab70129fa3660acd9cd2b51e8685d619cd613
+        uses: step-security/harden-runner@c0db65e1f64025718795419be8dbbf8c4050160f
         with:
           disable-sudo: true
           egress-policy: audit
