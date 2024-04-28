@@ -2,6 +2,7 @@
 *.iml
 .fleet/
 .idea/
+.kotlin/
 projectFilesBackup*/
 
 # Gradle

@@ -3,6 +3,7 @@
 
 .idea/
 .fleet/
+.kotlin/
 .run/
 
 .gradle/

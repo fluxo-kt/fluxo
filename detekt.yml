@@ -2,12 +2,42 @@
 # https://github.com/detekt/detekt/blob/main/detekt-core/src/main/resources/default-detekt-config.yml
 # https://github.com/detekt/detekt/blob/main/detekt-formatting/src/main/resources/config/config.yml
 
+config:
+  validation: true
+  warningsAsErrors: false
+  checkExhaustiveness: false
+
 output-reports:
   active: true
   exclude:
     - 'TxtOutputReport'
     - 'XmlOutputReport'
+    - 'HtmlOutputReport'
     - 'MdOutputReport'
+
+console-reports:
+  active: true
+  exclude: [ ]
+
+exceptions:
+  TooGenericExceptionCaught:
+    active: false
+
+complexity:
+  LongParameterList:
+    ignoreDefaultParameters: true
+  TooManyFunctions:
+    ignoreDeprecated: true
+    ignoreOverridden: true
+    ignoreAnnotatedFunctions: ['Preview']
+
+empty-blocks:
+  EmptyFunctionBlock:
+    ignoreOverridden: true
+
+naming:
+  FunctionNaming:
+    ignoreAnnotated: ['Composable']
 
 style:
   LoopWithTooManyJumpStatements:
@@ -15,21 +45,23 @@ style:
   MagicNumber:
     ignoreAnnotation: true
   MaxLineLength:
-    maxLineLength: 140
-
-empty-blocks:
-  EmptyFunctionBlock:
-    ignoreOverridden: true
+    maxLineLength: 100
+  UnusedPrivateMember:
+    ignoreAnnotated: ['Preview']
 
 formatting:
   ArgumentListWrapping:
-    maxLineLength: 140
+    maxLineLength: 100
   BlockCommentInitialStarAlignment:
     active: true
   CommentWrapping:
     active: true
   DiscouragedCommentLocation:
     active: true
+  ImportOrdering:
+    active: true
+    autoCorrect: true
+    layout: '*'
   Indentation:
     active: false
   FunKeywordSpacing:
@@ -38,7 +70,7 @@ formatting:
     active: true
   FunctionSignature:
     active: false
-    maxLineLength: 140
+    maxLineLength: 100
   FunctionStartOfBodySpacing:
     active: true
   FunctionTypeReferenceSpacing:
@@ -46,7 +78,7 @@ formatting:
   KdocWrapping:
     active: true
   MaximumLineLength:
-    maxLineLength: 140
+    maxLineLength: 100
   ModifierListSpacing:
     active: true
   NoConsecutiveBlankLines:
@@ -54,7 +86,7 @@ formatting:
   NullableTypeSpacing:
     active: true
   ParameterListWrapping:
-    maxLineLength: 140
+    maxLineLength: 100
   SpacingBetweenDeclarationsWithAnnotations:
     active: false
   TrailingCommaOnCallSite:
