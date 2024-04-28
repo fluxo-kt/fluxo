@@ -29,6 +29,8 @@ kotlinLangVersion = "1.8"
 # https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-gradle-plugin
 # WARN: Don't forget to update kotlin version badge in ../README.md
 kotlin = "1.9.23"
+#noinspection GradleDependency
+kotlinCoreLibraries = "1.8.22"
 
 # https://github.com/google/ksp/releases
 ksp = "1.9.23-1.0.20"
@@ -43,7 +45,9 @@ dokka = "1.9.20"
 
 # https://github.com/Kotlin/kotlinx.coroutines/releases
 # https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-coroutines-core
-coroutines = "1.8.0"
+# WARN: 1.8+ requires Kotlin Stdlib 1.9+
+coroutines = "1.7.3"
+coroutinesLatest = "1.8.1-Beta"
 
 # Public API management tool
 # https://github.com/Kotlin/binary-compatibility-validator/releases
@@ -54,7 +58,7 @@ bin-compat-validator = "0.14.0"
 # https://maven.google.com/web/index.html#com.android.tools.build:gradle
 # https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google
 # https://developer.android.com/build/releases/gradle-plugin#updating-plugin
-android-gradle-plugin = "8.3.2"
+android-gradle-plugin = "8.2.2"
 
 # Λrrow – Functional companion to Kotlin's Standard Library.
 # https://mvnrepository.com/artifact/io.arrow-kt/arrow-core
@@ -115,6 +119,9 @@ visualfsm = "2.0.0"                 # https://mvnrepository.com/artifact/ru.kont
 
 [libraries]
 
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlinCoreLibraries" }
+kotlin-stdlib-js = { module = "org.jetbrains.kotlin:kotlin-stdlib-js", version.ref = "kotlinCoreLibraries" }
+
 kotlin-atomicfu = { module = "org.jetbrains.kotlin:atomicfu", version.ref = "kotlin" }
 kotlin-atomicfu-runtime = { module = "org.jetbrains.kotlin:kotlinx-atomicfu-runtime", version.ref = "kotlin" }
 kotlin-parcelize-runtime = { module = "org.jetbrains.kotlin:kotlin-parcelize-runtime", version.ref = "kotlin" }
@@ -129,6 +136,7 @@ kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version 
 
 kotlinx-coroutines-bom = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-bom", version.ref = "coroutines" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+kotlinx-coroutines-core-latest = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutinesLatest" }
 kotlinx-coroutines-debug = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-debug", version.ref = "coroutines" }
 kotlinx-coroutines-reactive = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-reactive", version.ref = "coroutines" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
@@ -180,7 +188,7 @@ plugin-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref
 
 # Gradle plugin for building plugins for IntelliJ-based IDEs
 # https://github.com/JetBrains/gradle-intellij-plugin/releases
-plugin-intellij = { module = "org.jetbrains.intellij.plugins:gradle-intellij-plugin", version = "1.17.2" }
+plugin-intellij = { module = "org.jetbrains.intellij.plugins:gradle-intellij-plugin", version = "1.17.3" }
 
 
 # Benchmark dependencies

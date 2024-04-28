@@ -1,5 +1,9 @@
-@file:Suppress("AMBIGUOUS_EXPECTS", "ACTUAL_WITHOUT_EXPECT", "EXPOSED_TYPEALIAS_EXPANDED_TYPE", "INVISIBLE_REFERENCE")
-
+@file:Suppress(
+    "AMBIGUOUS_EXPECTS",
+    "ACTUAL_WITHOUT_EXPECT",
+    "EXPOSED_TYPEALIAS_EXPANDED_TYPE",
+    "INVISIBLE_REFERENCE",
+)
 package kt.fluxo.common.annotation
 
 /** @see kotlin.internal.InlineOnly */

@@ -12,11 +12,12 @@ find . -name "lint-baseline.xml" -type f -print -delete
 
 export CI=true
 export RELEASE=true
+export GRADLE_OPTS="-Dorg.gradle.caching=false -Dorg.gradle.configuration-cache=false -Dorg.gradle.logging.stacktrace=all
+ -Dkotlin.incremental=false -Dlint.baselines.continue=true"
 
 # Update only Lint baselines
-#./gradlew lint lintDebug lintRelease -Dlint.baselines.continue=true \
-# -Pci --console=plain --continue --stacktrace --no-configuration-cache
+#./gradlew lint lintDebug lintRelease -Pci --console=plain --continue
 
-./gradlew lint lintDebug lintRelease detektBaselineMerge dependencyGuardBaseline apiDump \
- kotlinUpgradeYarnLock kotlinStoreYarnLock -Dlint.baselines.continue=true \
- -Pci --console=plain --continue --stacktrace --no-build-cache --no-configuration-cache -Dkotlin.incremental=false
+./gradlew lint lintDebug lintRelease \
+ detektBaselineMerge dependencyGuardBaseline apiDump \
+ kotlinUpgradeYarnLock kotlinStoreYarnLock -Pci --console=plain --continue

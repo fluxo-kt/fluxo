@@ -1,6 +1,7 @@
 package kt.fluxo.core
 
 import kotlinx.coroutines.flow.Flow
+import kt.fluxo.common.annotation.ExperimentalFluxoApi
 import kt.fluxo.core.annotation.ThreadSafe
 
 
@@ -11,7 +12,8 @@ import kt.fluxo.core.annotation.ThreadSafe
  * @param SideEffect Side effects type posted by this container. Can be [Nothing] if this
  * container never posts side effects.
  */
-public typealias Container<State, SideEffect> = StoreSE<FluxoIntent<State, SideEffect>, State, SideEffect>
+public typealias Container<State, SideEffect> =
+    StoreSE<FluxoIntent<State, SideEffect>, State, SideEffect>
 
 /**
  * Convenience typealias for an MVVM+ Fluxo [Store] setup with no side effects.
@@ -30,7 +32,7 @@ public typealias ContainerS<State> = Container<State, Nothing>
  * container never posts side effects.
  */
 @ThreadSafe
-// @SubclassOptInRequired(ExperimentalFluxoApi::class) // TODO: Kotlin API version 1.8
+@SubclassOptInRequired(ExperimentalFluxoApi::class)
 public interface StoreSE<in Intent, out State, out SideEffect : Any> : Store<Intent, State> {
 
     /**

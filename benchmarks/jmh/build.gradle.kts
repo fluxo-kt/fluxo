@@ -1,21 +1,25 @@
 plugins {
-    alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.jmh)
 }
 
-setupKotlin(
-    config = KotlinConfigSetup(
-        kotlinLangVersion = "latest",
-        javaLangTarget = "17",
-        optInInternal = true,
-        optIns = listOf("kt.fluxo.common.annotation.ExperimentalFluxoApi"),
-    )
-)
+fkcSetupKotlinApp(
+    optIns = listOf("kt.fluxo.common.annotation.ExperimentalFluxoApi"),
+) {
+    kotlinLangVersion = "latest"
+    javaLangTarget = "latest"
+
+    setupCoroutines = true
+    setupDependencies = true
+    addStdlibDependency = true
+    experimentalLatestCompilation = false
+}
 
 dependencies {
     // JMH, a JVM harness for building, running, and analysing nano/micro/milli/macro benchmarks
     jmh(libs.jmh.core)
     jmh(libs.jmh.generator.annprocess)
+
+    implementation(libs.kotlinx.coroutines.core.latest)
 
 
     // Use the latest snapshot for local development to dogfood the lib.

@@ -1,21 +1,23 @@
-# IntelliJ
+### IDE & Tooling ###
+.idea/*
+!.idea/.gitignore
+!.idea/detekt.xml
 *.iml
+*.ipr
+*.iws
 .fleet/
-.idea/
+.gradle/
 .kotlin/
+.vscode/
+bin/
+build/
+local.properties
 projectFilesBackup*/
 
-# Gradle
-.gradle/
-build/
-
-# JVM/Android
-local.properties
-
-# OS
+### OS ###
 .DS_Store
 Thumbs.db
 
-# Other
+### Other ###
 *.log
 _/
