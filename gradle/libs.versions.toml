@@ -10,75 +10,74 @@
 
 fluxo = "0.1.0-SNAPSHOT"
 
-# For local development to dogfood the lib
+# For local development to dogfood lib
 # https://s01.oss.sonatype.org/content/repositories/snapshots/io/github/fluxo-kt/fluxo-core/maven-metadata.xml
-# WARN: Don't forget to update snapshot version example in ../README.md
+# WARN: Don't forget to update snapshot version example in `../README.md`.
 fluxoSnapshot = "0.1-140e32d-SNAPSHOT"
 
-# 21 is default for new projects per May 2021, required for Compose, but we don't need it for core modules
+# 21 is default for new projects per May 2021, required for Compose, but we don't need it for core modules.
 androidMinSdk = "9"
-androidTargetSdk = "33"
-androidCompileSdk = "33"
-androidBuildTools = "33.0.2"
+androidTargetSdk = "34"
+androidCompileSdk = "34"
+androidBuildTools = "34.0.0"
 
 # Java/Kotlin compatibility
 javaToolchain = "11"
 javaLangTarget = "1.8"
-kotlinLangVersion = "1.7"
+kotlinLangVersion = "1.8"
 
 # https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-gradle-plugin
 # WARN: Don't forget to update kotlin version badge in ../README.md
-kotlin = "1.8.21"
+kotlin = "1.9.23"
 
 # https://github.com/google/ksp/releases
-ksp = "1.8.21-1.0.11"
+ksp = "1.9.23-1.0.20"
 
 # https://github.com/arkivanov/Essenty/releases
-essenty = "1.1.0"
+essenty = "2.0.0"
 
 # Dokka is a documentation engine for Kotlin/Java
 # https://github.com/Kotlin/dokka/releases
 # https://mvnrepository.com/artifact/org.jetbrains.dokka/dokka-gradle-plugin?repo=space-kotlin-dokka-dev
-dokka = "1.8.20"
+dokka = "1.9.20"
 
 # https://github.com/Kotlin/kotlinx.coroutines/releases
 # https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-coroutines-core
-coroutines = "1.7.1"
+coroutines = "1.8.0"
 
 # Public API management tool
 # https://github.com/Kotlin/binary-compatibility-validator/releases
-# Can't be updated to 0.13+ vefore Kotlin metadata 0.6.0 support in AtomicFU
-bin-compat-validator = "0.12.1"
+bin-compat-validator = "0.14.0"
 
-# Android Plugin for Gradle
+# Android Plugin for Gradle.
 # Note: R8 version can be updated independently in settings.gradle.kts
 # https://maven.google.com/web/index.html#com.android.tools.build:gradle
 # https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google
 # https://developer.android.com/build/releases/gradle-plugin#updating-plugin
-android-gradle-plugin = "8.1.1"
+android-gradle-plugin = "8.3.2"
 
-# Λrrow - Functional companion to Kotlin's Standard Library
+# Λrrow – Functional companion to Kotlin's Standard Library.
 # https://mvnrepository.com/artifact/io.arrow-kt/arrow-core
-arrow = "1.2.1"
+arrow = "1.2.4"
 
 # https://github.com/detekt/detekt/releases
-detekt = "1.23.0"
+detekt = "1.23.6"
 
 # Kotlin code coverage plugin
 # https://github.com/Kotlin/kotlinx-kover/releases
 # https://mvnrepository.com/artifact/org.jetbrains.kotlinx.kover/org.jetbrains.kotlinx.kover.gradle.plugin
-kover = "0.7.3"
+kover = "0.7.6"
 
 # Compose Multiplatform
 # https://github.com/JetBrains/compose-multiplatform/releases
-jetbrains-compose = "1.4.0"
+jetbrains-compose = "1.6.2"
 
 # Android Jetpack
 # https://developer.android.com/jetpack/androidx/versions
 # https://developer.android.com/jetpack/androidx/versions/all-channel#latest_release
 
 # https://developer.android.com/jetpack/androidx/releases/annotation
-androidx-annotation = "1.7.0-alpha02"
+androidx-annotation = "1.7.1"
 
 # Java Microbenchmark Harness (JMH)
 # https://github.com/openjdk/jmh/tags
@@ -87,31 +86,31 @@ jmh = "1.37"
 
 # NPM repo dependencies
 
-js-engineIo = "6.4.2"           # https://www.npmjs.com/package/engine.io?activeTab=versions
-js-karma = "6.4.2"              # https://www.npmjs.com/package/karma?activeTab=versions
-js-mocha = "10.2.0"             # https://www.npmjs.com/package/mocha?activeTab=versions
-js-socketIo = "4.6.2"           # https://www.npmjs.com/package/socket.io?activeTab=versions
-js-uaParserJs = "0.7.35"        # https://www.npmjs.com/package/ua-parser-js?activeTab=versions
-js-webpack = "5.85.0"           # https://www.npmjs.com/package/webpack?activeTab=versions
-js-webpackCli = "5.1.1"         # https://www.npmjs.com/package/webpack-cli?activeTab=versions
-js-webpackDevServer = "4.15.0"  # https://www.npmjs.com/package/webpack-dev-server?activeTab=versions
+js-engineIo = "6.5.4"           # https://www.npmjs.com/package/engine.io?activeTab=versions
+js-karma = "6.4.3"              # https://www.npmjs.com/package/karma?activeTab=versions
+js-mocha = "10.4.0"             # https://www.npmjs.com/package/mocha?activeTab=versions
+js-socketIo = "4.7.5"           # https://www.npmjs.com/package/socket.io?activeTab=versions
+js-uaParserJs = "0.7.37"        # https://www.npmjs.com/package/ua-parser-js?activeTab=versions
+js-webpack = "5.91.0"           # https://www.npmjs.com/package/webpack?activeTab=versions
+js-webpackCli = "5.1.4"         # https://www.npmjs.com/package/webpack-cli?activeTab=versions
+js-webpackDevServer = "4.15.2"  # https://www.npmjs.com/package/webpack-dev-server?activeTab=versions
 
 
 # Libraries to compare/benchmark against
-ballast = "4.0.0"                   # https://mvnrepository.com/artifact/io.github.copper-leaf/ballast-core
+ballast = "4.1.0"                   # https://mvnrepository.com/artifact/io.github.copper-leaf/ballast-core
 elmslie = "3.0.0-alpha06"           # https://github.com/vivid-money/elmslie/tags
-flowredux = "1.2.0"                 # https://mvnrepository.com/artifact/com.freeletics.flowredux/flowredux
-genakuReduce = "1.0.0"              # https://github.com/genaku/Reduce/tags
-mobiusKt = "1.0.0-rc06"             # https://mvnrepository.com/artifact/org.drewcarlson/mobiuskt-coroutines
-motorroCommonStateMachine = "3.0.2" # https://mvnrepository.com/artifact/com.motorro.commonstatemachine/commonstatemachine
+flowredux = "1.2.1"                 # https://mvnrepository.com/artifact/com.freeletics.flowredux/flowredux
+genakuReduce = "1.0.1"              # https://github.com/genaku/Reduce/tags
+mobiusKt = "1.2.1"                  # https://mvnrepository.com/artifact/org.drewcarlson/mobiuskt-coroutines
+motorroCommonStateMachine = "3.2.0" # https://mvnrepository.com/artifact/com.motorro.commonstatemachine/commonstatemachine
 mvicore = "1.4.0"                   # https://github.com/badoo/MVICore/releases
-mvikotlin = "3.2.1"                 # https://mvnrepository.com/artifact/com.arkivanov.mvikotlin/mvikotlin
-orbit = "6.1.0"                     # https://mvnrepository.com/artifact/org.orbit-mvi/orbit-core
+mvikotlin = "4.0.0"                 # https://mvnrepository.com/artifact/com.arkivanov.mvikotlin/mvikotlin
+orbit = "7.1.0"                     # https://mvnrepository.com/artifact/org.orbit-mvi/orbit-core
 reduktor = "0.4"                    # https://github.com/g000sha256/reduktor/tags
 reduxkotlin = "0.6.1"               # https://mvnrepository.com/artifact/org.reduxkotlin/redux-kotlin-threadsafe
-respawnFlowMVI = "2.0.0-beta09"     # https://mvnrepository.com/artifact/pro.respawn.flowmvi/core
+respawnFlowMVI = "2.5.0-alpha11"    # https://mvnrepository.com/artifact/pro.respawn.flowmvi/core
 tinderStateMachine = "0.3.0"        # https://github.com/Tinder/StateMachine/releases
-visualfsm = "1.5.0"                 # https://mvnrepository.com/artifact/ru.kontur.mobile.visualfsm/visualfsm-core
+visualfsm = "2.0.0"                 # https://mvnrepository.com/artifact/ru.kontur.mobile.visualfsm/visualfsm-core
 
 
 [libraries]
@@ -123,10 +122,10 @@ kotlin-parcelize-runtime = { module = "org.jetbrains.kotlin:kotlin-parcelize-run
 # Framework for testing concurrent data structures
 # https://kotlinlang.org/docs/lincheck-guide.html
 # https://github.com/Kotlin/kotlinx-lincheck/releases
-kotlinx-lincheck = { module = "org.jetbrains.kotlinx:lincheck", version = "2.23" }
+kotlinx-lincheck = { module = "org.jetbrains.kotlinx:lincheck", version = "2.30" }
 
 # https://github.com/Kotlin/kotlinx-datetime/tags
-kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.4.0" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.5.0" }
 
 kotlinx-coroutines-bom = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-bom", version.ref = "coroutines" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
@@ -135,7 +134,7 @@ kotlinx-coroutines-reactive = { module = "org.jetbrains.kotlinx:kotlinx-coroutin
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 
 # https://mvnrepository.com/artifact/org.jetbrains/annotations
-jetbrains-annotation = { module = "org.jetbrains:annotations", version = "24.0.1" }
+jetbrains-annotation = { module = "org.jetbrains:annotations", version = "24.1.0" }
 
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
 
@@ -152,9 +151,9 @@ arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
 # https://mvnrepository.com/artifact/junit/junit
 test-junit = { module = "junit:junit", version = "4.13.2"  }
 # https://mvnrepository.com/artifact/org.robolectric/robolectric
-test-robolectric = { module = "org.robolectric:robolectric", version = "4.10.3" }
+test-robolectric = { module = "org.robolectric:robolectric", version = "4.12.1" }
 # https://github.com/cashapp/turbine/releases
-test-turbine = { module = "app.cash.turbine:turbine", version = "0.13.0" }
+test-turbine = { module = "app.cash.turbine:turbine", version = "1.1.0" }
 
 plugin-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 plugin-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
@@ -164,7 +163,7 @@ plugin-jetbrains-compose = { group = "org.jetbrains.compose", name = "compose-gr
 
 # https://github.com/mrmans0n/compose-rules/releases
 # https://mvnrepository.com/artifact/io.nlopez.compose.rules/detekt
-detekt-compose = { module = "io.nlopez.compose.rules:detekt", version = "0.3.0" }
+detekt-compose = { module = "io.nlopez.compose.rules:detekt", version = "0.3.18" }
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 detekt-core = { module = "io.gitlab.arturbosch.detekt:detekt-core", version.ref = "detekt" }
 
@@ -175,14 +174,13 @@ plugin-binCompatValidator = { module = "org.jetbrains.kotlinx:binary-compatibili
 
 # AtomicFU: The idiomatic way to use atomic operations in Kotlin
 # https://github.com/Kotlin/kotlinx-atomicfu/releases
-plugin-kotlinx-atomicfu = { module = "org.jetbrains.kotlinx:atomicfu-gradle-plugin", version = "0.20.2" }
-kotlin-gradle-api = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin-api", version.ref = "kotlin" }
+plugin-kotlinx-atomicfu = { module = "org.jetbrains.kotlinx:atomicfu-gradle-plugin", version = "0.24.0" }
 
 plugin-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
 
 # Gradle plugin for building plugins for IntelliJ-based IDEs
 # https://github.com/JetBrains/gradle-intellij-plugin/releases
-plugin-intellij = { module = "org.jetbrains.intellij.plugins:gradle-intellij-plugin", version = "1.15.0" }
+plugin-intellij = { module = "org.jetbrains.intellij.plugins:gradle-intellij-plugin", version = "1.17.2" }
 
 
 # Benchmark dependencies
@@ -194,13 +192,13 @@ rxjava2 = { module = "io.reactivex.rxjava2:rxjava", version.strictly = "2.2.21" 
 # build or classpath dependencies for the forced update (security recommendations)
 
 # https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
-jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version = "2.15.2" }
+jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version = "2.15.4" }
 # https://mvnrepository.com/artifact/org.jsoup/jsoup
-jsoup = { module = "org.jsoup:jsoup", version = "1.16.1" }
+jsoup = { module = "org.jsoup:jsoup", version = "1.17.2" }
 # https://mvnrepository.com/artifact/org.json/json
-org-json = { module = "org.json:json", version = "20230618" }
+org-json = { module = "org.json:json", version = "20240303" }
 # https://mvnrepository.com/artifact/com.fasterxml.woodstox/woodstox-core
-woodstox-core = { module = "com.fasterxml.woodstox:woodstox-core", version = "6.5.1" }
+woodstox-core = { module = "com.fasterxml.woodstox:woodstox-core", version = "6.6.2" }
 
 
 [bundles]
@@ -235,26 +233,30 @@ android-lib = { id = "com.android.library", version.ref = "android-gradle-plugin
 
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 
-fluxo-bcv-js = { id = "io.github.fluxo-kt.binary-compatibility-validator-js", version = "0.2.0" }
+# https://github.com/fluxo-kt/fluxo-bcv-js/releases
+fluxo-bcv-js = { id = "io.github.fluxo-kt.binary-compatibility-validator-js", version = "0.3.0" }
+
+# https://github.com/fluxo-kt/fluxo-kmp-conf/releases
+fluxo-kmp-conf = { id = "io.github.fluxo-kt.fluxo-kmp-conf", version = "0.8.0" }
 
 # Gradle Versions Plugin: provides a task to determine which dependencies have updates
 # https://github.com/ben-manes/gradle-versions-plugin
 # https://plugins.gradle.org/plugin/com.github.ben-manes.versions
-deps-versions = { id = "com.github.ben-manes.versions", version = "0.48.0" }
+deps-versions = { id = "com.github.ben-manes.versions", version = "0.51.0" }
 
 # Detect unused and misused dependencies
 # https://github.com/autonomousapps/dependency-analysis-android-gradle-plugin/tags
 # https://mvnrepository.com/artifact/com.autonomousapps/dependency-analysis-gradle-plugin
-deps-analysis = { id = "com.autonomousapps.dependency-analysis", version = "1.22.0" }
+deps-analysis = { id = "com.autonomousapps.dependency-analysis", version = "1.31.0" }
 
 # Plugin that guards against unintentional dependency changes
 # https://github.com/dropbox/dependency-guard/releases
-deps-guard = { id = "com.dropbox.dependency-guard", version = "0.4.3" }
+deps-guard = { id = "com.dropbox.dependency-guard", version = "0.5.0" }
 
 # 'taskTree' task that prints task dependency tree
 # https://github.com/dorongold/gradle-task-tree
-task-tree = { id = "com.dorongold.task-tree", version = "2.1.1" }
+task-tree = { id = "com.dorongold.task-tree", version = "3.0.0" }
 
 # JMH benchmarking for Gradle
 # https://github.com/melix/jmh-gradle-plugin/releases
-jmh = { id = "me.champeau.jmh", version = "0.7.1" }
+jmh = { id = "me.champeau.jmh", version = "0.7.2" }

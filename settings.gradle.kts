@@ -21,7 +21,8 @@ pluginManagement {
 }
 
 plugins {
-    id("com.gradle.enterprise") version "3.13.3"
+    // https://plugins.gradle.org/plugin/com.gradle.enterprise
+    id("com.gradle.enterprise") version "3.16.2"
 }
 
 dependencyResolutionManagement {

@@ -4,4 +4,4 @@ package kt.fluxo.common.annotation
 
 /** @see kotlin.internal.InlineOnly */
 @InternalFluxoApi
-public actual annotation class InlineOnly
+public actual typealias InlineOnly = kotlin.internal.InlineOnly
