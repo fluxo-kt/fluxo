@@ -62,7 +62,7 @@ android-gradle-plugin = "8.1.1"
 arrow = "1.2.1"
 
 # https://github.com/detekt/detekt/releases
-detekt = "1.23.0"
+detekt = "1.23.6"
 
 # Kotlin code coverage plugin
 # https://github.com/Kotlin/kotlinx-kover/releases
