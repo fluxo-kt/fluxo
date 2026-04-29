@@ -57,6 +57,8 @@ Each cites a symbol or file so you can verify in one read.
 15. **K/Native uses old experimental memory model + native compiler daemon disabled** (`gradle.properties`). Slower native builds; brittle on K/N upgrades.
 16. **`kotlinx-atomicfu` plugin rewrites bytecode at compile time** → `atomic()` works without a runtime artefact. Buildscript classpath includes the plugin.
 17. **KT-58512** breaks IDE "Go to declaration" / "Quick Documentation" on `container { }` and similar inline builders. Known issue, not actionable here.
+18. **`FluxoSettings.coroutineContext` defaults to `Dispatchers.Default`, not `Main`.** UI/view-bound stores (Android, Compose Desktop, etc.) must explicitly set `coroutineContext = Dispatchers.Main` or pass a Main-bound `scope`. Wrong default for view consumers — symptom is state updates landing off the main thread.
+19. **Reducer-based stores without a `bootstrapper` have side jobs disabled.** `FluxoStore.<init>` skips creating `sideJobsMap` when `intentHandler is ReducerHandler` and `bootstrapper == null` (perf optimization). `sideJob` / `repeatOnSubscription` then throw `"Side jobs are disabled for the current store: …"` at runtime. Switch to an `IntentHandler` or set a bootstrapper to enable them.
 
 ## Common commands
 
