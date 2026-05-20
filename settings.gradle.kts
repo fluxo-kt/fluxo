@@ -10,12 +10,13 @@ pluginManagement {
     }
 
     // For local development.
-//    includeBuild("../fluxo-kmp-conf")
+    includeBuild("../fluxo-kmp-conf/self")
+    includeBuild("../fluxo-kmp-conf")
 }
 
 plugins {
-    // https://plugins.gradle.org/plugin/com.gradle.enterprise
-    id("com.gradle.enterprise") version "3.16.2"
+    // https://plugins.gradle.org/plugin/com.gradle.develocity
+    id("com.gradle.develocity") version "4.4.1"
 }
 
 dependencyResolutionManagement {

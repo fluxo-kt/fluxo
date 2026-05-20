@@ -7,7 +7,7 @@
 
 package kt.fluxo.core.debug
 
-import kt.fluxo.common.annotation.InlineOnly
+import kotlin.internal.InlineOnly
 
 
 // this::class.qualifiedName reflection API is not supported yet in JavaScript.

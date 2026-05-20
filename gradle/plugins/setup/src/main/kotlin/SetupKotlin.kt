@@ -20,6 +20,7 @@ import org.gradle.kotlin.dsl.exclude
 import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.kotlin
 import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.dsl.JvmDefaultMode
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.Kotlin2JsProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
@@ -259,7 +260,7 @@ private fun KotlinCommonCompilerOptions.setupKotlinOptions(
         "-Xcontext-receivers",
         "-Xklib-enable-signature-clash-checks",
     )
-    freeCompilerArgs.addAll(config.getListOfOptIns(isTestTask, optIns).map { "-opt-in=$it" })
+    optIn.addAll(config.getListOfOptIns(isTestTask, optIns))
 
     val isLatestKotlinVersion = kotlinLangVersion == KotlinVersion.values().last()
     if (config.progressive && isLatestKotlinVersion) {
@@ -273,12 +274,11 @@ private fun KotlinCommonCompilerOptions.setupKotlinOptions(
         }
 
         javaParameters.set(config.javaParameters)
+        jvmDefault.set(JvmDefaultMode.NO_COMPATIBILITY)
 
         // https://github.com/JetBrains/kotlin/blob/master/compiler/testData/cli/jvm/extraHelp.out
         freeCompilerArgs.addAll(
             "-Xjsr305=strict",
-            "-Xjvm-default=all",
-            "-Xtype-enhancement-improvements-strict-mode",
             "-Xvalidate-bytecode",
             "-Xvalidate-ir",
         )

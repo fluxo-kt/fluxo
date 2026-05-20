@@ -23,7 +23,6 @@ import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
-import kotlin.test.fail
 
 internal class RepeatOnSubscriptionTest : CoroutineScopeAwareTest() {
 
@@ -117,7 +116,6 @@ internal class RepeatOnSubscriptionTest : CoroutineScopeAwareTest() {
                 assertFailsWith<IllegalStateException> { store.sideEffectFlow }
             }
 
-            else -> fail("Unexpected SideEffectsStrategy: $strategy")
         }
 
         store.closeAndWait()

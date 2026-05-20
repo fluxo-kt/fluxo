@@ -1,6 +1,7 @@
 package kt.fluxo.core.intent
 
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow
@@ -128,7 +129,7 @@ internal open class ChannelBasedIntentStrategy<Intent, State>(
     final override fun queueIntent(intent: Intent): Job {
         val deferred = CompletableDeferred<Unit>(handler.coroutineContext[Job])
         // Don't pay for dispatch here, it is never necessary
-        handler.launch(context = deferred, start = CoroutineStart.UNDISPATCHED) {
+        CoroutineScope(handler.coroutineContext + deferred).launch(start = CoroutineStart.UNDISPATCHED) {
             // TODO: Test cancellation of suspended queuing if deferred was cancelled
             queueIntent(intent, deferred)
         }

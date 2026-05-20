@@ -8,9 +8,18 @@ fkcSetupMultiplatform(
         "kt.fluxo.common.annotation.InternalFluxoApi",
     ),
 ) {
-    commonCompileOnly(projects.fluxoCommon)
-    commonCompileOnly(libs.kotlinx.coroutines.core)
+    common.main.dependencies {
+        api(projects.fluxoCommon)
+        api(libs.kotlinx.coroutines.core)
+    }
     common.test.dependencies {
         implementation(libs.kotlinx.coroutines.test)
+    }
+}
+
+extensions.configure<org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension> {
+    targets.named("android") {
+        (this as com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget)
+            .withHostTest {}
     }
 }

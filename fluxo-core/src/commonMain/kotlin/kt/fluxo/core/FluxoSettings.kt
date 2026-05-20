@@ -18,7 +18,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kt.fluxo.common.annotation.ExperimentalFluxoApi
-import kt.fluxo.common.annotation.InlineOnly
+import kotlin.internal.InlineOnly
 import kt.fluxo.core.annotation.FluxoDsl
 import kt.fluxo.core.annotation.NotThreadSafe
 import kt.fluxo.core.debug.DEBUG
@@ -90,12 +90,12 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
 
     // region Processing control
 
-    public var bootstrapper: Bootstrapper<in Intent, State, SideEffect>? = null
+    public var bootstrapper: Bootstrapper<Intent, State, SideEffect>? = null
 
     /** [bootstrapper] convenience method */
     @InlineOnly
     @JsName("onStart")
-    public inline fun onStart(noinline bootstrapper: Bootstrapper<in Intent, State, SideEffect>) {
+    public inline fun onStart(noinline bootstrapper: Bootstrapper<Intent, State, SideEffect>) {
         this.bootstrapper = bootstrapper
     }
 
@@ -103,7 +103,7 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
     @InlineOnly
     @JsName("onCreate")
     @Deprecated("Use onStart instead", ReplaceWith("onStart(bootstrapper)"))
-    public inline fun onCreate(noinline bootstrapper: Bootstrapper<in Intent, State, SideEffect>) {
+    public inline fun onCreate(noinline bootstrapper: Bootstrapper<Intent, State, SideEffect>) {
         onStart(bootstrapper)
     }
 
@@ -125,7 +125,7 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
      * (`true` to accept intent, `false` otherwise)
      */
     @ExperimentalFluxoApi
-    public var intentFilter: IntentFilter<in Intent, State>? = null
+    public var intentFilter: IntentFilter<Intent, State>? = null
 
     /**
      * Take full control of the intent processing pipeline.

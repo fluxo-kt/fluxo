@@ -30,7 +30,7 @@ class JobTest {
         assertTrue(job.isCompleted)
         assertFalse(job.isCancelled)
 
-        val childJob = launch(job) {
+        val childJob = launchWithJob(job) {
             fail("Shouldn't be called!")
         }
         assertFalse(childJob.isActive)
@@ -52,7 +52,7 @@ class JobTest {
         assertTrue(job.isCompleted)
         assertTrue(job.isCancelled)
 
-        val childJob = launch(job) {
+        val childJob = launchWithJob(job) {
             fail("Shouldn't be called!")
         }
         assertFalse(childJob.isActive)
@@ -92,7 +92,7 @@ class JobTest {
         assertFalse(childJob.isCancelled, "childJob.isCancelled 3")
 
         var wasCalled = false
-        val childJob2 = launch(job) { wasCalled = true }
+        val childJob2 = launchWithJob(job) { wasCalled = true }
         assertTrue(childJob2.isActive, "childJob2.isActive 4")
         assertFalse(childJob2.isCompleted, "childJob2.isCompleted 4")
         assertFalse(childJob2.isCancelled, "childJob2.isCancelled 4")
@@ -153,7 +153,7 @@ class JobTest {
         // childJob.isCompleted can have any value at this moment (linuxX64, tvosX64, watchosX64)
         assertTrue(childJob.isCancelled, "childJob.isCancelled 3")
 
-        val childJob2 = launch(job) {
+        val childJob2 = launchWithJob(job) {
             fail("Shouldn't be called!")
         }
         assertFalse(childJob2.isActive, "childJob2.isActive 4")
@@ -193,4 +193,9 @@ class JobTest {
 
         Job(coroutineContext[Job]).cancel()
     }
+
+    private fun CoroutineScope.launchWithJob(
+        job: Job,
+        block: suspend CoroutineScope.() -> Unit,
+    ): Job = CoroutineScope(coroutineContext + job).launch(block = block)
 }

@@ -1,6 +1,6 @@
 plugins {
     alias(libs.plugins.kotlinx.kover)
-    id("kotlinx-atomicfu")
+    alias(libs.plugins.kotlinx.atomicfu)
 }
 
 fkcSetupMultiplatform(
@@ -20,7 +20,19 @@ fkcSetupMultiplatform(
             api(projects.fluxoCommon)
         }
         test.dependencies {
-            implementation(libs.kotlinx.coroutines.core.latest)
+            implementation(libs.kotlinx.coroutines.core)
+        }
+    }
+}
+
+extensions.configure<org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension> {
+    targets.named("android") {
+        (this as com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget)
+            .withHostTest {}
+    }
+    sourceSets.named("androidMain") {
+        dependencies {
+            compileOnly(libs.androidx.annotation)
         }
     }
 }

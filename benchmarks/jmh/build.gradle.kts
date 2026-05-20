@@ -19,7 +19,7 @@ dependencies {
     jmh(libs.jmh.core)
     jmh(libs.jmh.generator.annprocess)
 
-    implementation(libs.kotlinx.coroutines.core.latest)
+    implementation(libs.kotlinx.coroutines.core)
 
 
     // Use the latest snapshot for local development to dogfood the lib.

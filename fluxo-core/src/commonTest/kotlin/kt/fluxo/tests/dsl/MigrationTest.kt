@@ -13,6 +13,9 @@ import kt.fluxo.core.dsl.orbit
 import kt.fluxo.core.dsl.store
 import kt.fluxo.core.store
 import kt.fluxo.test.runUnitTest
+import kotlin.coroutines.AbstractCoroutineContextElement
+import kotlin.coroutines.Continuation
+import kotlin.coroutines.ContinuationInterceptor
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -21,6 +24,11 @@ import kotlin.test.assertSame
 
 @Suppress("DEPRECATION")
 class MigrationTest {
+    private object NonDispatcherInterceptor : AbstractCoroutineContextElement(ContinuationInterceptor),
+        ContinuationInterceptor {
+        override fun <T> interceptContinuation(continuation: Continuation<T>): Continuation<T> = continuation
+    }
+
     @Test
     fun container_host__store() {
         val host = object : ContainerHostS<Int> {
@@ -54,6 +62,9 @@ class MigrationTest {
         assertSame(Dispatchers.Default, settings.intentDispatcher)
 
         settings.scope = CoroutineScope(EmptyCoroutineContext)
+        assertSame(Dispatchers.Default, settings.intentDispatcher)
+
+        settings.coroutineContext = NonDispatcherInterceptor
         assertSame(Dispatchers.Default, settings.intentDispatcher)
 
         settings.scope = CoroutineScope(Dispatchers.Main)

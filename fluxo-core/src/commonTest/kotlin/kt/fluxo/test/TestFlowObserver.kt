@@ -1,7 +1,6 @@
 package kt.fluxo.test
 
 import kotlinx.atomicfu.atomic
-import kotlinx.atomicfu.getAndUpdate
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -19,8 +18,6 @@ import kotlinx.coroutines.withTimeout
  *
  * @param flow The flow to observe.
  */
-@Deprecated("Use Turbine tests instead")
-@Suppress("DEPRECATION")
 class TestFlowObserver<T>(flow: Flow<T>) {
     private val _values = atomic(emptyList<T>())
     private val scope = CoroutineScope(Dispatchers.Unconfined)
@@ -32,8 +29,15 @@ class TestFlowObserver<T>(flow: Flow<T>) {
             .let { if (it != null) "$it: TestFlowObserver" else "TestFlowObserver" }
         scope.launch(CoroutineName(coroutineName)) {
             flow.collect { emission ->
-                _values.getAndUpdate { it + emission }
+                appendValue(emission)
             }
+        }
+    }
+
+    private fun appendValue(emission: T) {
+        while (true) {
+            val current = _values.value
+            if (_values.compareAndSet(current, current + emission)) return
         }
     }
 
@@ -93,6 +97,4 @@ class TestFlowObserver<T>(flow: Flow<T>) {
 /**
  * Allows you to put a [Flow] into test mode.
  */
-@Deprecated("Use Turbine tests instead")
-@Suppress("DeprecatedCallableAddReplaceWith", "DEPRECATION")
 fun <T> Flow<T>.test(): TestFlowObserver<T> = TestFlowObserver(this)

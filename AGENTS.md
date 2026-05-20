@@ -41,8 +41,8 @@ KMP source-set intermediates `commonJvmMain`/`commonJvmTest`, `nonJvmMain`/`nonJ
 Each cites a symbol or file so you can verify in one read.
 
 1. **`Direct` is the *code* default for `intentStrategy`, but README + KDoc claim `Fifo`.** Both `FluxoSettings.intentStrategy` (initial value) and `ParallelIntentStrategy.Companion.DIRECT` (`= ParallelIntentStrategy(start=UNDISPATCHED)`) confirm. Real contradiction in source docs — don't propagate the wrong claim.
-2. **`DEBUG` differs by platform.** Android: variant-aware (`debug=true`, `release=false`, ✅). Pure JVM (`Debug.kt` in `jvmMain`): hardcoded `true` with TODO ❗ — pure-JVM consumers run `IntentStrategyGuardian` even in production unless they explicitly set `debugChecks=false`. JS/Native: `false`.
-3. **`fluxo-common/.../InlineOnly.kt` is regenerated on every Kotlin compile** by `inlineOnlySwitcher` (in `fluxo-common/build.gradle.kts`). Don't hand-edit; expect git to show it dirty post-build. Switches between `kotlin.internal.InlineOnly` (release) and a no-op annotation (debug).
+2. **`DEBUG` differs by platform.** Android/JS/Native: `false` by default. Pure JVM (`Debug.kt` in `jvmMain`): hardcoded `true` with TODO ❗ — pure-JVM consumers run `IntentStrategyGuardian` even in production unless they explicitly set `debugChecks=false`.
+3. **`InlineOnly` compatibility wrapper is no-op; real inline-only uses `kotlin.internal.InlineOnly` directly.** Kotlin 2.3 rejects the old public actual typealias to hidden `kotlin.internal.InlineOnly`, so don't reintroduce it in `fluxo-common/build.gradle.kts`.
 4. **`./gradlew apiDump` may produce a dump that differs from the CI-published one** unless run with the env from `.run/apiDump.run.xml` (`RELEASE=true`, `--no-build-cache`, `--no-configuration-cache`, `-Dkotlin.incremental=false`, `--rerun-tasks`). Use `./updateBaselines` (sets all flags) for safety.
 5. **Public API is locked only on JVM/Android/JS** (`*/api/{android,jvm}/*.api` + `*/api/js/*.d.ts` via sibling `fluxo-bcv-js` plugin). **Apple/Linux/MinGW targets are NOT BCV-locked** — drift on those targets won't fail CI.
 6. **`FluxoSettings.DEFAULT` is a `@NotThreadSafe` global mutable singleton.** Configure once at app start; mutating it later affects every later-built store.
@@ -54,11 +54,13 @@ Each cites a symbol or file so you can verify in one read.
 12. **`compareAndSet` on stored state closes the previous state** if `expect != update`, *and* the new state if `expect !== update` but `expect == update` — the experimental "Closeable as state" feature. Returning a new equal instance still triggers `closeSafely()` on it.
 13. **`emit` vs `send`**: `emit` is the suspend `FlowCollector` form (no `Job`); `send` returns a `Job` for non-suspend callers. **Joining the returned `Job` is dangerous** (deadlock-prone) and explicitly discouraged.
 14. **Module list duplicated** in `settings.gradle.kts` and `.github/workflows/build.yml` — keep both in sync (settings file warns).
-15. **K/Native uses old experimental memory model + native compiler daemon disabled** (`gradle.properties`). Slower native builds; brittle on K/N upgrades.
+15. **K/Native compiler daemon is disabled** (`gradle.properties`). Native builds can be slower; re-check this on K/N upgrades.
 16. **`kotlinx-atomicfu` plugin rewrites bytecode at compile time** → `atomic()` works without a runtime artefact. Buildscript classpath includes the plugin.
 17. **KT-58512** breaks IDE "Go to declaration" / "Quick Documentation" on `container { }` and similar inline builders. Known issue, not actionable here.
 18. **`FluxoSettings.coroutineContext` defaults to `Dispatchers.Default`, not `Main`.** UI/view-bound stores (Android, Compose Desktop, etc.) must explicitly set `coroutineContext = Dispatchers.Main` or pass a Main-bound `scope`. Wrong default for view consumers — symptom is state updates landing off the main thread.
 19. **Reducer-based stores without a `bootstrapper` have side jobs disabled.** `FluxoStore.<init>` skips creating `sideJobsMap` when `intentHandler is ReducerHandler` and `bootstrapper == null` (perf optimization). `sideJob` / `repeatOnSubscription` then throw `"Side jobs are disabled for the current store: …"` at runtime. Switch to an `IntentHandler` or set a bootstrapper to enable them.
+20. **AGP 9 rejects old global Android flags** in `gradle.properties` (`android.defaults.buildfeatures.*`, `android.experimental.*` lint/resource flags). Configure required Android features in module DSL, not root properties.
+21. **AGP 9 KMP Android must be explicitly wired under `commonJvmMain`.** `KotlinHierarchyTemplate.fluxoKmpConf` alone left `androidMain` as a sibling; sibling `fluxo-kmp-conf` now bridges `androidMain -> commonJvmMain` in `SetupKotlin.kt`.
 
 ## Common commands
 
@@ -69,7 +71,7 @@ Each cites a symbol or file so you can verify in one read.
 ./gradlew dependencyGuardBaseline                # regenerate only dep snapshots
 ./gradlew :benchmarks:jmh:jmh                    # run JMH suite (filter via `IncrementIntent.*` regex)
 ./gradlew -Dsplit_targets ...                    # split KMP targets across CI shards (Windows uses this)
-RELEASE=true ./gradlew ...                       # release mode (IndyLambdas, real InlineOnly)
+RELEASE=true ./gradlew ...                       # release mode (IndyLambdas, stricter baselines)
 CI=true ./gradlew :benchmarks:jmh:jmh            # benchmark against the LOCAL fluxo-core, not the snapshot
 ```
 

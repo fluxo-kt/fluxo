@@ -18,6 +18,8 @@ export GRADLE_OPTS="-Dorg.gradle.caching=false -Dorg.gradle.configuration-cache=
 # Update only Lint baselines
 #./gradlew lint lintDebug lintRelease -Pci --console=plain --continue
 
-./gradlew lint lintDebug lintRelease \
- detektBaselineMerge dependencyGuardBaseline apiDump \
- kotlinUpgradeYarnLock kotlinStoreYarnLock -Pci --console=plain --continue
+./gradlew lintAnalyzeAndroidHostTest \
+ dependencyGuardBaseline \
+ kotlinUpgradeYarnLock kotlinStoreYarnLock \
+ kotlinWasmUpgradeYarnLock kotlinWasmStoreYarnLock \
+ -Pci --console=plain --continue

@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kt.fluxo.common.annotation.ExperimentalFluxoApi
-import kt.fluxo.core.annotation.FluxoDsl
 import kt.fluxo.core.dsl.StoreScope
 import kt.fluxo.core.internal.RunningSideJob.Companion.DEFAULT_REPEAT_ON_SUBSCRIPTION_JOB
 import kotlin.coroutines.CoroutineContext
@@ -43,7 +42,6 @@ public suspend fun Store<*, *>.closeAndWait() {
  *
  * @see StoreScope.sideJob
  */
-@FluxoDsl
 @JsName("repeatOnSubscriptionIn")
 @JvmName("repeatOnSubscriptionIn")
 @OptIn(ExperimentalCoroutinesApi::class)

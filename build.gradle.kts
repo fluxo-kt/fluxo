@@ -1,12 +1,6 @@
 @file:Suppress("SpreadOperator")
 
-import java.net.URL
-
-buildscript {
-    dependencies {
-        classpath(libs.plugin.kotlinx.atomicfu)
-    }
-}
+import java.net.URI
 
 plugins {
     alias(libs.plugins.android.lib) apply false
@@ -52,74 +46,76 @@ fkcSetupRaw {
     // TODO: BinaryCompatibilityValidatorConfig.disableForNonRelease = true
 }
 
-koverReport {
-    dependencies {
-        kover(projects.fluxoCommon)
-        kover(projects.fluxoCore)
-        kover(projects.fluxoData)
-    }
+dependencies {
+    kover(projects.fluxoCommon)
+    kover(projects.fluxoCore)
+    kover(projects.fluxoData)
+}
+
+kover {
+    // TODO: Disable Kover by default to reduce performance penalty.
+    //  https://github.com/Kotlin/kotlinx-kover/issues/531#issuecomment-1929483468
 
     val isCI by isCI()
-    defaults {
-        xml {
-            onCheck = true
-            setReportFile(layout.buildDirectory.file("reports/kover-merged-report.xml"))
-        }
-        html {
-            onCheck = !isCI && isRelease
-            // change report directory
-            setReportDir(layout.buildDirectory.dir("reports/kover-merged-report-html"))
-        }
+    reports {
+        total {
+            xml {
+                onCheck = true
+                xmlFile = layout.buildDirectory.file("reports/kover-merged-report.xml")
+            }
+            html {
+                onCheck = !isCI && isRelease
+                htmlDir = layout.buildDirectory.dir("reports/kover-merged-report-html")
+            }
 
-        verify {
-            onCheck = true
-            rule {
-                isEnabled = true
-                entity = kotlinx.kover.gradle.plugin.dsl.GroupingEntityType.APPLICATION
-                minBound(50)
-                bound {
-                    minValue = 72
-                    metric = kotlinx.kover.gradle.plugin.dsl.MetricType.LINE
-                    aggregation = kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
-                }
-                bound {
-                    minValue = 65
-                    metric = kotlinx.kover.gradle.plugin.dsl.MetricType.INSTRUCTION
-                    aggregation = kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
-                }
-                bound {
-                    minValue = 50
-                    metric = kotlinx.kover.gradle.plugin.dsl.MetricType.BRANCH
-                    aggregation = kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
+            verify {
+                onCheck = true
+                rule {
+                    groupBy = kotlinx.kover.gradle.plugin.dsl.GroupingEntityType.APPLICATION
+                    minBound(50)
+                    bound {
+                        minValue = 72
+                        coverageUnits = kotlinx.kover.gradle.plugin.dsl.CoverageUnit.LINE
+                        aggregationForGroup = kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
+                    }
+                    bound {
+                        minValue = 65
+                        coverageUnits = kotlinx.kover.gradle.plugin.dsl.CoverageUnit.INSTRUCTION
+                        aggregationForGroup = kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
+                    }
+                    bound {
+                        minValue = 50
+                        coverageUnits = kotlinx.kover.gradle.plugin.dsl.CoverageUnit.BRANCH
+                        aggregationForGroup = kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
+                    }
                 }
             }
         }
-    }
-
-    filters {
-        excludes {
-            classes(
-                *listOfNotNull(
-                    // Test classes
-                    "kt.fluxo.test.*",
-                    "kt.fluxo.tests.*",
-                    // Inline DSL with coverage not detected in release mode.
-                    if (isRelease) "kt.fluxo.core.FluxoKt*" else null,
-                    if (isRelease) "kt.fluxo.core.dsl.MigrationKt*" else null,
-                ).toTypedArray(),
-            )
-
-            if (isRelease) {
-                annotatedBy(
-                    // Coverage is invalid for inline and InlineOnly methods in release mode.
-                    "*Inline*",
-                    // No real need for a deprecated methods' coverage.
-                    "*Deprecated*",
-                    // JvmSynthetic used as a marker
-                    // for migration helpers hidden from non-kotlin usage
-                    // and not supposed for coverage.
-                    "*Synthetic*",
+        filters {
+            excludes {
+                classes(
+                    *listOfNotNull(
+                        // Test classes
+                        "kt.fluxo.test.*",
+                        "kt.fluxo.tests.*",
+                        // Inline DSL with coverage not detected in release mode.
+                        if (isRelease) "kt.fluxo.core.FluxoKt*" else null,
+                        if (isRelease) "kt.fluxo.core.dsl.MigrationKt*" else null,
+                    ).toTypedArray(),
                 )
+
+                if (isRelease) {
+                    annotatedBy(
+                        // Coverage is invalid for inline and InlineOnly methods in release mode.
+                        "*Inline*",
+                        // No real need for a deprecated methods' coverage.
+                        "*Deprecated*",
+                        // JvmSynthetic used as a marker
+                        // for migration helpers hidden from non-kotlin usage
+                        // and not supposed for coverage.
+                        "*Synthetic*",
+                    )
+                }
             }
         }
     }
@@ -137,7 +133,7 @@ allprojects {
 
     // FIXME: Setup automatically.
     plugins.withType<org.jetbrains.dokka.gradle.DokkaPlugin> {
-        tasks.withType<org.jetbrains.dokka.gradle.DokkaTask>().configureEach {
+        extensions.configure<org.jetbrains.dokka.gradle.DokkaExtension> {
             dokkaSourceSets {
                 configureEach {
                     if (name.startsWith("ios")) {
@@ -146,8 +142,7 @@ allprojects {
 
                     sourceLink {
                         localDirectory.set(rootDir)
-                        @Suppress("DEPRECATION")
-                        remoteUrl.set(URL("https://github.com/fluxo-kt/fluxo/blob/main"))
+                        remoteUrl.set(URI("https://github.com/fluxo-kt/fluxo/blob/main"))
                         remoteLineSuffix.set("#L")
                     }
                 }

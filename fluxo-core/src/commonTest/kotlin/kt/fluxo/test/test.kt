@@ -127,7 +127,7 @@ private fun printStackItemWithTestName() {
 
 suspend fun <T> inScope(scope: CoroutineScope, propagateCancellation: Boolean = false, block: suspend CoroutineScope.() -> T): T? {
     contract {
-        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+        callsInPlace(block, InvocationKind.AT_MOST_ONCE)
     }
     return try {
         withContext(scope.coroutineContext, block = block)
@@ -142,7 +142,7 @@ suspend fun <T> inScope(scope: CoroutineScope, propagateCancellation: Boolean = 
 
 inline fun <reified T : Throwable> mayFailWith(block: () -> Unit) {
     contract {
-        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+        callsInPlace(block, InvocationKind.AT_MOST_ONCE)
     }
     try {
         block()

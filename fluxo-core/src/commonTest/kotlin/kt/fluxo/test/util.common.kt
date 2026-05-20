@@ -2,11 +2,13 @@ package kt.fluxo.test
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 
+@OptIn(ExperimentalTime::class)
 fun testLog(message: Any?) {
     val time = Clock.System.now().toLocalDateTime(TIME_ZONE).time
     val thread = threadInfo().let {

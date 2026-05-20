@@ -13,5 +13,4 @@ package kt.fluxo.common.annotation
     AnnotationTarget.PROPERTY_SETTER,
 )
 @Retention(AnnotationRetention.BINARY)
-@Suppress("EXPECT_AND_ACTUAL_IN_THE_SAME_MODULE")
 public expect annotation class InlineOnly()

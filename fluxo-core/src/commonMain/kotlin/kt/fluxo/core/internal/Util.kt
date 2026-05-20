@@ -51,6 +51,7 @@ internal fun Job.dependOn(job: Job?): DisposableHandle? {
 internal operator fun StateFlow<Int>.plus(other: StateFlow<Int>): StateFlow<Int> = CombinedFlowCounter(this, other)
 
 @ExperimentalFluxoApi
+@Suppress("OPT_IN_TO_INHERITANCE")
 private class CombinedFlowCounter(
     private val a: StateFlow<Int>,
     private val b: StateFlow<Int>,
@@ -64,8 +65,8 @@ private class CombinedFlowCounter(
     override val replayCache: List<Int> get() = listOf(value)
 
     override suspend fun collect(collector: FlowCollector<Int>): Nothing {
-        @Suppress("CAST_NEVER_SUCCEEDS")
-        flow.collect(collector) as Nothing
+        flow.collect(collector)
+        error("StateFlow collection completed unexpectedly")
     }
 }
 

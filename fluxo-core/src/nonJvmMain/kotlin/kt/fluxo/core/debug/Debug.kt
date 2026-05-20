@@ -7,7 +7,7 @@
 
 package kt.fluxo.core.debug
 
-import kt.fluxo.common.annotation.InlineOnly
+import kotlin.internal.InlineOnly
 
 // TODO: Split debug and release version
 internal actual val DEBUG: Boolean = false

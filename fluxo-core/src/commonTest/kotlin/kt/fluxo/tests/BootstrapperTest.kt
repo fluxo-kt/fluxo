@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.sync.Mutex
+import kt.fluxo.core.FluxoIntent
 import kt.fluxo.core.closeAndWait
 import kt.fluxo.core.container
 import kt.fluxo.core.repeatOnSubscription
@@ -90,9 +91,10 @@ internal class BootstrapperTest : CoroutineScopeAwareTest() {
             debugChecks = true
             @Suppress("DEPRECATION")
             onCreate {
-                send {
+                val intent: FluxoIntent<String, Nothing> = {
                     hadIntent = true
-                }.join()
+                }
+                send(intent).join()
             }
         }
         assertNotNull(store.start(), "Expected Job for explicit lazy start").join()

@@ -9,7 +9,7 @@
 
 package kt.fluxo.data
 
-import kt.fluxo.common.annotation.InlineOnly
+import kotlin.internal.InlineOnly
 import kotlin.js.JsExport
 import kotlin.js.JsName
 
@@ -29,6 +29,7 @@ import kotlin.js.JsName
  * @see com.seanghay.resultof.ResultOf
  */
 @JsExport
+@ExposedCopyVisibility
 @Suppress("SerialVersionUIDInSerializableClass", "KDocUnresolvedReference", "MemberVisibilityCanBePrivate")
 public data class FluxoResult<out T> internal constructor(
     public val value: T,

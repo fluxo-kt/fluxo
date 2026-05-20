@@ -12,8 +12,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
-import kt.fluxo.common.annotation.InlineOnly
-import kt.fluxo.core.annotation.FluxoDsl
+import kotlin.internal.InlineOnly
 import kt.fluxo.core.dsl.ContainerHost
 import kt.fluxo.core.dsl.StoreScope
 import kt.fluxo.core.factory.FluxoStoreFactory
@@ -292,7 +291,6 @@ public inline fun <Intent, State, SideEffect : Any> store(
  *
  * Use [send] if you need an intent [Job].
  */
-@FluxoDsl
 @InlineOnly
 public inline fun <State, SE : Any> ContainerHost<State, SE>.intent(noinline intent: FluxoIntent<State, SE>) {
     container.send(intent)
@@ -301,7 +299,6 @@ public inline fun <State, SE : Any> ContainerHost<State, SE>.intent(noinline int
 /**
  * Build and execute a functional [intent][FluxoIntent] on [Store], returning a [Job].
  */
-@FluxoDsl
 @InlineOnly
 public inline fun <State, SE : Any> ContainerHost<State, SE>.send(noinline intent: FluxoIntent<State, SE>): Job = container.send(intent)
 
@@ -310,7 +307,6 @@ public inline fun <State, SE : Any> ContainerHost<State, SE>.send(noinline inten
  *
  * Use [send] if you need an intent [Job].
  */
-@FluxoDsl
 @InlineOnly
 public inline fun <State, SE : Any> Container<State, SE>.intent(noinline intent: FluxoIntent<State, SE>) {
     send(intent)
@@ -328,7 +324,6 @@ public inline fun <State, SE : Any> Container<State, SE>.intent(noinline intent:
  *
  * @TODO Lint/Detekt rules with recommendation to avoid this method when the prevState is not used
  */
-@FluxoDsl
 @InlineOnly
 @Suppress("EXTENSION_SHADOWED_BY_MEMBER")
 public inline fun <State> StoreScope<*, State, *>.updateState(reducer: (prevState: State) -> State): State {

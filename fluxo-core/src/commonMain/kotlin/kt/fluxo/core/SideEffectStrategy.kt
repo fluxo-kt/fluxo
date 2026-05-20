@@ -6,7 +6,6 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.receiveAsFlow
-import kt.fluxo.common.annotation.InternalFluxoApi
 import kt.fluxo.core.SideEffectStrategy.RECEIVE
 import kotlin.jvm.JvmField
 
@@ -28,7 +27,6 @@ public sealed interface SideEffectStrategy {
      */
     public object RECEIVE : SideEffectStrategy {
         /** @hide */
-        @InternalFluxoApi
         override fun toString(): String = "RECEIVE"
     }
 
@@ -49,7 +47,6 @@ public sealed interface SideEffectStrategy {
      */
     public object CONSUME : SideEffectStrategy {
         /** @hide */
-        @InternalFluxoApi
         override fun toString(): String = "CONSUME"
     }
 
@@ -71,15 +68,12 @@ public sealed interface SideEffectStrategy {
         public constructor() : this(replay = 0)
 
         /** @hide */
-        @InternalFluxoApi
         override fun toString(): String = "SHARE(replay=$replay)"
 
         /** @hide */
-        @InternalFluxoApi
         override fun equals(other: Any?): Boolean = this === other || other is SHARE && replay == other.replay
 
         /** @hide */
-        @InternalFluxoApi
         override fun hashCode(): Int = replay
     }
 
@@ -89,7 +83,6 @@ public sealed interface SideEffectStrategy {
      */
     public object DISABLE : SideEffectStrategy {
         /** @hide */
-        @InternalFluxoApi
         override fun toString(): String = "DISABLE"
     }
 }

@@ -7,12 +7,14 @@
 
 package kt.fluxo.core.debug
 
-import kt.fluxo.common.annotation.InlineOnly
+import kotlin.internal.InlineOnly
 import kt.fluxo.core.FluxoIntent
+import kt.fluxo.core.dsl.StoreScope
 import java.lang.reflect.AccessibleObject
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.coroutines.Continuation
 
 // TODO: Only for test/debug variants?
 @Suppress("UNCHECKED_CAST", "ReturnCount")
@@ -99,7 +101,13 @@ private data class FluxoIntentDebug<S, SE : Any>(
     val methodName: String?,
     val arguments: List<Pair<String, Any?>>,
     val fluxoIntent: FluxoIntent<S, SE>,
-) : FluxoIntent<S, SE> by fluxoIntent {
+) : Function2<StoreScope<Nothing, S, SE>, Continuation<Unit>, Any?> {
+    override fun invoke(scope: StoreScope<Nothing, S, SE>, continuation: Continuation<Unit>): Any? {
+        @Suppress("UNCHECKED_CAST")
+        val intent = fluxoIntent as Function2<StoreScope<Nothing, S, SE>, Continuation<Unit>, Any?>
+        return intent(scope, continuation)
+    }
+
     override fun toString(): String {
         val sb = StringBuilder()
         sb.append(if (methodName.isNullOrEmpty()) "<unknown>" else methodName)

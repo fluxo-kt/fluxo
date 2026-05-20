@@ -3,7 +3,7 @@
 package kt.fluxo.core.factory
 
 import kt.fluxo.common.annotation.ExperimentalFluxoApi
-import kt.fluxo.common.annotation.InlineOnly
+import kotlin.internal.InlineOnly
 import kt.fluxo.core.Container
 import kt.fluxo.core.ContainerS
 import kt.fluxo.core.FluxoIntent

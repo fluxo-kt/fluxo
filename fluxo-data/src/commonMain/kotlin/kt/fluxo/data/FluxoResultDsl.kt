@@ -10,7 +10,7 @@ package kt.fluxo.data
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
-import kt.fluxo.common.annotation.InlineOnly
+import kotlin.internal.InlineOnly
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 import kotlin.coroutines.cancellation.CancellationException

@@ -1,6 +1,5 @@
 package kt.fluxo.tests
 
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Dispatchers.Unconfined
@@ -39,6 +38,7 @@ import kt.fluxo.test.IgnoreNativeAndJs
 import kt.fluxo.test.TestLoggingStoreFactory
 import kt.fluxo.test.runUnitTest
 import kt.fluxo.test.testLog
+import kotlin.coroutines.ContinuationInterceptor
 import kotlin.random.Random
 import kotlin.test.Ignore
 import kotlin.test.Test
@@ -226,8 +226,7 @@ internal class IntentStrategyTest : CoroutineScopeAwareTest() {
     private suspend fun CoroutineScope.lifo_test() = lifo_test(strategy = Lifo)
 
     private suspend fun CoroutineScope.lifo_test(strategy: IntentStrategy.Factory) {
-        @OptIn(ExperimentalStdlibApi::class)
-        val isUnconfined = coroutineContext[CoroutineDispatcher] == Unconfined
+        val isUnconfined = coroutineContext[ContinuationInterceptor] == Unconfined
         val results = intent_strategy_test(strategy = strategy, equal = isUnconfined)
         val last = NUMBER_OF_ITEMS - 1
         assertTrue(last in results, "Last result should be presented ($last), but wasn't in ${results.size} results")
@@ -359,8 +358,7 @@ internal class IntentStrategyTest : CoroutineScopeAwareTest() {
     }
 
     private suspend fun CoroutineScope.parallel_test(generic: Boolean = false) {
-        @OptIn(ExperimentalStdlibApi::class)
-        val isUnconfined = coroutineContext[CoroutineDispatcher] == Unconfined
+        val isUnconfined = coroutineContext[ContinuationInterceptor] == Unconfined
         intent_strategy_test(strategy = Parallel, equal = isUnconfined, nonOrderedEqual = true, generic = generic, parallel = true)
     }
 
