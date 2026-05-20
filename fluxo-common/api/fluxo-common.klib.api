@@ -1,0 +1,25 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, js, linuxArm64, linuxX64, macosArm64, macosX64, mingwX64, tvosArm64, tvosSimulatorArm64, tvosX64, wasmJs, watchosArm32, watchosArm64, watchosDeviceArm64, watchosSimulatorArm64, watchosX64]
+// Alias: native => [iosArm64, iosSimulatorArm64, iosX64, linuxArm64, linuxX64, macosArm64, macosX64, mingwX64, tvosArm64, tvosSimulatorArm64, tvosX64, watchosArm32, watchosArm64, watchosDeviceArm64, watchosSimulatorArm64, watchosX64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <io.github.fluxo-kt:fluxo-common>
+open annotation class kt.fluxo.common.annotation/ExperimentalFluxoApi : kotlin/Annotation { // kt.fluxo.common.annotation/ExperimentalFluxoApi|null[0]
+    constructor <init>() // kt.fluxo.common.annotation/ExperimentalFluxoApi.<init>|<init>(){}[0]
+}
+
+open annotation class kt.fluxo.common.annotation/InlineOnly : kotlin/Annotation { // kt.fluxo.common.annotation/InlineOnly|null[0]
+    constructor <init>() // kt.fluxo.common.annotation/InlineOnly.<init>|<init>(){}[0]
+}
+
+open annotation class kt.fluxo.common.annotation/InternalFluxoApi : kotlin/Annotation { // kt.fluxo.common.annotation/InternalFluxoApi|null[0]
+    constructor <init>() // kt.fluxo.common.annotation/InternalFluxoApi.<init>|<init>(){}[0]
+}
+
+// Targets: [native, wasmJs]
+open annotation class kt.fluxo.common.annotation/FluxoJsExport : kotlin/Annotation { // kt.fluxo.common.annotation/FluxoJsExport|null[0]
+    constructor <init>() // kt.fluxo.common.annotation/FluxoJsExport.<init>|<init>(){}[0]
+}

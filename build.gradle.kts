@@ -35,6 +35,10 @@ fkcSetupRaw {
 
     enableSpotless = true
     enableApiValidation = true
+    apiValidation {
+        tsApiChecks = true
+        klibValidationEnabled = true
+    }
 
     experimentalLatestCompilation = true
     allWarningsAsErrors = true

@@ -1,0 +1,68 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, js, linuxArm64, linuxX64, macosArm64, macosX64, mingwX64, tvosArm64, tvosSimulatorArm64, tvosX64, wasmJs, watchosArm32, watchosArm64, watchosDeviceArm64, watchosSimulatorArm64, watchosX64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <io.github.fluxo-kt:fluxo-data>
+final class <#A: out kotlin/Any?> kt.fluxo.data/FluxoResult : kotlin.io/Serializable { // kt.fluxo.data/FluxoResult|null[0]
+    final val error // kt.fluxo.data/FluxoResult.error|{}error[0]
+        final fun <get-error>(): kotlin/Throwable? // kt.fluxo.data/FluxoResult.error.<get-error>|<get-error>(){}[0]
+    final val isCached // kt.fluxo.data/FluxoResult.isCached|{}isCached[0]
+        final fun <get-isCached>(): kotlin/Boolean // kt.fluxo.data/FluxoResult.isCached.<get-isCached>|<get-isCached>(){}[0]
+    final val isEmpty // kt.fluxo.data/FluxoResult.isEmpty|{}isEmpty[0]
+        final fun <get-isEmpty>(): kotlin/Boolean // kt.fluxo.data/FluxoResult.isEmpty.<get-isEmpty>|<get-isEmpty>(){}[0]
+    final val isFailed // kt.fluxo.data/FluxoResult.isFailed|{}isFailed[0]
+        final inline fun <get-isFailed>(): kotlin/Boolean // kt.fluxo.data/FluxoResult.isFailed.<get-isFailed>|<get-isFailed>(){}[0]
+    final val isFailure // kt.fluxo.data/FluxoResult.isFailure|{}isFailure[0]
+        final fun <get-isFailure>(): kotlin/Boolean // kt.fluxo.data/FluxoResult.isFailure.<get-isFailure>|<get-isFailure>(){}[0]
+    final val isLoading // kt.fluxo.data/FluxoResult.isLoading|{}isLoading[0]
+        final fun <get-isLoading>(): kotlin/Boolean // kt.fluxo.data/FluxoResult.isLoading.<get-isLoading>|<get-isLoading>(){}[0]
+    final val isNotLoaded // kt.fluxo.data/FluxoResult.isNotLoaded|{}isNotLoaded[0]
+        final fun <get-isNotLoaded>(): kotlin/Boolean // kt.fluxo.data/FluxoResult.isNotLoaded.<get-isNotLoaded>|<get-isNotLoaded>(){}[0]
+    final val isSuccess // kt.fluxo.data/FluxoResult.isSuccess|{}isSuccess[0]
+        final fun <get-isSuccess>(): kotlin/Boolean // kt.fluxo.data/FluxoResult.isSuccess.<get-isSuccess>|<get-isSuccess>(){}[0]
+    final val value // kt.fluxo.data/FluxoResult.value|{}value[0]
+        final fun <get-value>(): #A // kt.fluxo.data/FluxoResult.value.<get-value>|<get-value>(){}[0]
+
+    final fun component1(): #A // kt.fluxo.data/FluxoResult.component1|component1(){}[0]
+    final fun component2(): kotlin/Throwable? // kt.fluxo.data/FluxoResult.component2|component2(){}[0]
+    final fun copy(#A = ..., kotlin/Throwable? = ..., kotlin/Int = ...): kt.fluxo.data/FluxoResult<#A> // kt.fluxo.data/FluxoResult.copy|copy(1:0;kotlin.Throwable?;kotlin.Int){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // kt.fluxo.data/FluxoResult.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // kt.fluxo.data/FluxoResult.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // kt.fluxo.data/FluxoResult.toString|toString(){}[0]
+
+    final object Companion { // kt.fluxo.data/FluxoResult.Companion|null[0]
+        final fun <#A2: kotlin/Any?> cached(#A2): kt.fluxo.data/FluxoResult<#A2> // kt.fluxo.data/FluxoResult.Companion.cached|cached(0:0){0§<kotlin.Any?>}[0]
+        final fun <#A2: kotlin/Any?> empty(#A2): kt.fluxo.data/FluxoResult<#A2> // kt.fluxo.data/FluxoResult.Companion.empty|empty(0:0){0§<kotlin.Any?>}[0]
+        final fun <#A2: kotlin/Any?> failure(kotlin/Throwable?, #A2): kt.fluxo.data/FluxoResult<#A2> // kt.fluxo.data/FluxoResult.Companion.failure|failure(kotlin.Throwable?;0:0){0§<kotlin.Any?>}[0]
+        final fun <#A2: kotlin/Any?> loading(#A2): kt.fluxo.data/FluxoResult<#A2> // kt.fluxo.data/FluxoResult.Companion.loading|loading(0:0){0§<kotlin.Any?>}[0]
+        final fun <#A2: kotlin/Any?> notLoaded(#A2): kt.fluxo.data/FluxoResult<#A2> // kt.fluxo.data/FluxoResult.Companion.notLoaded|notLoaded(0:0){0§<kotlin.Any?>}[0]
+        final fun <#A2: kotlin/Any?> success(#A2): kt.fluxo.data/FluxoResult<#A2> // kt.fluxo.data/FluxoResult.Companion.success|success(0:0){0§<kotlin.Any?>}[0]
+        final fun empty(): kt.fluxo.data/FluxoResult<kotlin/Nothing?> // kt.fluxo.data/FluxoResult.Companion.empty|empty(){}[0]
+        final fun failure(kotlin/Throwable?): kt.fluxo.data/FluxoResult<kotlin/Nothing?> // kt.fluxo.data/FluxoResult.Companion.failure|failure(kotlin.Throwable?){}[0]
+        final fun loading(): kt.fluxo.data/FluxoResult<kotlin/Nothing?> // kt.fluxo.data/FluxoResult.Companion.loading|loading(){}[0]
+        final fun notLoaded(): kt.fluxo.data/FluxoResult<kotlin/Nothing?> // kt.fluxo.data/FluxoResult.Companion.notLoaded|notLoaded(){}[0]
+    }
+}
+
+final fun (kt.fluxo.data/FluxoResult<*>).kt.fluxo.data/throwOnFailure() // kt.fluxo.data/throwOnFailure|throwOnFailure@kt.fluxo.data.FluxoResult<*>(){}[0]
+final fun <#A: kotlin/Any?> (kotlinx.coroutines.flow/Flow<kt.fluxo.data/FluxoResult<#A>>).kt.fluxo.data/filterResult(): kotlinx.coroutines.flow/Flow<kt.fluxo.data/FluxoResult<#A>> // kt.fluxo.data/filterResult|filterResult@kotlinx.coroutines.flow.Flow<kt.fluxo.data.FluxoResult<0:0>>(){0§<kotlin.Any?>}[0]
+final inline fun <#A: kotlin/Any?, #B: #A> (kt.fluxo.data/FluxoResult<#B>).kt.fluxo.data/cached(#A = ...): kt.fluxo.data/FluxoResult<#A> // kt.fluxo.data/cached|cached@kt.fluxo.data.FluxoResult<0:1>(0:0){0§<kotlin.Any?>;1§<0:0>}[0]
+final inline fun <#A: kotlin/Any?, #B: #A> (kt.fluxo.data/FluxoResult<#B>).kt.fluxo.data/failure(kotlin/Throwable? = ..., #A = ...): kt.fluxo.data/FluxoResult<#A> // kt.fluxo.data/failure|failure@kt.fluxo.data.FluxoResult<0:1>(kotlin.Throwable?;0:0){0§<kotlin.Any?>;1§<0:0>}[0]
+final inline fun <#A: kotlin/Any?, #B: #A> (kt.fluxo.data/FluxoResult<#B>).kt.fluxo.data/getOrElse(kotlin/Function1<kotlin/Throwable?, #A>): #A // kt.fluxo.data/getOrElse|getOrElse@kt.fluxo.data.FluxoResult<0:1>(kotlin.Function1<kotlin.Throwable?,0:0>){0§<kotlin.Any?>;1§<0:0>}[0]
+final inline fun <#A: kotlin/Any?, #B: #A> (kt.fluxo.data/FluxoResult<#B>).kt.fluxo.data/loading(#A = ...): kt.fluxo.data/FluxoResult<#A> // kt.fluxo.data/loading|loading@kt.fluxo.data.FluxoResult<0:1>(0:0){0§<kotlin.Any?>;1§<0:0>}[0]
+final inline fun <#A: kotlin/Any?, #B: #A> (kt.fluxo.data/FluxoResult<#B>).kt.fluxo.data/map(kotlin/Function1<#B, #A>): kt.fluxo.data/FluxoResult<#A> // kt.fluxo.data/map|map@kt.fluxo.data.FluxoResult<0:1>(kotlin.Function1<0:1,0:0>){0§<kotlin.Any?>;1§<0:0>}[0]
+final inline fun <#A: kotlin/Any?, #B: #A> (kt.fluxo.data/FluxoResult<#B>).kt.fluxo.data/mapCatching(kotlin/Function1<#B, #A>): kt.fluxo.data/FluxoResult<#A?> // kt.fluxo.data/mapCatching|mapCatching@kt.fluxo.data.FluxoResult<0:1>(kotlin.Function1<0:1,0:0>){0§<kotlin.Any?>;1§<0:0>}[0]
+final inline fun <#A: kotlin/Any?, #B: #A> (kt.fluxo.data/FluxoResult<#B>).kt.fluxo.data/recover(kotlin/Function1<kotlin/Throwable?, #A>): kt.fluxo.data/FluxoResult<#A> // kt.fluxo.data/recover|recover@kt.fluxo.data.FluxoResult<0:1>(kotlin.Function1<kotlin.Throwable?,0:0>){0§<kotlin.Any?>;1§<0:0>}[0]
+final inline fun <#A: kotlin/Any?, #B: #A> (kt.fluxo.data/FluxoResult<#B>).kt.fluxo.data/recoverCatching(kotlin/Function1<kotlin/Throwable?, #A>): kt.fluxo.data/FluxoResult<#A?> // kt.fluxo.data/recoverCatching|recoverCatching@kt.fluxo.data.FluxoResult<0:1>(kotlin.Function1<kotlin.Throwable?,0:0>){0§<kotlin.Any?>;1§<0:0>}[0]
+final inline fun <#A: kotlin/Any?, #B: #A> (kt.fluxo.data/FluxoResult<#B>).kt.fluxo.data/success(#A = ...): kt.fluxo.data/FluxoResult<#A> // kt.fluxo.data/success|success@kt.fluxo.data.FluxoResult<0:1>(0:0){0§<kotlin.Any?>;1§<0:0>}[0]
+final inline fun <#A: kotlin/Any?, #B: #A> (kt.fluxo.data/FluxoResult<#B?>).kt.fluxo.data/getOrDefault(kotlin/Function0<#A>): #A // kt.fluxo.data/getOrDefault|getOrDefault@kt.fluxo.data.FluxoResult<0:1?>(kotlin.Function0<0:0>){0§<kotlin.Any?>;1§<0:0>}[0]
+final inline fun <#A: kotlin/Any?, #B: kotlin/Any?> (#A).kt.fluxo.data/resultOf(kotlin/Function1<#A, #B>): kt.fluxo.data/FluxoResult<#B?> // kt.fluxo.data/resultOf|resultOf@0:0(kotlin.Function1<0:0,0:1>){0§<kotlin.Any?>;1§<kotlin.Any?>}[0]
+final inline fun <#A: kotlin/Any?, #B: kotlin/Any?> (kt.fluxo.data/FluxoResult<#B>).kt.fluxo.data/fold(kotlin/Function1<#B, #A>, kotlin/Function1<kotlin/Throwable?, #A>): #A // kt.fluxo.data/fold|fold@kt.fluxo.data.FluxoResult<0:1>(kotlin.Function1<0:1,0:0>;kotlin.Function1<kotlin.Throwable?,0:0>){0§<kotlin.Any?>;1§<kotlin.Any?>}[0]
+final inline fun <#A: kotlin/Any?> (kt.fluxo.data/FluxoResult<#A>).kt.fluxo.data/getOrThrow(): #A // kt.fluxo.data/getOrThrow|getOrThrow@kt.fluxo.data.FluxoResult<0:0>(){0§<kotlin.Any?>}[0]
+final inline fun <#A: kotlin/Any?> (kt.fluxo.data/FluxoResult<#A>).kt.fluxo.data/isValid(kotlin/Function1<#A, kotlin/Boolean>): kotlin/Boolean // kt.fluxo.data/isValid|isValid@kt.fluxo.data.FluxoResult<0:0>(kotlin.Function1<0:0,kotlin.Boolean>){0§<kotlin.Any?>}[0]
+final inline fun <#A: kotlin/Any?> (kt.fluxo.data/FluxoResult<#A>).kt.fluxo.data/onFailure(kotlin/Function2<kt.fluxo.data/FluxoResult<#A>, kotlin/Throwable?, kotlin/Unit>): kt.fluxo.data/FluxoResult<#A> // kt.fluxo.data/onFailure|onFailure@kt.fluxo.data.FluxoResult<0:0>(kotlin.Function2<kt.fluxo.data.FluxoResult<0:0>,kotlin.Throwable?,kotlin.Unit>){0§<kotlin.Any?>}[0]
+final inline fun <#A: kotlin/Any?> (kt.fluxo.data/FluxoResult<#A>).kt.fluxo.data/onSuccess(kotlin/Function1<#A, kotlin/Unit>): kt.fluxo.data/FluxoResult<#A> // kt.fluxo.data/onSuccess|onSuccess@kt.fluxo.data.FluxoResult<0:0>(kotlin.Function1<0:0,kotlin.Unit>){0§<kotlin.Any?>}[0]
+final inline fun <#A: kotlin/Any?> kt.fluxo.data/resultOf(kotlin/Function0<#A>): kt.fluxo.data/FluxoResult<#A?> // kt.fluxo.data/resultOf|resultOf(kotlin.Function0<0:0>){0§<kotlin.Any?>}[0]

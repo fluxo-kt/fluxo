@@ -1,0 +1,341 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, js, linuxArm64, linuxX64, macosArm64, macosX64, mingwX64, tvosArm64, tvosSimulatorArm64, tvosX64, wasmJs, watchosArm32, watchosArm64, watchosDeviceArm64, watchosSimulatorArm64, watchosX64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <io.github.fluxo-kt:fluxo-core>
+open annotation class kt.fluxo.core.annotation/CallSuper : kotlin/Annotation { // kt.fluxo.core.annotation/CallSuper|null[1]
+    constructor <init>() // kt.fluxo.core.annotation/CallSuper.<init>|<init>(){}[1]
+}
+
+open annotation class kt.fluxo.core.annotation/FluxoDsl : kotlin/Annotation { // kt.fluxo.core.annotation/FluxoDsl|null[0]
+    constructor <init>() // kt.fluxo.core.annotation/FluxoDsl.<init>|<init>(){}[0]
+}
+
+open annotation class kt.fluxo.core.annotation/NotThreadSafe : kotlin/Annotation { // kt.fluxo.core.annotation/NotThreadSafe|null[1]
+    constructor <init>() // kt.fluxo.core.annotation/NotThreadSafe.<init>|<init>(){}[1]
+}
+
+open annotation class kt.fluxo.core.annotation/ThreadSafe : kotlin/Annotation { // kt.fluxo.core.annotation/ThreadSafe|null[1]
+    constructor <init>() // kt.fluxo.core.annotation/ThreadSafe.<init>|<init>(){}[1]
+}
+
+abstract fun interface <#A: kotlin/Any?, #B: kotlin/Any?, #C: kotlin/Any> kt.fluxo.core/IntentHandler { // kt.fluxo.core/IntentHandler|null[0]
+    abstract suspend fun (kt.fluxo.core.dsl/StoreScope<#A, #B, #C>).handleIntent(#A) // kt.fluxo.core/IntentHandler.handleIntent|handleIntent@kt.fluxo.core.dsl.StoreScope<1:0,1:1,1:2>(1:0){}[0]
+}
+
+abstract interface <#A: in kotlin/Any?, #B: kotlin/Any?, #C: kotlin/Any> kt.fluxo.core.dsl/StoreScope : kt.fluxo.core/StoreSE<#A, #B, #C> { // kt.fluxo.core.dsl/StoreScope|null[0]
+    abstract var value // kt.fluxo.core.dsl/StoreScope.value|{}value[0]
+        abstract fun <get-value>(): #B // kt.fluxo.core.dsl/StoreScope.value.<get-value>|<get-value>(){}[0]
+        abstract fun <set-value>(#B) // kt.fluxo.core.dsl/StoreScope.value.<set-value>|<set-value>(1:1){}[0]
+
+    abstract fun compareAndSet(#B, #B): kotlin/Boolean // kt.fluxo.core.dsl/StoreScope.compareAndSet|compareAndSet(1:1;1:1){}[0]
+    abstract suspend fun postSideEffect(#C) // kt.fluxo.core.dsl/StoreScope.postSideEffect|postSideEffect(1:2){}[0]
+    abstract suspend fun sideJob(kotlin/String, kotlin.coroutines/CoroutineContext, kotlinx.coroutines/CoroutineStart, kotlin/Function1<kotlin/Throwable, kotlin/Unit>?, kotlin.coroutines/SuspendFunction2<kt.fluxo.core.dsl/StoreScope<#A, #B, #C>, kotlin/Boolean, kotlin/Unit>): kotlinx.coroutines/Job // kt.fluxo.core.dsl/StoreScope.sideJob|sideJob(kotlin.String;kotlin.coroutines.CoroutineContext;kotlinx.coroutines.CoroutineStart;kotlin.Function1<kotlin.Throwable,kotlin.Unit>?;kotlin.coroutines.SuspendFunction2<kt.fluxo.core.dsl.StoreScope<1:0,1:1,1:2>,kotlin.Boolean,kotlin.Unit>){}[0]
+    open fun async(kotlin.coroutines/CoroutineContext = ..., kotlinx.coroutines/CoroutineStart = ..., kotlin/String = ..., kotlin.coroutines/SuspendFunction2<kt.fluxo.core.dsl/StoreScope<#A, *, *>, kotlin/Boolean, kotlin/Unit>) // kt.fluxo.core.dsl/StoreScope.async|async(kotlin.coroutines.CoroutineContext;kotlinx.coroutines.CoroutineStart;kotlin.String;kotlin.coroutines.SuspendFunction2<kt.fluxo.core.dsl.StoreScope<1:0,*,*>,kotlin.Boolean,kotlin.Unit>){}[0]
+    open fun launch(kotlin.coroutines/CoroutineContext = ..., kotlinx.coroutines/CoroutineStart = ..., kotlin/String = ..., kotlin.coroutines/SuspendFunction2<kt.fluxo.core.dsl/StoreScope<#A, *, *>, kotlin/Boolean, kotlin/Unit>): kotlinx.coroutines/Job // kt.fluxo.core.dsl/StoreScope.launch|launch(kotlin.coroutines.CoroutineContext;kotlinx.coroutines.CoroutineStart;kotlin.String;kotlin.coroutines.SuspendFunction2<kt.fluxo.core.dsl.StoreScope<1:0,*,*>,kotlin.Boolean,kotlin.Unit>){}[0]
+    open fun noOp() // kt.fluxo.core.dsl/StoreScope.noOp|noOp(){}[0]
+    open fun reduce(kotlin/Function1<#B, #B>): #B // kt.fluxo.core.dsl/StoreScope.reduce|reduce(kotlin.Function1<1:1,1:1>){}[0]
+    open fun updateState(kotlin/Function1<#B, #B>): #B // kt.fluxo.core.dsl/StoreScope.updateState|updateState(kotlin.Function1<1:1,1:1>){}[0]
+    open suspend fun sideJob(kotlin.coroutines/CoroutineContext, kotlin.coroutines/SuspendFunction2<kt.fluxo.core.dsl/StoreScope<#A, #B, #C>, kotlin/Boolean, kotlin/Unit>): kotlinx.coroutines/Job // kt.fluxo.core.dsl/StoreScope.sideJob|sideJob(kotlin.coroutines.CoroutineContext;kotlin.coroutines.SuspendFunction2<kt.fluxo.core.dsl.StoreScope<1:0,1:1,1:2>,kotlin.Boolean,kotlin.Unit>){}[0]
+    open suspend fun sideJob(kotlin.coroutines/CoroutineContext, kotlin/Function1<kotlin/Throwable, kotlin/Unit>?, kotlin.coroutines/SuspendFunction2<kt.fluxo.core.dsl/StoreScope<#A, #B, #C>, kotlin/Boolean, kotlin/Unit>): kotlinx.coroutines/Job // kt.fluxo.core.dsl/StoreScope.sideJob|sideJob(kotlin.coroutines.CoroutineContext;kotlin.Function1<kotlin.Throwable,kotlin.Unit>?;kotlin.coroutines.SuspendFunction2<kt.fluxo.core.dsl.StoreScope<1:0,1:1,1:2>,kotlin.Boolean,kotlin.Unit>){}[0]
+    open suspend fun sideJob(kotlin.coroutines/CoroutineContext, kotlinx.coroutines/CoroutineStart, kotlin.coroutines/SuspendFunction2<kt.fluxo.core.dsl/StoreScope<#A, #B, #C>, kotlin/Boolean, kotlin/Unit>): kotlinx.coroutines/Job // kt.fluxo.core.dsl/StoreScope.sideJob|sideJob(kotlin.coroutines.CoroutineContext;kotlinx.coroutines.CoroutineStart;kotlin.coroutines.SuspendFunction2<kt.fluxo.core.dsl.StoreScope<1:0,1:1,1:2>,kotlin.Boolean,kotlin.Unit>){}[0]
+    open suspend fun sideJob(kotlin.coroutines/CoroutineContext, kotlinx.coroutines/CoroutineStart, kotlin/Function1<kotlin/Throwable, kotlin/Unit>?, kotlin.coroutines/SuspendFunction2<kt.fluxo.core.dsl/StoreScope<#A, #B, #C>, kotlin/Boolean, kotlin/Unit>): kotlinx.coroutines/Job // kt.fluxo.core.dsl/StoreScope.sideJob|sideJob(kotlin.coroutines.CoroutineContext;kotlinx.coroutines.CoroutineStart;kotlin.Function1<kotlin.Throwable,kotlin.Unit>?;kotlin.coroutines.SuspendFunction2<kt.fluxo.core.dsl.StoreScope<1:0,1:1,1:2>,kotlin.Boolean,kotlin.Unit>){}[0]
+    open suspend fun sideJob(kotlin.coroutines/SuspendFunction2<kt.fluxo.core.dsl/StoreScope<#A, #B, #C>, kotlin/Boolean, kotlin/Unit>): kotlinx.coroutines/Job // kt.fluxo.core.dsl/StoreScope.sideJob|sideJob(kotlin.coroutines.SuspendFunction2<kt.fluxo.core.dsl.StoreScope<1:0,1:1,1:2>,kotlin.Boolean,kotlin.Unit>){}[0]
+    open suspend fun sideJob(kotlin/Function1<kotlin/Throwable, kotlin/Unit>?, kotlin.coroutines/SuspendFunction2<kt.fluxo.core.dsl/StoreScope<#A, #B, #C>, kotlin/Boolean, kotlin/Unit>): kotlinx.coroutines/Job // kt.fluxo.core.dsl/StoreScope.sideJob|sideJob(kotlin.Function1<kotlin.Throwable,kotlin.Unit>?;kotlin.coroutines.SuspendFunction2<kt.fluxo.core.dsl.StoreScope<1:0,1:1,1:2>,kotlin.Boolean,kotlin.Unit>){}[0]
+    open suspend fun sideJob(kotlin/String, kotlin.coroutines/CoroutineContext, kotlin.coroutines/SuspendFunction2<kt.fluxo.core.dsl/StoreScope<#A, #B, #C>, kotlin/Boolean, kotlin/Unit>): kotlinx.coroutines/Job // kt.fluxo.core.dsl/StoreScope.sideJob|sideJob(kotlin.String;kotlin.coroutines.CoroutineContext;kotlin.coroutines.SuspendFunction2<kt.fluxo.core.dsl.StoreScope<1:0,1:1,1:2>,kotlin.Boolean,kotlin.Unit>){}[0]
+    open suspend fun sideJob(kotlin/String, kotlin.coroutines/CoroutineContext, kotlin/Function1<kotlin/Throwable, kotlin/Unit>?, kotlin.coroutines/SuspendFunction2<kt.fluxo.core.dsl/StoreScope<#A, #B, #C>, kotlin/Boolean, kotlin/Unit>): kotlinx.coroutines/Job // kt.fluxo.core.dsl/StoreScope.sideJob|sideJob(kotlin.String;kotlin.coroutines.CoroutineContext;kotlin.Function1<kotlin.Throwable,kotlin.Unit>?;kotlin.coroutines.SuspendFunction2<kt.fluxo.core.dsl.StoreScope<1:0,1:1,1:2>,kotlin.Boolean,kotlin.Unit>){}[0]
+    open suspend fun sideJob(kotlin/String, kotlin.coroutines/CoroutineContext, kotlinx.coroutines/CoroutineStart, kotlin.coroutines/SuspendFunction2<kt.fluxo.core.dsl/StoreScope<#A, #B, #C>, kotlin/Boolean, kotlin/Unit>): kotlinx.coroutines/Job // kt.fluxo.core.dsl/StoreScope.sideJob|sideJob(kotlin.String;kotlin.coroutines.CoroutineContext;kotlinx.coroutines.CoroutineStart;kotlin.coroutines.SuspendFunction2<kt.fluxo.core.dsl.StoreScope<1:0,1:1,1:2>,kotlin.Boolean,kotlin.Unit>){}[0]
+    open suspend fun sideJob(kotlin/String, kotlin.coroutines/SuspendFunction2<kt.fluxo.core.dsl/StoreScope<#A, #B, #C>, kotlin/Boolean, kotlin/Unit>): kotlinx.coroutines/Job // kt.fluxo.core.dsl/StoreScope.sideJob|sideJob(kotlin.String;kotlin.coroutines.SuspendFunction2<kt.fluxo.core.dsl.StoreScope<1:0,1:1,1:2>,kotlin.Boolean,kotlin.Unit>){}[0]
+    open suspend fun sideJob(kotlin/String, kotlin/Function1<kotlin/Throwable, kotlin/Unit>?, kotlin.coroutines/SuspendFunction2<kt.fluxo.core.dsl/StoreScope<#A, #B, #C>, kotlin/Boolean, kotlin/Unit>): kotlinx.coroutines/Job // kt.fluxo.core.dsl/StoreScope.sideJob|sideJob(kotlin.String;kotlin.Function1<kotlin.Throwable,kotlin.Unit>?;kotlin.coroutines.SuspendFunction2<kt.fluxo.core.dsl.StoreScope<1:0,1:1,1:2>,kotlin.Boolean,kotlin.Unit>){}[0]
+    open suspend fun sideJob(kotlin/String, kotlinx.coroutines/CoroutineStart, kotlin.coroutines/SuspendFunction2<kt.fluxo.core.dsl/StoreScope<#A, #B, #C>, kotlin/Boolean, kotlin/Unit>): kotlinx.coroutines/Job // kt.fluxo.core.dsl/StoreScope.sideJob|sideJob(kotlin.String;kotlinx.coroutines.CoroutineStart;kotlin.coroutines.SuspendFunction2<kt.fluxo.core.dsl.StoreScope<1:0,1:1,1:2>,kotlin.Boolean,kotlin.Unit>){}[0]
+    open suspend fun sideJob(kotlin/String, kotlinx.coroutines/CoroutineStart, kotlin/Function1<kotlin/Throwable, kotlin/Unit>?, kotlin.coroutines/SuspendFunction2<kt.fluxo.core.dsl/StoreScope<#A, #B, #C>, kotlin/Boolean, kotlin/Unit>): kotlinx.coroutines/Job // kt.fluxo.core.dsl/StoreScope.sideJob|sideJob(kotlin.String;kotlinx.coroutines.CoroutineStart;kotlin.Function1<kotlin.Throwable,kotlin.Unit>?;kotlin.coroutines.SuspendFunction2<kt.fluxo.core.dsl.StoreScope<1:0,1:1,1:2>,kotlin.Boolean,kotlin.Unit>){}[0]
+    open suspend fun sideJob(kotlinx.coroutines/CoroutineStart, kotlin.coroutines/SuspendFunction2<kt.fluxo.core.dsl/StoreScope<#A, #B, #C>, kotlin/Boolean, kotlin/Unit>): kotlinx.coroutines/Job // kt.fluxo.core.dsl/StoreScope.sideJob|sideJob(kotlinx.coroutines.CoroutineStart;kotlin.coroutines.SuspendFunction2<kt.fluxo.core.dsl.StoreScope<1:0,1:1,1:2>,kotlin.Boolean,kotlin.Unit>){}[0]
+    open suspend fun sideJob(kotlinx.coroutines/CoroutineStart, kotlin/Function1<kotlin/Throwable, kotlin/Unit>?, kotlin.coroutines/SuspendFunction2<kt.fluxo.core.dsl/StoreScope<#A, #B, #C>, kotlin/Boolean, kotlin/Unit>): kotlinx.coroutines/Job // kt.fluxo.core.dsl/StoreScope.sideJob|sideJob(kotlinx.coroutines.CoroutineStart;kotlin.Function1<kotlin.Throwable,kotlin.Unit>?;kotlin.coroutines.SuspendFunction2<kt.fluxo.core.dsl.StoreScope<1:0,1:1,1:2>,kotlin.Boolean,kotlin.Unit>){}[0]
+}
+
+abstract interface <#A: in kotlin/Any?, #B: kotlin/Any?> kt.fluxo.core.intent/IntentStrategyScope : kotlinx.coroutines/CoroutineScope { // kt.fluxo.core.intent/IntentStrategyScope|null[0]
+    abstract var value // kt.fluxo.core.intent/IntentStrategyScope.value|{}value[0]
+        abstract fun <get-value>(): #B // kt.fluxo.core.intent/IntentStrategyScope.value.<get-value>|<get-value>(){}[0]
+        abstract fun <set-value>(#B) // kt.fluxo.core.intent/IntentStrategyScope.value.<set-value>|<set-value>(1:1){}[0]
+
+    abstract fun handleException(kotlin.coroutines/CoroutineContext, kotlin/Throwable) // kt.fluxo.core.intent/IntentStrategyScope.handleException|handleException(kotlin.coroutines.CoroutineContext;kotlin.Throwable){}[0]
+    abstract fun undeliveredIntent(#A, kotlin/Boolean) // kt.fluxo.core.intent/IntentStrategyScope.undeliveredIntent|undeliveredIntent(1:0;kotlin.Boolean){}[0]
+    abstract suspend fun executeIntent(#A) // kt.fluxo.core.intent/IntentStrategyScope.executeIntent|executeIntent(1:0){}[0]
+}
+
+abstract interface <#A: in kotlin/Any?, #B: out kotlin/Any?, #C: out kotlin/Any> kt.fluxo.core/StoreSE : kt.fluxo.core/Store<#A, #B> { // kt.fluxo.core/StoreSE|null[0]
+    abstract val sideEffectFlow // kt.fluxo.core/StoreSE.sideEffectFlow|{}sideEffectFlow[0]
+        abstract fun <get-sideEffectFlow>(): kotlinx.coroutines.flow/Flow<#C> // kt.fluxo.core/StoreSE.sideEffectFlow.<get-sideEffectFlow>|<get-sideEffectFlow>(){}[0]
+}
+
+abstract interface <#A: in kotlin/Any?, #B: out kotlin/Any?> kt.fluxo.core/Store : kotlinx.coroutines.flow/FlowCollector<#A>, kotlinx.coroutines.flow/StateFlow<#B>, kotlinx.coroutines/CoroutineScope, kt.fluxo.core.internal/Closeable { // kt.fluxo.core/Store|null[0]
+    abstract val name // kt.fluxo.core/Store.name|{}name[0]
+        abstract fun <get-name>(): kotlin/String // kt.fluxo.core/Store.name.<get-name>|<get-name>(){}[0]
+    abstract val subscriptionCount // kt.fluxo.core/Store.subscriptionCount|{}subscriptionCount[0]
+        abstract fun <get-subscriptionCount>(): kotlinx.coroutines.flow/StateFlow<kotlin/Int> // kt.fluxo.core/Store.subscriptionCount.<get-subscriptionCount>|<get-subscriptionCount>(){}[0]
+    open val state // kt.fluxo.core/Store.state|{}state[0]
+        open fun <get-state>(): #B // kt.fluxo.core/Store.state.<get-state>|<get-state>(){}[0]
+    open val stateFlow // kt.fluxo.core/Store.stateFlow|{}stateFlow[0]
+        open fun <get-stateFlow>(): kotlinx.coroutines.flow/StateFlow<#B> // kt.fluxo.core/Store.stateFlow.<get-stateFlow>|<get-stateFlow>(){}[0]
+
+    abstract fun send(#A): kotlinx.coroutines/Job // kt.fluxo.core/Store.send|send(1:0){}[0]
+    abstract fun start(): kotlinx.coroutines/Job // kt.fluxo.core/Store.start|start(){}[0]
+    abstract suspend fun emit(#A) // kt.fluxo.core/Store.emit|emit(1:0){}[0]
+    open fun close() // kt.fluxo.core/Store.close|close(){}[0]
+}
+
+abstract interface <#A: kotlin/Any?, #B: kotlin/Any> kt.fluxo.core.dsl/ContainerHost { // kt.fluxo.core.dsl/ContainerHost|null[0]
+    abstract val container // kt.fluxo.core.dsl/ContainerHost.container|{}container[0]
+        abstract fun <get-container>(): kt.fluxo.core/StoreSE<kotlin.coroutines/SuspendFunction1<kt.fluxo.core.dsl/StoreScope<kotlin/Nothing, #A, #B>, kotlin/Unit>, #A, #B> // kt.fluxo.core.dsl/ContainerHost.container.<get-container>|<get-container>(){}[0]
+}
+
+abstract interface <#A: kotlin/Any?, #B: kotlin/Any?, #C: kotlin/Any> kt.fluxo.core.factory/StoreDecorator : kt.fluxo.core.dsl/StoreScope<#A, #B, #C> { // kt.fluxo.core.factory/StoreDecorator|null[0]
+    abstract fun init(kt.fluxo.core.factory/StoreDecorator<#A, #B, #C>, kt.fluxo.core/FluxoSettings<#A, #B, #C>) // kt.fluxo.core.factory/StoreDecorator.init|init(kt.fluxo.core.factory.StoreDecorator<1:0,1:1,1:2>;kt.fluxo.core.FluxoSettings<1:0,1:1,1:2>){}[0]
+    abstract suspend fun onBootstrap(kotlin.coroutines/SuspendFunction1<kt.fluxo.core.dsl/StoreScope<#A, #B, #C>, kotlin/Unit>) // kt.fluxo.core.factory/StoreDecorator.onBootstrap|onBootstrap(kotlin.coroutines.SuspendFunction1<kt.fluxo.core.dsl.StoreScope<1:0,1:1,1:2>,kotlin.Unit>){}[0]
+    abstract suspend fun onIntent(#A) // kt.fluxo.core.factory/StoreDecorator.onIntent|onIntent(1:0){}[0]
+    abstract suspend fun onSideJob(kotlin/String, kotlin/Boolean, kotlin.coroutines/SuspendFunction2<kt.fluxo.core.dsl/StoreScope<#A, #B, #C>, kotlin/Boolean, kotlin/Unit>) // kt.fluxo.core.factory/StoreDecorator.onSideJob|onSideJob(kotlin.String;kotlin.Boolean;kotlin.coroutines.SuspendFunction2<kt.fluxo.core.dsl.StoreScope<1:0,1:1,1:2>,kotlin.Boolean,kotlin.Unit>){}[0]
+    abstract suspend fun onStart(kotlin.coroutines/SuspendFunction1<kt.fluxo.core.dsl/StoreScope<#A, #B, #C>, kotlin/Unit>?) // kt.fluxo.core.factory/StoreDecorator.onStart|onStart(kotlin.coroutines.SuspendFunction1<kt.fluxo.core.dsl.StoreScope<1:0,1:1,1:2>,kotlin.Unit>?){}[0]
+    open fun onClosed(kotlin/Throwable?) // kt.fluxo.core.factory/StoreDecorator.onClosed|onClosed(kotlin.Throwable?){}[0]
+    open fun onStateChanged(#B, #B) // kt.fluxo.core.factory/StoreDecorator.onStateChanged|onStateChanged(1:1;1:1){}[0]
+    open fun onUndeliveredIntent(#A, kotlin/Boolean) // kt.fluxo.core.factory/StoreDecorator.onUndeliveredIntent|onUndeliveredIntent(1:0;kotlin.Boolean){}[0]
+    open fun onUndeliveredSideEffect(#C, kotlin/Boolean) // kt.fluxo.core.factory/StoreDecorator.onUndeliveredSideEffect|onUndeliveredSideEffect(1:2;kotlin.Boolean){}[0]
+    open fun onUnhandledError(kotlin/Throwable): kotlin/Boolean // kt.fluxo.core.factory/StoreDecorator.onUnhandledError|onUnhandledError(kotlin.Throwable){}[0]
+}
+
+abstract interface kt.fluxo.core.internal/Closeable { // kt.fluxo.core.internal/Closeable|null[0]
+    abstract fun close() // kt.fluxo.core.internal/Closeable.close|close(){}[0]
+}
+
+sealed interface kt.fluxo.core/FluxoException // kt.fluxo.core/FluxoException|null[0]
+
+sealed interface kt.fluxo.core/SideEffectStrategy { // kt.fluxo.core/SideEffectStrategy|null[0]
+    final class SHARE : kt.fluxo.core/SideEffectStrategy { // kt.fluxo.core/SideEffectStrategy.SHARE|null[0]
+        constructor <init>() // kt.fluxo.core/SideEffectStrategy.SHARE.<init>|<init>(){}[0]
+        constructor <init>(kotlin/Int) // kt.fluxo.core/SideEffectStrategy.SHARE.<init>|<init>(kotlin.Int){}[0]
+
+        final val replay // kt.fluxo.core/SideEffectStrategy.SHARE.replay|{}replay[0]
+            final fun <get-replay>(): kotlin/Int // kt.fluxo.core/SideEffectStrategy.SHARE.replay.<get-replay>|<get-replay>(){}[0]
+
+        final fun equals(kotlin/Any?): kotlin/Boolean // kt.fluxo.core/SideEffectStrategy.SHARE.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // kt.fluxo.core/SideEffectStrategy.SHARE.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // kt.fluxo.core/SideEffectStrategy.SHARE.toString|toString(){}[0]
+    }
+
+    final object CONSUME : kt.fluxo.core/SideEffectStrategy { // kt.fluxo.core/SideEffectStrategy.CONSUME|null[0]
+        final fun toString(): kotlin/String // kt.fluxo.core/SideEffectStrategy.CONSUME.toString|toString(){}[0]
+    }
+
+    final object DISABLE : kt.fluxo.core/SideEffectStrategy { // kt.fluxo.core/SideEffectStrategy.DISABLE|null[0]
+        final fun toString(): kotlin/String // kt.fluxo.core/SideEffectStrategy.DISABLE.toString|toString(){}[0]
+    }
+
+    final object RECEIVE : kt.fluxo.core/SideEffectStrategy { // kt.fluxo.core/SideEffectStrategy.RECEIVE|null[0]
+        final fun toString(): kotlin/String // kt.fluxo.core/SideEffectStrategy.RECEIVE.toString|toString(){}[0]
+    }
+}
+
+abstract class <#A: in kotlin/Any?, #B: kotlin/Any?> kt.fluxo.core.intent/IntentStrategy : kt.fluxo.core.internal/Closeable { // kt.fluxo.core.intent/IntentStrategy|null[0]
+    constructor <init>(kt.fluxo.core.intent/IntentStrategyScope<#A, #B>, kotlin/Boolean, kotlin/Boolean, kotlin/Boolean) // kt.fluxo.core.intent/IntentStrategy.<init>|<init>(kt.fluxo.core.intent.IntentStrategyScope<1:0,1:1>;kotlin.Boolean;kotlin.Boolean;kotlin.Boolean){}[0]
+
+    final val handler // kt.fluxo.core.intent/IntentStrategy.handler|{}handler[0]
+        final fun <get-handler>(): kt.fluxo.core.intent/IntentStrategyScope<#A, #B> // kt.fluxo.core.intent/IntentStrategy.handler.<get-handler>|<get-handler>(){}[0]
+
+    abstract fun queueIntent(#A): kotlinx.coroutines/Job // kt.fluxo.core.intent/IntentStrategy.queueIntent|queueIntent(1:0){}[0]
+    final suspend fun (kotlinx.coroutines/CoroutineScope).executeIntent(#A, kotlinx.coroutines/CompletableDeferred<kotlin/Unit>?) // kt.fluxo.core.intent/IntentStrategy.executeIntent|executeIntent@kotlinx.coroutines.CoroutineScope(1:0;kotlinx.coroutines.CompletableDeferred<kotlin.Unit>?){}[0]
+    open fun close() // kt.fluxo.core.intent/IntentStrategy.close|close(){}[0]
+    open suspend fun launch() // kt.fluxo.core.intent/IntentStrategy.launch|launch(){}[0]
+    open suspend fun queueIntentSuspend(#A) // kt.fluxo.core.intent/IntentStrategy.queueIntentSuspend|queueIntentSuspend(1:0){}[0]
+
+    abstract interface Factory { // kt.fluxo.core.intent/IntentStrategy.Factory|null[0]
+        abstract fun <#A2: kotlin/Any?, #B2: kotlin/Any?> invoke(kt.fluxo.core.intent/IntentStrategyScope<#A2, #B2>): kt.fluxo.core.intent/IntentStrategy<#A2, #B2> // kt.fluxo.core.intent/IntentStrategy.Factory.invoke|invoke(kt.fluxo.core.intent.IntentStrategyScope<0:0,0:1>){0§<kotlin.Any?>;1§<kotlin.Any?>}[0]
+    }
+
+    final object InBox { // kt.fluxo.core.intent/IntentStrategy.InBox|null[0]
+        final val Direct // kt.fluxo.core.intent/IntentStrategy.InBox.Direct|{}Direct[0]
+            final fun <get-Direct>(): kt.fluxo.core.intent/IntentStrategy.Factory // kt.fluxo.core.intent/IntentStrategy.InBox.Direct.<get-Direct>|<get-Direct>(){}[0]
+        final val Fifo // kt.fluxo.core.intent/IntentStrategy.InBox.Fifo|{}Fifo[0]
+            final fun <get-Fifo>(): kt.fluxo.core.intent/IntentStrategy.Factory // kt.fluxo.core.intent/IntentStrategy.InBox.Fifo.<get-Fifo>|<get-Fifo>(){}[0]
+        final val Lifo // kt.fluxo.core.intent/IntentStrategy.InBox.Lifo|{}Lifo[0]
+            final fun <get-Lifo>(): kt.fluxo.core.intent/IntentStrategy.Factory // kt.fluxo.core.intent/IntentStrategy.InBox.Lifo.<get-Lifo>|<get-Lifo>(){}[0]
+        final val Parallel // kt.fluxo.core.intent/IntentStrategy.InBox.Parallel|{}Parallel[0]
+            final fun <get-Parallel>(): kt.fluxo.core.intent/IntentStrategy.Factory // kt.fluxo.core.intent/IntentStrategy.InBox.Parallel.<get-Parallel>|<get-Parallel>(){}[0]
+    }
+}
+
+abstract class <#A: kotlin/Any?, #B: kotlin/Any?, #C: kotlin/Any> kt.fluxo.core.factory/StoreDecoratorBase : kt.fluxo.core.factory/StoreDecorator<#A, #B, #C> { // kt.fluxo.core.factory/StoreDecoratorBase|null[0]
+    constructor <init>(kt.fluxo.core.factory/StoreDecorator<#A, #B, #C>) // kt.fluxo.core.factory/StoreDecoratorBase.<init>|<init>(kt.fluxo.core.factory.StoreDecorator<1:0,1:1,1:2>){}[0]
+
+    final val coroutineContext // kt.fluxo.core.factory/StoreDecoratorBase.coroutineContext|{}coroutineContext[0]
+        final fun <get-coroutineContext>(): kotlin.coroutines/CoroutineContext // kt.fluxo.core.factory/StoreDecoratorBase.coroutineContext.<get-coroutineContext>|<get-coroutineContext>(){}[0]
+    final val replayCache // kt.fluxo.core.factory/StoreDecoratorBase.replayCache|{}replayCache[0]
+        final fun <get-replayCache>(): kotlin.collections/List<#B> // kt.fluxo.core.factory/StoreDecoratorBase.replayCache.<get-replayCache>|<get-replayCache>(){}[0]
+    final val sideEffectFlow // kt.fluxo.core.factory/StoreDecoratorBase.sideEffectFlow|{}sideEffectFlow[0]
+        final fun <get-sideEffectFlow>(): kotlinx.coroutines.flow/Flow<#C> // kt.fluxo.core.factory/StoreDecoratorBase.sideEffectFlow.<get-sideEffectFlow>|<get-sideEffectFlow>(){}[0]
+    final val subscriptionCount // kt.fluxo.core.factory/StoreDecoratorBase.subscriptionCount|{}subscriptionCount[0]
+        final fun <get-subscriptionCount>(): kotlinx.coroutines.flow/StateFlow<kotlin/Int> // kt.fluxo.core.factory/StoreDecoratorBase.subscriptionCount.<get-subscriptionCount>|<get-subscriptionCount>(){}[0]
+    open val name // kt.fluxo.core.factory/StoreDecoratorBase.name|{}name[0]
+        open fun <get-name>(): kotlin/String // kt.fluxo.core.factory/StoreDecoratorBase.name.<get-name>|<get-name>(){}[0]
+
+    open var value // kt.fluxo.core.factory/StoreDecoratorBase.value|{}value[0]
+        open fun <get-value>(): #B // kt.fluxo.core.factory/StoreDecoratorBase.value.<get-value>|<get-value>(){}[0]
+        open fun <set-value>(#B) // kt.fluxo.core.factory/StoreDecoratorBase.value.<set-value>|<set-value>(1:1){}[0]
+
+    final fun init(kt.fluxo.core.factory/StoreDecorator<#A, #B, #C>, kt.fluxo.core/FluxoSettings<#A, #B, #C>) // kt.fluxo.core.factory/StoreDecoratorBase.init|init(kt.fluxo.core.factory.StoreDecorator<1:0,1:1,1:2>;kt.fluxo.core.FluxoSettings<1:0,1:1,1:2>){}[0]
+    open fun close() // kt.fluxo.core.factory/StoreDecoratorBase.close|close(){}[0]
+    open fun compareAndSet(#B, #B): kotlin/Boolean // kt.fluxo.core.factory/StoreDecoratorBase.compareAndSet|compareAndSet(1:1;1:1){}[0]
+    open fun onClosed(kotlin/Throwable?) // kt.fluxo.core.factory/StoreDecoratorBase.onClosed|onClosed(kotlin.Throwable?){}[0]
+    open fun onStateChanged(#B, #B) // kt.fluxo.core.factory/StoreDecoratorBase.onStateChanged|onStateChanged(1:1;1:1){}[0]
+    open fun onUndeliveredIntent(#A, kotlin/Boolean) // kt.fluxo.core.factory/StoreDecoratorBase.onUndeliveredIntent|onUndeliveredIntent(1:0;kotlin.Boolean){}[0]
+    open fun onUndeliveredSideEffect(#C, kotlin/Boolean) // kt.fluxo.core.factory/StoreDecoratorBase.onUndeliveredSideEffect|onUndeliveredSideEffect(1:2;kotlin.Boolean){}[0]
+    open fun onUnhandledError(kotlin/Throwable): kotlin/Boolean // kt.fluxo.core.factory/StoreDecoratorBase.onUnhandledError|onUnhandledError(kotlin.Throwable){}[0]
+    open fun send(#A): kotlinx.coroutines/Job // kt.fluxo.core.factory/StoreDecoratorBase.send|send(1:0){}[0]
+    open fun start(): kotlinx.coroutines/Job // kt.fluxo.core.factory/StoreDecoratorBase.start|start(){}[0]
+    open fun toString(): kotlin/String // kt.fluxo.core.factory/StoreDecoratorBase.toString|toString(){}[0]
+    open suspend fun collect(kotlinx.coroutines.flow/FlowCollector<#B>): kotlin/Nothing // kt.fluxo.core.factory/StoreDecoratorBase.collect|collect(kotlinx.coroutines.flow.FlowCollector<1:1>){}[0]
+    open suspend fun emit(#A) // kt.fluxo.core.factory/StoreDecoratorBase.emit|emit(1:0){}[0]
+    open suspend fun onBootstrap(kotlin.coroutines/SuspendFunction1<kt.fluxo.core.dsl/StoreScope<#A, #B, #C>, kotlin/Unit>) // kt.fluxo.core.factory/StoreDecoratorBase.onBootstrap|onBootstrap(kotlin.coroutines.SuspendFunction1<kt.fluxo.core.dsl.StoreScope<1:0,1:1,1:2>,kotlin.Unit>){}[0]
+    open suspend fun onIntent(#A) // kt.fluxo.core.factory/StoreDecoratorBase.onIntent|onIntent(1:0){}[0]
+    open suspend fun onSideJob(kotlin/String, kotlin/Boolean, kotlin.coroutines/SuspendFunction2<kt.fluxo.core.dsl/StoreScope<#A, #B, #C>, kotlin/Boolean, kotlin/Unit>) // kt.fluxo.core.factory/StoreDecoratorBase.onSideJob|onSideJob(kotlin.String;kotlin.Boolean;kotlin.coroutines.SuspendFunction2<kt.fluxo.core.dsl.StoreScope<1:0,1:1,1:2>,kotlin.Boolean,kotlin.Unit>){}[0]
+    open suspend fun onStart(kotlin.coroutines/SuspendFunction1<kt.fluxo.core.dsl/StoreScope<#A, #B, #C>, kotlin/Unit>?) // kt.fluxo.core.factory/StoreDecoratorBase.onStart|onStart(kotlin.coroutines.SuspendFunction1<kt.fluxo.core.dsl.StoreScope<1:0,1:1,1:2>,kotlin.Unit>?){}[0]
+    open suspend fun postSideEffect(#C) // kt.fluxo.core.factory/StoreDecoratorBase.postSideEffect|postSideEffect(1:2){}[0]
+    open suspend fun sideJob(kotlin/String, kotlin.coroutines/CoroutineContext, kotlinx.coroutines/CoroutineStart, kotlin/Function1<kotlin/Throwable, kotlin/Unit>?, kotlin.coroutines/SuspendFunction2<kt.fluxo.core.dsl/StoreScope<#A, #B, #C>, kotlin/Boolean, kotlin/Unit>): kotlinx.coroutines/Job // kt.fluxo.core.factory/StoreDecoratorBase.sideJob|sideJob(kotlin.String;kotlin.coroutines.CoroutineContext;kotlinx.coroutines.CoroutineStart;kotlin.Function1<kotlin.Throwable,kotlin.Unit>?;kotlin.coroutines.SuspendFunction2<kt.fluxo.core.dsl.StoreScope<1:0,1:1,1:2>,kotlin.Boolean,kotlin.Unit>){}[0]
+}
+
+abstract class kt.fluxo.core.factory/StoreFactory { // kt.fluxo.core.factory/StoreFactory|null[0]
+    constructor <init>() // kt.fluxo.core.factory/StoreFactory.<init>|<init>(){}[0]
+
+    abstract fun <#A1: kotlin/Any?, #B1: kotlin/Any?, #C1: kotlin/Any> createForDecoration(#B1, kt.fluxo.core/IntentHandler<#A1, #B1, #C1>, kt.fluxo.core/FluxoSettings<#A1, #B1, #C1>): kt.fluxo.core.factory/StoreDecorator<#A1, #B1, #C1> // kt.fluxo.core.factory/StoreFactory.createForDecoration|createForDecoration(0:1;kt.fluxo.core.IntentHandler<0:0,0:1,0:2>;kt.fluxo.core.FluxoSettings<0:0,0:1,0:2>){0§<kotlin.Any?>;1§<kotlin.Any?>;2§<kotlin.Any>}[0]
+    final fun <#A1: kotlin/Any?, #B1: kotlin/Any?, #C1: kotlin/Any> create(#B1, kt.fluxo.core/IntentHandler<#A1, #B1, #C1>, kt.fluxo.core/FluxoSettings<#A1, #B1, #C1> = ...): kt.fluxo.core/StoreSE<#A1, #B1, #C1> // kt.fluxo.core.factory/StoreFactory.create|create(0:1;kt.fluxo.core.IntentHandler<0:0,0:1,0:2>;kt.fluxo.core.FluxoSettings<0:0,0:1,0:2>){0§<kotlin.Any?>;1§<kotlin.Any?>;2§<kotlin.Any>}[0]
+    final fun <#A1: kotlin/Any?, #B1: kotlin/Any?> create(#B1, kt.fluxo.core/IntentHandler<#A1, #B1, kotlin/Nothing>, kt.fluxo.core/FluxoSettings<#A1, #B1, kotlin/Nothing>): kt.fluxo.core/Store<#A1, #B1> // kt.fluxo.core.factory/StoreFactory.create|create(0:1;kt.fluxo.core.IntentHandler<0:0,0:1,kotlin.Nothing>;kt.fluxo.core.FluxoSettings<0:0,0:1,kotlin.Nothing>){0§<kotlin.Any?>;1§<kotlin.Any?>}[0]
+    final inline fun <#A1: kotlin/Any?, #B1: kotlin/Any> container(#A1, kt.fluxo.core/FluxoSettings<kotlin.coroutines/SuspendFunction1<kt.fluxo.core.dsl/StoreScope<kotlin/Nothing, #A1, #B1>, kotlin/Unit>, #A1, #B1>? = ..., kotlin/Function1<kt.fluxo.core/FluxoSettings<kotlin.coroutines/SuspendFunction1<kt.fluxo.core.dsl/StoreScope<kotlin/Nothing, #A1, #B1>, kotlin/Unit>, #A1, #B1>, kotlin/Unit> = ...): kt.fluxo.core/StoreSE<kotlin.coroutines/SuspendFunction1<kt.fluxo.core.dsl/StoreScope<kotlin/Nothing, #A1, #B1>, kotlin/Unit>, #A1, #B1> // kt.fluxo.core.factory/StoreFactory.container|container(0:0;kt.fluxo.core.FluxoSettings<kotlin.coroutines.SuspendFunction1<kt.fluxo.core.dsl.StoreScope<kotlin.Nothing,0:0,0:1>,kotlin.Unit>,0:0,0:1>?;kotlin.Function1<kt.fluxo.core.FluxoSettings<kotlin.coroutines.SuspendFunction1<kt.fluxo.core.dsl.StoreScope<kotlin.Nothing,0:0,0:1>,kotlin.Unit>,0:0,0:1>,kotlin.Unit>){0§<kotlin.Any?>;1§<kotlin.Any>}[0]
+    final inline fun <#A1: kotlin/Any?, #B1: kotlin/Any?, #C1: kotlin/Any> store(#B1, kt.fluxo.core/IntentHandler<#A1, #B1, #C1>, kt.fluxo.core/FluxoSettings<#A1, #B1, #C1>? = ..., kotlin/Function1<kt.fluxo.core/FluxoSettings<#A1, #B1, #C1>, kotlin/Unit> = ...): kt.fluxo.core/StoreSE<#A1, #B1, #C1> // kt.fluxo.core.factory/StoreFactory.store|store(0:1;kt.fluxo.core.IntentHandler<0:0,0:1,0:2>;kt.fluxo.core.FluxoSettings<0:0,0:1,0:2>?;kotlin.Function1<kt.fluxo.core.FluxoSettings<0:0,0:1,0:2>,kotlin.Unit>){0§<kotlin.Any?>;1§<kotlin.Any?>;2§<kotlin.Any>}[0]
+    final inline fun <#A1: kotlin/Any?, #B1: kotlin/Any?> store(#B1, kt.fluxo.core/IntentHandler<#A1, #B1, kotlin/Nothing>, kt.fluxo.core/FluxoSettings<#A1, #B1, kotlin/Nothing>? = ..., kotlin/Function1<kt.fluxo.core/FluxoSettings<#A1, #B1, kotlin/Nothing>, kotlin/Unit> = ...): kt.fluxo.core/Store<#A1, #B1> // kt.fluxo.core.factory/StoreFactory.store|store(0:1;kt.fluxo.core.IntentHandler<0:0,0:1,kotlin.Nothing>;kt.fluxo.core.FluxoSettings<0:0,0:1,kotlin.Nothing>?;kotlin.Function1<kt.fluxo.core.FluxoSettings<0:0,0:1,kotlin.Nothing>,kotlin.Unit>){0§<kotlin.Any?>;1§<kotlin.Any?>}[0]
+    final inline fun <#A1: kotlin/Any?, #B1: kotlin/Any?> store(#B1, noinline kotlin/Function2<#B1, #A1, #B1>, kt.fluxo.core/FluxoSettings<#A1, #B1, kotlin/Nothing>? = ..., kotlin/Function1<kt.fluxo.core/FluxoSettings<#A1, #B1, kotlin/Nothing>, kotlin/Unit> = ...): kt.fluxo.core/Store<#A1, #B1> // kt.fluxo.core.factory/StoreFactory.store|store(0:1;kotlin.Function2<0:1,0:0,0:1>;kt.fluxo.core.FluxoSettings<0:0,0:1,kotlin.Nothing>?;kotlin.Function1<kt.fluxo.core.FluxoSettings<0:0,0:1,kotlin.Nothing>,kotlin.Unit>){0§<kotlin.Any?>;1§<kotlin.Any?>}[0]
+    final inline fun <#A1: kotlin/Any?> container(#A1, kt.fluxo.core/FluxoSettings<kotlin.coroutines/SuspendFunction1<kt.fluxo.core.dsl/StoreScope<kotlin/Nothing, #A1, kotlin/Nothing>, kotlin/Unit>, #A1, kotlin/Nothing>? = ..., kotlin/Function1<kt.fluxo.core/FluxoSettings<kotlin.coroutines/SuspendFunction1<kt.fluxo.core.dsl/StoreScope<kotlin/Nothing, #A1, kotlin/Nothing>, kotlin/Unit>, #A1, kotlin/Nothing>, kotlin/Unit> = ...): kt.fluxo.core/StoreSE<kotlin.coroutines/SuspendFunction1<kt.fluxo.core.dsl/StoreScope<kotlin/Nothing, #A1, kotlin/Nothing>, kotlin/Unit>, #A1, kotlin/Nothing> // kt.fluxo.core.factory/StoreFactory.container|container(0:0;kt.fluxo.core.FluxoSettings<kotlin.coroutines.SuspendFunction1<kt.fluxo.core.dsl.StoreScope<kotlin.Nothing,0:0,kotlin.Nothing>,kotlin.Unit>,0:0,kotlin.Nothing>?;kotlin.Function1<kt.fluxo.core.FluxoSettings<kotlin.coroutines.SuspendFunction1<kt.fluxo.core.dsl.StoreScope<kotlin.Nothing,0:0,kotlin.Nothing>,kotlin.Unit>,0:0,kotlin.Nothing>,kotlin.Unit>){0§<kotlin.Any?>}[0]
+}
+
+final class <#A: kotlin/Any?, #B: kotlin/Any?, #C: kotlin/Any> kt.fluxo.core/FluxoSettings { // kt.fluxo.core/FluxoSettings|null[0]
+    final val Direct // kt.fluxo.core/FluxoSettings.Direct|{}Direct[0]
+        final inline fun <get-Direct>(): kt.fluxo.core.intent/IntentStrategy.Factory // kt.fluxo.core/FluxoSettings.Direct.<get-Direct>|<get-Direct>(){}[0]
+    final val Fifo // kt.fluxo.core/FluxoSettings.Fifo|{}Fifo[0]
+        final inline fun <get-Fifo>(): kt.fluxo.core.intent/IntentStrategy.Factory // kt.fluxo.core/FluxoSettings.Fifo.<get-Fifo>|<get-Fifo>(){}[0]
+    final val Lifo // kt.fluxo.core/FluxoSettings.Lifo|{}Lifo[0]
+        final inline fun <get-Lifo>(): kt.fluxo.core.intent/IntentStrategy.Factory // kt.fluxo.core/FluxoSettings.Lifo.<get-Lifo>|<get-Lifo>(){}[0]
+    final val Parallel // kt.fluxo.core/FluxoSettings.Parallel|{}Parallel[0]
+        final inline fun <get-Parallel>(): kt.fluxo.core.intent/IntentStrategy.Factory // kt.fluxo.core/FluxoSettings.Parallel.<get-Parallel>|<get-Parallel>(){}[0]
+
+    final var bootstrapper // kt.fluxo.core/FluxoSettings.bootstrapper|{}bootstrapper[0]
+        final fun <get-bootstrapper>(): kotlin.coroutines/SuspendFunction1<kt.fluxo.core.dsl/StoreScope<#A, #B, #C>, kotlin/Unit>? // kt.fluxo.core/FluxoSettings.bootstrapper.<get-bootstrapper>|<get-bootstrapper>(){}[0]
+        final fun <set-bootstrapper>(kotlin.coroutines/SuspendFunction1<kt.fluxo.core.dsl/StoreScope<#A, #B, #C>, kotlin/Unit>?) // kt.fluxo.core/FluxoSettings.bootstrapper.<set-bootstrapper>|<set-bootstrapper>(kotlin.coroutines.SuspendFunction1<kt.fluxo.core.dsl.StoreScope<1:0,1:1,1:2>,kotlin.Unit>?){}[0]
+    final var closeOnExceptions // kt.fluxo.core/FluxoSettings.closeOnExceptions|{}closeOnExceptions[0]
+        final fun <get-closeOnExceptions>(): kotlin/Boolean // kt.fluxo.core/FluxoSettings.closeOnExceptions.<get-closeOnExceptions>|<get-closeOnExceptions>(){}[0]
+        final fun <set-closeOnExceptions>(kotlin/Boolean) // kt.fluxo.core/FluxoSettings.closeOnExceptions.<set-closeOnExceptions>|<set-closeOnExceptions>(kotlin.Boolean){}[0]
+    final var coroutineContext // kt.fluxo.core/FluxoSettings.coroutineContext|{}coroutineContext[0]
+        final fun <get-coroutineContext>(): kotlin.coroutines/CoroutineContext // kt.fluxo.core/FluxoSettings.coroutineContext.<get-coroutineContext>|<get-coroutineContext>(){}[0]
+        final fun <set-coroutineContext>(kotlin.coroutines/CoroutineContext) // kt.fluxo.core/FluxoSettings.coroutineContext.<set-coroutineContext>|<set-coroutineContext>(kotlin.coroutines.CoroutineContext){}[0]
+    final var debugChecks // kt.fluxo.core/FluxoSettings.debugChecks|{}debugChecks[0]
+        final fun <get-debugChecks>(): kotlin/Boolean // kt.fluxo.core/FluxoSettings.debugChecks.<get-debugChecks>|<get-debugChecks>(){}[0]
+        final fun <set-debugChecks>(kotlin/Boolean) // kt.fluxo.core/FluxoSettings.debugChecks.<set-debugChecks>|<set-debugChecks>(kotlin.Boolean){}[0]
+    final var exceptionHandler // kt.fluxo.core/FluxoSettings.exceptionHandler|{}exceptionHandler[0]
+        final fun <get-exceptionHandler>(): kotlinx.coroutines/CoroutineExceptionHandler? // kt.fluxo.core/FluxoSettings.exceptionHandler.<get-exceptionHandler>|<get-exceptionHandler>(){}[0]
+        final fun <set-exceptionHandler>(kotlinx.coroutines/CoroutineExceptionHandler?) // kt.fluxo.core/FluxoSettings.exceptionHandler.<set-exceptionHandler>|<set-exceptionHandler>(kotlinx.coroutines.CoroutineExceptionHandler?){}[0]
+    final var intentFilter // kt.fluxo.core/FluxoSettings.intentFilter|{}intentFilter[0]
+        final fun <get-intentFilter>(): kotlin/Function2<#B, #A, kotlin/Boolean>? // kt.fluxo.core/FluxoSettings.intentFilter.<get-intentFilter>|<get-intentFilter>(){}[0]
+        final fun <set-intentFilter>(kotlin/Function2<#B, #A, kotlin/Boolean>?) // kt.fluxo.core/FluxoSettings.intentFilter.<set-intentFilter>|<set-intentFilter>(kotlin.Function2<1:1,1:0,kotlin.Boolean>?){}[0]
+    final var intentStrategy // kt.fluxo.core/FluxoSettings.intentStrategy|{}intentStrategy[0]
+        final fun <get-intentStrategy>(): kt.fluxo.core.intent/IntentStrategy.Factory // kt.fluxo.core/FluxoSettings.intentStrategy.<get-intentStrategy>|<get-intentStrategy>(){}[0]
+        final fun <set-intentStrategy>(kt.fluxo.core.intent/IntentStrategy.Factory) // kt.fluxo.core/FluxoSettings.intentStrategy.<set-intentStrategy>|<set-intentStrategy>(kt.fluxo.core.intent.IntentStrategy.Factory){}[0]
+    final var lazy // kt.fluxo.core/FluxoSettings.lazy|{}lazy[0]
+        final fun <get-lazy>(): kotlin/Boolean // kt.fluxo.core/FluxoSettings.lazy.<get-lazy>|<get-lazy>(){}[0]
+        final fun <set-lazy>(kotlin/Boolean) // kt.fluxo.core/FluxoSettings.lazy.<set-lazy>|<set-lazy>(kotlin.Boolean){}[0]
+    final var name // kt.fluxo.core/FluxoSettings.name|{}name[0]
+        final fun <get-name>(): kotlin/String? // kt.fluxo.core/FluxoSettings.name.<get-name>|<get-name>(){}[0]
+        final fun <set-name>(kotlin/String?) // kt.fluxo.core/FluxoSettings.name.<set-name>|<set-name>(kotlin.String?){}[0]
+    final var optimized // kt.fluxo.core/FluxoSettings.optimized|{}optimized[0]
+        final fun <get-optimized>(): kotlin/Boolean // kt.fluxo.core/FluxoSettings.optimized.<get-optimized>|<get-optimized>(){}[0]
+        final fun <set-optimized>(kotlin/Boolean) // kt.fluxo.core/FluxoSettings.optimized.<set-optimized>|<set-optimized>(kotlin.Boolean){}[0]
+    final var repeatOnSubscribedStopTimeout // kt.fluxo.core/FluxoSettings.repeatOnSubscribedStopTimeout|{}repeatOnSubscribedStopTimeout[0]
+        final inline fun <get-repeatOnSubscribedStopTimeout>(): kotlin/Long // kt.fluxo.core/FluxoSettings.repeatOnSubscribedStopTimeout.<get-repeatOnSubscribedStopTimeout>|<get-repeatOnSubscribedStopTimeout>(){}[0]
+        final inline fun <set-repeatOnSubscribedStopTimeout>(kotlin/Long) // kt.fluxo.core/FluxoSettings.repeatOnSubscribedStopTimeout.<set-repeatOnSubscribedStopTimeout>|<set-repeatOnSubscribedStopTimeout>(kotlin.Long){}[0]
+    final var scope // kt.fluxo.core/FluxoSettings.scope|{}scope[0]
+        final fun <get-scope>(): kotlinx.coroutines/CoroutineScope? // kt.fluxo.core/FluxoSettings.scope.<get-scope>|<get-scope>(){}[0]
+        final fun <set-scope>(kotlinx.coroutines/CoroutineScope?) // kt.fluxo.core/FluxoSettings.scope.<set-scope>|<set-scope>(kotlinx.coroutines.CoroutineScope?){}[0]
+    final var sideEffectBufferSize // kt.fluxo.core/FluxoSettings.sideEffectBufferSize|{}sideEffectBufferSize[0]
+        final fun <get-sideEffectBufferSize>(): kotlin/Int // kt.fluxo.core/FluxoSettings.sideEffectBufferSize.<get-sideEffectBufferSize>|<get-sideEffectBufferSize>(){}[0]
+        final fun <set-sideEffectBufferSize>(kotlin/Int) // kt.fluxo.core/FluxoSettings.sideEffectBufferSize.<set-sideEffectBufferSize>|<set-sideEffectBufferSize>(kotlin.Int){}[0]
+    final var sideEffectStrategy // kt.fluxo.core/FluxoSettings.sideEffectStrategy|{}sideEffectStrategy[0]
+        final fun <get-sideEffectStrategy>(): kt.fluxo.core/SideEffectStrategy // kt.fluxo.core/FluxoSettings.sideEffectStrategy.<get-sideEffectStrategy>|<get-sideEffectStrategy>(){}[0]
+        final fun <set-sideEffectStrategy>(kt.fluxo.core/SideEffectStrategy) // kt.fluxo.core/FluxoSettings.sideEffectStrategy.<set-sideEffectStrategy>|<set-sideEffectStrategy>(kt.fluxo.core.SideEffectStrategy){}[0]
+    final var sideJobsContext // kt.fluxo.core/FluxoSettings.sideJobsContext|{}sideJobsContext[0]
+        final fun <get-sideJobsContext>(): kotlin.coroutines/CoroutineContext // kt.fluxo.core/FluxoSettings.sideJobsContext.<get-sideJobsContext>|<get-sideJobsContext>(){}[0]
+        final fun <set-sideJobsContext>(kotlin.coroutines/CoroutineContext) // kt.fluxo.core/FluxoSettings.sideJobsContext.<set-sideJobsContext>|<set-sideJobsContext>(kotlin.coroutines.CoroutineContext){}[0]
+
+    final fun bootstrapperJob(kotlin/String = ..., kotlin.coroutines/CoroutineContext = ..., kotlinx.coroutines/CoroutineStart = ..., kotlin/Function1<kotlin/Throwable, kotlin/Unit>? = ..., kotlin.coroutines/SuspendFunction2<kt.fluxo.core.dsl/StoreScope<#A, #B, #C>, kotlin/Boolean, kotlin/Unit>) // kt.fluxo.core/FluxoSettings.bootstrapperJob|bootstrapperJob(kotlin.String;kotlin.coroutines.CoroutineContext;kotlinx.coroutines.CoroutineStart;kotlin.Function1<kotlin.Throwable,kotlin.Unit>?;kotlin.coroutines.SuspendFunction2<kt.fluxo.core.dsl.StoreScope<1:0,1:1,1:2>,kotlin.Boolean,kotlin.Unit>){}[0]
+    final fun copy(): kt.fluxo.core/FluxoSettings<#A, #B, #C> // kt.fluxo.core/FluxoSettings.copy|copy(){}[0]
+    final inline fun exceptionHandler(crossinline kotlin/Function2<kotlin.coroutines/CoroutineContext, kotlin/Throwable, kotlin/Unit>) // kt.fluxo.core/FluxoSettings.exceptionHandler|exceptionHandler(kotlin.Function2<kotlin.coroutines.CoroutineContext,kotlin.Throwable,kotlin.Unit>){}[0]
+    final inline fun onCreate(noinline kotlin.coroutines/SuspendFunction1<kt.fluxo.core.dsl/StoreScope<#A, #B, #C>, kotlin/Unit>) // kt.fluxo.core/FluxoSettings.onCreate|onCreate(kotlin.coroutines.SuspendFunction1<kt.fluxo.core.dsl.StoreScope<1:0,1:1,1:2>,kotlin.Unit>){}[0]
+    final inline fun onError(crossinline kotlin/Function2<kotlin.coroutines/CoroutineContext, kotlin/Throwable, kotlin/Unit>) // kt.fluxo.core/FluxoSettings.onError|onError(kotlin.Function2<kotlin.coroutines.CoroutineContext,kotlin.Throwable,kotlin.Unit>){}[0]
+    final inline fun onStart(noinline kotlin.coroutines/SuspendFunction1<kt.fluxo.core.dsl/StoreScope<#A, #B, #C>, kotlin/Unit>) // kt.fluxo.core/FluxoSettings.onStart|onStart(kotlin.coroutines.SuspendFunction1<kt.fluxo.core.dsl.StoreScope<1:0,1:1,1:2>,kotlin.Unit>){}[0]
+
+    final object Factory { // kt.fluxo.core/FluxoSettings.Factory|null[0]
+        final val DEFAULT // kt.fluxo.core/FluxoSettings.Factory.DEFAULT|{}DEFAULT[0]
+            final fun <get-DEFAULT>(): kt.fluxo.core/FluxoSettings<out kotlin/Any?, out kotlin/Any?, out kotlin/Any> // kt.fluxo.core/FluxoSettings.Factory.DEFAULT.<get-DEFAULT>|<get-DEFAULT>(){}[0]
+
+        final fun <#A2: kotlin/Any?, #B2: kotlin/Any?, #C2: kotlin/Any> invoke(): kt.fluxo.core/FluxoSettings<#A2, #B2, #C2> // kt.fluxo.core/FluxoSettings.Factory.invoke|invoke(){0§<kotlin.Any?>;1§<kotlin.Any?>;2§<kotlin.Any>}[0]
+    }
+}
+
+final class kt.fluxo.core/FluxoClosedException : kotlin.coroutines.cancellation/CancellationException, kt.fluxo.core/FluxoException { // kt.fluxo.core/FluxoClosedException|null[0]
+    final val cause // kt.fluxo.core/FluxoClosedException.cause|{}cause[0]
+        final fun <get-cause>(): kotlin/Throwable? // kt.fluxo.core/FluxoClosedException.cause.<get-cause>|<get-cause>(){}[0]
+}
+
+open class <#A: out kotlin/Any> kt.fluxo.core.data/GuaranteedEffect : kt.fluxo.core.internal/Closeable { // kt.fluxo.core.data/GuaranteedEffect|null[0]
+    constructor <init>(#A) // kt.fluxo.core.data/GuaranteedEffect.<init>|<init>(1:0){}[0]
+
+    final val content // kt.fluxo.core.data/GuaranteedEffect.content|{}content[0]
+        final fun <get-content>(): #A? // kt.fluxo.core.data/GuaranteedEffect.content.<get-content>|<get-content>(){}[0]
+    final val rawContent // kt.fluxo.core.data/GuaranteedEffect.rawContent|{}rawContent[0]
+        final fun <get-rawContent>(): #A // kt.fluxo.core.data/GuaranteedEffect.rawContent.<get-rawContent>|<get-rawContent>(){}[0]
+
+    final fun resend() // kt.fluxo.core.data/GuaranteedEffect.resend|resend(){}[0]
+    final inline fun handleOrResend(kotlin/Function1<#A, kotlin/Boolean>): kotlin/Boolean // kt.fluxo.core.data/GuaranteedEffect.handleOrResend|handleOrResend(kotlin.Function1<1:0,kotlin.Boolean>){}[0]
+    open fun close() // kt.fluxo.core.data/GuaranteedEffect.close|close(){}[0]
+}
+
+open class kt.fluxo.core/FluxoRuntimeException : kotlin/RuntimeException, kt.fluxo.core/FluxoException // kt.fluxo.core/FluxoRuntimeException|null[0]
+
+final object kt.fluxo.core.factory/FluxoStoreFactory : kt.fluxo.core.factory/StoreFactory { // kt.fluxo.core.factory/FluxoStoreFactory|null[0]
+    final fun <#A1: kotlin/Any?, #B1: kotlin/Any?, #C1: kotlin/Any> createForDecoration(#B1, kt.fluxo.core/IntentHandler<#A1, #B1, #C1>, kt.fluxo.core/FluxoSettings<#A1, #B1, #C1>): kt.fluxo.core.factory/StoreDecorator<#A1, #B1, #C1> // kt.fluxo.core.factory/FluxoStoreFactory.createForDecoration|createForDecoration(0:1;kt.fluxo.core.IntentHandler<0:0,0:1,0:2>;kt.fluxo.core.FluxoSettings<0:0,0:1,0:2>){0§<kotlin.Any?>;1§<kotlin.Any?>;2§<kotlin.Any>}[0]
+}
+
+final val kt.fluxo.core.dsl/store // kt.fluxo.core.dsl/store|@kt.fluxo.core.dsl.ContainerHost<0:0,0:1>{0§<kotlin.Any?>;1§<kotlin.Any>}store[0]
+    final inline fun <#A1: kotlin/Any?, #B1: kotlin/Any> (kt.fluxo.core.dsl/ContainerHost<#A1, #B1>).<get-store>(): kt.fluxo.core/StoreSE<kotlin.coroutines/SuspendFunction1<kt.fluxo.core.dsl/StoreScope<kotlin/Nothing, #A1, #B1>, kotlin/Unit>, #A1, #B1> // kt.fluxo.core.dsl/store.<get-store>|<get-store>@kt.fluxo.core.dsl.ContainerHost<0:0,0:1>(){0§<kotlin.Any?>;1§<kotlin.Any>}[0]
+
+final var kt.fluxo.core.dsl/intentDispatcher // kt.fluxo.core.dsl/intentDispatcher|@kt.fluxo.core.FluxoSettings<*,*,*>{}intentDispatcher[0]
+    final inline fun (kt.fluxo.core/FluxoSettings<*, *, *>).<get-intentDispatcher>(): kotlinx.coroutines/CoroutineDispatcher // kt.fluxo.core.dsl/intentDispatcher.<get-intentDispatcher>|<get-intentDispatcher>@kt.fluxo.core.FluxoSettings<*,*,*>(){}[0]
+    final inline fun (kt.fluxo.core/FluxoSettings<*, *, *>).<set-intentDispatcher>(kotlinx.coroutines/CoroutineDispatcher) // kt.fluxo.core.dsl/intentDispatcher.<set-intentDispatcher>|<set-intentDispatcher>@kt.fluxo.core.FluxoSettings<*,*,*>(kotlinx.coroutines.CoroutineDispatcher){}[0]
+
+final fun <#A: kotlin/Any?, #B: kotlin/Any> kt.fluxo.core.internal/FluxoIntentHandler(): kt.fluxo.core/IntentHandler<kotlin.coroutines/SuspendFunction1<kt.fluxo.core.dsl/StoreScope<kotlin/Nothing, #A, #B>, kotlin/Unit>, #A, #B> // kt.fluxo.core.internal/FluxoIntentHandler|FluxoIntentHandler(){0§<kotlin.Any?>;1§<kotlin.Any>}[0]
+final fun <#A: kotlin/Any?, #B: kotlin/Any?, #C: kotlin/Any> kt.fluxo.core.internal/ReducerIntentHandler(kotlin/Function2<#B, #A, #B>): kt.fluxo.core/IntentHandler<#A, #B, #C> // kt.fluxo.core.internal/ReducerIntentHandler|ReducerIntentHandler(kotlin.Function2<0:1,0:0,0:1>){0§<kotlin.Any?>;1§<kotlin.Any?>;2§<kotlin.Any>}[0]
+final inline fun <#A: kotlin/Any?, #B: kotlin/Any> (kotlinx.coroutines/CoroutineScope).kt.fluxo.core/container(#A, kt.fluxo.core/FluxoSettings<kotlin.coroutines/SuspendFunction1<kt.fluxo.core.dsl/StoreScope<kotlin/Nothing, #A, #B>, kotlin/Unit>, #A, #B>? = ..., kt.fluxo.core.factory/StoreFactory? = ..., kotlin/Function1<kt.fluxo.core/FluxoSettings<kotlin.coroutines/SuspendFunction1<kt.fluxo.core.dsl/StoreScope<kotlin/Nothing, #A, #B>, kotlin/Unit>, #A, #B>, kotlin/Unit> = ...): kt.fluxo.core/StoreSE<kotlin.coroutines/SuspendFunction1<kt.fluxo.core.dsl/StoreScope<kotlin/Nothing, #A, #B>, kotlin/Unit>, #A, #B> // kt.fluxo.core/container|container@kotlinx.coroutines.CoroutineScope(0:0;kt.fluxo.core.FluxoSettings<kotlin.coroutines.SuspendFunction1<kt.fluxo.core.dsl.StoreScope<kotlin.Nothing,0:0,0:1>,kotlin.Unit>,0:0,0:1>?;kt.fluxo.core.factory.StoreFactory?;kotlin.Function1<kt.fluxo.core.FluxoSettings<kotlin.coroutines.SuspendFunction1<kt.fluxo.core.dsl.StoreScope<kotlin.Nothing,0:0,0:1>,kotlin.Unit>,0:0,0:1>,kotlin.Unit>){0§<kotlin.Any?>;1§<kotlin.Any>}[0]
+final inline fun <#A: kotlin/Any?, #B: kotlin/Any> (kt.fluxo.core.dsl/ContainerHost<#A, #B>).kt.fluxo.core/intent(noinline kotlin.coroutines/SuspendFunction1<kt.fluxo.core.dsl/StoreScope<kotlin/Nothing, #A, #B>, kotlin/Unit>) // kt.fluxo.core/intent|intent@kt.fluxo.core.dsl.ContainerHost<0:0,0:1>(kotlin.coroutines.SuspendFunction1<kt.fluxo.core.dsl.StoreScope<kotlin.Nothing,0:0,0:1>,kotlin.Unit>){0§<kotlin.Any?>;1§<kotlin.Any>}[0]
+final inline fun <#A: kotlin/Any?, #B: kotlin/Any> (kt.fluxo.core.dsl/ContainerHost<#A, #B>).kt.fluxo.core/send(noinline kotlin.coroutines/SuspendFunction1<kt.fluxo.core.dsl/StoreScope<kotlin/Nothing, #A, #B>, kotlin/Unit>): kotlinx.coroutines/Job // kt.fluxo.core/send|send@kt.fluxo.core.dsl.ContainerHost<0:0,0:1>(kotlin.coroutines.SuspendFunction1<kt.fluxo.core.dsl.StoreScope<kotlin.Nothing,0:0,0:1>,kotlin.Unit>){0§<kotlin.Any?>;1§<kotlin.Any>}[0]
+final inline fun <#A: kotlin/Any?, #B: kotlin/Any> (kt.fluxo.core/StoreSE<kotlin.coroutines/SuspendFunction1<kt.fluxo.core.dsl/StoreScope<kotlin/Nothing, #A, #B>, kotlin/Unit>, #A, #B>).kt.fluxo.core/intent(noinline kotlin.coroutines/SuspendFunction1<kt.fluxo.core.dsl/StoreScope<kotlin/Nothing, #A, #B>, kotlin/Unit>) // kt.fluxo.core/intent|intent@kt.fluxo.core.StoreSE<kotlin.coroutines.SuspendFunction1<kt.fluxo.core.dsl.StoreScope<kotlin.Nothing,0:0,0:1>,kotlin.Unit>,0:0,0:1>(kotlin.coroutines.SuspendFunction1<kt.fluxo.core.dsl.StoreScope<kotlin.Nothing,0:0,0:1>,kotlin.Unit>){0§<kotlin.Any?>;1§<kotlin.Any>}[0]
+final inline fun <#A: kotlin/Any?, #B: kotlin/Any> kt.fluxo.core/container(#A, kt.fluxo.core/FluxoSettings<kotlin.coroutines/SuspendFunction1<kt.fluxo.core.dsl/StoreScope<kotlin/Nothing, #A, #B>, kotlin/Unit>, #A, #B>? = ..., kt.fluxo.core.factory/StoreFactory? = ..., kotlin/Function1<kt.fluxo.core/FluxoSettings<kotlin.coroutines/SuspendFunction1<kt.fluxo.core.dsl/StoreScope<kotlin/Nothing, #A, #B>, kotlin/Unit>, #A, #B>, kotlin/Unit> = ...): kt.fluxo.core/StoreSE<kotlin.coroutines/SuspendFunction1<kt.fluxo.core.dsl/StoreScope<kotlin/Nothing, #A, #B>, kotlin/Unit>, #A, #B> // kt.fluxo.core/container|container(0:0;kt.fluxo.core.FluxoSettings<kotlin.coroutines.SuspendFunction1<kt.fluxo.core.dsl.StoreScope<kotlin.Nothing,0:0,0:1>,kotlin.Unit>,0:0,0:1>?;kt.fluxo.core.factory.StoreFactory?;kotlin.Function1<kt.fluxo.core.FluxoSettings<kotlin.coroutines.SuspendFunction1<kt.fluxo.core.dsl.StoreScope<kotlin.Nothing,0:0,0:1>,kotlin.Unit>,0:0,0:1>,kotlin.Unit>){0§<kotlin.Any?>;1§<kotlin.Any>}[0]
+final inline fun <#A: kotlin/Any?, #B: kotlin/Any?, #C: kotlin/Any> (kotlinx.coroutines/CoroutineScope).kt.fluxo.core/store(#B, kt.fluxo.core/IntentHandler<#A, #B, #C>, kt.fluxo.core/FluxoSettings<#A, #B, #C>? = ..., kt.fluxo.core.factory/StoreFactory? = ..., kotlin/Function1<kt.fluxo.core/FluxoSettings<#A, #B, #C>, kotlin/Unit> = ...): kt.fluxo.core/StoreSE<#A, #B, #C> // kt.fluxo.core/store|store@kotlinx.coroutines.CoroutineScope(0:1;kt.fluxo.core.IntentHandler<0:0,0:1,0:2>;kt.fluxo.core.FluxoSettings<0:0,0:1,0:2>?;kt.fluxo.core.factory.StoreFactory?;kotlin.Function1<kt.fluxo.core.FluxoSettings<0:0,0:1,0:2>,kotlin.Unit>){0§<kotlin.Any?>;1§<kotlin.Any?>;2§<kotlin.Any>}[0]
+final inline fun <#A: kotlin/Any?, #B: kotlin/Any?, #C: kotlin/Any> kt.fluxo.core/store(#B, kt.fluxo.core/IntentHandler<#A, #B, #C>, kt.fluxo.core/FluxoSettings<#A, #B, #C>? = ..., kt.fluxo.core.factory/StoreFactory? = ..., kotlin/Function1<kt.fluxo.core/FluxoSettings<#A, #B, #C>, kotlin/Unit> = ...): kt.fluxo.core/StoreSE<#A, #B, #C> // kt.fluxo.core/store|store(0:1;kt.fluxo.core.IntentHandler<0:0,0:1,0:2>;kt.fluxo.core.FluxoSettings<0:0,0:1,0:2>?;kt.fluxo.core.factory.StoreFactory?;kotlin.Function1<kt.fluxo.core.FluxoSettings<0:0,0:1,0:2>,kotlin.Unit>){0§<kotlin.Any?>;1§<kotlin.Any?>;2§<kotlin.Any>}[0]
+final inline fun <#A: kotlin/Any?, #B: kotlin/Any?> (kotlinx.coroutines/CoroutineScope).kt.fluxo.core/store(#B, kt.fluxo.core/IntentHandler<#A, #B, kotlin/Nothing>, kt.fluxo.core/FluxoSettings<#A, #B, kotlin/Nothing>? = ..., kt.fluxo.core.factory/StoreFactory? = ..., kotlin/Function1<kt.fluxo.core/FluxoSettings<#A, #B, kotlin/Nothing>, kotlin/Unit> = ...): kt.fluxo.core/Store<#A, #B> // kt.fluxo.core/store|store@kotlinx.coroutines.CoroutineScope(0:1;kt.fluxo.core.IntentHandler<0:0,0:1,kotlin.Nothing>;kt.fluxo.core.FluxoSettings<0:0,0:1,kotlin.Nothing>?;kt.fluxo.core.factory.StoreFactory?;kotlin.Function1<kt.fluxo.core.FluxoSettings<0:0,0:1,kotlin.Nothing>,kotlin.Unit>){0§<kotlin.Any?>;1§<kotlin.Any?>}[0]
+final inline fun <#A: kotlin/Any?, #B: kotlin/Any?> (kotlinx.coroutines/CoroutineScope).kt.fluxo.core/store(#B, noinline kotlin/Function2<#B, #A, #B>, kt.fluxo.core/FluxoSettings<#A, #B, kotlin/Nothing>? = ..., kt.fluxo.core.factory/StoreFactory? = ..., kotlin/Function1<kt.fluxo.core/FluxoSettings<#A, #B, kotlin/Nothing>, kotlin/Unit> = ...): kt.fluxo.core/Store<#A, #B> // kt.fluxo.core/store|store@kotlinx.coroutines.CoroutineScope(0:1;kotlin.Function2<0:1,0:0,0:1>;kt.fluxo.core.FluxoSettings<0:0,0:1,kotlin.Nothing>?;kt.fluxo.core.factory.StoreFactory?;kotlin.Function1<kt.fluxo.core.FluxoSettings<0:0,0:1,kotlin.Nothing>,kotlin.Unit>){0§<kotlin.Any?>;1§<kotlin.Any?>}[0]
+final inline fun <#A: kotlin/Any?, #B: kotlin/Any?> kt.fluxo.core/store(#B, kt.fluxo.core/IntentHandler<#A, #B, kotlin/Nothing>, kt.fluxo.core/FluxoSettings<#A, #B, kotlin/Nothing>? = ..., kt.fluxo.core.factory/StoreFactory? = ..., kotlin/Function1<kt.fluxo.core/FluxoSettings<#A, #B, kotlin/Nothing>, kotlin/Unit> = ...): kt.fluxo.core/Store<#A, #B> // kt.fluxo.core/store|store(0:1;kt.fluxo.core.IntentHandler<0:0,0:1,kotlin.Nothing>;kt.fluxo.core.FluxoSettings<0:0,0:1,kotlin.Nothing>?;kt.fluxo.core.factory.StoreFactory?;kotlin.Function1<kt.fluxo.core.FluxoSettings<0:0,0:1,kotlin.Nothing>,kotlin.Unit>){0§<kotlin.Any?>;1§<kotlin.Any?>}[0]
+final inline fun <#A: kotlin/Any?, #B: kotlin/Any?> kt.fluxo.core/store(#B, noinline kotlin/Function2<#B, #A, #B>, kt.fluxo.core/FluxoSettings<#A, #B, kotlin/Nothing>? = ..., kt.fluxo.core.factory/StoreFactory? = ..., kotlin/Function1<kt.fluxo.core/FluxoSettings<#A, #B, kotlin/Nothing>, kotlin/Unit> = ...): kt.fluxo.core/Store<#A, #B> // kt.fluxo.core/store|store(0:1;kotlin.Function2<0:1,0:0,0:1>;kt.fluxo.core.FluxoSettings<0:0,0:1,kotlin.Nothing>?;kt.fluxo.core.factory.StoreFactory?;kotlin.Function1<kt.fluxo.core.FluxoSettings<0:0,0:1,kotlin.Nothing>,kotlin.Unit>){0§<kotlin.Any?>;1§<kotlin.Any?>}[0]
+final inline fun <#A: kotlin/Any?> (kotlinx.coroutines/CoroutineScope).kt.fluxo.core/container(#A, kt.fluxo.core/FluxoSettings<kotlin.coroutines/SuspendFunction1<kt.fluxo.core.dsl/StoreScope<kotlin/Nothing, #A, kotlin/Nothing>, kotlin/Unit>, #A, kotlin/Nothing>? = ..., kt.fluxo.core.factory/StoreFactory? = ..., kotlin/Function1<kt.fluxo.core/FluxoSettings<kotlin.coroutines/SuspendFunction1<kt.fluxo.core.dsl/StoreScope<kotlin/Nothing, #A, kotlin/Nothing>, kotlin/Unit>, #A, kotlin/Nothing>, kotlin/Unit> = ...): kt.fluxo.core/StoreSE<kotlin.coroutines/SuspendFunction1<kt.fluxo.core.dsl/StoreScope<kotlin/Nothing, #A, kotlin/Nothing>, kotlin/Unit>, #A, kotlin/Nothing> // kt.fluxo.core/container|container@kotlinx.coroutines.CoroutineScope(0:0;kt.fluxo.core.FluxoSettings<kotlin.coroutines.SuspendFunction1<kt.fluxo.core.dsl.StoreScope<kotlin.Nothing,0:0,kotlin.Nothing>,kotlin.Unit>,0:0,kotlin.Nothing>?;kt.fluxo.core.factory.StoreFactory?;kotlin.Function1<kt.fluxo.core.FluxoSettings<kotlin.coroutines.SuspendFunction1<kt.fluxo.core.dsl.StoreScope<kotlin.Nothing,0:0,kotlin.Nothing>,kotlin.Unit>,0:0,kotlin.Nothing>,kotlin.Unit>){0§<kotlin.Any?>}[0]
+final inline fun <#A: kotlin/Any?> (kt.fluxo.core.dsl/StoreScope<*, #A, *>).kt.fluxo.core/updateState(kotlin/Function1<#A, #A>): #A // kt.fluxo.core/updateState|updateState@kt.fluxo.core.dsl.StoreScope<*,0:0,*>(kotlin.Function1<0:0,0:0>){0§<kotlin.Any?>}[0]
+final inline fun <#A: kotlin/Any?> (kt.fluxo.core/Store<#A, *>).kt.fluxo.core.dsl/accept(#A): kotlinx.coroutines/Job // kt.fluxo.core.dsl/accept|accept@kt.fluxo.core.Store<0:0,*>(0:0){0§<kotlin.Any?>}[0]
+final inline fun <#A: kotlin/Any?> kt.fluxo.core/container(#A, kt.fluxo.core/FluxoSettings<kotlin.coroutines/SuspendFunction1<kt.fluxo.core.dsl/StoreScope<kotlin/Nothing, #A, kotlin/Nothing>, kotlin/Unit>, #A, kotlin/Nothing>? = ..., kt.fluxo.core.factory/StoreFactory? = ..., kotlin/Function1<kt.fluxo.core/FluxoSettings<kotlin.coroutines/SuspendFunction1<kt.fluxo.core.dsl/StoreScope<kotlin/Nothing, #A, kotlin/Nothing>, kotlin/Unit>, #A, kotlin/Nothing>, kotlin/Unit> = ...): kt.fluxo.core/StoreSE<kotlin.coroutines/SuspendFunction1<kt.fluxo.core.dsl/StoreScope<kotlin/Nothing, #A, kotlin/Nothing>, kotlin/Unit>, #A, kotlin/Nothing> // kt.fluxo.core/container|container(0:0;kt.fluxo.core.FluxoSettings<kotlin.coroutines.SuspendFunction1<kt.fluxo.core.dsl.StoreScope<kotlin.Nothing,0:0,kotlin.Nothing>,kotlin.Unit>,0:0,kotlin.Nothing>?;kt.fluxo.core.factory.StoreFactory?;kotlin.Function1<kt.fluxo.core.FluxoSettings<kotlin.coroutines.SuspendFunction1<kt.fluxo.core.dsl.StoreScope<kotlin.Nothing,0:0,kotlin.Nothing>,kotlin.Unit>,0:0,kotlin.Nothing>,kotlin.Unit>){0§<kotlin.Any?>}[0]
+final suspend fun (kt.fluxo.core/Store<*, *>).kt.fluxo.core/closeAndWait() // kt.fluxo.core/closeAndWait|closeAndWait@kt.fluxo.core.Store<*,*>(){}[0]
+final suspend fun <#A: kotlin/Any?, #B: kotlin/Any?, #C: kotlin/Any> (kt.fluxo.core.dsl/StoreScope<#A, #B, #C>).kt.fluxo.core/repeatOnSubscription(kotlin/String = ..., kotlin/Long = ..., kotlin.coroutines/CoroutineContext = ..., kotlinx.coroutines/CoroutineStart = ..., kotlin.coroutines/SuspendFunction2<kt.fluxo.core.dsl/StoreScope<#A, #B, #C>, kotlin/Boolean, kotlin/Unit>) // kt.fluxo.core/repeatOnSubscription|repeatOnSubscription@kt.fluxo.core.dsl.StoreScope<0:0,0:1,0:2>(kotlin.String;kotlin.Long;kotlin.coroutines.CoroutineContext;kotlinx.coroutines.CoroutineStart;kotlin.coroutines.SuspendFunction2<kt.fluxo.core.dsl.StoreScope<0:0,0:1,0:2>,kotlin.Boolean,kotlin.Unit>){0§<kotlin.Any?>;1§<kotlin.Any?>;2§<kotlin.Any>}[0]
+final suspend inline fun <#A: kotlin/Any?, #B: kotlin/Any> (kt.fluxo.core/StoreSE<kotlin.coroutines/SuspendFunction1<kt.fluxo.core.dsl/StoreScope<kotlin/Nothing, #A, #B>, kotlin/Unit>, #A, #B>).kt.fluxo.core.dsl/orbit(noinline kotlin.coroutines/SuspendFunction1<kt.fluxo.core.dsl/StoreScope<kotlin/Nothing, #A, #B>, kotlin/Unit>) // kt.fluxo.core.dsl/orbit|orbit@kt.fluxo.core.StoreSE<kotlin.coroutines.SuspendFunction1<kt.fluxo.core.dsl.StoreScope<kotlin.Nothing,0:0,0:1>,kotlin.Unit>,0:0,0:1>(kotlin.coroutines.SuspendFunction1<kt.fluxo.core.dsl.StoreScope<kotlin.Nothing,0:0,0:1>,kotlin.Unit>){0§<kotlin.Any?>;1§<kotlin.Any>}[0]

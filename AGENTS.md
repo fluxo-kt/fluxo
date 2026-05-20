@@ -1,6 +1,6 @@
 # Fluxo — Agent Guide
 
-**Fluxo** /ˈfluksu/ — Kotlin Multiplatform state-management on coroutines + `StateFlow`. Combines strict Redux/MVI correctness with MVVM+ ergonomics (suspend lambda intents, side-jobs, time-travel-ready logging). **Pre-1.0 alpha**; public API is unstable but locked per-commit by `binary-compatibility-validator` (BCV) — but **only on JVM, Android, and JS** (see Gotchas). Targets every KMP platform.
+**Fluxo** /ˈfluksu/ — Kotlin Multiplatform state-management on coroutines + `StateFlow`. Combines strict Redux/MVI correctness with MVVM+ ergonomics (suspend lambda intents, side-jobs, time-travel-ready logging). **Pre-1.0 alpha**; public API is unstable but locked per-commit by `binary-compatibility-validator` (BCV): JVM bytecode, Android-main bytecode, JS/Wasm declarations, and KLib ABI. Targets every KMP platform.
 
 ## Meta-rule: if you're surprised, alert + amend
 
@@ -44,7 +44,7 @@ Each cites a symbol or file so you can verify in one read.
 2. **`DEBUG` differs by platform.** Android/JS/Native: `false` by default. Pure JVM (`Debug.kt` in `jvmMain`): hardcoded `true` with TODO ❗ — pure-JVM consumers run `IntentStrategyGuardian` even in production unless they explicitly set `debugChecks=false`.
 3. **`InlineOnly` compatibility wrapper is no-op; real inline-only uses `kotlin.internal.InlineOnly` directly.** Kotlin 2.3 rejects the old public actual typealias to hidden `kotlin.internal.InlineOnly`, so don't reintroduce it in `fluxo-common/build.gradle.kts`.
 4. **`./gradlew apiDump` may produce a dump that differs from the CI-published one** unless run with the env from `.run/apiDump.run.xml` (`RELEASE=true`, `--no-build-cache`, `--no-configuration-cache`, `-Dkotlin.incremental=false`, `--rerun-tasks`). Use `./updateBaselines` (sets all flags) for safety.
-5. **Active API validation currently locks JVM dumps only.** `apiDump`/`apiCheck` run `jvmApi*`; Android tasks are absent and JS/KLib API tasks are configured but skipped under the current Kotlin 2.3/BCV wiring. Treat checked-in `api/android` and `api/js` files as stale until the build logic is fixed.
+5. **API validation is intentionally multi-lane.** `apiCheck` must run `jvmApiCheck`, custom `androidApiCheck`, JS/Wasm declaration builds, and `klibApiCheck`; `apiDump` writes `api/jvm`, `api/android`, `api/js`, and root `*.klib.api` baselines. If any lane is skipped unexpectedly, treat it as a build-logic regression.
 6. **`FluxoSettings.DEFAULT` is a `@NotThreadSafe` global mutable singleton.** Configure once at app start; mutating it later affects every later-built store.
 7. **Setter cascades** in `FluxoSettings`: `debugChecks=true` ⇒ `closeOnExceptions=true`; setting `exceptionHandler` non-null ⇒ disables `closeOnExceptions`; `sideEffectStrategy=SHARE(...)` ⇒ flips a `BUFFERED` (-1) buffer to `0`. `copy()` runs assignments in reverse to neutralise these — keep that order if extending.
 8. **`SideEffectStrategy.CONSUME` is single-subscriber** (`consumeAsFlow`); resubscribing throws. Use `RECEIVE` (default channel multiplex) or `SHARE` (`MutableSharedFlow` broadcast) for multiple collectors.
@@ -63,6 +63,8 @@ Each cites a symbol or file so you can verify in one read.
 21. **AGP 9 rejects old global Android flags** in `gradle.properties` (`android.defaults.buildfeatures.*`, `android.experimental.*` lint/resource flags). Configure required Android features in module DSL, not root properties.
 22. **AGP 9 KMP Android must be explicitly wired under `commonJvmMain`.** `KotlinHierarchyTemplate.fluxoKmpConf` alone left `androidMain` as a sibling; sibling `fluxo-kmp-conf` now bridges `androidMain -> commonJvmMain` in `SetupKotlin.kt`.
 23. **Kotlin/JS default-argument bridges can recurse for overridable `StoreScope.sideJob`.** Keep `StoreScope.sideJob` as explicit overloads plus one full `@JsName("sideJob")` implementation; restoring default parameters reintroduces `RangeError: Maximum call stack size exceeded` in `StoreDecoratorTest.interface_check`.
+24. **Diagnostic Kotlin target/source-set print tasks are not configuration-cache safe.** `:fluxo-core:printKotlinTargetsInfo` succeeds but discards the configuration cache because the task captures `Project`; do not use it as a CC gate until the helper task is fixed.
+25. **Merged test report results are execution-time shared state.** In `fluxo-kmp-conf`, keep `TestReportService` results in service-owned synchronized storage; Gradle `ListProperty.add` from parallel `TestListener.afterTest` callbacks corrupts provider state.
 
 ## Common commands
 
@@ -116,5 +118,5 @@ For `apiDump`, see Gotcha #4.
 - One-liner creation, automatic type inference, no boilerplate. Ceremony = wrong design.
 - Performance is a feature — defending the JMH score matters; benchmark before/after micro-changes.
 - **Multiplatform-first, Android-second.** Don't add JVM-only or Android-only API to common code.
-- Don't break public API lightly. BCV enforces it on JVM/Android/JS (Apple/Linux not enforced — extra care needed there).
+- Don't break public API lightly. BCV enforces JVM, Android-main, JS/Wasm declarations, and KLib ABI.
 - Side effects are an antipattern; supported but discouraged. Prefer state.
