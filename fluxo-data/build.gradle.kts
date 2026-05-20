@@ -13,7 +13,11 @@ fkcSetupMultiplatform(
         api(libs.kotlinx.coroutines.core)
     }
     common.test.dependencies {
+        implementation(kotlin("test"))
         implementation(libs.kotlinx.coroutines.test)
+    }
+    commonJs.test.dependencies {
+        implementation(libs.kotlinx.browser)
     }
 }
 

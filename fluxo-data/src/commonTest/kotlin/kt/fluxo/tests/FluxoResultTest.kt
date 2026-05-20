@@ -279,9 +279,8 @@ class FluxoResultTest {
 
     @Test
     fun auto_detection_of_empty_char_sequences() {
-        for (it in arrayOf(
+        for (it in arrayOf<CharSequence>(
             "",
-            String(),
             StringBuilder(),
         ).flatMap(::packAsData)) {
             assertTrue(it.isEmpty)
@@ -289,7 +288,7 @@ class FluxoResultTest {
             assertTrue(it.value.isEmpty())
         }
 
-        for (it in arrayOf(
+        for (it in arrayOf<CharSequence>(
             "a",
             StringBuilder("a"),
         ).flatMap(::packAsNotEmptyData)) {

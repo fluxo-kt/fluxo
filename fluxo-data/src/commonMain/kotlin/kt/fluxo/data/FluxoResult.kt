@@ -10,7 +10,7 @@
 package kt.fluxo.data
 
 import kotlin.internal.InlineOnly
-import kotlin.js.JsExport
+import kt.fluxo.common.annotation.FluxoJsExport
 import kotlin.js.JsName
 
 /**
@@ -28,7 +28,7 @@ import kotlin.js.JsName
  * @see io.uniflow.core.flow.data.UIState
  * @see com.seanghay.resultof.ResultOf
  */
-@JsExport
+@FluxoJsExport
 @ExposedCopyVisibility
 @Suppress("SerialVersionUIDInSerializableClass", "KDocUnresolvedReference", "MemberVisibilityCanBePrivate")
 public data class FluxoResult<out T> internal constructor(

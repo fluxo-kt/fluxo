@@ -15,7 +15,7 @@ import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.internal.LowPriorityInOverloadResolution
-import kotlin.js.JsExport
+import kt.fluxo.common.annotation.FluxoJsExport
 
 
 // region resultOf
@@ -27,7 +27,7 @@ import kotlin.js.JsExport
  *
  * @see kotlin.runCatching
  */
-@JsExport
+@FluxoJsExport
 @InlineOnly
 public inline fun <R> resultOf(block: () -> R): FluxoResult<R?> {
     return try {
@@ -87,7 +87,7 @@ internal fun FluxoResult<*>.throwOnFailure() {
  *
  * @see kotlin.getOrThrow
  */
-@JsExport
+@FluxoJsExport
 @InlineOnly
 public inline fun <T> FluxoResult<T>.getOrThrow(): T {
     throwOnFailure()
@@ -104,7 +104,7 @@ public inline fun <T> FluxoResult<T>.getOrThrow(): T {
  *
  * @see kotlin.getOrElse
  */
-@JsExport
+@FluxoJsExport
 @InlineOnly
 public inline fun <R, T : R> FluxoResult<T>.getOrElse(onFailure: (exception: Throwable?) -> R): R {
     contract {
@@ -121,7 +121,7 @@ public inline fun <R, T : R> FluxoResult<T>.getOrElse(onFailure: (exception: Thr
  *
  * @see kotlin.getOrDefault
  */
-@JsExport
+@FluxoJsExport
 @InlineOnly
 public inline fun <R, T : R> FluxoResult<T?>.getOrDefault(defaultValue: () -> R): R {
     contract {
@@ -138,7 +138,7 @@ public inline fun <R, T : R> FluxoResult<T?>.getOrDefault(defaultValue: () -> R)
  *
  * @see kotlin.fold
  */
-@JsExport
+@FluxoJsExport
 @InlineOnly
 public inline fun <R, T> FluxoResult<T>.fold(onSuccess: (value: T) -> R, onFailure: (exception: Throwable?) -> R): R {
     contract {
@@ -155,7 +155,7 @@ public inline fun <R, T> FluxoResult<T>.fold(onSuccess: (value: T) -> R, onFailu
 /**
  * Returns the result of the [predicate] on the encapsulated value.
  */
-@JsExport
+@FluxoJsExport
 @InlineOnly
 public inline fun <T> FluxoResult<T>.isValid(predicate: (T) -> Boolean): Boolean {
     contract {
@@ -179,7 +179,7 @@ public inline fun <T> FluxoResult<T>.isValid(predicate: (T) -> Boolean): Boolean
  *
  * @see kotlin.map
  */
-@JsExport
+@FluxoJsExport
 @InlineOnly
 public inline fun <R, T : R> FluxoResult<T>.map(transform: (T) -> R): FluxoResult<R> {
     contract {
@@ -199,7 +199,7 @@ public inline fun <R, T : R> FluxoResult<T>.map(transform: (T) -> R): FluxoResul
  * @see resultOf
  * @see kotlin.mapCatching
  */
-@JsExport
+@FluxoJsExport
 @InlineOnly
 public inline fun <R, T : R> FluxoResult<T>.mapCatching(transform: (value: T) -> R): FluxoResult<R?> {
     contract {
@@ -228,7 +228,7 @@ public inline fun <R, T : R> FluxoResult<T>.mapCatching(transform: (value: T) ->
  *
  * @see kotlin.recover
  */
-@JsExport
+@FluxoJsExport
 @InlineOnly
 public inline fun <R, T : R> FluxoResult<T>.recover(transform: (exception: Throwable?) -> R): FluxoResult<R> {
     contract {
@@ -245,7 +245,7 @@ public inline fun <R, T : R> FluxoResult<T>.recover(transform: (exception: Throw
  *
  * See [recover] for rethrowing exceptions alternative.
  */
-@JsExport
+@FluxoJsExport
 @InlineOnly
 public inline fun <R, T : R> FluxoResult<T>.recoverCatching(transform: (exception: Throwable?) -> R): FluxoResult<R?> {
     contract {
@@ -264,11 +264,11 @@ public inline fun <R, T : R> FluxoResult<T>.recoverCatching(transform: (exceptio
 }
 
 
-@JsExport
+@FluxoJsExport
 @InlineOnly
 public inline fun <R, T : R> FluxoResult<T>.cached(value: R = this.value): FluxoResult<R> = FluxoResult.cached(value)
 
-@JsExport
+@FluxoJsExport
 @InlineOnly
 public inline fun <R, T : R> FluxoResult<T>.loading(value: R = this.value): FluxoResult<R> = FluxoResult.loading(value)
 
@@ -277,11 +277,11 @@ public inline fun <R, T : R> FluxoResult<T>.loading(value: R = this.value): Flux
  * @see FluxoResult.recover
  * @see kotlin.recover
  */
-@JsExport
+@FluxoJsExport
 @InlineOnly
 public inline fun <R, T : R> FluxoResult<T>.success(value: R = this.value): FluxoResult<R> = FluxoResult.success(value)
 
-@JsExport
+@FluxoJsExport
 @InlineOnly
 public inline fun <R, T : R> FluxoResult<T>.failure(error: Throwable? = this.error, value: R = this.value): FluxoResult<R> =
     FluxoResult.failure(error, value)
@@ -295,7 +295,7 @@ public inline fun <R, T : R> FluxoResult<T>.failure(error: Throwable? = this.err
  * Performs the given [action] on the encapsulated value if this instance represents [success][FluxoResult.isSuccess].
  * Returns the original result unchanged.
  */
-@JsExport
+@FluxoJsExport
 @InlineOnly
 public inline fun <T> FluxoResult<T>.onSuccess(action: (T) -> Unit): FluxoResult<T> {
     contract {
@@ -313,7 +313,7 @@ public inline fun <T> FluxoResult<T>.onSuccess(action: (T) -> Unit): FluxoResult
  *
  * @see kotlin.onFailure
  */
-@JsExport
+@FluxoJsExport
 @InlineOnly
 public inline fun <T> FluxoResult<T>.onFailure(action: FluxoResult<T>.(Throwable?) -> Unit): FluxoResult<T> {
     contract {

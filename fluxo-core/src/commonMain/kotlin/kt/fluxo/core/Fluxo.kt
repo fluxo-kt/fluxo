@@ -40,7 +40,7 @@ public inline fun <State> CoroutineScope.container(
     initialState: State,
     settings: FluxoSettings<FluxoIntentS<State>, State, Nothing>? = null,
     factory: StoreFactory? = null,
-    @BuilderInference setup: FluxoSettings<FluxoIntentS<State>, State, Nothing>.() -> Unit = {},
+    setup: FluxoSettings<FluxoIntentS<State>, State, Nothing>.() -> Unit = {},
 ): ContainerS<State> {
     contract { callsInPlace(setup, InvocationKind.EXACTLY_ONCE) }
     val context = coroutineContext
@@ -66,7 +66,7 @@ public inline fun <State, SideEffect : Any> CoroutineScope.container(
     initialState: State,
     settings: FluxoSettings<FluxoIntent<State, SideEffect>, State, SideEffect>? = null,
     factory: StoreFactory? = null,
-    @BuilderInference setup: FluxoSettings<FluxoIntent<State, SideEffect>, State, SideEffect>.() -> Unit = {},
+    setup: FluxoSettings<FluxoIntent<State, SideEffect>, State, SideEffect>.() -> Unit = {},
 ): Container<State, SideEffect> {
     contract { callsInPlace(setup, InvocationKind.EXACTLY_ONCE) }
     val context = coroutineContext
@@ -88,10 +88,10 @@ public inline fun <State, SideEffect : Any> CoroutineScope.container(
 @InlineOnly
 public inline fun <Intent, State> CoroutineScope.store(
     initialState: State,
-    @BuilderInference noinline reducer: Reducer<Intent, State>,
+    noinline reducer: Reducer<Intent, State>,
     settings: FluxoSettingsS<Intent, State>? = null,
     factory: StoreFactory? = null,
-    @BuilderInference setup: FluxoSettingsS<Intent, State>.() -> Unit = {},
+    setup: FluxoSettingsS<Intent, State>.() -> Unit = {},
 ): Store<Intent, State> {
     contract { callsInPlace(setup, InvocationKind.EXACTLY_ONCE) }
     return store(
@@ -111,10 +111,10 @@ public inline fun <Intent, State> CoroutineScope.store(
 @InlineOnly
 public inline fun <Intent, State> CoroutineScope.store(
     initialState: State,
-    @BuilderInference handler: IntentHandler<Intent, State, Nothing>,
+    handler: IntentHandler<Intent, State, Nothing>,
     settings: FluxoSettingsS<Intent, State>? = null,
     factory: StoreFactory? = null,
-    @BuilderInference setup: FluxoSettingsS<Intent, State>.() -> Unit = {},
+    setup: FluxoSettingsS<Intent, State>.() -> Unit = {},
 ): Store<Intent, State> {
     contract { callsInPlace(setup, InvocationKind.EXACTLY_ONCE) }
     val context = coroutineContext
@@ -140,10 +140,10 @@ public inline fun <Intent, State> CoroutineScope.store(
 @ObjCName("storeWithSideEffects")
 public inline fun <Intent, State, SideEffect : Any> CoroutineScope.store(
     initialState: State,
-    @BuilderInference handler: IntentHandler<Intent, State, SideEffect>,
+    handler: IntentHandler<Intent, State, SideEffect>,
     settings: FluxoSettings<Intent, State, SideEffect>? = null,
     factory: StoreFactory? = null,
-    @BuilderInference setup: FluxoSettings<Intent, State, SideEffect>.() -> Unit = {},
+    setup: FluxoSettings<Intent, State, SideEffect>.() -> Unit = {},
 ): StoreSE<Intent, State, SideEffect> {
     contract { callsInPlace(setup, InvocationKind.EXACTLY_ONCE) }
     val context = coroutineContext
@@ -171,7 +171,7 @@ public inline fun <State> container(
     initialState: State,
     settings: FluxoSettings<FluxoIntentS<State>, State, Nothing>? = null,
     factory: StoreFactory? = null,
-    @BuilderInference setup: FluxoSettings<FluxoIntentS<State>, State, Nothing>.() -> Unit = {},
+    setup: FluxoSettings<FluxoIntentS<State>, State, Nothing>.() -> Unit = {},
 ): ContainerS<State> {
     contract { callsInPlace(setup, InvocationKind.EXACTLY_ONCE) }
     return container<State, Nothing>(
@@ -196,7 +196,7 @@ public inline fun <State, SideEffect : Any> container(
     initialState: State,
     settings: FluxoSettings<FluxoIntent<State, SideEffect>, State, SideEffect>? = null,
     factory: StoreFactory? = null,
-    @BuilderInference setup: FluxoSettings<FluxoIntent<State, SideEffect>, State, SideEffect>.() -> Unit = {},
+    setup: FluxoSettings<FluxoIntent<State, SideEffect>, State, SideEffect>.() -> Unit = {},
 ): Container<State, SideEffect> {
     contract { callsInPlace(setup, InvocationKind.EXACTLY_ONCE) }
     return store(
@@ -216,10 +216,10 @@ public inline fun <State, SideEffect : Any> container(
 @InlineOnly
 public inline fun <Intent, State> store(
     initialState: State,
-    @BuilderInference noinline reducer: Reducer<Intent, State>,
+    noinline reducer: Reducer<Intent, State>,
     settings: FluxoSettingsS<Intent, State>? = null,
     factory: StoreFactory? = null,
-    @BuilderInference setup: FluxoSettingsS<Intent, State>.() -> Unit = {},
+    setup: FluxoSettingsS<Intent, State>.() -> Unit = {},
 ): Store<Intent, State> {
     contract { callsInPlace(setup, InvocationKind.EXACTLY_ONCE) }
     return store(
@@ -239,10 +239,10 @@ public inline fun <Intent, State> store(
 @InlineOnly
 public inline fun <Intent, State> store(
     initialState: State,
-    @BuilderInference handler: IntentHandler<Intent, State, Nothing>,
+    handler: IntentHandler<Intent, State, Nothing>,
     settings: FluxoSettingsS<Intent, State>? = null,
     factory: StoreFactory? = null,
-    @BuilderInference setup: FluxoSettingsS<Intent, State>.() -> Unit = {},
+    setup: FluxoSettingsS<Intent, State>.() -> Unit = {},
 ): Store<Intent, State> {
     contract { callsInPlace(setup, InvocationKind.EXACTLY_ONCE) }
     return (factory ?: FluxoStoreFactory).create(
@@ -267,10 +267,10 @@ public inline fun <Intent, State> store(
 @ObjCName("storeWithSideEffects")
 public inline fun <Intent, State, SideEffect : Any> store(
     initialState: State,
-    @BuilderInference handler: IntentHandler<Intent, State, SideEffect>,
+    handler: IntentHandler<Intent, State, SideEffect>,
     settings: FluxoSettings<Intent, State, SideEffect>? = null,
     factory: StoreFactory? = null,
-    @BuilderInference setup: FluxoSettings<Intent, State, SideEffect>.() -> Unit = {},
+    setup: FluxoSettings<Intent, State, SideEffect>.() -> Unit = {},
 ): StoreSE<Intent, State, SideEffect> {
     contract { callsInPlace(setup, InvocationKind.EXACTLY_ONCE) }
     return (factory ?: FluxoStoreFactory).create(

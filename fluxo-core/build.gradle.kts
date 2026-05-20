@@ -23,12 +23,20 @@ fkcSetupMultiplatform(
             implementation(libs.kotlinx.coroutines.core)
         }
     }
+    commonJs {
+        test.dependencies {
+            implementation(libs.kotlinx.browser)
+        }
+    }
 }
 
 extensions.configure<org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension> {
     targets.named("android") {
         (this as com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget)
             .withHostTest {}
+    }
+    sourceSets.named("androidHostTest") {
+        dependsOn(sourceSets.named("commonJvmTest").get())
     }
     sourceSets.named("androidMain") {
         dependencies {

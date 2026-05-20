@@ -12,7 +12,7 @@ import kt.fluxo.test.interception.PipelineInterceptionProceedLambdaChain.Interce
  * * Usage code is harder to read and maintain
  * * Basically 1.5-2x slower than simple interception chain.
  */
-object PipelineInterceptionProceedLambdaChain : InterceptionBase() {
+internal object PipelineInterceptionProceedLambdaChain : InterceptionBase() {
 
     private fun interface Interceptor<R> {
 

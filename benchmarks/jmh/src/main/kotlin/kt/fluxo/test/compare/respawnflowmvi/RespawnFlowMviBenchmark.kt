@@ -24,13 +24,15 @@ internal object RespawnFlowMviBenchmark {
 
     @Suppress("InjectDispatcher")
     private fun <I : MVIIntent> createStoreAndJob(
-        @BuilderInference reduce: Reduce<RespawnFlowMviState, I, Nothing>,
+        reduce: Reduce<RespawnFlowMviState, I, Nothing>,
     ): Pair<Store<RespawnFlowMviState, I, Nothing>, Job> {
         val job = SupervisorJob()
         val scope = CoroutineScope(Dispatchers.Unconfined + job)
         val store = store(RespawnFlowMviState()) {
-            actionShareBehavior = ActionShareBehavior.Disabled
-            debuggable = false
+            configure {
+                actionShareBehavior = ActionShareBehavior.Disabled
+                debuggable = false
+            }
             reduce(reduce = reduce)
         }
         store.start(scope)
@@ -48,7 +50,7 @@ internal object RespawnFlowMviBenchmark {
             }
         }
         return runBlocking {
-            val launchDef = launchCommonBenchmarkWithStaticIntent(IntentIncrement.Increment) { store.send(it) }
+            val launchDef = launchCommonBenchmarkWithStaticIntent(IntentIncrement.Increment) { store.intent(it) }
             suspendCoroutine { cont ->
                 with(store) {
                     subscribe {
@@ -66,7 +68,7 @@ internal object RespawnFlowMviBenchmark {
             }
         }
         return runBlocking {
-            val launchDef = launchCommonBenchmark { store.send(IntentAdd.Add(value = value)) }
+            val launchDef = launchCommonBenchmark { store.intent(IntentAdd.Add(value = value)) }
             suspendCoroutine { cont ->
                 with(store) {
                     subscribe {

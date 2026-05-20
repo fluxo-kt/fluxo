@@ -26,10 +26,13 @@ If you need predictable unidirectional data flow (`UDF`) or deterministic cont
 
 **⚠ Work-In-Progress**, first release is coming. **API isn’t stable yet!**
 
+### Requirements
+
+Fluxo currently requires JDK 17+, Gradle 9+, Kotlin 2.3+ language/API/runtime compatibility, and Android API 21+ for Android consumers.
+
 ### TLDR: Use SNAPSHOT artefact in Gradle (in a safe and reproducible way)
 [![Latest snapshot](https://img.shields.io/badge/dynamic/xml?color=f68244&logo=gradle&label=Latest%20snapshot&query=%2F%2Fversion%5Blast%28%29%5D&url=https%3A%2F%2Fs01.oss.sonatype.org%2Fcontent%2Frepositories%2Fsnapshots%2Fio%2Fgithub%2Ffluxo-kt%2Ffluxo-core%2Fmaven-metadata.xml)](https://s01.oss.sonatype.org/content/repositories/snapshots/io/github/fluxo-kt/fluxo-core/maven-metadata.xml)
 <br>Select a snapshot for the preferred commit using a scheme: `0.1-<SHORT_COMMIT_SHA>-SNAPSHOT`.
-<br>For example: `0.1-140e32d-SNAPSHOT`
 
 ```kotlin
 implementation("io.github.fluxo-kt:fluxo-core:0.1-<SHORT_COMMIT_SHA>-SNAPSHOT")
@@ -193,10 +196,10 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super
   * Listen to the number of subscribers with [`subscriptionCount`][subscriptionCount] `StateFlow`.
 * Forceful customization:
   * Pluggable **intent strategies**:
-    * _First In, First Out_ (Fifo). Default, predictable, and intuitive, ordered processing with good performance.
+    * _First In, First Out_ (Fifo). Predictable, intuitive, ordered processing with good performance.
     * _Last In, First Out_ (Lifo). Can improve responsiveness, e.g. UI events processing, but may lose some intents!
     * _Parallel_. No processing order guarantees, can provide better performance and responsiveness compared to _Fifo_.
-    * _Direct_. No pipeline. Immediately executes every intent until the first suspension point in the current thread.
+    * _Direct_. Default. No pipeline. Immediately executes every intent until the first suspension point in the current thread.
     * _ChannelLifo_. Special `Channel`-based Lifo implementation that provides extra customization compared to _Lifo_.
     * Create your own!
   * Eager or lazy initialization of the store (lazy by default).
@@ -329,7 +332,7 @@ aka Redux/MVI with [contextual reduction][contextual-reduction].
 [orbit-mvvm+]: https://github.com/orbit-mvi/orbit-mvi/blob/6b6f290/README.md#what-is-orbit
 [contextual-reduction]: https://dev.to/feresr/a-case-against-the-mvi-architecture-pattern-1add
 
-[badge-kotlin]: http://img.shields.io/badge/Kotlin-1.9.23-7F52FF?logo=kotlin&logoWidth=10&logoColor=7F52FF&labelColor=2B2B2B
+[badge-kotlin]: http://img.shields.io/badge/Kotlin-2.3-7F52FF?logo=kotlin&logoWidth=10&logoColor=7F52FF&labelColor=2B2B2B
 [badge-kotlin-link]: https://github.com/JetBrains/kotlin/releases
 
 [badge-kmp]: http://img.shields.io/badge/Kotlin-Multiplatform-7F52FF?logo=kotlin&logoColor=7F52FF&labelColor=2B2B2B

@@ -1,7 +1,7 @@
 package kt.fluxo.core.internal
 
 import kotlinx.coroutines.Job
-import kotlin.jvm.Volatile
+import kotlin.concurrent.Volatile
 
 internal class RunningSideJob(
     @Volatile

@@ -45,7 +45,7 @@ public abstract class StoreFactory {
     @JsName("createForDecoration")
     public abstract fun <Intent, State, SideEffect : Any> createForDecoration(
         initialState: State,
-        @BuilderInference handler: IntentHandler<Intent, State, SideEffect>,
+        handler: IntentHandler<Intent, State, SideEffect>,
         settings: FluxoSettings<Intent, State, SideEffect>,
     ): StoreDecorator<Intent, State, SideEffect>
 
@@ -56,7 +56,7 @@ public abstract class StoreFactory {
     @JsName("create")
     public fun <Intent, State, SideEffect : Any> create(
         initialState: State,
-        @BuilderInference handler: IntentHandler<Intent, State, SideEffect>,
+        handler: IntentHandler<Intent, State, SideEffect>,
         settings: FluxoSettings<Intent, State, SideEffect> = FluxoSettings(),
     ): StoreSE<Intent, State, SideEffect> {
         val store = createForDecoration(initialState, handler, settings)
@@ -83,7 +83,7 @@ public abstract class StoreFactory {
     @ObjCName("createWithNoSideEffects")
     public fun <Intent, State> create(
         initialState: State,
-        @BuilderInference handler: IntentHandler<Intent, State, Nothing>,
+        handler: IntentHandler<Intent, State, Nothing>,
         settings: FluxoSettings<Intent, State, Nothing>,
     ): Store<Intent, State> {
         if (settings.debugChecks) {
@@ -106,7 +106,7 @@ public abstract class StoreFactory {
     public inline fun <State> container(
         initialState: State,
         settings: FluxoSettings<FluxoIntentS<State>, State, Nothing>? = null,
-        @BuilderInference setup: FluxoSettings<FluxoIntentS<State>, State, Nothing>.() -> Unit = {},
+        setup: FluxoSettings<FluxoIntentS<State>, State, Nothing>.() -> Unit = {},
     ): ContainerS<State> {
         contract { callsInPlace(setup, InvocationKind.EXACTLY_ONCE) }
         return container(
@@ -128,7 +128,7 @@ public abstract class StoreFactory {
     public inline fun <State, SideEffect : Any> container(
         initialState: State,
         settings: FluxoSettings<FluxoIntent<State, SideEffect>, State, SideEffect>? = null,
-        @BuilderInference setup: FluxoSettings<FluxoIntent<State, SideEffect>, State, SideEffect>.() -> Unit = {},
+        setup: FluxoSettings<FluxoIntent<State, SideEffect>, State, SideEffect>.() -> Unit = {},
     ): Container<State, SideEffect> {
         contract { callsInPlace(setup, InvocationKind.EXACTLY_ONCE) }
         return container(
@@ -148,9 +148,9 @@ public abstract class StoreFactory {
     @JsName("storeWithReducer")
     public inline fun <Intent, State> store(
         initialState: State,
-        @BuilderInference noinline reducer: Reducer<Intent, State>,
+        noinline reducer: Reducer<Intent, State>,
         settings: FluxoSettings<Intent, State, Nothing>? = null,
-        @BuilderInference setup: FluxoSettings<Intent, State, Nothing>.() -> Unit = {},
+        setup: FluxoSettings<Intent, State, Nothing>.() -> Unit = {},
     ): Store<Intent, State> {
         contract { callsInPlace(setup, InvocationKind.EXACTLY_ONCE) }
         return store(
@@ -171,9 +171,9 @@ public abstract class StoreFactory {
     @JsName("store")
     public inline fun <Intent, State> store(
         initialState: State,
-        @BuilderInference handler: IntentHandler<Intent, State, Nothing>,
+        handler: IntentHandler<Intent, State, Nothing>,
         settings: FluxoSettings<Intent, State, Nothing>? = null,
-        @BuilderInference setup: FluxoSettings<Intent, State, Nothing>.() -> Unit = {},
+        setup: FluxoSettings<Intent, State, Nothing>.() -> Unit = {},
     ): Store<Intent, State> {
         contract { callsInPlace(setup, InvocationKind.EXACTLY_ONCE) }
         return store(
@@ -196,9 +196,9 @@ public abstract class StoreFactory {
     @ObjCName("storeWithSideEffects")
     public inline fun <Intent, State, SideEffect : Any> store(
         initialState: State,
-        @BuilderInference handler: IntentHandler<Intent, State, SideEffect>,
+        handler: IntentHandler<Intent, State, SideEffect>,
         settings: FluxoSettings<Intent, State, SideEffect>? = null,
-        @BuilderInference setup: FluxoSettings<Intent, State, SideEffect>.() -> Unit = {},
+        setup: FluxoSettings<Intent, State, SideEffect>.() -> Unit = {},
     ): StoreSE<Intent, State, SideEffect> {
         contract { callsInPlace(setup, InvocationKind.EXACTLY_ONCE) }
         return store(

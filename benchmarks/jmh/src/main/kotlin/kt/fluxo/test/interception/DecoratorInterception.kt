@@ -7,7 +7,7 @@ import kt.fluxo.test.compare.addAndGet
  * Decorator interception like in MVIKotlin (via factory) or in Orbit (via ContainerDecorator).
  * We test both decorations for outbound calls and inbound calls to the decoration chain.
  */
-object DecoratorInterception : InterceptionBase() {
+internal object DecoratorInterception : InterceptionBase() {
 
     // https://square.github.io/okhttp/features/interceptors/
     // https://github.com/square/okhttp/blob/3ad1912/okhttp/src/jvmMain/kotlin/okhttp3/Interceptor.kt

@@ -10,28 +10,21 @@
 
 fluxo = "0.1.0-SNAPSHOT"
 
-# For local development to dogfood lib
-# https://s01.oss.sonatype.org/content/repositories/snapshots/io/github/fluxo-kt/fluxo-core/maven-metadata.xml
-# WARN: Don't forget to update snapshot version example in `../README.md`.
-fluxoSnapshot = "0.1-140e32d-SNAPSHOT"
-
-# 21 is default for new projects per May 2021, required for Compose, but we don't need it for core modules.
-androidMinSdk = "9"
-androidTargetSdk = "34"
-androidCompileSdk = "34"
-androidBuildTools = "34.0.0"
+# Android API 21 is the project floor after the Gradle 9 / AGP 9 toolchain upgrade.
+androidMinSdk = "21"
+androidTargetSdk = "36"
+androidCompileSdk = "36"
 
 # Java/Kotlin compatibility
 javaToolchain = "17"
 javaLangTarget = "17"
-kotlinLangVersion = "2.1"
-kotlinApiVersion = "2.1"
+kotlinLangVersion = "2.3"
+kotlinApiVersion = "2.3"
 
 # https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-gradle-plugin
 # WARN: Don't forget to update kotlin version badge in ../README.md
-kotlin = "2.3.21"
-#noinspection GradleDependency
-kotlinCoreLibraries = "2.1.21"
+kotlin = "2.3.20"
+kotlinCoreLibraries = "2.3.21"
 
 # https://github.com/google/ksp/releases
 ksp = "2.3.8"
@@ -48,6 +41,7 @@ dokka = "2.2.0"
 # https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-coroutines-core
 # WARN: 1.8+ requires Kotlin Stdlib 1.9+
 coroutines = "1.11.0"
+kotlinx-browser = "0.5.0"
 
 # Public API management tool
 # https://github.com/Kotlin/binary-compatibility-validator/releases
@@ -65,7 +59,7 @@ android-gradle-plugin = "9.2.1"
 arrow = "1.2.4"
 
 # https://github.com/detekt/detekt/releases
-detekt = "1.23.6"
+detekt = "1.23.8"
 
 # Kotlin code coverage plugin
 # https://github.com/Kotlin/kotlinx-kover/releases
@@ -105,7 +99,7 @@ js-webpackDevServer = "4.15.2"  # https://www.npmjs.com/package/webpack-dev-serv
 
 # Libraries to compare/benchmark against
 ballast = "4.1.0"                   # https://mvnrepository.com/artifact/io.github.copper-leaf/ballast-core
-elmslie = "3.0.0-alpha06"           # https://github.com/vivid-money/elmslie/tags
+elmslie = "3.0.0"                   # https://repo.maven.apache.org/maven2/money/vivid/elmslie/elmslie-core/maven-metadata.xml
 flowredux = "1.2.1"                 # https://mvnrepository.com/artifact/com.freeletics.flowredux/flowredux
 genakuReduce = "1.0.1"              # https://github.com/genaku/Reduce/tags
 mobiusKt = "1.2.1"                  # https://mvnrepository.com/artifact/org.drewcarlson/mobiuskt-coroutines
@@ -141,6 +135,7 @@ kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-c
 kotlinx-coroutines-debug = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-debug", version.ref = "coroutines" }
 kotlinx-coroutines-reactive = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-reactive", version.ref = "coroutines" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
+kotlinx-browser = { module = "org.jetbrains.kotlinx:kotlinx-browser", version.ref = "kotlinx-browser" }
 
 # https://mvnrepository.com/artifact/org.jetbrains/annotations
 jetbrains-annotation = { module = "org.jetbrains:annotations", version = "24.1.0" }
@@ -172,7 +167,7 @@ plugin-jetbrains-compose = { group = "org.jetbrains.compose", name = "compose-gr
 
 # https://github.com/mrmans0n/compose-rules/releases
 # https://mvnrepository.com/artifact/io.nlopez.compose.rules/detekt
-detekt-compose = { module = "io.nlopez.compose.rules:detekt", version = "0.3.18" }
+detekt-compose = { module = "io.nlopez.compose.rules:detekt", version = "0.4.28" }
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 detekt-core = { module = "io.gitlab.arturbosch.detekt:detekt-core", version.ref = "detekt" }
 

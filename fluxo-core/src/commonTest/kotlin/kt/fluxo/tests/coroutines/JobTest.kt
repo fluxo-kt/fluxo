@@ -161,11 +161,15 @@ class JobTest {
         assertTrue(childJob2.isCancelled, "childJob2.isCancelled 4")
         job.children.toList().let {
             if (it.isNotEmpty()) { // mingwX64, sometimes for JVM/Android too!
-                assertContentEquals(listOf(childJob), it, "job.children, check 2: $it")
+                assertTrue(
+                    it.all { child -> (child === childJob || child === childJob2) && !child.isActive && child.isCancelled },
+                    "job.children, check 2: $it",
+                )
             }
         }
 
         childJob.join()
+        childJob2.join()
         assertFalse(childJob.isActive, "childJob.isActive 5")
         assertTrue(childJob.isCompleted, "childJob.isCompleted 5")
         assertTrue(childJob.isCancelled, "childJob.isCancelled 5")

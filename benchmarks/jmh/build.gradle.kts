@@ -5,8 +5,8 @@ plugins {
 fkcSetupKotlinApp(
     optIns = listOf("kt.fluxo.common.annotation.ExperimentalFluxoApi"),
 ) {
-    kotlinLangVersion = "latest"
-    javaLangTarget = "latest"
+    kotlinLangVersion = "2.3"
+    javaLangTarget = "17"
 
     setupCoroutines = true
     setupDependencies = true
@@ -22,12 +22,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
 
 
-    // Use the latest snapshot for local development to dogfood the lib.
-    if (isCI().get() || isRelease().get()) {
-        implementation(projects.fluxoCore)
-    } else {
-        implementation("io.github.fluxo-kt:fluxo-core:" + libs.versions.fluxoSnapshot.get())
-    }
+    implementation(projects.fluxoCore)
 
 
     // region Libraries to compare/benchmark with
@@ -88,8 +83,7 @@ dependencies {
 
     // Elmslie
     val elmslieVersion = libs.versions.elmslie.get()
-    implementation("com.github.vivid-money.elmslie:elmslie-core:$elmslieVersion")
-    implementation("com.github.vivid-money.elmslie:elmslie-coroutines:$elmslieVersion")
+    implementation("money.vivid.elmslie:elmslie-core:$elmslieVersion")
 
     // endregion
 }

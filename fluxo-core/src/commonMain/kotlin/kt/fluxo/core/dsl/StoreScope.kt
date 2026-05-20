@@ -80,13 +80,116 @@ public interface StoreScope<in Intent, State, SideEffect : Any> : StoreSE<Intent
      * @see kotlinx.coroutines.launch
      */
     @CallSuper
-    @JsName("sideJob")
     // FIXME: More options for a side job restarting or start-avoidance. SideJobs registry/management API
     public suspend fun sideJob(
-        key: String = DEFAULT_SIDE_JOB,
-        context: CoroutineContext = EmptyCoroutineContext,
-        start: CoroutineStart = CoroutineStart.DEFAULT,
-        onError: ((error: Throwable) -> Unit)? = null,
+        block: SideJob<Intent, State, SideEffect>,
+    ): Job = sideJob(DEFAULT_SIDE_JOB, EmptyCoroutineContext, CoroutineStart.DEFAULT, null, block)
+
+    @CallSuper
+    public suspend fun sideJob(
+        key: String,
+        block: SideJob<Intent, State, SideEffect>,
+    ): Job = sideJob(key, EmptyCoroutineContext, CoroutineStart.DEFAULT, null, block)
+
+    @CallSuper
+    public suspend fun sideJob(
+        context: CoroutineContext,
+        block: SideJob<Intent, State, SideEffect>,
+    ): Job = sideJob(DEFAULT_SIDE_JOB, context, CoroutineStart.DEFAULT, null, block)
+
+    @CallSuper
+    public suspend fun sideJob(
+        start: CoroutineStart,
+        block: SideJob<Intent, State, SideEffect>,
+    ): Job = sideJob(DEFAULT_SIDE_JOB, EmptyCoroutineContext, start, null, block)
+
+    @CallSuper
+    public suspend fun sideJob(
+        onError: ((error: Throwable) -> Unit)?,
+        block: SideJob<Intent, State, SideEffect>,
+    ): Job = sideJob(DEFAULT_SIDE_JOB, EmptyCoroutineContext, CoroutineStart.DEFAULT, onError, block)
+
+    @CallSuper
+    public suspend fun sideJob(
+        key: String,
+        context: CoroutineContext,
+        block: SideJob<Intent, State, SideEffect>,
+    ): Job = sideJob(key, context, CoroutineStart.DEFAULT, null, block)
+
+    @CallSuper
+    public suspend fun sideJob(
+        key: String,
+        start: CoroutineStart,
+        block: SideJob<Intent, State, SideEffect>,
+    ): Job = sideJob(key, EmptyCoroutineContext, start, null, block)
+
+    @CallSuper
+    public suspend fun sideJob(
+        key: String,
+        onError: ((error: Throwable) -> Unit)?,
+        block: SideJob<Intent, State, SideEffect>,
+    ): Job = sideJob(key, EmptyCoroutineContext, CoroutineStart.DEFAULT, onError, block)
+
+    @CallSuper
+    public suspend fun sideJob(
+        context: CoroutineContext,
+        start: CoroutineStart,
+        block: SideJob<Intent, State, SideEffect>,
+    ): Job = sideJob(DEFAULT_SIDE_JOB, context, start, null, block)
+
+    @CallSuper
+    public suspend fun sideJob(
+        context: CoroutineContext,
+        onError: ((error: Throwable) -> Unit)?,
+        block: SideJob<Intent, State, SideEffect>,
+    ): Job = sideJob(DEFAULT_SIDE_JOB, context, CoroutineStart.DEFAULT, onError, block)
+
+    @CallSuper
+    public suspend fun sideJob(
+        start: CoroutineStart,
+        onError: ((error: Throwable) -> Unit)?,
+        block: SideJob<Intent, State, SideEffect>,
+    ): Job = sideJob(DEFAULT_SIDE_JOB, EmptyCoroutineContext, start, onError, block)
+
+    @CallSuper
+    public suspend fun sideJob(
+        key: String,
+        context: CoroutineContext,
+        start: CoroutineStart,
+        block: SideJob<Intent, State, SideEffect>,
+    ): Job = sideJob(key, context, start, null, block)
+
+    @CallSuper
+    public suspend fun sideJob(
+        key: String,
+        context: CoroutineContext,
+        onError: ((error: Throwable) -> Unit)?,
+        block: SideJob<Intent, State, SideEffect>,
+    ): Job = sideJob(key, context, CoroutineStart.DEFAULT, onError, block)
+
+    @CallSuper
+    public suspend fun sideJob(
+        key: String,
+        start: CoroutineStart,
+        onError: ((error: Throwable) -> Unit)?,
+        block: SideJob<Intent, State, SideEffect>,
+    ): Job = sideJob(key, EmptyCoroutineContext, start, onError, block)
+
+    @CallSuper
+    public suspend fun sideJob(
+        context: CoroutineContext,
+        start: CoroutineStart,
+        onError: ((error: Throwable) -> Unit)?,
+        block: SideJob<Intent, State, SideEffect>,
+    ): Job = sideJob(DEFAULT_SIDE_JOB, context, start, onError, block)
+
+    @CallSuper
+    @JsName("sideJob")
+    public suspend fun sideJob(
+        key: String,
+        context: CoroutineContext,
+        start: CoroutineStart,
+        onError: ((error: Throwable) -> Unit)?,
         block: SideJob<Intent, State, SideEffect>,
     ): Job
 

@@ -27,7 +27,7 @@ import kt.fluxo.core.internal.IntentStrategyGuardian
 import kt.fluxo.core.internal.RunningSideJob.Companion.BOOTSTRAPPER_SIDE_JOB
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
-import kotlin.js.JsExport
+import kt.fluxo.common.annotation.FluxoJsExport
 import kotlin.js.JsName
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmName
@@ -46,7 +46,7 @@ public typealias FluxoSettingsS<Intent, State> = FluxoSettings<Intent, State, No
  * * Configure each [store] individually with the standard DSL (see [container] and [store]).
  */
 @FluxoDsl
-@JsExport
+@FluxoJsExport
 @NotThreadSafe
 public class FluxoSettings<Intent, State, SideEffect : Any> private constructor() {
 
@@ -344,6 +344,7 @@ public class FluxoSettings<Intent, State, SideEffect : Any> private constructor(
      */
     @InlineOnly
     @Deprecated("Not applicable from here! Use stopTimeout parameter for repeatOnSubscription method instead")
+    @kotlin.js.JsExport.Ignore
     public var repeatOnSubscribedStopTimeout: Long
         inline get() = 0
         inline set(@Suppress("UNUSED_PARAMETER") value) {}

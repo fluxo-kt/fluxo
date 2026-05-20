@@ -9,7 +9,7 @@ import kt.fluxo.test.interception.PipelineInterceptionChain.IntentInterceptor
  *
  * Also has some similarities with Netty ChannelPipeline/ChannelHandler.
  */
-object PipelineInterceptionChain : InterceptionBase() {
+internal object PipelineInterceptionChain : InterceptionBase() {
 
     // https://square.github.io/okhttp/features/interceptors/
     // https://github.com/square/okhttp/blob/3ad1912/okhttp/src/jvmMain/kotlin/okhttp3/Interceptor.kt

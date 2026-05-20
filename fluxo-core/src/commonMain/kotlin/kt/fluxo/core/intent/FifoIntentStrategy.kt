@@ -1,7 +1,7 @@
 package kt.fluxo.core.intent
 
 /**
- * **Fifo**, `First-in, first-out` strategy. Provides strictly ordered processing: predictable and intuitive, the default choice.
+ * **Fifo**, `First-in, first-out` strategy. Provides strictly ordered processing: predictable and intuitive.
  * Based on [Channel][ChannelBasedIntentStrategy] to maintain the order of processing.
  *
  * **IMPORTANT:** The new intent will not start processing until the previous one is finished!

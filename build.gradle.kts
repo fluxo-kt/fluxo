@@ -34,6 +34,7 @@ fkcSetupRaw {
     // developerEmail = "artyom.shendrik@gmail.com"
 
     enableSpotless = true
+    enableApiValidation = true
 
     experimentalLatestCompilation = true
     allWarningsAsErrors = true

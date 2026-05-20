@@ -2,7 +2,7 @@
 androidx.annotation:annotation-jvm:1.7.1
 androidx.annotation:annotation:1.7.1
 com.google.code.findbugs:jsr305:3.0.2
-org.jetbrains.kotlin:kotlin-stdlib:2.2.20
+org.jetbrains.kotlin:kotlin-stdlib:2.3.21
 org.jetbrains.kotlinx:atomicfu-jvm:0.32.1
 org.jetbrains.kotlinx:atomicfu:0.32.1
 org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.11.0
