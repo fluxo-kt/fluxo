@@ -8,6 +8,7 @@
 .fleet/
 .gradle/
 .kotlin/
+.vale*
 .vscode/
 bin/
 build/
