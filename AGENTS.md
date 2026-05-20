@@ -65,6 +65,7 @@ Each cites a symbol or file so you can verify in one read.
 23. **Kotlin/JS default-argument bridges can recurse for overridable `StoreScope.sideJob`.** Keep `StoreScope.sideJob` as explicit overloads plus one full `@JsName("sideJob")` implementation; restoring default parameters reintroduces `RangeError: Maximum call stack size exceeded` in `StoreDecoratorTest.interface_check`.
 24. **Diagnostic Kotlin target/source-set print tasks are not configuration-cache safe.** `:fluxo-core:printKotlinTargetsInfo` succeeds but discards the configuration cache because the task captures `Project`; do not use it as a CC gate until the helper task is fixed.
 25. **Merged test report results are execution-time shared state.** In `fluxo-kmp-conf`, keep `TestReportService` results in service-owned synchronized storage; Gradle `ListProperty.add` from parallel `TestListener.afterTest` callbacks corrupts provider state.
+26. **The external JMH Gradle plugin is not configuration-cache compatible here.** Run JMH with `--no-configuration-cache` and keep `benchmarks/jmh` JMH tasks marked `notCompatibleWithConfigurationCache`; otherwise Gradle 9 reports `:benchmarks:jmh:jmhJar` Project serialization problems after benchmark execution.
 
 ## Common commands
 
@@ -73,10 +74,10 @@ Each cites a symbol or file so you can verify in one read.
 ./gradlew :fluxo-core:jvmTest                    # fast inner loop
 ./updateBaselines                                # regenerate ALL baselines (lint, detekt, dep guard, api, yarn lock) with correct env
 ./gradlew dependencyGuardBaseline                # regenerate only dep snapshots
-./gradlew :benchmarks:jmh:jmh                    # run JMH suite (filter via `IncrementIntent.*` regex)
+./gradlew :benchmarks:jmh:jmh --no-configuration-cache # run JMH suite (filter via `IncrementIntent.*` regex)
 ./gradlew -Dsplit_targets ...                    # split KMP targets across CI shards (Windows uses this)
 RELEASE=true ./gradlew ...                       # release mode (IndyLambdas, stricter baselines)
-./gradlew :benchmarks:jmh:jmh                    # benchmark against the LOCAL fluxo-core
+./gradlew :benchmarks:jmh:jmh --no-configuration-cache # benchmark against the LOCAL fluxo-core
 ```
 
 For `apiDump`, see Gotcha #4.

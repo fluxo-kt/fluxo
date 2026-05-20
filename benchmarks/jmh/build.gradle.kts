@@ -136,3 +136,9 @@ jmh {
 
     jvmArgsAppend.add("-Dkotlinx.coroutines.debug=off")
 }
+
+tasks.matching { it.name.startsWith("jmh") }.configureEach {
+    notCompatibleWithConfigurationCache(
+        "me.champeau.jmh generated JMH tasks capture Project state on Gradle 9.",
+    )
+}

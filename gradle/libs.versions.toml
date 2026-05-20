@@ -261,4 +261,4 @@ task-tree = { id = "com.dorongold.task-tree", version = "3.0.0" }
 
 # JMH benchmarking for Gradle
 # https://github.com/melix/jmh-gradle-plugin/releases
-jmh = { id = "me.champeau.jmh", version = "0.7.2" }
+jmh = { id = "me.champeau.jmh", version = "0.7.3" }
