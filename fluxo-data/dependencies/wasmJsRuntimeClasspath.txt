@@ -1,0 +1,7 @@
+:fluxo-common
+org.jetbrains.kotlin:kotlin-stdlib-wasm-js:2.2.20
+org.jetbrains.kotlin:kotlin-stdlib:2.2.20
+org.jetbrains.kotlinx:atomicfu-wasm-js:0.32.1
+org.jetbrains.kotlinx:atomicfu:0.32.1
+org.jetbrains.kotlinx:kotlinx-coroutines-core-wasm-js:1.11.0
+org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0

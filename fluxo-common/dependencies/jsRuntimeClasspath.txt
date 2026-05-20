@@ -1,1 +1,2 @@
-org.jetbrains.kotlin:kotlin-stdlib-js:1.8.22
+org.jetbrains.kotlin:kotlin-stdlib-js:2.1.21
+org.jetbrains.kotlin:kotlin-stdlib:2.1.21
