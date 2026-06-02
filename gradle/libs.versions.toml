@@ -23,7 +23,10 @@ kotlinApiVersion = "2.3"
 
 # https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-gradle-plugin
 # WARN: Don't forget to update kotlin version badge in ../README.md
-kotlin = "2.3.20"
+# `kotlinCoreLibraries` (stdlib) MUST NOT exceed `kotlin` (compiler): a runtime newer than the
+# compiler emits a version-mismatch warning that `allWarningsAsErrors` turns fatal on CI/release.
+# Keep them aligned; the harness fails fast on skew (opt-out: -Pfluxo.allowKotlinStdlibSkew).
+kotlin = "2.3.21"
 kotlinCoreLibraries = "2.3.21"
 
 # https://github.com/google/ksp/releases
@@ -82,7 +85,7 @@ androidx-annotation = "1.7.1"
 jmh = "1.37"
 
 # AtomicFU: compile-time atomic transformation plugin and source dependency.
-atomicfu = "0.32.1"
+atomicfu = "0.33.0"
 
 
 # NPM repo dependencies

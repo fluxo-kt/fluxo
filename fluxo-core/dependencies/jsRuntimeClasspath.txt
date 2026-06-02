@@ -1,8 +1,8 @@
 :fluxo-common
 org.jetbrains.kotlin:kotlin-stdlib-js:2.3.21
 org.jetbrains.kotlin:kotlin-stdlib:2.3.21
-org.jetbrains.kotlin:kotlinx-atomicfu-runtime:2.3.20
-org.jetbrains.kotlinx:atomicfu-js:0.32.1
-org.jetbrains.kotlinx:atomicfu:0.32.1
+org.jetbrains.kotlin:kotlinx-atomicfu-runtime:2.3.21
+org.jetbrains.kotlinx:atomicfu-js:0.33.0
+org.jetbrains.kotlinx:atomicfu:0.33.0
 org.jetbrains.kotlinx:kotlinx-coroutines-core-js:1.11.0
 org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0
