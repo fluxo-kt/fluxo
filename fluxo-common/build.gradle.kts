@@ -92,19 +92,28 @@ extensions.configure<org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtensio
         (this as com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget)
             .withHostTest {}
     }
+    // Register generated sources via the producing task providers so the task dependency is
+    // intrinsic to the source directory — every consumer (Kotlin compile, AGP's ART-profile task,
+    // …) inherits it. A bare layout-dir provider carries no producer, which made Gradle 9 fail
+    // ProcessLibraryArtProfileTask with an implicit-dependency error (it scans the generated
+    // androidMain root for a sibling `baselineProfiles` dir).
     inlineOnlySourceSets.forEach { sourceSet ->
         sourceSets.named(sourceSet) {
-            kotlin.srcDir(inlineOnlyGeneratedDir.map { it.dir("$sourceSet/kotlin") })
+            kotlin.srcDir(inlineOnlySwitcher.map { it.destinationDir.resolve("$sourceSet/kotlin") })
         }
     }
     (fluxoJsExportSourceSets + "jsMain").forEach { sourceSet ->
         sourceSets.named(sourceSet) {
-            kotlin.srcDir(fluxoJsExportGeneratedDir.map { it.dir("$sourceSet/kotlin") })
+            kotlin.srcDir(fluxoJsExportSwitcher.map { it.destinationDir.resolve("$sourceSet/kotlin") })
         }
     }
 }
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask<*>>().configureEach {
-    dependsOn(inlineOnlySwitcher)
-    dependsOn(fluxoJsExportSwitcher)
+// Kotlin compile gets the switcher dependency intrinsically via the srcDir task providers above.
+// AGP's ProcessLibraryArtProfileTask additionally scans each android source root for a sibling
+// `baselineProfiles` dir, deriving that path as a plain File that loses the builtBy — so Gradle 9
+// strict validation fails unless the producer is declared for it explicitly. Match by the stable
+// AGP task-name suffix rather than coupling to AGP-internal task types.
+tasks.matching { it.name.endsWith("ArtProfile") }.configureEach {
+    dependsOn(inlineOnlySwitcher, fluxoJsExportSwitcher)
 }
