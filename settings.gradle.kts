@@ -9,9 +9,19 @@ pluginManagement {
         maven("https://jitpack.io")
     }
 
-    // For local development.
-    includeBuild("../fluxo-kmp-conf/self")
-    includeBuild("../fluxo-kmp-conf")
+    // Dogfood the in-repo harness locally; on CI — or any fresh checkout without the sibling —
+    // resolve the PUBLISHED io.github.fluxo-kt.fluxo-kmp-conf plugin, so CI builds exactly what
+    // external consumers get (invariant I1). Computed inside pluginManagement because that block is
+    // evaluated before the settings-script body — a top-level val would be out of scope here.
+    // providers.*/settingsDir keep it configuration-cache-correct under strict CC.
+    val useLocalHarness =
+        providers.gradleProperty("fluxo.dogfood").orNull?.toBooleanStrictOrNull()
+            ?: (providers.environmentVariable("CI").orNull?.toBooleanStrictOrNull() != true &&
+                settingsDir.resolveSibling("fluxo-kmp-conf").exists())
+    if (useLocalHarness) {
+        includeBuild("../fluxo-kmp-conf/self")
+        includeBuild("../fluxo-kmp-conf")
+    }
 }
 
 plugins {
