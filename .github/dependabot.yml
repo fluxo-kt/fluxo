@@ -16,6 +16,38 @@ updates:
     labels:
       - "gradle"
       - "dependencies"
+    # Explicit cap so a backlog can never silently saturate the default limit (5)
+    # and stall all new updates again (the 2024 stall). Grouping keeps the real PR
+    # count well below this.
+    open-pull-requests-limit: 10
+    cooldown:
+      default-days: 7
+      semver-major-days: 30
+    # Coupled toolchains land as one reviewable PR instead of fanning out into
+    # several that can't merge atomically (and re-saturate the cap).
+    groups:
+      kotlin:
+        patterns:
+          - "org.jetbrains.kotlin:*"
+          - "org.jetbrains.kotlin.*"
+          - "com.google.devtools.ksp"
+          - "com.google.devtools.ksp:*"
+      agp:
+        patterns:
+          - "com.android.tools.build:*"
+          - "com.android.tools:r8"
+          - "com.android.lint*"
+      detekt:
+        patterns:
+          - "io.gitlab.arturbosch.detekt"
+          - "io.gitlab.arturbosch.detekt:*"
+      vanniktech:
+        patterns:
+          - "com.vanniktech*"
+      dokka:
+        patterns:
+          - "org.jetbrains.dokka"
+          - "org.jetbrains.dokka*"
 
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -28,6 +60,14 @@ updates:
     labels:
       - "gh-action"
       - "dependencies"
+    open-pull-requests-limit: 10
+    cooldown:
+      default-days: 7
+    # All action bumps in one PR — the ecosystem this migration just modernised.
+    groups:
+      gh-actions:
+        patterns:
+          - "*"
 
   - package-ecosystem: "npm"
     directory: "/"
@@ -40,3 +80,6 @@ updates:
     labels:
       - "js"
       - "dependencies"
+    open-pull-requests-limit: 5
+    cooldown:
+      default-days: 7
