@@ -47,8 +47,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "fluxo"
 
-// On module update, don't forget to update '.github/workflows/build.yml'!
-
 include(":fluxo-common")
 include(":fluxo-core")
 include(":fluxo-data")

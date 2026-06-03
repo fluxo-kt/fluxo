@@ -8,7 +8,7 @@ If anything in this project surprises you, contradicts the docs, or would have s
 
 ## Composite build (read this first)
 
-`settings.gradle.kts` does `includeBuild("../fluxo-kmp-conf")`. The Gradle DSL the build relies on (`fkcSetupRaw`, `fkcSetupMultiplatform`, `fkcSetupKotlinApp`, `isRelease()`, `isCI()`) lives in that sibling repo (https://github.com/fluxo-kt/fluxo-kmp-conf). **Without `../fluxo-kmp-conf` checked out alongside, configuration fails with unresolved references.** The plugin is *also* published to Plugin Portal/JitPack — swap `includeBuild(...)` for a versioned alias if you don't want to dogfood. Project default is dogfooding.
+`settings.gradle.kts` **conditionally** `includeBuild`s the sibling harness — guard computed *inside* `pluginManagement {}` (it evaluates before the script body, so a top-level val is out of scope there). The Gradle DSL the build relies on (`fkcSetupRaw`, `fkcSetupMultiplatform`, `fkcSetupKotlinApp`, `isRelease()`, `isCI()`) lives in that sibling repo (https://github.com/fluxo-kt/fluxo-kmp-conf). It dogfoods the local sibling **only** when it exists **and** not on CI; otherwise it resolves the **published** `io.github.fluxo-kt.fluxo-kmp-conf` plugin (catalog-pinned), so a fresh single-repo checkout and every CI run build exactly what external consumers get (invariant **I1**). Force either side with `-Pfluxo.dogfood=true|false`. Local default is dogfooding.
 
 `enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")` is what makes `projects.fluxoCommon` syntax work in module builds.
 
@@ -53,7 +53,7 @@ Each cites a symbol or file so you can verify in one read.
 11. **Only `Store.stateFlow`, `Store.state`, `StoreScope.launch`, `StoreScope.async` are `@JvmSynthetic`-hidden** from Java/iOS. Inline `accept`/`orbit` rely on `@InlineOnly`. Kover excludes `*Synthetic*`/`*Inline*`/`*Deprecated*` only in release mode → debug vs release coverage numbers aren't the same scale.
 12. **`compareAndSet` on stored state closes the previous state** if `expect != update`, *and* the new state if `expect !== update` but `expect == update` — the experimental "Closeable as state" feature. Returning a new equal instance still triggers `closeSafely()` on it.
 13. **`emit` vs `send`**: `emit` is the suspend `FlowCollector` form (no `Job`); `send` returns a `Job` for non-suspend callers. **Joining the returned `Job` is dangerous** (deadlock-prone) and explicitly discouraged.
-14. **Module list duplicated** in `settings.gradle.kts` and `.github/workflows/build.yml` — keep both in sync (settings file warns).
+14. **Module list lives only in `settings.gradle.kts`.** CI (`build.yml`) runs *root* Gradle tasks (`build`/`check`/`publishToMavenCentral`) that auto-discover modules — it enumerates none, so adding a module needs no `build.yml` edit. (An older `settings.gradle.kts` "update build.yml" reminder was stale — removed.)
 15. **K/Native compiler daemon is disabled** (`gradle.properties`). Native builds can be slower; re-check this on K/N upgrades.
 16. **`org.jetbrains.kotlinx.atomicfu` plugin rewrites bytecode at compile time** → `atomic()` works without a runtime artefact. Keep it on the plugin DSL alias in modules that use atomicfu.
 17. **KT-58512** breaks IDE "Go to declaration" / "Quick Documentation" on `container { }` and similar inline builders. Known issue, not actionable here.
@@ -66,6 +66,8 @@ Each cites a symbol or file so you can verify in one read.
 24. **Diagnostic Kotlin target/source-set print tasks are not configuration-cache safe.** `:fluxo-core:printKotlinTargetsInfo` succeeds but discards the configuration cache because the task captures `Project`; do not use it as a CC gate until the helper task is fixed.
 25. **Merged test report results are execution-time shared state.** In `fluxo-kmp-conf`, keep `TestReportService` results in service-owned synchronized storage; Gradle `ListProperty.add` from parallel `TestListener.afterTest` callbacks corrupts provider state.
 26. **The external JMH Gradle plugin is not configuration-cache compatible here.** Run JMH with `--no-configuration-cache` and keep `benchmarks/jmh` JMH tasks marked `notCompatibleWithConfigurationCache`; otherwise Gradle 9 reports `:benchmarks:jmh:jmhJar` Project serialization problems after benchmark execution.
+27. **Publishing needs four independent layers — drop any one and it silently breaks/mis-targets** (see `RELEASING.md`): (a) `enablePublication = true` in root `build.gradle.kts` (harness gate); (b) the vanniktech plugin `alias`-applied in *each* library module **and** `apply false` at root — Gradle plugin-classloader isolation means the harness configures but cannot apply it; (c) the `version` catalog key (a wrong key falls through to `unspecified`); (d) per-module `projectName` (else all modules collide on the root `artifactId`).
+28. **Kotlin compiler version must equal `kotlinCoreLibraries` (stdlib).** Under `allWarningsAsErrors` a newer-stdlib-than-compiler skew is fatal on CI/release (passes local dev where the flag is off — why a skew can lurk). The harness fails fast on it (`kotlinStdlibSkewError`; opt-out `-Pfluxo.allowKotlinStdlibSkew`). Align both keys in `libs.versions.toml`; never suppress with `-Xskip-runtime-version-check`.
 
 ## Common commands
 
@@ -109,7 +111,7 @@ For `apiDump`, see Gotcha #4.
 
 ## Where deeper docs live
 
-- Usage examples + benchmarks: `README.md`. Roadmap: `ROADMAP.md`. Releasing: `RELEASING.md` (currently a stub).
+- Usage examples + benchmarks: `README.md`. Roadmap: `ROADMAP.md`. Releasing: `RELEASING.md` (tag-push → vanniktech → Central Portal; secrets, snapshot/release split, the 4-layer publication wiring).
 - Per-module READMEs are minimal/single-line.
 - **Deepest semantics live in KDoc inside source.** Start with `FluxoSettings`, `FluxoStore.<init>` and `onStart`/`onIntent`, `IntentStrategy`, `SideEffectStrategy`, `GuaranteedEffect`, `StoreScope`, `IntentStrategyGuardian`.
 
