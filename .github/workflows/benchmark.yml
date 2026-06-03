@@ -12,7 +12,6 @@ on:
 env:
   TRIGGER_COUNTER: 15
   JMH_THREADS: 2
-  GRADLE_BUILD_ACTION_CACHE_DEBUG_ENABLED: true
   GRADLE_OPTS: "-Dorg.gradle.daemon=false \
   -Dorg.gradle.configuration-cache=false \
   -Dorg.gradle.vfs.watch=false \
@@ -36,26 +35,33 @@ jobs:
     steps:
       - name: Harden Runner
         if: matrix.os == 'ubuntu'
-        uses: step-security/harden-runner@0c6ab70129fa3660acd9cd2b51e8685d619cd613
+        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
         with:
           disable-sudo: true
           egress-policy: audit
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: 'Set up JDK ${{ matrix.java }}'
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '${{ matrix.java }}'
 
       # macos runner provides more CPU cores.
       - if: matrix.os == 'macos'
-        run: echo "JMH_THREADS=3" >> $GITHUB_ENV
+        run: echo "JMH_THREADS=3" >> "$GITHUB_ENV"
 
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          cache-disabled: ${{ matrix.java == '11' }}
+          cache-read-only: ${{ github.ref != 'refs/heads/main' || matrix.java != '17' }}
+
+      # setup-gradle@v4+ dropped the `arguments:` input — run Gradle in a dedicated step.
+      # jmh is configuration-cache-incompatible, hence the explicit `--no-configuration-cache`.
       - name: 'Benchmark "${{ matrix.benchmark }}" on ${{ matrix.os }} JDK${{ matrix.java }}'
-        uses: gradle/gradle-build-action@v2
         env:
           CI: true
           jmh: '${{ matrix.benchmark }}'
@@ -63,12 +69,8 @@ jobs:
           jmh_i: 6
           jmh_f: 2
           jmh_t: '${{ env.JMH_THREADS }}'
-        with:
-          gradle-home-cache-cleanup: true
-          cache-disabled: ${{ matrix.java == '11' }}
-          cache-read-only: ${{ github.ref != 'refs/heads/main' || matrix.java != '17' }}
-          arguments: jmh --stacktrace --no-configuration-cache --scan
+        run: ./gradlew jmh --stacktrace --no-configuration-cache --scan
 
       - name: Summary
-        run: ./.github/workflows/benchmark-summary.main.kts >> $GITHUB_STEP_SUMMARY
+        run: ./.github/workflows/benchmark-summary.main.kts >> "$GITHUB_STEP_SUMMARY"
         shell: bash

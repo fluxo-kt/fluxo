@@ -28,19 +28,19 @@ jobs:
       contents: write
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@0c6ab70129fa3660acd9cd2b51e8685d619cd613
+        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
         with:
           disable-sudo: true
           egress-policy: audit
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up JDK 17
-        uses: Wandalen/wretry.action@v1.3.0
+        uses: Wandalen/wretry.action@v3.8.0
         timeout-minutes: 5
         with:
-          action: actions/setup-java@v3
+          action: actions/setup-java@v5
           with: |
             cache: gradle
             distribution: temurin
@@ -52,20 +52,18 @@ jobs:
         run: sed -i 's/org.gradle.configuration-cache=true/org.gradle.configuration-cache=false/' gradle.properties
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/actions/setup-gradle@v6
         with:
           cache-read-only: true
-          gradle-home-cache-cleanup: true
 
       - name: Submit Gradle Dependency Graph
-        uses: mikepenz/gradle-dependency-submission@v0.9.0
+        uses: mikepenz/gradle-dependency-submission@v1.0.0
         with:
           gradle-build-module: |-
             :
             :fluxo-common
             :fluxo-core
             :fluxo-data
-            :plugins
             :benchmarks:jmh
           include-build-environment: false
           sub-module-mode: INDIVIDUAL_DEEP

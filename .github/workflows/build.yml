@@ -26,7 +26,6 @@ env:
   CI: true
   BUILD_NUMBER: ${{ github.run_number }}
   SCM_TAG: ${{ github.sha }}
-  GRADLE_BUILD_ACTION_CACHE_DEBUG_ENABLED: true
   GRADLE_OPTS: "\
   -Dorg.gradle.configuration-cache=false \
   -Dorg.gradle.vfs.watch=false \
@@ -49,29 +48,29 @@ jobs:
     steps:
       - name: Harden Runner
         if: matrix.os == 'ubuntu-latest'
-        uses: step-security/harden-runner@0c6ab70129fa3660acd9cd2b51e8685d619cd613
+        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
         with:
           disable-sudo: true
           egress-policy: audit
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: 'Set up JDK ${{ matrix.java }}'
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '${{ matrix.java }}'
 
       - name: 'Set up NodeJS 18 (LTS)'
         if: matrix.os != 'windows-latest'
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v6
         with:
           node-version: 18
 
       - name: 'Cache Konan (Kotlin/Native compiler)'
         timeout-minutes: 6
-        uses: actions/cache@v3
+        uses: actions/cache@v5
         continue-on-error: true
         with:
           path: |
@@ -83,10 +82,12 @@ jobs:
             ${{ runner.os }}-konan-
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/actions/setup-gradle@v6
         with:
-          gradle-home-cache-cleanup: true
           cache-read-only: ${{ (github.ref != 'refs/heads/main' && github.ref != 'refs/heads/dev') || matrix.java != '17' }}
+          # Native replacement for the old custom build-scan PR-comment step (which referenced a
+          # non-existent step id and always rendered empty). Posts the build report on PR failure.
+          add-job-summary-as-pr-comment: on-failure
 
       - name: 'Build and check on ${{ matrix.os }} (complete, non-release)'
         id: check
@@ -101,28 +102,15 @@ jobs:
           RELEASE: true
         run: ./gradlew build assemble check -Dsplit_targets --stacktrace --continue --scan --no-daemon
 
-      - name: "Add build scan URL as PR comment"
-        uses: actions/github-script@v6
-        if: github.event_name == 'pull_request' && failure()
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: '❌ ${{ github.workflow }} failed: ${{ steps.gradle.outputs.build-scan-url }}'
-            })
-
       - name: Summary
         if: success() || failure()
         continue-on-error: true
-        run: ./.github/workflows/summary.main.kts >> $GITHUB_STEP_SUMMARY
+        run: ./.github/workflows/summary.main.kts >> "$GITHUB_STEP_SUMMARY"
         shell: bash
 
       - name: Upload code coverage
         if: (success() || failure()) && !contains(github.event.head_commit.message, 'coverage skip')
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v6
         env:
           OS: ${{ matrix.os }}
           JAVA_VERSION: ${{ matrix.java }}
@@ -132,12 +120,11 @@ jobs:
           env_vars: OS,JAVA_VERSION
           flags: 'unit-tests,${{ matrix.os }}'
           name: 'codecov-${{ matrix.os }}'
-          move_coverage_to_trash: true
           fail_ci_if_error: false
 
       - name: Upload reports
         if: success() || failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v7
         continue-on-error: true
         with:
           name: 'reports-${{ matrix.os }}'
@@ -149,7 +136,7 @@ jobs:
       - name: Upload merged sarif (Lint)
         if: (success() || failure()) && matrix.os == 'macos-latest'
           && (github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev')
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v4
         continue-on-error: true
         with:
           sarif_file: build/lint-merged.sarif
@@ -158,7 +145,7 @@ jobs:
       - name: Upload merged sarif (Detekt)
         if: (success() || failure()) && matrix.os == 'macos-latest'
           && (github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev')
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v4
         continue-on-error: true
         with:
           sarif_file: build/detekt-merged.sarif
@@ -167,7 +154,7 @@ jobs:
       - name: Publish JUnit test results as a pull request check
         if: (success() || failure()) && matrix.os == 'macos-latest'
           && github.repository == 'fluxo-kt/fluxo' && github.ref == 'refs/heads/main'
-        uses: mikepenz/action-junit-report@v4
+        uses: mikepenz/action-junit-report@v6
         with:
           report_paths: '**/build/test-results/*/TEST-*.xml'
 

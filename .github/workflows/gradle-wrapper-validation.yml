@@ -26,7 +26,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@0c6ab70129fa3660acd9cd2b51e8685d619cd613
+        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
         with:
           disable-sudo: true
           egress-policy: block
@@ -35,5 +35,5 @@ jobs:
             github.com:443
             services.gradle.org:443
             downloads.gradle.org:443
-      - uses: actions/checkout@v4
-      - uses: gradle/wrapper-validation-action@v1
+      - uses: actions/checkout@v6
+      - uses: gradle/actions/wrapper-validation@v6
