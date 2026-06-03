@@ -164,12 +164,16 @@ jobs:
           && steps.check.outcome == 'success'
           && github.event_name == 'push' && github.ref == 'refs/heads/main' && github.repository == 'fluxo-kt/fluxo'
         env:
-          OSSRH_USER: ${{ secrets.OSSRH_USER }}
-          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
-          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
-          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+          # Vanniktech reads Central Portal credentials from these Gradle-property
+          # env vars (ORG_GRADLE_PROJECT_*). The previous OSSRH_* names reached the
+          # runner but were never read by the plugin, so snapshots never published.
+          # Snapshots are published unsigned — the harness sets signing isRequired
+          # only for non-snapshot versions (SetupVanniktechPublication.kt) — so no
+          # signing key is needed on this path; releases sign via release.yml.
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
           RELEASE: true
-        run: ./gradlew apiCheck androidApiCheck publish -DDISABLE_TESTS --rerun-tasks --stacktrace --scan
+        run: ./gradlew apiCheck androidApiCheck publishToMavenCentral -DDISABLE_TESTS --rerun-tasks --stacktrace --scan
 
       - name: 'Check release API on ${{ matrix.os }}'
         if: matrix.os != 'windows-latest' && steps.snapshot.outcome == 'skipped'

@@ -1,0 +1,121 @@
+name: Release
+
+# Tag-triggered release of the fluxo libraries to Maven Central (Central Portal).
+#
+# Cut a release by setting the non-SNAPSHOT version in gradle/libs.versions.toml
+# (`version = "X.Y.Z"`), committing, then pushing a matching `vX.Y.Z` tag. Publishing
+# is 100% vanniktech maven-publish → Central Portal (OSSRH is retired); releases are
+# PGP-signed (the harness marks signing required for non-snapshot versions), so all
+# four secrets below must be present. Snapshots publish unsigned from build.yml on
+# main pushes — this workflow is releases only.
+#
+# Required repository secrets (maintainer-provisioned; GitHub Settings → Secrets):
+#   MAVEN_CENTRAL_USERNAME / MAVEN_CENTRAL_PASSWORD  Central Portal user token
+#   SIGNING_KEY                                      ASCII-armored PGP private key block
+#   SIGNING_PASSWORD                                 passphrase for SIGNING_KEY
+#   SIGNING_KEY_ID (optional)                        short key id, if the key has subkeys
+# SIGNING_KEY must contain real newlines (the armored block verbatim). If stored with
+# escaped "\n", normalize it first — see fluxo-kmp-conf's export-release-signing-key.sh.
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+env:
+  CI: true
+  RELEASE: true
+  BUILD_NUMBER: ${{ github.run_number }}
+  GRADLE_OPTS: "\
+  -Dorg.gradle.daemon=false \
+  -Dorg.gradle.configuration-cache=false \
+  -Dorg.gradle.vfs.watch=false \
+  -Dorg.gradle.unsafe.watch-fs=false \
+  "
+
+jobs:
+  publish:
+    name: Publish release to Maven Central
+    if: github.repository == 'fluxo-kt/fluxo'
+    runs-on: macos-latest
+    timeout-minutes: 55
+    env:
+      SCM_TAG: ${{ github.ref_name }}
+      # Vanniktech reads these as Gradle project properties.
+      ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+      ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+      ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
+      ORG_GRADLE_PROJECT_signingInMemoryKeyId: ${{ secrets.SIGNING_KEY_ID }}
+      ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_PASSWORD }}
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+        with:
+          disable-sudo: true
+          egress-policy: audit
+
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          cache-read-only: true
+
+      - name: Verify release secrets
+        env:
+          MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          MAVEN_CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+        run: |
+          missing=()
+          for name in MAVEN_CENTRAL_USERNAME MAVEN_CENTRAL_PASSWORD SIGNING_KEY SIGNING_PASSWORD; do
+            [[ -n "${!name}" ]] || missing+=("$name")
+          done
+          if (( ${#missing[@]} > 0 )); then
+            printf '::error::Missing required release secrets: %s\n' "${missing[*]}"
+            exit 1
+          fi
+          if [[ "$SIGNING_KEY" != *"BEGIN PGP PRIVATE KEY BLOCK"* ]]; then
+            echo "::error::SIGNING_KEY must be the ASCII-armored private PGP key block."
+            exit 1
+          fi
+
+      - name: Verify tag matches the release version
+        # Fail fast before the build: the resolved Gradle version (single source of
+        # truth) must equal the tag and must not be a snapshot — otherwise a v* tag
+        # would publish a mismatched or unsigned-snapshot artifact.
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          version="$(./gradlew -q :fluxo-core:properties | awk -F': ' '/^version:/ {print $2; exit}')"
+          if [[ "$version" != "$tag" ]]; then
+            echo "::error::Tag v$tag != project version '$version'. Set the 'version' key in gradle/libs.versions.toml, then re-tag."
+            exit 1
+          fi
+          if [[ "$version" == *SNAPSHOT* ]]; then
+            echo "::error::Refusing to release SNAPSHOT version '$version' on a v* tag."
+            exit 1
+          fi
+
+      - name: Verify release build (API + check)
+        run: >
+          ./gradlew apiCheck androidApiCheck build assemble check
+          --no-configuration-cache --stacktrace --scan
+
+      - name: Publish release to Maven Central
+        run: >
+          ./gradlew publishAndReleaseToMavenCentral
+          --no-configuration-cache --stacktrace --scan
