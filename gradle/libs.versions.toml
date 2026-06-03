@@ -8,7 +8,11 @@
 
 [versions]
 
-fluxo = "0.1.0-SNAPSHOT"
+# Published version of the fluxo libraries. The harness auto-reads the catalog key
+# named `version` (FluxoConfigurationExtension); the prior `fluxo` key was never read,
+# so publications resolved to `unspecified`. Bump for a release; CI may override with a
+# per-commit `-SNAPSHOT` for snapshot publishing.
+version = "0.1.0-SNAPSHOT"
 
 # Android API 21 is the project floor after the Gradle 9 / AGP 9 toolchain upgrade.
 androidMinSdk = "21"
@@ -68,6 +72,13 @@ detekt = "1.23.8"
 # https://github.com/Kotlin/kotlinx-kover/releases
 # https://mvnrepository.com/artifact/org.jetbrains.kotlinx.kover/org.jetbrains.kotlinx.kover.gradle.plugin
 kover = "0.9.8"
+
+# Vanniktech Maven Publish — Central Portal publication for the library modules.
+# Pinned to the fluxo-kmp-conf harness version: the harness applies/configures this
+# plugin through its compiled MavenPublishBaseExtension calls, so the consumer must
+# match that API to avoid version skew.
+# https://github.com/vanniktech/gradle-maven-publish-plugin/releases
+vanniktech-mvn-publish = "0.36.0"
 
 # Compose Multiplatform
 # https://github.com/JetBrains/compose-multiplatform/releases
@@ -232,6 +243,8 @@ kotlinx-kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 kotlinx-binCompatValidator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "bcv" }
 
 kotlinx-atomicfu = { id = "org.jetbrains.kotlinx.atomicfu", version.ref = "atomicfu" }
+
+vanniktech-mvn-publish = { id = "com.vanniktech.maven.publish", version.ref = "vanniktech-mvn-publish" }
 
 android-app = { id = "com.android.application", version.ref = "android-gradle-plugin" }
 android-lib = { id = "com.android.library", version.ref = "android-gradle-plugin" }

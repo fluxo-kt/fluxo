@@ -12,6 +12,9 @@ fkcSetupKotlinApp(
     setupDependencies = true
     addStdlibDependency = true
     experimentalLatestCompilation = false
+
+    // Internal benchmark app — opt out of the root-inherited library publication.
+    enablePublication = false
 }
 
 dependencies {

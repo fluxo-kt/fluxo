@@ -1,5 +1,7 @@
 plugins {
     alias(libs.plugins.kotlinx.kover)
+    // Publication plugin: the harness configures but requires it applied here.
+    alias(libs.plugins.vanniktech.mvn.publish)
 }
 
 fkcSetupMultiplatform(
@@ -7,6 +9,10 @@ fkcSetupMultiplatform(
     optIns = listOf(
         "kt.fluxo.common.annotation.InternalFluxoApi",
     ),
+    config = {
+        // Maven artifactId — without it modules collide on the root projectName.
+        projectName = "fluxo-data"
+    },
 ) {
     common.main.dependencies {
         api(projects.fluxoCommon)

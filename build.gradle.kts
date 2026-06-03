@@ -9,6 +9,11 @@ plugins {
     alias(libs.plugins.kotlin.dokka) apply false
     alias(libs.plugins.kotlinx.kover)
     alias(libs.plugins.fluxo.bcv.js) apply false
+    // `apply false`, but declared here so the publication plugin loads into the root
+    // plugin classloader the harness shares — the harness is compiled `compileOnly`
+    // against vanniktech and configures MavenPublishBaseExtension reflectively, so the
+    // classes must be visible to it. Library modules then apply it from this classpath.
+    alias(libs.plugins.vanniktech.mvn.publish) apply false
     alias(libs.plugins.fluxo.kmp.conf)
 }
 
@@ -28,10 +33,15 @@ fkcSetupRaw {
     githubProject = "fluxo-kt/fluxo"
     group = "io.github.fluxo-kt"
 
-    // TODO: Set developer info.
-    // developerId = "amal"
-    // developerName = "Artyom Shendrik"
-    // developerEmail = "artyom.shendrik@gmail.com"
+    // Publish all library modules to Maven Central (Central Portal) via vanniktech.
+    // POM name/URL/SCM derive from projectName/githubProject/group above; license
+    // defaults to Apache-2.0 (matches LICENSE). Mirrors the sibling harness config.
+    enablePublication = true
+    publicationConfig {
+        developerId = "amal"
+        developerName = "Art Shendrik"
+        developerEmail = "artyom.shendrik@gmail.com"
+    }
 
     enableSpotless = true
     enableApiValidation = true

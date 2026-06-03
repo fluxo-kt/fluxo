@@ -1,6 +1,9 @@
 plugins {
     alias(libs.plugins.kotlinx.kover)
     alias(libs.plugins.kotlinx.atomicfu)
+    // Applied here (not `apply false`): the harness configures but never applies the
+    // publication plugin, so it must already be on this library module's classpath.
+    alias(libs.plugins.vanniktech.mvn.publish)
 }
 
 fkcSetupMultiplatform(
@@ -10,6 +13,10 @@ fkcSetupMultiplatform(
         "kt.fluxo.common.annotation.InternalFluxoApi",
     ),
     config = {
+        // Maven artifactId for this module (coordinates(group, projectName, version)).
+        // Without it, all modules inherit the root projectName "Fluxo" and collide on
+        // a single coordinate; this pins the published `io.github.fluxo-kt:fluxo-core`.
+        projectName = "fluxo-core"
         setupCoroutines = true
         setupDependencies = true
         addStdlibDependency = true

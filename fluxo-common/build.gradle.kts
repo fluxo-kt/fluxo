@@ -1,5 +1,7 @@
 plugins {
     alias(libs.plugins.kotlinx.kover)
+    // Publication plugin: the harness configures but requires it applied here.
+    alias(libs.plugins.vanniktech.mvn.publish)
 }
 
 val inlineOnlyGeneratedDir = layout.buildDirectory.dir("generated/inlineOnlySwitcher")
@@ -76,6 +78,8 @@ val fluxoJsExportSwitcher = tasks.register<Sync>("fluxoJsExportSwitcher") {
 fkcSetupMultiplatform(
     namespace = "kt.fluxo.common",
     config = {
+        // Maven artifactId — without it modules collide on the root projectName.
+        projectName = "fluxo-common"
         setupCoroutines = false
     },
 ) {
