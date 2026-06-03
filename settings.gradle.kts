@@ -37,8 +37,11 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven(url = "https://jitpack.io")
-        maven(url = "https://s01.oss.sonatype.org/content/repositories/snapshots/")
-        maven(url = "https://oss.sonatype.org/content/repositories/snapshots/")
+        // No snapshot repository on purpose: this build resolves only released
+        // dependencies. `0.1.0-SNAPSHOT` is the version this project *publishes*
+        // to the Central Portal snapshot repo, never one it consumes. (The retired
+        // OSSRH snapshot repos that used to live here have 404'd since Sonatype's
+        // shutdown; re-add a live repo only if a real -SNAPSHOT dependency appears.)
     }
 }
 

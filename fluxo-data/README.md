@@ -1,7 +1,7 @@
 ## Common data utils for Fluxo
 
 ![Stability: Beta](https://kotl.in/badges/beta.svg)
-[![Snapshot Version](https://img.shields.io/badge/dynamic/xml?color=f68244&logo=gradle&labelColor=666&label=&query=%2F%2Fversion%5Blast%28%29%5D&url=https%3A%2F%2Fs01.oss.sonatype.org%2Fcontent%2Frepositories%2Fsnapshots%2Fio%2Fgithub%2Ffluxo-kt%2Ffluxo-data%2Fmaven-metadata.xml)](https://s01.oss.sonatype.org/content/repositories/snapshots/io/github/fluxo-kt/fluxo-data)
+[![Snapshot Version](https://img.shields.io/badge/dynamic/xml?color=f68244&logo=gradle&labelColor=666&label=&query=%2F%2Fversion%5Blast%28%29%5D&url=https%3A%2F%2Fcentral.sonatype.com%2Frepository%2Fmaven-snapshots%2Fio%2Fgithub%2Ffluxo-kt%2Ffluxo-data%2Fmaven-metadata.xml)](https://central.sonatype.com/repository/maven-snapshots/io/github/fluxo-kt/fluxo-data)
 [![codecov](https://codecov.io/gh/fluxo-kt/fluxo/branch/main/graph/badge.svg?token=LKCNVWR8QC)](https://app.codecov.io/gh/fluxo-kt/fluxo/tree/main/fluxo-data)
 
 * Wrapper [`FluxoResult`](src/commonMain/kotlin/kt/fluxo/data/FluxoResult.kt) type for common
