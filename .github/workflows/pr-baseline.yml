@@ -6,13 +6,16 @@ name: PR Baseline Regen
 # `./updateBaselines` locally for every catalog bump.
 #
 # Safety:
-# - Uses `pull_request_target` so the workflow runs with the BASE repo's
-#   secrets/permissions (the PR-author cannot rewrite the workflow file itself
-#   in their fork to escalate).
-# - Push is `--force-with-lease=<ref>:<sha>` against the PR head SHA captured
-#   at workflow-start time: a concurrent contributor push between the trigger
-#   and the regen is detected and the push refuses, so contributor work is
-#   never silently clobbered.
+# - `pull_request_target` runs with BASE repo secrets/permissions (workflow
+#   file itself can't be modified by the PR author in their fork).
+# - Same-repo gate: workflow refuses to run on fork PRs. `pull_request_target`
+#   would otherwise execute the PR's `build.gradle.kts` (via `./updateBaselines`
+#   → Gradle) with BASE-repo `contents: write` token; a malicious fork could
+#   exfiltrate or escalate. Fork-PR maintainers regen the baselines locally and
+#   push (or close + reopen as a branch in the base repo).
+# - `--force-with-lease=<ref>:<sha>` against the head SHA captured at trigger
+#   time: a concurrent contributor push between trigger and regen is detected;
+#   the push refuses rather than silently clobber contributor work.
 on:
   pull_request_target:
     types: [labeled]
@@ -29,7 +32,11 @@ concurrency:
 
 jobs:
   regen:
-    if: github.event.label.name == 'baseline-regen'
+    # Same-repo only (no forks): see the safety note above. Forks must regen
+    # locally; same-repo PRs are author-trusted by the labelling maintainer.
+    if: >-
+      github.event.label.name == 'baseline-regen' &&
+      github.event.pull_request.head.repo.full_name == github.repository
     name: Regenerate ABI + dep-guard baselines
     runs-on: macos-latest
     timeout-minutes: 35
@@ -38,6 +45,7 @@ jobs:
         uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
         with:
           egress-policy: audit
+          disable-sudo: true
 
       - name: Checkout PR head
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6

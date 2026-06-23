@@ -35,10 +35,13 @@ concurrency:
 
 jobs:
   regen:
-    # Limit to Dependabot — human contributors regen locally via the documented
-    # command in CHANGELOG/RELEASING. Running this on every human PR would
-    # force-push their branch on every commit.
-    if: github.event.pull_request.user.login == 'dependabot[bot]'
+    # Dependabot-only (operates in same repo only — fork-PR enforcement is
+    # belt-and-braces here): humans regen locally via the documented command in
+    # CHANGELOG/RELEASING. Running on every human PR would force-push their
+    # branch on every commit.
+    if: >-
+      github.event.pull_request.user.login == 'dependabot[bot]' &&
+      github.event.pull_request.head.repo.full_name == github.repository
     name: Regenerate verification-metadata.xml
     runs-on: ubuntu-latest
     timeout-minutes: 35
@@ -47,6 +50,7 @@ jobs:
         uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
         with:
           egress-policy: audit
+          disable-sudo: true
 
       - name: Checkout PR head
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
