@@ -262,7 +262,7 @@ deps-versions = { id = "com.github.ben-manes.versions", version = "0.54.0" }
 # harness composite applies this explicitly via its own DSL.
 # https://github.com/autonomousapps/dependency-analysis-android-gradle-plugin/tags
 # https://mvnrepository.com/artifact/com.autonomousapps/dependency-analysis-gradle-plugin
-deps-analysis = { id = "com.autonomousapps.dependency-analysis", version = "3.9.0" }
+deps-analysis = { id = "com.autonomousapps.dependency-analysis", version = "3.15.0" }
 
 # Plugin that guards against unintentional dependency changes
 # https://github.com/dropbox/dependency-guard/releases
