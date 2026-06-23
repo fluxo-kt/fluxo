@@ -1,0 +1,95 @@
+name: Dependency Verification Metadata
+
+# R5.5 — Gradle dependency-verification supports SHA-256 (and optionally PGP)
+# pinning of every artefact in the resolved graph at `gradle/verification-metadata.xml`.
+# Strict mode (set in the file) makes the daemon refuse any artefact whose hash
+# isn't pre-recorded, defending against repo/CDN poisoning.
+#
+# This workflow auto-regenerates the metadata file on Dependabot PRs (Dependabot
+# can't run Gradle on its own) and force-with-lease pushes the result back onto
+# the PR head, so the developer doesn't have to remember the regen command.
+#
+# Safety mirror of pr-baseline.yml: uses `pull_request_target` so the workflow
+# runs with BASE-repo secrets/permissions, and `--force-with-lease=ref:sha`
+# captures the head SHA at workflow-start time to refuse pushes if the PR head
+# moved between trigger and regen.
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+    branches: [main, dev]
+    paths:
+      # Only run when something has likely shifted the dep graph.
+      - 'gradle/libs.versions.toml'
+      - 'gradle/wrapper/gradle-wrapper.properties'
+      - '**/build.gradle.kts'
+      - 'settings.gradle.kts'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: verify-metadata-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  regen:
+    # Limit to Dependabot — human contributors regen locally via the documented
+    # command in CHANGELOG/RELEASING. Running this on every human PR would
+    # force-push their branch on every commit.
+    if: github.event.pull_request.user.login == 'dependabot[bot]'
+    name: Regenerate verification-metadata.xml
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Harden runner
+        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+        with:
+          egress-policy: audit
+
+      - name: Checkout PR head
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@ad2b38190b15e4d6bdf0c97fb4fca8412226d287 # v5
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6
+
+      - name: Regenerate metadata against full graph
+        # `help build apiCheck` covers configuration + JVM/KMP compile + ABI
+        # resolution paths. Tests are skipped (-DDISABLE_TESTS) — test-runtime
+        # deps still resolve via `build`'s dependencies-discovery phase.
+        run: >
+          ./gradlew --write-verification-metadata sha256 help build apiCheck
+          --no-configuration-cache -DDISABLE_TESTS --stacktrace
+
+      - name: Commit + force-with-lease push
+        env:
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add gradle/verification-metadata.xml 2>/dev/null || true
+
+          if git diff --staged --quiet; then
+            echo "::notice::Metadata file unchanged."
+            exit 0
+          fi
+
+          git commit -m "build(deps): regen verification-metadata.xml for Dependabot bump"
+
+          git push --force-with-lease="refs/heads/${HEAD_REF}:${HEAD_SHA}" \
+            origin "HEAD:${HEAD_REF}"

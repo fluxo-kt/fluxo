@@ -36,6 +36,13 @@
   per-module CycloneDX SBOM. The release workflow attaches both as GitHub
   Release assets (`<artifact>.sigstore.json` + `<module>-cyclonedx.json`).
   Verification commands are in `RELEASING.md`.
+- Supply-chain (build-side): Gradle dependency-verification metadata at
+  `gradle/verification-metadata.xml` enforces SHA-256 pinning of every resolved
+  artefact in the graph. CDN/repo poisoning of any direct or transitive
+  dependency is rejected at resolve time. PGP signature pinning is left
+  advisory for now (`verify-signatures=false`); SHA-256 alone defends against
+  artefact substitution. New workflow `verify-metadata.yml` auto-regenerates
+  the file on Dependabot PRs and force-with-lease-pushes the update back.
 
 ### Removed
 

@@ -145,3 +145,43 @@ each library module. The plugin emits two scopes — full transitive and direct-
 and XML; the workflow uploads them as `<module>-cyclonedx.{json,xml}` (full transitive) and
 `<module>-cyclonedx-direct.{json,xml}` (direct deps only). Choose the scope you need: direct for
 supply-chain review of fluxo's own declared deps, full for downstream-scanner ingestion.
+
+## Dependency-verification metadata (build-side supply-chain)
+
+`gradle/verification-metadata.xml` pins SHA-256 of every artefact in the resolved graph (direct +
+transitive, across every KMP target's klib + every Android variant). With `verify-metadata=true`
+the daemon refuses any artefact whose hash isn't pre-recorded — repo/CDN poisoning of any pin in
+the catalog is rejected at resolve time, not after the build has compromised the workstation.
+
+PGP signature pinning (`verify-signatures=true`) is intentionally left advisory for now: it would
+require curating the trusted-key list for every publisher (jetbrains, google, sonatype-central,
+…) and rotating it on each vendor's key roll. SHA-256-only defends against substitution; PGP is a
+follow-up RFC.
+
+### When to regenerate
+
+Whenever the resolved graph changes:
+
+- Catalog version bumps (`gradle/libs.versions.toml`)
+- Build script dependency edits
+- Wrapper bumps (`gradle-wrapper.properties`)
+- New plugin additions
+
+Dependabot PRs regenerate automatically via `.github/workflows/verify-metadata.yml`. For local
+work, run:
+
+```bash
+./gradlew --write-verification-metadata sha256 help build apiCheck \
+  --no-configuration-cache -DDISABLE_TESTS
+```
+
+The `help build apiCheck` task list covers configuration, JVM/KMP compile, and ABI resolution —
+enough to enumerate the full graph used by CI. If you forget, `./gradlew help` itself will fail
+with a clear "Dependency verification failed for…" error citing the offending coordinate.
+
+### Disabling temporarily (not recommended)
+
+If a critical artefact must be unblocked while a fix is in flight, prefer regenerating over
+turning verification off. As a last resort, pass `--dependency-verification lenient` to a single
+invocation (logs warnings, does not fail) — never flip `verify-metadata` to `false` in the
+checked-in file.
