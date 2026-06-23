@@ -356,14 +356,12 @@ private fun File.parseJmhJson(): List<JmhJsonEntry> {
 // after fresh-baseline regeneration in CI doesn't self-block.
 if (System.getenv("JMH_BASELINE_CHECK")?.lowercase(Locale.US) in arrayOf("1", "true")) run check@ {
     try {
-        // Current-run output: prefer JSON when present (richer schema, exact numbers);
-        // fall back to results.txt (default JMH output the summary pipeline parses).
-        val resultsDir = File("benchmarks/jmh/build/results/jmh")
-        val resultsJson = File(resultsDir, "results.json")
-        val resultsTxt = File(resultsDir, "results.txt")
-        val resultsFile = sequenceOf(resultsJson, resultsTxt).firstOrNull { it.exists() }
-        if (resultsFile == null) {
-            System.err.println("[baseline-check] no current results.{json,txt} in ${resultsDir.path}; skipping gate")
+        // Current-run output is results.txt (JMH default; the build.gradle.kts
+        // `jmh_rf` override is set to JSON only by the baseline-bootstrap workflow,
+        // which never enters this gate code path).
+        val resultsFile = File("benchmarks/jmh/build/results/jmh/results.txt")
+        if (!resultsFile.exists()) {
+            System.err.println("[baseline-check] no ${resultsFile.path}; skipping gate")
             return@check
         }
         val osName = System.getProperty("os.name").lowercase(Locale.US)
@@ -393,28 +391,25 @@ if (System.getenv("JMH_BASELINE_CHECK")?.lowercase(Locale.US) in arrayOf("1", "t
             return@check
         }
 
-        data class CurrentEntry(val fqn: String, val mode: String, val score: BigDecimal, val error: BigDecimal?)
-        val current: List<CurrentEntry> = if (resultsFile === resultsJson) {
-            resultsFile.parseJmhJson().map { CurrentEntry(it.benchmark, it.mode, it.score, it.scoreError) }
-        } else {
-            // results.txt: header row + space-separated columns; the σ-marker '±' can be
-            // the unicode replacement char on Windows hosts (kept tolerated, see actions
-            // run 3840763260). Same negative-lookbehind split as the summary pipeline.
-            val splitRx = Pattern.compile("(?i)(?<![±�])\\s+", Pattern.UNICODE_CHARACTER_CLASS or Pattern.UNICODE_CASE).toRegex()
-            resultsFile.readText().lineSequence().drop(1).mapNotNull { line ->
-                val l = line.trim()
-                if (l.isEmpty()) return@mapNotNull null
-                val parts = l.split(splitRx, 6)
-                if (parts.size < 4) return@mapNotNull null
-                var i = 0
-                val fqn = parts[i++]
-                val mode = parts[i++].lowercase(Locale.US)
-                if (parts.size >= 5) i++ // skip cnt
-                val sc = parts.getOrNull(i++)?.toBigDecimalOrNull() ?: return@mapNotNull null
-                val er = parts.getOrNull(i)?.trimStart('±', '�')?.trimStart()?.toBigDecimalOrNull()
-                CurrentEntry(fqn, mode, sc, er)
-            }.toList()
-        }
+        // results.txt: header row + space-separated columns; the σ-marker '±' can be
+        // the unicode replacement char on Windows hosts (kept tolerated, see actions
+        // run 3840763260). Same negative-lookbehind split as the summary pipeline.
+        // Verdict reads only score (baseline's scoreError gates significance) → no
+        // current-side error parsing.
+        val splitRx = Pattern.compile("(?i)(?<![±�])\\s+", Pattern.UNICODE_CHARACTER_CLASS or Pattern.UNICODE_CASE).toRegex()
+        data class CurrentEntry(val fqn: String, val mode: String, val score: BigDecimal)
+        val current: List<CurrentEntry> = resultsFile.readText().lineSequence().drop(1).mapNotNull { line ->
+            val l = line.trim()
+            if (l.isEmpty()) return@mapNotNull null
+            val parts = l.split(splitRx, 6)
+            if (parts.size < 4) return@mapNotNull null
+            var i = 0
+            val fqn = parts[i++]
+            val mode = parts[i++].lowercase(Locale.US)
+            if (parts.size >= 5) i++ // skip cnt
+            val sc = parts.getOrNull(i)?.toBigDecimalOrNull() ?: return@mapNotNull null
+            CurrentEntry(fqn, mode, sc)
+        }.toList()
 
             val bd100 = BigDecimal(100)
             val twoBd = BigDecimal(2)
