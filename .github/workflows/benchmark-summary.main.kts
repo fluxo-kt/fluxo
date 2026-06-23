@@ -6,13 +6,19 @@ import java.math.RoundingMode
 import java.util.Locale
 import java.util.regex.Pattern
 
+// JMH `results.txt` column splitter: any whitespace except after a σ-marker.
+// The replacement char `�` covers Windows-host encoding fallouts where '±' lost
+// its glyph (see actions run 3840763260). Hoisted so the summary + baseline-gate
+// paths can't diverge on this pattern.
+val splitRegex = Pattern.compile("(?i)(?<![±�])\\s+", Pattern.UNICODE_CHARACTER_CLASS or Pattern.UNICODE_CASE).toRegex()
+
 // JMH results summary
 try {
-    val koverFile = File("benchmarks/jmh/build/results/jmh/results.txt")
-    if (koverFile.exists()) {
-        System.err.println("JMH results FOUND: $koverFile")
+    val jmhResultsFile = File("benchmarks/jmh/build/results/jmh/results.txt")
+    if (jmhResultsFile.exists()) {
+        System.err.println("JMH results FOUND: $jmhResultsFile")
 
-        val text = koverFile.readText()
+        val text = jmhResultsFile.readText()
 
         data class JmhResult(
             val clazz: String,
@@ -38,8 +44,6 @@ try {
                 )
         }
 
-        val splitRegex =
-            Pattern.compile("(?i)(?<![±�])\\s+", Pattern.UNICODE_CHARACTER_CLASS or Pattern.UNICODE_CASE).toRegex()
         val bd100 = BigDecimal(100)
         var total = 0
         val resultsByClass = text.lineSequence().drop(1).mapNotNull l@{ line ->
@@ -251,7 +255,7 @@ try {
             }
         }
     } else {
-        System.err.println("JMH results NOT found: $koverFile")
+        System.err.println("JMH results NOT found: $jmhResultsFile")
     }
 } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
     System.err.println("JMH results error: $e")
@@ -391,17 +395,13 @@ if (System.getenv("JMH_BASELINE_CHECK")?.lowercase(Locale.US) in arrayOf("1", "t
             return@check
         }
 
-        // results.txt: header row + space-separated columns; the σ-marker '±' can be
-        // the unicode replacement char on Windows hosts (kept tolerated, see actions
-        // run 3840763260). Same negative-lookbehind split as the summary pipeline.
-        // Verdict reads only score (baseline's scoreError gates significance) → no
-        // current-side error parsing.
-        val splitRx = Pattern.compile("(?i)(?<![±�])\\s+", Pattern.UNICODE_CHARACTER_CLASS or Pattern.UNICODE_CASE).toRegex()
+        // results.txt: header row + space-separated columns. Verdict reads only
+        // score (baseline's scoreError gates significance) → no current-side error.
         data class CurrentEntry(val fqn: String, val mode: String, val score: BigDecimal)
         val current: List<CurrentEntry> = resultsFile.readText().lineSequence().drop(1).mapNotNull { line ->
             val l = line.trim()
             if (l.isEmpty()) return@mapNotNull null
-            val parts = l.split(splitRx, 6)
+            val parts = l.split(splitRegex, 6)
             if (parts.size < 4) return@mapNotNull null
             var i = 0
             val fqn = parts[i++]
@@ -411,49 +411,49 @@ if (System.getenv("JMH_BASELINE_CHECK")?.lowercase(Locale.US) in arrayOf("1", "t
             CurrentEntry(fqn, mode, sc)
         }.toList()
 
-            val bd100 = BigDecimal(100)
-            val twoBd = BigDecimal(2)
-            val fivePctBd = BigDecimal("0.05")
-            data class Verdict(val fqn: String, val mode: String, val curr: BigDecimal, val base: BigDecimal, val baseErr: BigDecimal, val passes: Boolean, val note: String)
-            val verdicts = current.mapNotNull { c ->
-                val b = baseline[joinKey(c.fqn, c.mode)] ?: return@mapNotNull null
-                val delta = (c.score - b.score).abs()
-                val deltaPctOfBase = if (b.score.signum() != 0) delta.divide(b.score, 6, RoundingMode.HALF_UP) else BigDecimal.ZERO
-                val significant = b.scoreError.signum() != 0 && delta > b.scoreError * twoBd
-                val nonTrivial = deltaPctOfBase > fivePctBd
-                val passes = !(significant && nonTrivial)
-                val pctStr = deltaPctOfBase.multiply(bd100).setScale(1, RoundingMode.HALF_DOWN)
-                val sigmaStr = if (b.scoreError.signum() == 0) "∞" else delta.divide(b.scoreError, 2, RoundingMode.HALF_UP).toPlainString()
-                val note = "Δ=$pctStr%, ${sigmaStr}σ"
-                Verdict(c.fqn, c.mode, c.score, b.score, b.scoreError, passes, note)
-            }
+        val bd100 = BigDecimal(100)
+        val twoBd = BigDecimal(2)
+        val fivePctBd = BigDecimal("0.05")
+        data class Verdict(val fqn: String, val mode: String, val curr: BigDecimal, val base: BigDecimal, val baseErr: BigDecimal, val passes: Boolean, val note: String)
+        val verdicts = current.mapNotNull { c ->
+            val b = baseline[joinKey(c.fqn, c.mode)] ?: return@mapNotNull null
+            val delta = (c.score - b.score).abs()
+            val deltaPctOfBase = if (b.score.signum() != 0) delta.divide(b.score, 6, RoundingMode.HALF_UP) else BigDecimal.ZERO
+            val significant = b.scoreError.signum() != 0 && delta > b.scoreError * twoBd
+            val nonTrivial = deltaPctOfBase > fivePctBd
+            val passes = !(significant && nonTrivial)
+            val pctStr = deltaPctOfBase.multiply(bd100).setScale(1, RoundingMode.HALF_DOWN)
+            val sigmaStr = if (b.scoreError.signum() == 0) "∞" else delta.divide(b.scoreError, 2, RoundingMode.HALF_UP).toPlainString()
+            val note = "Δ=$pctStr%, ${sigmaStr}σ"
+            Verdict(c.fqn, c.mode, c.score, b.score, b.scoreError, passes, note)
+        }
 
-            if (verdicts.isEmpty()) {
-                System.err.println("[baseline-check] no current ↔ baseline matches found (current entries=${current.size}, baseline entries=${baseline.size}); refusing to gate silently")
-                System.exit(1)
-            }
+        if (verdicts.isEmpty()) {
+            System.err.println("[baseline-check] no current ↔ baseline matches found (current entries=${current.size}, baseline entries=${baseline.size}); refusing to gate silently")
+            System.exit(1)
+        }
 
-            val failed = verdicts.filterNot { it.passes }
-            val isCI = System.getenv("CI")?.lowercase(Locale.US) in arrayOf("1", "true")
+        val failed = verdicts.filterNot { it.passes }
+        val isCI = System.getenv("CI")?.lowercase(Locale.US) in arrayOf("1", "true")
+        println()
+        println("### JMH baseline gate — host `$osKey` (${verdicts.size} compared, ${failed.size} failed)")
+        if (isCI) {
             println()
-            println("### JMH baseline gate — host `$osKey` (${verdicts.size} compared, ${failed.size} failed)")
-            if (isCI) {
-                println()
-                println("| Benchmark | Mode | Current | Baseline | Δ | Verdict |")
-                println("|-----------|:----:|--------:|---------:|---|:-------:|")
-                for (v in verdicts) {
-                    val mark = if (v.passes) "✅" else "❌"
-                    println("| `${v.fqn}` | ${v.mode} | ${v.curr} | ${v.base} ±${v.baseErr} | ${v.note} | $mark |")
-                }
+            println("| Benchmark | Mode | Current | Baseline | Δ | Verdict |")
+            println("|-----------|:----:|--------:|---------:|---|:-------:|")
+            for (v in verdicts) {
+                val mark = if (v.passes) "✅" else "❌"
+                println("| `${v.fqn}` | ${v.mode} | ${v.curr} | ${v.base} ±${v.baseErr} | ${v.note} | $mark |")
             }
-            for (v in failed) {
-                System.err.println("[baseline-check] FAIL ${v.fqn} (${v.mode}): current=${v.curr}, baseline=${v.base}±${v.baseErr}, ${v.note}")
-            }
-            if (failed.isNotEmpty()) {
-                System.err.println("[baseline-check] ${failed.size} benchmark(s) regressed past dual gate (|Δ|/σ>2 AND |Δ|/base>5%) — blocking merge")
-                System.exit(1)
-            }
-            System.err.println("[baseline-check] all ${verdicts.size} matched benchmarks within dual gate")
+        }
+        for (v in failed) {
+            System.err.println("[baseline-check] FAIL ${v.fqn} (${v.mode}): current=${v.curr}, baseline=${v.base}±${v.baseErr}, ${v.note}")
+        }
+        if (failed.isNotEmpty()) {
+            System.err.println("[baseline-check] ${failed.size} benchmark(s) regressed past dual gate (|Δ|/σ>2 AND |Δ|/base>5%) — blocking merge")
+            System.exit(1)
+        }
+        System.err.println("[baseline-check] all ${verdicts.size} matched benchmarks within dual gate")
     } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
         System.err.println("[baseline-check] unexpected error: $e")
         @Suppress("PrintStackTrace")
