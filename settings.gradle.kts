@@ -14,10 +14,23 @@ pluginManagement {
     // external consumers get (invariant I1). Computed inside pluginManagement because that block is
     // evaluated before the settings-script body — a top-level val would be out of scope here.
     // providers.*/settingsDir keep it configuration-cache-correct under strict CC.
-    val useLocalHarness =
+    //
+    // `--write-verification-metadata` forces composite OFF regardless of any explicit override:
+    // metadata regen MUST capture the *published* plugin graph; composite mode resolves the harness
+    // from the filesystem, skips Plugin Portal, and leaves the published JAR + transitive POMs
+    // unpinned — which then blows up every CI job on the next push (AGENTS.md gotcha #29). Making
+    // the predicate self-aware structurally eliminates the human-discipline-around-a-flag failure
+    // mode.
+    // Public StartParameter API — the property is `writeDependencyVerifications` (plural, no
+    // "Metadata" suffix); it backs the `--write-verification-metadata <sha256,…>` CLI flag and is
+    // empty when no checksums were requested. Verified against gradle-start-parameter-9.6.0.jar.
+    val isWritingVerificationMetadata =
+        gradle.startParameter.writeDependencyVerifications.isNotEmpty()
+    val useLocalHarness = !isWritingVerificationMetadata && (
         providers.gradleProperty("fluxo.dogfood").orNull?.toBooleanStrictOrNull()
             ?: (providers.environmentVariable("CI").orNull?.toBooleanStrictOrNull() != true &&
                 settingsDir.resolveSibling("fluxo-kmp-conf").exists())
+    )
     if (useLocalHarness) {
         includeBuild("../fluxo-kmp-conf/self")
         includeBuild("../fluxo-kmp-conf")
