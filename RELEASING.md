@@ -59,8 +59,9 @@ Consumers opt in with that repository plus the `-SNAPSHOT` coordinate (see `READ
 - runs `publishAndReleaseToMavenCentral` (PGP-signed for Central + Sigstore-signed via the
   `dev.sigstore.sign` plugin, which auto-attaches `.sigstore.json` bundles to every
   `MavenPublication`; both auto-promote the Central Portal deployment);
-- attaches the CycloneDX SBOMs (`<module>-cyclonedx.json`) and Sigstore bundles
-  (`*.sigstore.json`) as GitHub Release assets on the `v*` tag.
+- attaches the CycloneDX SBOMs (`<module>-cyclonedx{,-direct}.{json,xml}` — full + direct
+  scopes × JSON + XML) and Sigstore bundles (`*.sigstore.json`) as GitHub Release assets
+  on the `v*` tag.
 
 > **One-shot.** A tag/publish is not re-runnable against the same version. If the Central Portal
 > deployment stalls in a `VALIDATED` (not `PUBLISHED`) state, finish it with the manual **Publish**
