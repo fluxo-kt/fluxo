@@ -67,5 +67,3 @@
   CI has been GitHub Actions since the harness migration.
 - OSSRH snapshot infrastructure — shutdown 2025-06-30; replaced by Sonatype
   Central Portal (`publishToMavenCentral` / `publishAndReleaseToMavenCentral`).
-
-<div style="text-align: center"><small>Unreleased</small></div>
