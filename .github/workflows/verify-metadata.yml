@@ -67,11 +67,15 @@ jobs:
         uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6
 
       - name: Regenerate metadata against full graph
-        # `help build apiCheck` covers configuration + JVM/KMP compile + ABI
-        # resolution paths. Tests are skipped (-DDISABLE_TESTS) — test-runtime
+        # `help build apiCheck cyclonedxBom` covers configuration + JVM/KMP
+        # compile + ABI + SBOM resolution paths. The CycloneDX plugin pulls
+        # POMs for every transitive (for SPDX coordinate enumeration) that the
+        # regular build doesn't resolve — omitting it leaves those POMs
+        # unpinned and the release-time `cyclonedxBom` step fails strict
+        # verification. Tests are skipped (-DDISABLE_TESTS) — test-runtime
         # deps still resolve via `build`'s dependencies-discovery phase.
         run: >
-          ./gradlew --write-verification-metadata sha256 help build apiCheck
+          ./gradlew --write-verification-metadata sha256 help build apiCheck cyclonedxBom
           --no-configuration-cache -DDISABLE_TESTS --stacktrace
 
       - name: Commit + force-with-lease push

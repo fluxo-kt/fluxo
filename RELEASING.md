@@ -172,13 +172,15 @@ is gated on `dependabot[bot]` only — human contributors regen locally on the P
 command applies before cutting a release tag, so the published graph matches the resolved one:
 
 ```bash
-./gradlew --write-verification-metadata sha256 help build apiCheck \
+./gradlew --write-verification-metadata sha256 help build apiCheck cyclonedxBom \
   --no-configuration-cache -DDISABLE_TESTS
 ```
 
-The `help build apiCheck` task list covers configuration, JVM/KMP compile, and ABI resolution —
-enough to enumerate the full graph used by CI. If you forget, `./gradlew help` itself will fail
-with a clear "Dependency verification failed for…" error citing the offending coordinate.
+The `help build apiCheck cyclonedxBom` task list covers configuration, JVM/KMP compile, ABI
+resolution, and the SBOM POM-enumeration path. Omitting `cyclonedxBom` leaves transitive POMs
+unpinned and breaks the release-time SBOM step under strict verification. If you forget,
+`./gradlew help` fails fast with "Dependency verification failed for…" citing the offending
+coordinate.
 
 ### Disabling temporarily (not recommended)
 
