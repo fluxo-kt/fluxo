@@ -26,7 +26,7 @@ try {
             var percent: BigDecimal = BigDecimal.ZERO
                 get() = field.setScale(1, RoundingMode.HALF_DOWN)
 
-            val asRawArray
+            val asRawArray: Array<Any?>
                 get() = arrayOf(
                     name,
                     mode,
@@ -207,7 +207,7 @@ try {
             if (isCI) {
                 print("<details><summary><i>Raw results</i></summary><p><pre language=\"jmh\">\n")
             }
-            fun Int.f(v: Any, entity: Boolean = false): String {
+            fun Int.f(v: Any?, entity: Boolean = false): String {
                 val s = v.toString()
                 val spaces = " ".repeat(maxLengths[this] - s.length)
                 val e = when {
@@ -262,4 +262,145 @@ try {
 
 fun Int.enPlural(one: String, other: String): String {
     return (if (this == 1) one else other).format(this)
+}
+
+
+// JMH dual-gate baseline comparison (plan §11).
+// Gated on JMH_BASELINE_CHECK=1 so non-gating runs (PR summary table, local
+// devs) stay unaffected. Fires only when the baseline-comparison CI step
+// opts in. Reads host-matched `benchmarks/jmh/baselines/main-${os}.json`,
+// where `os` is `darwin` on macOS runners and `linux` on Linux runners.
+// Per-benchmark dual gate: `|delta|/baselineStderr > 2.0 AND |delta|/baseline > 5%`.
+// Both conditions necessary — effect must be both statistically significant
+// AND non-trivial. Either alone is noise.
+// Exits with code 1 if any matched benchmark fails the gate, blocking merge.
+// Missing baseline file is treated as "no gate" (warn + exit 0), so first-run
+// after fresh-baseline regeneration in CI doesn't self-block.
+if (System.getenv("JMH_BASELINE_CHECK")?.lowercase(Locale.US) in arrayOf("1", "true")) run check@ {
+    try {
+        val resultsFile = File("benchmarks/jmh/build/results/jmh/results.txt")
+        if (!resultsFile.exists()) {
+            System.err.println("[baseline-check] no current results.txt at ${resultsFile.path}; skipping gate")
+            return@check
+        }
+        val osName = System.getProperty("os.name").lowercase(Locale.US)
+        val osKey = when {
+            "mac" in osName || "darwin" in osName -> "darwin"
+            "linux" in osName -> "linux"
+            else -> {
+                System.err.println("[baseline-check] unsupported os.name='$osName'; gate only runs on darwin|linux")
+                return@check
+            }
+        }
+        val baselineFile = File("benchmarks/jmh/baselines/main-$osKey.json")
+        if (!baselineFile.exists()) {
+            System.err.println("[baseline-check] no baseline at ${baselineFile.path}; gate skipped (regenerate baseline in CI to enable)")
+            return@check
+        }
+
+            // Minimal JMH-JSON parser. JMH's `-rf json` emits a top-level array
+            // of objects with shallow keys; we only need (benchmark, mode,
+            // primaryMetric.score, primaryMetric.scoreError). Per-entry regex
+            // tolerates whitespace, scientific notation, and field reordering.
+            data class BaselineEntry(val benchmark: String, val mode: String, val score: BigDecimal, val scoreError: BigDecimal)
+            val baselineText = baselineFile.readText()
+            // Allow one level of nesting (primaryMetric / secondaryMetrics are nested objects).
+            // Two levels would need a recursive regex (Kotlin/Java regex doesn't support); JMH's
+            // schema is shallow enough that one level suffices for the (benchmark, mode, score,
+            // scoreError) fields we read.
+            val entryRegex = Regex("\\{(?:[^{}]|\\{[^{}]*\\})*?\"benchmark\"(?:[^{}]|\\{[^{}]*\\})*?\\}", RegexOption.DOT_MATCHES_ALL)
+            val benchmarkRx = Regex("\"benchmark\"\\s*:\\s*\"([^\"]+)\"")
+            val modeRx = Regex("\"mode\"\\s*:\\s*\"([^\"]+)\"")
+            val scoreRx = Regex("\"score\"\\s*:\\s*([\\d.eE+\\-]+)")
+            val errorRx = Regex("\"scoreError\"\\s*:\\s*([\\d.eE+\\-]+)")
+            val baseline = entryRegex.findAll(baselineText).mapNotNull { m ->
+                val raw = m.value
+                val b = benchmarkRx.find(raw)?.groupValues?.get(1) ?: return@mapNotNull null
+                val mo = modeRx.find(raw)?.groupValues?.get(1) ?: return@mapNotNull null
+                val sc = scoreRx.find(raw)?.groupValues?.get(1)?.toBigDecimalOrNull() ?: return@mapNotNull null
+                val er = errorRx.find(raw)?.groupValues?.get(1)?.toBigDecimalOrNull() ?: return@mapNotNull null
+                BaselineEntry(b, mo, sc, er)
+            }.associateBy {
+                // results.txt emits "SimpleClass.method"; JMH JSON emits FQN
+                // "pkg.SimpleClass.method". Normalise both sides to last two
+                // dot-segments so the join works regardless of source format.
+                val simpleFqn = it.benchmark.split('.').takeLast(2).joinToString(".")
+                "$simpleFqn|${it.mode.lowercase(Locale.US)}"
+            }
+
+        if (baseline.isEmpty()) {
+            System.err.println("[baseline-check] baseline ${baselineFile.path} parsed to 0 entries — refusing to gate (parser regression vs JMH schema change?)")
+            return@check
+        }
+
+            // Re-parse current results.txt — duplicates the parser above
+            // because that parser's state-by-class is bound to the summary
+            // pipeline. Cheap to repeat (a few dozen lines).
+            data class CurrentEntry(val fqn: String, val mode: String, val score: BigDecimal, val error: BigDecimal?)
+            val splitRx = Pattern.compile("(?i)(?<![±�])\\s+", Pattern.UNICODE_CHARACTER_CLASS or Pattern.UNICODE_CASE).toRegex()
+            val current = resultsFile.readText().lineSequence().drop(1).mapNotNull { line ->
+                val l = line.trim()
+                if (l.isEmpty()) return@mapNotNull null
+                val parts = l.split(splitRx, 6)
+                if (parts.size < 4) return@mapNotNull null
+                var i = 0
+                val fqn = parts[i++]
+                val mode = parts[i++].lowercase(Locale.US)
+                if (parts.size >= 5) i++ // skip cnt
+                val sc = parts.getOrNull(i++)?.toBigDecimalOrNull() ?: return@mapNotNull null
+                val er = parts.getOrNull(i)?.trimStart('±', '�')?.trimStart()?.toBigDecimalOrNull()
+                CurrentEntry(fqn, mode, sc, er)
+            }.toList()
+
+            val bd100 = BigDecimal(100)
+            val twoBd = BigDecimal(2)
+            val fivePctBd = BigDecimal("0.05")
+            data class Verdict(val fqn: String, val mode: String, val curr: BigDecimal, val base: BigDecimal, val baseErr: BigDecimal, val passes: Boolean, val note: String)
+            val verdicts = current.mapNotNull { c ->
+                val simpleFqn = c.fqn.split('.').takeLast(2).joinToString(".")
+                val key = "$simpleFqn|${c.mode}"
+                val b = baseline[key] ?: return@mapNotNull null
+                val delta = (c.score - b.score).abs()
+                val deltaPctOfBase = if (b.score.signum() != 0) delta.divide(b.score, 6, RoundingMode.HALF_UP) else BigDecimal.ZERO
+                val significant = b.scoreError.signum() != 0 && delta > b.scoreError * twoBd
+                val nonTrivial = deltaPctOfBase > fivePctBd
+                val passes = !(significant && nonTrivial)
+                val pctStr = deltaPctOfBase.multiply(bd100).setScale(1, RoundingMode.HALF_DOWN)
+                val sigmaStr = if (b.scoreError.signum() == 0) "∞" else delta.divide(b.scoreError, 2, RoundingMode.HALF_UP).toPlainString()
+                val note = "Δ=$pctStr%, ${sigmaStr}σ"
+                Verdict(c.fqn, c.mode, c.score, b.score, b.scoreError, passes, note)
+            }
+
+            if (verdicts.isEmpty()) {
+                System.err.println("[baseline-check] no current ↔ baseline matches found (current entries=${current.size}, baseline entries=${baseline.size}); refusing to gate silently")
+                System.exit(1)
+            }
+
+            val failed = verdicts.filterNot { it.passes }
+            val isCI = System.getenv("CI")?.lowercase(Locale.US) in arrayOf("1", "true")
+            println()
+            println("### JMH baseline gate — host `$osKey` (${verdicts.size} compared, ${failed.size} failed)")
+            if (isCI) {
+                println()
+                println("| Benchmark | Mode | Current | Baseline | Δ | Verdict |")
+                println("|-----------|:----:|--------:|---------:|---|:-------:|")
+                for (v in verdicts) {
+                    val mark = if (v.passes) "✅" else "❌"
+                    println("| `${v.fqn}` | ${v.mode} | ${v.curr} | ${v.base} ±${v.baseErr} | ${v.note} | $mark |")
+                }
+            }
+            for (v in failed) {
+                System.err.println("[baseline-check] FAIL ${v.fqn} (${v.mode}): current=${v.curr}, baseline=${v.base}±${v.baseErr}, ${v.note}")
+            }
+            if (failed.isNotEmpty()) {
+                System.err.println("[baseline-check] ${failed.size} benchmark(s) regressed past dual gate (|Δ|/σ>2 AND |Δ|/base>5%) — blocking merge")
+                System.exit(1)
+            }
+            System.err.println("[baseline-check] all ${verdicts.size} matched benchmarks within dual gate")
+    } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
+        System.err.println("[baseline-check] unexpected error: $e")
+        @Suppress("PrintStackTrace")
+        e.printStackTrace(System.err)
+        System.exit(1)
+    }
 }
