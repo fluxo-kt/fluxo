@@ -53,7 +53,7 @@ Each cites a symbol or file so you can verify in one read.
 11. **Only `Store.stateFlow`, `Store.state`, `StoreScope.launch`, `StoreScope.async` are `@JvmSynthetic`-hidden** from Java/iOS. Inline `accept`/`orbit` rely on `@InlineOnly`. Kover excludes `*Synthetic*`/`*Inline*`/`*Deprecated*` only in release mode → debug vs release coverage numbers aren't the same scale.
 12. **`compareAndSet` on stored state closes the previous state** if `expect != update`, *and* the new state if `expect !== update` but `expect == update` — the experimental "Closeable as state" feature. Returning a new equal instance still triggers `closeSafely()` on it.
 13. **`emit` vs `send`**: `emit` is the suspend `FlowCollector` form (no `Job`); `send` returns a `Job` for non-suspend callers. **Joining the returned `Job` is dangerous** (deadlock-prone) and explicitly discouraged.
-14. **Module list lives only in `settings.gradle.kts`.** CI (`build.yml`) runs *root* Gradle tasks (`build`/`check`/`publishToMavenCentral`) that auto-discover modules — it enumerates none, so adding a module needs no `build.yml` edit. (An older `settings.gradle.kts` "update build.yml" reminder was stale — removed.)
+14. **Module list lives only in `settings.gradle.kts`.** CI (`build.yml`) runs *root* Gradle tasks (`build`/`check`/`publishToMavenCentral`) that auto-discover modules — it enumerates none, so adding a module needs no `build.yml` edit.
 15. **K/Native compiler daemon is disabled** (`gradle.properties`). Native builds can be slower; re-check this on K/N upgrades.
 16. **`org.jetbrains.kotlinx.atomicfu` plugin rewrites bytecode at compile time** → `atomic()` works without a runtime artefact. Keep it on the plugin DSL alias in modules that use atomicfu.
 17. **KT-58512** breaks IDE "Go to declaration" / "Quick Documentation" on `container { }` and similar inline builders. Known issue, not actionable here.
@@ -78,10 +78,9 @@ Each cites a symbol or file so you can verify in one read.
 ./gradlew :fluxo-core:jvmTest                    # fast inner loop
 ./updateBaselines                                # regenerate ALL baselines (lint, detekt, dep guard, api, yarn lock) with correct env
 ./gradlew dependencyGuardBaseline                # regenerate only dep snapshots
-./gradlew :benchmarks:jmh:jmh --no-configuration-cache # run JMH suite (filter via `IncrementIntent.*` regex)
+./gradlew :benchmarks:jmh:jmh --no-configuration-cache # run JMH suite (filter via `IncrementIntent.*` regex; dogfoods local `:fluxo-core`)
 ./gradlew -Dsplit_targets ...                    # split KMP targets across CI shards (Windows uses this)
 RELEASE=true ./gradlew ...                       # release mode (IndyLambdas, stricter baselines)
-./gradlew :benchmarks:jmh:jmh --no-configuration-cache # benchmark against the LOCAL fluxo-core
 ```
 
 For `apiDump`, see Gotcha #4.
@@ -103,6 +102,7 @@ For `apiDump`, see Gotcha #4.
 - `allWarningsAsErrors = true`; new warnings break the build.
 - **Conventional Commits required.** Allowed types: `feat|fix|test|build|ci|docs|perf|refactor|style|chore|i18n|deps|revert` (canonical list lives in `.commitlintrc.yml`). PR titles same format. Imperative present tense.
 - **Don't introduce dependencies.** Fluxo is "small and light" by stated policy. Public API changes need explicit reasoning in the PR; BCV diff must be committed.
+- **Scripts: inline-declare deps; no lockfile.** `.main.kts` uses `@file:DependsOn("group:artifact:ver")`. A new Bun TS script must use Bun's `import x from "npm:foo@1.2.3"` syntax — DO NOT add `bun.lock`/`package.json` unless ≥3 scripts share deps. Single-consumer lockfiles are pure maintenance burden.
 - Keep git history flat; no merge commits except hotfix branches.
 
 ## Testing
