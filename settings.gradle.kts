@@ -26,7 +26,7 @@ pluginManagement {
 
 plugins {
     // https://plugins.gradle.org/plugin/com.gradle.develocity
-    id("com.gradle.develocity") version "4.4.1"
+    id("com.gradle.develocity") version "4.4.3"
 }
 
 dependencyResolutionManagement {

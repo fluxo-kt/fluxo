@@ -34,7 +34,7 @@ kotlin = "2.3.21"
 kotlinCoreLibraries = "2.3.21"
 
 # https://github.com/google/ksp/releases
-ksp = "2.3.8"
+ksp = "2.3.9"
 
 # https://github.com/arkivanov/Essenty/releases
 essenty = "2.0.0"
@@ -80,9 +80,10 @@ kover = "0.9.8"
 # https://github.com/vanniktech/gradle-maven-publish-plugin/releases
 vanniktech-mvn-publish = "0.36.0"
 
-# Compose Multiplatform
+# Compose Multiplatform — Plugin Portal lags Maven Central; 1.9.3 is Portal's current stable.
+# Fluxo has zero runtime Compose; entry exists only so harness can self-detect plugin classpath.
 # https://github.com/JetBrains/compose-multiplatform/releases
-jetbrains-compose = "1.6.2"
+jetbrains-compose = "1.9.3"
 
 # Android Jetpack
 # https://developer.android.com/jetpack/androidx/versions
@@ -255,7 +256,7 @@ detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 fluxo-bcv-js = { id = "io.github.fluxo-kt.binary-compatibility-validator-js", version = "1.1.0" }
 
 # https://github.com/fluxo-kt/fluxo-kmp-conf/releases
-fluxo-kmp-conf = { id = "io.github.fluxo-kt.fluxo-kmp-conf", version = "0.14.1" }
+fluxo-kmp-conf = { id = "io.github.fluxo-kt.fluxo-kmp-conf", version = "0.15.0" }
 
 # Gradle Versions Plugin: provides a task to determine which dependencies have updates
 # https://github.com/ben-manes/gradle-versions-plugin
