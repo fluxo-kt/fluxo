@@ -37,7 +37,7 @@ kotlinCoreLibraries = "2.3.21"
 ksp = "2.3.9"
 
 # https://github.com/arkivanov/Essenty/releases
-essenty = "2.0.0"
+essenty = "2.5.0"
 
 # Dokka is a documentation engine for Kotlin/Java
 # https://github.com/Kotlin/dokka/releases
@@ -60,10 +60,6 @@ bcv = "0.18.1"
 # https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google
 # https://developer.android.com/build/releases/gradle-plugin#updating-plugin
 android-gradle-plugin = "9.2.1"
-
-# Λrrow – Functional companion to Kotlin's Standard Library.
-# https://mvnrepository.com/artifact/io.arrow-kt/arrow-core
-arrow = "1.2.4"
 
 # https://github.com/detekt/detekt/releases
 detekt = "1.23.8"
@@ -90,7 +86,7 @@ jetbrains-compose = "1.9.3"
 # https://developer.android.com/jetpack/androidx/versions/all-channel#latest_release
 
 # https://developer.android.com/jetpack/androidx/releases/annotation
-androidx-annotation = "1.7.1"
+androidx-annotation = "1.10.0"
 
 # Java Microbenchmark Harness (JMH)
 # https://github.com/openjdk/jmh/tags
@@ -137,11 +133,6 @@ kotlin-stdlib-js = { module = "org.jetbrains.kotlin:kotlin-stdlib-js", version.r
 kotlinx-atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
 kotlin-parcelize-runtime = { module = "org.jetbrains.kotlin:kotlin-parcelize-runtime", version.ref = "kotlin" }
 
-# Framework for testing concurrent data structures
-# https://kotlinlang.org/docs/lincheck-guide.html
-# https://github.com/Kotlin/kotlinx-lincheck/releases
-kotlinx-lincheck = { module = "org.jetbrains.kotlinx:lincheck", version = "2.30" }
-
 # https://github.com/Kotlin/kotlinx-datetime/tags
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.8.0" }
 
@@ -153,7 +144,7 @@ kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-t
 kotlinx-browser = { module = "org.jetbrains.kotlinx:kotlinx-browser", version.ref = "kotlinx-browser" }
 
 # https://mvnrepository.com/artifact/org.jetbrains/annotations
-jetbrains-annotation = { module = "org.jetbrains:annotations", version = "24.1.0" }
+jetbrains-annotation = { module = "org.jetbrains:annotations", version = "26.1.0" }
 
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
 
@@ -164,15 +155,10 @@ jsr305 = { module = "com.google.code.findbugs:jsr305", version = "3.0.2" }
 essenty-instance-keeper = { module = "com.arkivanov.essenty:instance-keeper", version.ref = "essenty" }
 essenty-lifecycle = { module = "com.arkivanov.essenty:lifecycle", version.ref = "essenty" }
 
-arrow-bom = { module = "io.arrow-kt:arrow-stack", version.ref = "arrow" }
-arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
-
 # https://mvnrepository.com/artifact/junit/junit
 test-junit = { module = "junit:junit", version = "4.13.2"  }
-# https://mvnrepository.com/artifact/org.robolectric/robolectric
-test-robolectric = { module = "org.robolectric:robolectric", version = "4.12.1" }
 # https://github.com/cashapp/turbine/releases
-test-turbine = { module = "app.cash.turbine:turbine", version = "1.1.0" }
+test-turbine = { module = "app.cash.turbine:turbine", version = "1.2.1" }
 
 plugin-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 plugin-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
@@ -193,11 +179,6 @@ plugin-binCompatValidator = { module = "org.jetbrains.kotlinx:binary-compatibili
 
 plugin-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
 
-# Gradle plugin for building plugins for IntelliJ-based IDEs
-# https://github.com/JetBrains/gradle-intellij-plugin/releases
-plugin-intellij = { module = "org.jetbrains.intellij.plugins:gradle-intellij-plugin", version = "1.17.3" }
-
-
 # Benchmark dependencies
 
 # https://mvnrepository.com/artifact/io.reactivex.rxjava2/rxjava
@@ -207,13 +188,13 @@ rxjava2 = { module = "io.reactivex.rxjava2:rxjava", version.strictly = "2.2.21" 
 # build or classpath dependencies for the forced update (security recommendations)
 
 # https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
-jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version = "2.15.4" }
+jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version = "2.22.0" }
 # https://mvnrepository.com/artifact/org.jsoup/jsoup
-jsoup = { module = "org.jsoup:jsoup", version = "1.17.2" }
+jsoup = { module = "org.jsoup:jsoup", version = "1.22.2" }
 # https://mvnrepository.com/artifact/org.json/json
-org-json = { module = "org.json:json", version = "20240303" }
+org-json = { module = "org.json:json", version = "20260522" }
 # https://mvnrepository.com/artifact/com.fasterxml.woodstox/woodstox-core
-woodstox-core = { module = "com.fasterxml.woodstox:woodstox-core", version = "6.6.2" }
+woodstox-core = { module = "com.fasterxml.woodstox:woodstox-core", version = "7.2.1" }
 
 
 [bundles]
@@ -261,12 +242,13 @@ fluxo-kmp-conf = { id = "io.github.fluxo-kt.fluxo-kmp-conf", version = "0.15.0" 
 # Gradle Versions Plugin: provides a task to determine which dependencies have updates
 # https://github.com/ben-manes/gradle-versions-plugin
 # https://plugins.gradle.org/plugin/com.github.ben-manes.versions
-deps-versions = { id = "com.github.ben-manes.versions", version = "0.51.0" }
+deps-versions = { id = "com.github.ben-manes.versions", version = "0.54.0" }
 
-# Detect unused and misused dependencies
+# Detect unused and misused dependencies. Note: 3.x removed auto-apply; the
+# harness composite applies this explicitly via its own DSL.
 # https://github.com/autonomousapps/dependency-analysis-android-gradle-plugin/tags
 # https://mvnrepository.com/artifact/com.autonomousapps/dependency-analysis-gradle-plugin
-deps-analysis = { id = "com.autonomousapps.dependency-analysis", version = "1.31.0" }
+deps-analysis = { id = "com.autonomousapps.dependency-analysis", version = "3.9.0" }
 
 # Plugin that guards against unintentional dependency changes
 # https://github.com/dropbox/dependency-guard/releases
@@ -274,7 +256,7 @@ deps-guard = { id = "com.dropbox.dependency-guard", version = "0.5.0" }
 
 # 'taskTree' task that prints task dependency tree
 # https://github.com/dorongold/gradle-task-tree
-task-tree = { id = "com.dorongold.task-tree", version = "3.0.0" }
+task-tree = { id = "com.dorongold.task-tree", version = "4.0.1" }
 
 # JMH benchmarking for Gradle
 # https://github.com/melix/jmh-gradle-plugin/releases
