@@ -1,0 +1,52 @@
+# Conventional Commits enforcement for fluxo PRs.
+# Wired into build.yml via wagoid/commitlint-github-action.
+
+extends:
+  - '@commitlint/config-conventional'
+
+rules:
+  # Allowed `type` values. Numeric prefix `2` means error (block PR).
+  # Add new types here when a new category emerges; do not silently expand.
+  type-enum:
+    - 2
+    - always
+    - - feat
+      - fix
+      - test
+      - build
+      - ci
+      - docs
+      - perf
+      - refactor
+      - style
+      - chore
+      - i18n
+      - deps
+      - misc
+      - revert
+
+  # Title hygiene.
+  subject-case:
+    - 2
+    - always
+    - lower-case
+  subject-max-length:
+    - 2
+    - always
+    - 72
+  # Conventional-commits spec: subject must end with no period.
+  subject-full-stop:
+    - 2
+    - never
+    - '.'
+
+  # Body hygiene.
+  body-max-line-length:
+    - 2
+    - always
+    - 100
+
+  # Footer hygiene: blank line before any trailer block (Co-authored-by, etc.).
+  footer-leading-blank:
+    - 2
+    - always
