@@ -78,7 +78,7 @@ vanniktech-mvn-publish = "0.36.0"
 # Compose Multiplatform — Plugin Portal lags Maven Central; 1.9.3 is Portal's current stable.
 # Fluxo has zero runtime Compose; entry exists only so harness can self-detect plugin classpath.
 # https://github.com/JetBrains/compose-multiplatform/releases
-jetbrains-compose = "1.9.3"
+jetbrains-compose = "1.11.1"
 
 # Android Jetpack
 # https://developer.android.com/jetpack/androidx/versions
