@@ -169,10 +169,27 @@ jobs:
           fi
           git commit -m "test(jmh): anchor JMH gating baselines"
           git push -u --force-with-lease origin "$branch"
-          if [ -z "$(gh pr list --head "$branch" --state open --json number -q '.[0].number')" ]; then
-            gh pr create \
+          if [ -n "$(gh pr list --head "$branch" --state open --json number -q '.[0].number')" ]; then
+            exit 0
+          fi
+          # Fail-soft on the repo-policy denial: "Allow GitHub Actions to create
+          # and approve pull requests" (Settings → Actions → General → Workflow
+          # permissions) is off → gh exits 1 with this exact GraphQL string. The
+          # branch is already pushed, so a maintainer can open the PR via the URL
+          # below. Any OTHER non-zero exit (auth, network, base-branch typo) still
+          # hard-fails so real bugs surface.
+          err="$(mktemp)"
+          if gh pr create \
               --base "$TARGET_BRANCH" \
               --head "$branch" \
               --title "test(jmh): anchor JMH gating baselines" \
-              --body "Host-matched JMH baselines on macos-latest + ubuntu-latest. Enables \`JMH_BASELINE_CHECK=1\` dual gate in benchmark-summary.main.kts."
+              --body "Host-matched JMH baselines on macos-latest + ubuntu-latest. Enables \`JMH_BASELINE_CHECK=1\` dual gate in benchmark-summary.main.kts." \
+              2> "$err"; then
+            :
+          elif grep -qF "GitHub Actions is not permitted to create or approve pull requests" "$err"; then
+            url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/compare/${TARGET_BRANCH}...${branch}?expand=1"
+            echo "::notice::Repo setting blocks workflow PR creation; baseline branch is pushed. Open the PR here: $url"
+          else
+            cat "$err" >&2
+            exit 1
           fi
