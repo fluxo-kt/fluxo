@@ -76,10 +76,16 @@ jobs:
         # POMs for every transitive (for SPDX coordinate enumeration) that the
         # regular build doesn't resolve — omitting it leaves those POMs
         # unpinned and the release-time `cyclonedxBom` step fails strict
-        # verification. Tests are skipped (-DDISABLE_TESTS) — test-runtime
-        # deps still resolve via `build`'s dependencies-discovery phase.
+        # verification. `-Pfluxo.dogfood=false` forces the published harness
+        # resolution path (invariant I1's CI side) so the harness JAR + its
+        # transitive POMs land in the metadata file — composite-mode regen
+        # silently skips them and CI then explodes on every job that loads
+        # the buildscript (AGENTS.md gotcha #29). Tests are skipped
+        # (-DDISABLE_TESTS) — test-runtime deps still resolve via `build`'s
+        # dependencies-discovery phase.
         run: >
-          ./gradlew --write-verification-metadata sha256 help build apiCheck cyclonedxBom
+          ./gradlew --write-verification-metadata sha256 -Pfluxo.dogfood=false
+          help build apiCheck cyclonedxBom
           --no-configuration-cache -DDISABLE_TESTS --stacktrace
 
       - name: Commit + force-with-lease push

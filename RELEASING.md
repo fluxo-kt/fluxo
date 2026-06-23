@@ -173,15 +173,23 @@ is gated on `dependabot[bot]` only — human contributors regen locally on the P
 command applies before cutting a release tag, so the published graph matches the resolved one:
 
 ```bash
-./gradlew --write-verification-metadata sha256 help build apiCheck cyclonedxBom \
+./gradlew --write-verification-metadata sha256 -Pfluxo.dogfood=false \
+  help build apiCheck cyclonedxBom \
   --no-configuration-cache -DDISABLE_TESTS
 ```
 
-The `help build apiCheck cyclonedxBom` task list covers configuration, JVM/KMP compile, ABI
-resolution, and the SBOM POM-enumeration path. Omitting `cyclonedxBom` leaves transitive POMs
-unpinned and breaks the release-time SBOM step under strict verification. If you forget,
-`./gradlew help` fails fast with "Dependency verification failed for…" citing the offending
-coordinate.
+Two non-obvious flags carry weight:
+
+- **`-Pfluxo.dogfood=false`** forces the *published* `io.github.fluxo-kt.fluxo-kmp-conf` plugin
+  resolution path (invariant **I1**'s CI side). Off-CI default is composite `includeBuild`, which
+  resolves the harness from the sibling filesystem and never touches Plugin Portal — so the
+  published harness JAR + every transitive POM stay unpinned. CI then explodes with
+  `DependencyVerificationException` on every job that loads the buildscript.
+- **`cyclonedxBom`** in the task list enumerates the transitive POMs the CycloneDX SBOM resolves
+  at release time; omitting it leaves those POMs unpinned and breaks the release-time SBOM step.
+
+If you forget either flag, `./gradlew help` (or any CI job) fails fast with "Dependency
+verification failed for…" citing the offending coordinate.
 
 ### Disabling temporarily (not recommended)
 
