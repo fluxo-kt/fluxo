@@ -1,0 +1,64 @@
+name: OSSF Scorecard
+
+on:
+  branch_protection_rule:
+  # Weekly run keeps the SARIF fresh between commits. Tuesday 04:15 UTC matches
+  # the rest of the project's scheduled-job cadence; pick a non-peak slot.
+  schedule:
+    - cron: '15 4 * * 2'
+  push:
+    branches: [main]
+
+# Top-level least privilege; per-job permissions grant what each step needs.
+permissions: read-all
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analysis:
+    name: Scorecard analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      # Required to upload SARIF to GitHub Code Scanning.
+      security-events: write
+      # Required for the publish_results step to attest the SARIF via OIDC.
+      id-token: write
+      contents: read
+    steps:
+      - name: Harden runner
+        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+        with:
+          egress-policy: audit
+
+      - name: Checkout
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          # Scorecard reads `.git` history but should not authenticate as the
+          # actor; persist-credentials=false prevents the GITHUB_TOKEN leaking to
+          # the subsequent steps.
+          persist-credentials: false
+
+      - name: Run Scorecard
+        uses: ossf/scorecard-action@4eaacf0543bb3f2c246792bd56e8cdeffafb205a # v2.4.3
+        with:
+          results_file: results.sarif
+          results_format: sarif
+          # publish_results=true requires id-token: write (see permissions); it
+          # signs the SARIF via Sigstore and pushes to the OpenSSF results bucket,
+          # which the Scorecard badge then queries.
+          publish_results: true
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: SARIF results
+          path: results.sarif
+          retention-days: 7
+
+      - name: Upload SARIF to Code Scanning
+        uses: github/codeql-action/upload-sarif@8aad20d150bbac5944a9f9d289da16a4b0d87c1e # v4
+        with:
+          sarif_file: results.sarif

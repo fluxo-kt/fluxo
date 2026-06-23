@@ -1,0 +1,104 @@
+name: PR Baseline Regen
+
+# Opt-in via PR label: dropping a `baseline-regen` label on a PR triggers a
+# fresh ABI + dep-guard baseline regeneration and force-pushes the result back
+# onto the PR head. Avoids the reviewer having to ask the contributor to
+# `./updateBaselines` locally for every catalog bump.
+#
+# Safety:
+# - Uses `pull_request_target` so the workflow runs with the BASE repo's
+#   secrets/permissions (the PR-author cannot rewrite the workflow file itself
+#   in their fork to escalate).
+# - Push is `--force-with-lease=<ref>:<sha>` against the PR head SHA captured
+#   at workflow-start time: a concurrent contributor push between the trigger
+#   and the regen is detected and the push refuses, so contributor work is
+#   never silently clobbered.
+on:
+  pull_request_target:
+    types: [labeled]
+    branches: [main, dev]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  # Per-PR lane: a label-removed/re-added bounce only runs one regen at a time.
+  group: pr-baseline-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  regen:
+    if: github.event.label.name == 'baseline-regen'
+    name: Regenerate ABI + dep-guard baselines
+    runs-on: macos-latest
+    timeout-minutes: 35
+    steps:
+      - name: Harden runner
+        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+        with:
+          egress-policy: audit
+
+      - name: Checkout PR head
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          # `pull_request_target` defaults to base ref; explicitly fetch the PR
+          # head SHA into the workspace so we regen against contributor changes.
+          ref: ${{ github.event.pull_request.head.sha }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          # full history so `git push --force-with-lease` can verify against the
+          # remote tip.
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@ad2b38190b15e4d6bdf0c97fb4fca8412226d287 # v5
+        with:
+          distribution: zulu
+          java-version: 17
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6
+
+      - name: Regenerate baselines
+        env:
+          RELEASE: "true"
+        # `./updateBaselines` is the canonical entry point; it sets the same
+        # CC-disabled / build-cache-disabled / rerun-tasks flags as the
+        # .run/apiDump.run.xml IDE config so the regen matches the CI-published
+        # one (AGENTS.md gotcha #4). Falls back to direct gradle invocation if
+        # the script is missing.
+        run: |
+          if [ -x ./updateBaselines ]; then
+            ./updateBaselines
+          else
+            ./gradlew apiDump dependencyGuardBaseline \
+              --no-build-cache --no-configuration-cache \
+              -Dkotlin.incremental=false --rerun-tasks
+          fi
+
+      - name: Commit + force-with-lease push
+        env:
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # Stage only the baseline-relevant trees. Avoids accidentally
+          # committing `build/` outputs or scratch files.
+          git add -A api/ '**/dependencies/*.txt' dependencies/classpath.txt fluxo-common/api fluxo-core/api fluxo-data/api 2>/dev/null || true
+
+          if git diff --staged --quiet; then
+            echo "::notice::No baseline changes — PR is already current."
+            exit 0
+          fi
+
+          git commit -m "build(baseline): auto-regen via PR baseline workflow"
+
+          # `--force-with-lease=ref:sha` refuses to push if the remote tip moved
+          # past HEAD_SHA between the trigger and now. Critical: a contributor
+          # push that landed during the regen is preserved, not overwritten.
+          git push --force-with-lease="refs/heads/${HEAD_REF}:${HEAD_SHA}" \
+            origin "HEAD:${HEAD_REF}"

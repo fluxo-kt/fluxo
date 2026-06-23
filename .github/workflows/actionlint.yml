@@ -1,0 +1,50 @@
+name: Actionlint
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/**'
+      - '.github/actions/**'
+  push:
+    branches: [main, dev]
+    paths:
+      - '.github/workflows/**'
+      - '.github/actions/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  actionlint:
+    name: Lint GitHub Actions workflows
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Harden runner
+        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+        with:
+          egress-policy: audit
+
+      - name: Checkout
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+
+      - name: Download actionlint
+        id: get_actionlint
+        # rhysd/actionlint v1.7.12 — official downloader script pinned at the tag's
+        # commit SHA. The script prints the binary path on stdout (read into
+        # ::set-output), so the next step can invoke it directly without PATH munging.
+        run: |
+          bash <(curl -fsSL https://raw.githubusercontent.com/rhysd/actionlint/914e7df21a07ef503a81201c76d2b11c789d3fca/scripts/download-actionlint.bash) 1.7.12
+          echo "executable=$(pwd)/actionlint" >> "$GITHUB_OUTPUT"
+        shell: bash
+
+      - name: Run actionlint
+        # `-color` keeps the output readable in the Actions log; `-shellcheck=` empty
+        # disables the shellcheck integration (we don't ship one on the runner image
+        # by default and the curl + bash idiom in our workflows is already audited).
+        run: ${{ steps.get_actionlint.outputs.executable }} -color -shellcheck=
+        shell: bash
