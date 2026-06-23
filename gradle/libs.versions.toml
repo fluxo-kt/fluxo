@@ -126,7 +126,7 @@ reduktor = "0.4"                    # https://github.com/g000sha256/reduktor/tag
 reduxkotlin = "0.6.1"               # https://mvnrepository.com/artifact/org.reduxkotlin/redux-kotlin-threadsafe (1.0.0-alpha02 exists but alpha; staying on 0.6.1 stable)
 respawnFlowMVI = "3.2.1"            # https://mvnrepository.com/artifact/pro.respawn.flowmvi/core
 tinderStateMachine = "0.3.0"        # https://github.com/Tinder/StateMachine/releases (abandoned 2019; frozen as comparison baseline)
-visualfsm = "2.0.0"                 # https://mvnrepository.com/artifact/ru.kontur.mobile.visualfsm/visualfsm-core (4.1.0 GA; R3.5 will migrate 2-major)
+visualfsm = "3.0.0"                 # https://mvnrepository.com/artifact/ru.kontur.mobile.visualfsm/visualfsm-core (4.x requires KSP code-generation: Transition.getFromState throws "Code generation not configured" without the generated factory wiring _fromState/_toState; 4.1.0 additionally raises bytecode to Java 21 — fluxo runs JDK 17. 3.0.0 retains the deprecated `Transition(KClass, KClass)` constructor that lets us declare transitions without KSP, while still picking up the 1-major bump over 2.0.0)
 
 
 [libraries]

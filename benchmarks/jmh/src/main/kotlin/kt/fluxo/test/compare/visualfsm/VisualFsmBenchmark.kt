@@ -13,23 +13,25 @@ import ru.kontur.mobile.visualfsm.TransitionsFactory
 
 internal object VisualFsmBenchmark {
 
+    // VisualFSM 3.x retains the deprecated `Transition(KClass, KClass)` constructor that lets
+    // a transition declare its FROM/TO types explicitly. 4.x removed it in favour of KSP-generated
+    // factories that wire `_fromState`/`_toState` reflectively; we don't apply the KSP processor
+    // on this benchmark module (orthogonal scope), so we stay on the constructor pattern.
+    @Suppress("DEPRECATION")
+    private class IncrementTransition : Transition<VisualFsmState, VisualFsmState>(
+        VisualFsmState::class, VisualFsmState::class,
+    ) {
+        override fun transform(state: VisualFsmState): VisualFsmState =
+            state.copy(value = state.value + 1)
+    }
+
     private class IncrementFsmFeature : Feature<VisualFsmState, IntentIncrement>(
         initialState = VisualFsmState(),
         transitionsFactory = object : TransitionsFactory<VisualFsmState, IntentIncrement> {
-            override fun create(action: IntentIncrement): List<Transition<VisualFsmState, VisualFsmState>> {
+            override fun create(action: IntentIncrement): List<Transition<VisualFsmState, VisualFsmState>> =
                 when (action) {
-                    is IntentIncrement.Increment -> {
-                        return listOf(
-                            @Suppress("DEPRECATION")
-                            object : Transition<VisualFsmState, VisualFsmState>(VisualFsmState::class, VisualFsmState::class) {
-                                override fun transform(state: VisualFsmState): VisualFsmState {
-                                    return state.copy(value = state.value + 1)
-                                }
-                            }
-                        )
-                    }
+                    is IntentIncrement.Increment -> listOf(IncrementTransition())
                 }
-            }
         },
     )
 
@@ -42,23 +44,21 @@ internal object VisualFsmBenchmark {
     }
 
 
+    @Suppress("DEPRECATION")
+    private class AddTransition(private val delta: Int) : Transition<VisualFsmState, VisualFsmState>(
+        VisualFsmState::class, VisualFsmState::class,
+    ) {
+        override fun transform(state: VisualFsmState): VisualFsmState =
+            state.copy(value = state.value + delta)
+    }
+
     private class AddFsmFeature : Feature<VisualFsmState, IntentAdd>(
         initialState = VisualFsmState(),
         transitionsFactory = object : TransitionsFactory<VisualFsmState, IntentAdd> {
-            override fun create(action: IntentAdd): List<Transition<VisualFsmState, VisualFsmState>> {
+            override fun create(action: IntentAdd): List<Transition<VisualFsmState, VisualFsmState>> =
                 when (action) {
-                    is IntentAdd.Add -> {
-                        return listOf(
-                            @Suppress("DEPRECATION")
-                            object : Transition<VisualFsmState, VisualFsmState>(VisualFsmState::class, VisualFsmState::class) {
-                                override fun transform(state: VisualFsmState): VisualFsmState {
-                                    return state.copy(value = state.value + action.value)
-                                }
-                            }
-                        )
-                    }
+                    is IntentAdd.Add -> listOf(AddTransition(delta = action.value))
                 }
-            }
         },
     )
 
