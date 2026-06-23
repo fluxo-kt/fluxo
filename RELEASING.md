@@ -141,5 +141,7 @@ jq -r '.components[] | "\(.purl // .name)@\(.version)"' fluxo-core-cyclonedx.jso
 ```
 
 SBOMs are produced by the `org.cyclonedx.bom` Gradle plugin (`cyclonedxBom` task) running against
-each library module's runtime classpath; the workflow uploads `<module>/build/reports/bom.json`
-renamed to `<module>-cyclonedx.json` so files survive co-location in the GH Release.
+each library module. The plugin emits two scopes — full transitive and direct-only — in both JSON
+and XML; the workflow uploads them as `<module>-cyclonedx.{json,xml}` (full transitive) and
+`<module>-cyclonedx-direct.{json,xml}` (direct deps only). Choose the scope you need: direct for
+supply-chain review of fluxo's own declared deps, full for downstream-scanner ingestion.

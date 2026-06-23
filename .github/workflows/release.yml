@@ -135,24 +135,33 @@ jobs:
       - name: Collect supply-chain artefacts (SBOMs + Sigstore bundles)
         # Flatten the per-module SBOMs and Sigstore bundles into a single staging
         # directory so the Release step can upload them as a single asset glob.
-        # Renames SBOMs to `<artifact>-cyclonedx.json` so they survive co-location.
+        # CycloneDX 3.x emits both `cyclonedx/` (full transitive) and
+        # `cyclonedx-direct/` (direct-deps only) reports — upload both renamed by
+        # module + scope so they survive co-location on the GH Release page.
         run: |
           set -euo pipefail
           stage="$RUNNER_TEMP/release-assets"
           mkdir -p "$stage"
           for mod in fluxo-core fluxo-common fluxo-data; do
-            src="$mod/build/reports/bom.json"
-            if [[ -f "$src" ]]; then
-              cp "$src" "$stage/${mod}-cyclonedx.json"
-            else
-              echo "::warning::missing CycloneDX SBOM for $mod ($src)"
-            fi
+            for scope in cyclonedx cyclonedx-direct; do
+              for ext in json xml; do
+                src="$mod/build/reports/$scope/bom.$ext"
+                if [[ -f "$src" ]]; then
+                  cp "$src" "$stage/${mod}-${scope}.${ext}"
+                fi
+              done
+            done
           done
           # Sigstore bundles land alongside artefacts in the staged publication tree.
           # Globs match both `*.sigstore.json` (current default) and legacy `*.sigstore`.
           find . -type f \( -name '*.sigstore.json' -o -name '*.sigstore' \) \
             -not -path './.git/*' -exec cp -n {} "$stage/" \;
           ls -la "$stage"
+          # Sanity: at least one SBOM per module must exist or release is incomplete.
+          for mod in fluxo-core fluxo-common fluxo-data; do
+            ls "$stage/${mod}-cyclonedx.json" >/dev/null \
+              || { echo "::error::missing CycloneDX SBOM for $mod"; exit 1; }
+          done
 
       - name: Attach supply-chain artefacts to GitHub Release
         # Creates (or updates) the GH Release for this tag and uploads SBOMs +
