@@ -199,7 +199,7 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super
     * _First In, First Out_ (Fifo). Predictable, intuitive, ordered processing with good performance.
     * _Last In, First Out_ (Lifo). Can improve responsiveness, e.g. UI events processing, but may lose some intents!
     * _Parallel_. No processing order guarantees, can provide better performance and responsiveness compared to _Fifo_.
-    * _Direct_. Default. No pipeline. Immediately executes every intent until the first suspension point in the current thread.
+    * _Direct_. **Default since the K2.3 chord** (was Fifo in older docs). No pipeline. Immediately executes every intent until the first suspension point in the current thread.
     * _ChannelLifo_. Special `Channel`-based Lifo implementation that provides extra customization compared to _Lifo_.
     * Create your own!
   * Eager or lazy initialization of the store (lazy by default).
@@ -242,7 +242,7 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super
 Compares the performance of different MVI state-management libraries.<br>
 **[Deep feature comparison research](https://docs.google.com/spreadsheets/d/1gbwXU5Vp9QGvph1rLu0hv90KqrHNhkZyKTxk_I_yBJk) is in-progress.**
 
-> Single-thread simple incrementing intents (16 tests, [2023-09-30](../../actions/runs/6365805466#summary-17283087030)), [updates on CI](../../actions/workflows/benchmark.yml).
+> **Historical reference (pre-K2 / pre-AGP-9 toolchain)** — single-thread simple incrementing intents (16 tests, [2023-09-30](../../actions/runs/6365805466#summary-17283087030)), [updates on CI](../../actions/workflows/benchmark.yml).
 > <br>_Each **operation** creates a state store, sends 5000 intents with reduction, and checks state updates!_
 
 | Benchmark                                     | Score | Units | Percent |
