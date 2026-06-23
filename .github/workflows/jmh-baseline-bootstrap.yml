@@ -1,0 +1,168 @@
+name: JMH Baseline Bootstrap
+
+# R0.b — One-shot bootstrap that produces the host-matched JMH gating
+# baselines at `benchmarks/jmh/baselines/main-{darwin,linux}.json` on
+# authoritative CI runners (macos-latest + ubuntu-latest).
+#
+# `benchmark-summary.main.kts` (committed in R0) reads these JSONs when
+# `JMH_BASELINE_CHECK=1` and applies the dual gate `|Δ|/σ>2 AND |Δ|/base>5%`
+# per benchmark. Without the JSONs the gate is silently skipped — see the
+# `[baseline-check] no baseline at …` log line in the script.
+#
+# Why a one-shot bootstrap workflow rather than a developer-runnable script:
+# JMH numbers are host-binding. A developer laptop's `darwin.json` would
+# silently make every CI run on macos-latest fail the gate even though no
+# regression exists — the laptop and the CI runner are different hosts.
+# This workflow generates the JSONs on the same hosts CI uses, so the gate
+# is comparing like to like.
+#
+# Trigger: `workflow_dispatch` only — maintainer reviews the PR that the
+# workflow opens before merging the baselines to main/dev.
+on:
+  workflow_dispatch:
+    inputs:
+      target_branch:
+        description: 'Branch to PR the baseline files against (defaults to dev).'
+        required: false
+        default: 'dev'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: jmh-baseline-bootstrap
+  cancel-in-progress: false
+
+jobs:
+  produce:
+    name: Produce ${{ matrix.host_key }} baseline
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-latest
+            host_key: darwin
+          - runner: ubuntu-latest
+            host_key: linux
+
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 55
+
+    steps:
+      - name: Harden runner
+        if: matrix.runner == 'ubuntu-latest'
+        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+        with:
+          egress-policy: audit
+
+      - name: Checkout
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@ad2b38190b15e4d6bdf0c97fb4fca8412226d287 # v5
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6
+
+      - name: Run JMH with gating config + emit JSON
+        # Same config as plan §11 gating profile: forks=2, warmupIterations=2,
+        # iterations=5, threads=2 (the benchmarks/jmh/build.gradle.kts default
+        # is a smoke profile: forks=1, iter=4). Property names match the
+        # `envOrPropInt("jmh_*")` reads in build.gradle.kts:
+        #   jmh_f  forks    jmh_wi warmupIterations
+        #   jmh_i  iterations  jmh_t  threads
+        # `jmh_rf=JSON` switches the result format so `results.json` is emitted
+        # for the baseline (the current-run parser still reads results.txt;
+        # default stays TEXT for non-bootstrap runs).
+        # Pattern matches `IncrementIntentBenchmark.fluxo*` (the three
+        # `fluxo__mvvmp_intent` / `mvi_reducer` / `mvi_handler` rows that gate
+        # fluxo-core regressions).
+        run: >
+          ./gradlew :benchmarks:jmh:jmh
+          --no-configuration-cache --stacktrace
+          "-Pjmh=IncrementIntentBenchmark.fluxo"
+          "-Pjmh_f=2"
+          "-Pjmh_wi=2"
+          "-Pjmh_i=5"
+          "-Pjmh_t=2"
+          "-Pjmh_rf=JSON"
+
+      - name: Stage baseline JSON
+        # benchmarks/jmh/build/results/jmh/ contains both results.txt + the
+        # JSON when the JMH task is run. Path of the JSON is plugin-version
+        # dependent; glob both common paths to be robust.
+        run: |
+          set -euo pipefail
+          mkdir -p benchmarks/jmh/baselines
+          src=""
+          for candidate in \
+            benchmarks/jmh/build/results/jmh/results.json \
+            benchmarks/jmh/build/reports/jmh/results.json \
+          ; do
+            if [[ -f "$candidate" ]]; then src="$candidate"; break; fi
+          done
+          if [[ -z "$src" ]]; then
+            echo "::error::no JMH JSON output found; check the JMH plugin config emits -rf json"
+            find benchmarks/jmh/build -name '*.json' -print
+            exit 1
+          fi
+          cp "$src" "benchmarks/jmh/baselines/main-${{ matrix.host_key }}.json"
+
+      - name: Upload baseline artefact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: 'jmh-baseline-${{ matrix.host_key }}'
+          path: 'benchmarks/jmh/baselines/main-${{ matrix.host_key }}.json'
+          if-no-files-found: error
+
+  open-pr:
+    name: Open baseline PR
+    needs: produce
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Harden runner
+        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+        with:
+          egress-policy: audit
+
+      - name: Checkout target branch
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          ref: ${{ github.event.inputs.target_branch || 'dev' }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Download baseline artefacts
+        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6
+        with:
+          path: benchmarks/jmh/baselines/
+          merge-multiple: true
+
+      - name: Open PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          branch="jmh-baseline-bootstrap-${{ github.run_id }}"
+          git switch -c "$branch"
+          git add benchmarks/jmh/baselines/main-*.json
+          if git diff --staged --quiet; then
+            echo "::notice::Baseline files unchanged; no PR needed."
+            exit 0
+          fi
+          git commit -m "test(jmh): anchor R-cycle baselines"
+          git push -u origin "$branch"
+          gh pr create \
+            --base "${{ github.event.inputs.target_branch || 'dev' }}" \
+            --head "$branch" \
+            --title "test(jmh): anchor R-cycle JMH gating baselines" \
+            --body "Produced by R0.b workflow run ${{ github.run_id }} on macos-latest + ubuntu-latest. Enables \`JMH_BASELINE_CHECK=1\` dual gate in benchmark-summary.main.kts."
