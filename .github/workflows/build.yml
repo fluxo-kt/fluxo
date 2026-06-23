@@ -22,6 +22,13 @@ on:
       - '**benchmark.yml'
       - '**dependabot.yml'
 
+concurrency:
+  # Per-branch lane: a second push to the same ref pre-empts an in-flight build.
+  # `cancel-in-progress: true` keeps CI minutes bounded for fast-iterating PRs.
+  # Tags get a unique ref so release builds never race themselves.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   CI: true
   BUILD_NUMBER: ${{ github.run_number }}
@@ -29,7 +36,6 @@ env:
   GRADLE_OPTS: "\
   -Dorg.gradle.configuration-cache=false \
   -Dorg.gradle.vfs.watch=false \
-  -Dorg.gradle.unsafe.watch-fs=false \
   "
 
 jobs:
@@ -54,23 +60,23 @@ jobs:
           egress-policy: audit
 
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
 
       - name: 'Set up JDK ${{ matrix.java }}'
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@ad2b38190b15e4d6bdf0c97fb4fca8412226d287 # v5
         with:
           distribution: 'temurin'
           java-version: '${{ matrix.java }}'
 
       - name: 'Set up NodeJS 18 (LTS)'
         if: matrix.os != 'windows-latest'
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: 18
 
       - name: 'Cache Konan (Kotlin/Native compiler)'
         timeout-minutes: 6
-        uses: actions/cache@v5
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
         continue-on-error: true
         with:
           path: |
@@ -82,7 +88,7 @@ jobs:
             ${{ runner.os }}-konan-
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6
+        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6
         with:
           cache-read-only: ${{ (github.ref != 'refs/heads/main' && github.ref != 'refs/heads/dev') || matrix.java != '17' }}
           # Native replacement for the old custom build-scan PR-comment step (which referenced a
@@ -110,7 +116,7 @@ jobs:
 
       - name: Upload code coverage
         if: (success() || failure()) && !contains(github.event.head_commit.message, 'coverage skip')
-        uses: codecov/codecov-action@v6
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v6
         env:
           OS: ${{ matrix.os }}
           JAVA_VERSION: ${{ matrix.java }}
@@ -124,7 +130,7 @@ jobs:
 
       - name: Upload reports
         if: success() || failure()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         continue-on-error: true
         with:
           name: 'reports-${{ matrix.os }}'
@@ -136,7 +142,7 @@ jobs:
       - name: Upload merged sarif (Lint)
         if: (success() || failure()) && matrix.os == 'macos-latest'
           && (github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev')
-        uses: github/codeql-action/upload-sarif@v4
+        uses: github/codeql-action/upload-sarif@8aad20d150bbac5944a9f9d289da16a4b0d87c1e # v4
         continue-on-error: true
         with:
           sarif_file: build/lint-merged.sarif
@@ -145,7 +151,7 @@ jobs:
       - name: Upload merged sarif (Detekt)
         if: (success() || failure()) && matrix.os == 'macos-latest'
           && (github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev')
-        uses: github/codeql-action/upload-sarif@v4
+        uses: github/codeql-action/upload-sarif@8aad20d150bbac5944a9f9d289da16a4b0d87c1e # v4
         continue-on-error: true
         with:
           sarif_file: build/detekt-merged.sarif
@@ -154,7 +160,7 @@ jobs:
       - name: Publish JUnit test results as a pull request check
         if: (success() || failure()) && matrix.os == 'macos-latest'
           && github.repository == 'fluxo-kt/fluxo' && github.ref == 'refs/heads/main'
-        uses: mikepenz/action-junit-report@v6
+        uses: mikepenz/action-junit-report@d9f48fc87bc235f7e214acf696ca5abc0a986f16 # v6
         with:
           report_paths: '**/build/test-results/*/TEST-*.xml'
 

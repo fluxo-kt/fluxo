@@ -9,13 +9,19 @@ on:
       - '**/benchmark-summary.main.kts'
       - '**/benchmark.yml'
 
+concurrency:
+  # JMH runs are long; a second push to the same ref preempts the previous one
+  # so we don't pay for two stale runs racing. Scheduled cron uses ref=main, so
+  # cancel-in-progress also stops a manually-triggered run if cron starts.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   TRIGGER_COUNTER: 15
   JMH_THREADS: 2
   GRADLE_OPTS: "-Dorg.gradle.daemon=false \
   -Dorg.gradle.configuration-cache=false \
   -Dorg.gradle.vfs.watch=false \
-  -Dorg.gradle.unsafe.watch-fs=false \
   "
 
 jobs:
@@ -41,10 +47,10 @@ jobs:
           egress-policy: audit
 
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
 
       - name: 'Set up JDK ${{ matrix.java }}'
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@ad2b38190b15e4d6bdf0c97fb4fca8412226d287 # v5
         with:
           distribution: 'temurin'
           java-version: '${{ matrix.java }}'
@@ -54,7 +60,7 @@ jobs:
         run: echo "JMH_THREADS=3" >> "$GITHUB_ENV"
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6
+        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6
         with:
           cache-disabled: ${{ matrix.java == '11' }}
           cache-read-only: ${{ github.ref != 'refs/heads/main' || matrix.java != '17' }}
