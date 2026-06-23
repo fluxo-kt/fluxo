@@ -1,0 +1,388 @@
+[
+    {
+        "jmhVersion" : "1.37",
+        "benchmark" : "kt.fluxo.jmh.IncrementIntentBenchmark.fluxo__mvi_handler",
+        "mode" : "thrpt",
+        "threads" : 2,
+        "forks" : 2,
+        "jvm" : "/usr/lib/jvm/temurin-17-jdk-amd64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/runner/work/fluxo/fluxo/benchmarks/jmh/build/tmp/jmh",
+            "-Duser.country",
+            "-Duser.language=en",
+            "-Duser.variant",
+            "-Dkotlinx.coroutines.debug=off"
+        ],
+        "jdkVersion" : "17.0.19",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.19+10",
+        "warmupIterations" : 2,
+        "warmupTime" : "10 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "10 s",
+        "measurementBatchSize" : 1,
+        "primaryMetric" : {
+            "score" : 1.957700700999658,
+            "scoreError" : 0.01990152345784512,
+            "scoreConfidence" : [
+                1.937799177541813,
+                1.977602224457503
+            ],
+            "scorePercentiles" : {
+                "0.0" : 1.9394214710571918,
+                "50.0" : 1.953469337072018,
+                "90.0" : 1.9772330560861597,
+                "95.0" : 1.9772584035301723,
+                "99.0" : 1.9772584035301723,
+                "99.9" : 1.9772584035301723,
+                "99.99" : 1.9772584035301723,
+                "99.999" : 1.9772584035301723,
+                "99.9999" : 1.9772584035301723,
+                "100.0" : 1.9772584035301723
+            },
+            "scoreUnit" : "ops/ms",
+            "rawData" : [
+                [
+                    1.9394214710571918,
+                    1.9516072895450363,
+                    1.9553313845989995,
+                    1.9489482864818082,
+                    1.9448580710445547
+                ],
+                [
+                    1.9772584035301723,
+                    1.977004929090047,
+                    1.9506970461989335,
+                    1.966693562218032,
+                    1.9651865662318038
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.37",
+        "benchmark" : "kt.fluxo.jmh.IncrementIntentBenchmark.fluxo__mvi_reducer",
+        "mode" : "thrpt",
+        "threads" : 2,
+        "forks" : 2,
+        "jvm" : "/usr/lib/jvm/temurin-17-jdk-amd64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/runner/work/fluxo/fluxo/benchmarks/jmh/build/tmp/jmh",
+            "-Duser.country",
+            "-Duser.language=en",
+            "-Duser.variant",
+            "-Dkotlinx.coroutines.debug=off"
+        ],
+        "jdkVersion" : "17.0.19",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.19+10",
+        "warmupIterations" : 2,
+        "warmupTime" : "10 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "10 s",
+        "measurementBatchSize" : 1,
+        "primaryMetric" : {
+            "score" : 6.2428572365794395,
+            "scoreError" : 0.7506543966197801,
+            "scoreConfidence" : [
+                5.49220283995966,
+                6.993511633199219
+            ],
+            "scorePercentiles" : {
+                "0.0" : 5.764896661240462,
+                "50.0" : 6.244302728288518,
+                "90.0" : 6.731328281164317,
+                "95.0" : 6.7322080671724995,
+                "99.0" : 6.7322080671724995,
+                "99.9" : 6.7322080671724995,
+                "99.99" : 6.7322080671724995,
+                "99.999" : 6.7322080671724995,
+                "99.9999" : 6.7322080671724995,
+                "100.0" : 6.7322080671724995
+            },
+            "scoreUnit" : "ops/ms",
+            "rawData" : [
+                [
+                    6.723410207090672,
+                    6.6930826392756,
+                    6.7322080671724995,
+                    6.717775778315076,
+                    6.702062540002222
+                ],
+                [
+                    5.766507858047503,
+                    5.7955228173014355,
+                    5.764896661240462,
+                    5.765558607193809,
+                    5.76754719015511
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.37",
+        "benchmark" : "kt.fluxo.jmh.IncrementIntentBenchmark.fluxo__mvvmp_intent",
+        "mode" : "thrpt",
+        "threads" : 2,
+        "forks" : 2,
+        "jvm" : "/usr/lib/jvm/temurin-17-jdk-amd64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/runner/work/fluxo/fluxo/benchmarks/jmh/build/tmp/jmh",
+            "-Duser.country",
+            "-Duser.language=en",
+            "-Duser.variant",
+            "-Dkotlinx.coroutines.debug=off"
+        ],
+        "jdkVersion" : "17.0.19",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.19+10",
+        "warmupIterations" : 2,
+        "warmupTime" : "10 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "10 s",
+        "measurementBatchSize" : 1,
+        "primaryMetric" : {
+            "score" : 1.9217322575281355,
+            "scoreError" : 0.007802757317003407,
+            "scoreConfidence" : [
+                1.913929500211132,
+                1.929535014845139
+            ],
+            "scorePercentiles" : {
+                "0.0" : 1.9113407283505985,
+                "50.0" : 1.9226863205193307,
+                "90.0" : 1.9299519211135114,
+                "95.0" : 1.9304469675855842,
+                "99.0" : 1.9304469675855842,
+                "99.9" : 1.9304469675855842,
+                "99.99" : 1.9304469675855842,
+                "99.999" : 1.9304469675855842,
+                "99.9999" : 1.9304469675855842,
+                "100.0" : 1.9304469675855842
+            },
+            "scoreUnit" : "ops/ms",
+            "rawData" : [
+                [
+                    1.9183248657671983,
+                    1.9113407283505985,
+                    1.9181202053825948,
+                    1.9201157116540832,
+                    1.923012122665024
+                ],
+                [
+                    1.9304469675855842,
+                    1.9223605183736372,
+                    1.923170026886015,
+                    1.9249349257517634,
+                    1.9254965028648574
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.37",
+        "benchmark" : "kt.fluxo.jmh.IncrementIntentBenchmark.fluxo__mvi_handler",
+        "mode" : "avgt",
+        "threads" : 2,
+        "forks" : 2,
+        "jvm" : "/usr/lib/jvm/temurin-17-jdk-amd64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/runner/work/fluxo/fluxo/benchmarks/jmh/build/tmp/jmh",
+            "-Duser.country",
+            "-Duser.language=en",
+            "-Duser.variant",
+            "-Dkotlinx.coroutines.debug=off"
+        ],
+        "jdkVersion" : "17.0.19",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.19+10",
+        "warmupIterations" : 2,
+        "warmupTime" : "10 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "10 s",
+        "measurementBatchSize" : 1,
+        "primaryMetric" : {
+            "score" : 1.018372970797211,
+            "scoreError" : 0.013627496062566583,
+            "scoreConfidence" : [
+                1.0047454747346443,
+                1.0320004668597775
+            ],
+            "scorePercentiles" : {
+                "0.0" : 1.0075280720951594,
+                "50.0" : 1.0184571435287604,
+                "90.0" : 1.028369445229714,
+                "95.0" : 1.0284207444040852,
+                "99.0" : 1.0284207444040852,
+                "99.9" : 1.0284207444040852,
+                "99.99" : 1.0284207444040852,
+                "99.999" : 1.0284207444040852,
+                "99.9999" : 1.0284207444040852,
+                "100.0" : 1.0284207444040852
+            },
+            "scoreUnit" : "ms/op",
+            "rawData" : [
+                [
+                    1.0284207444040852,
+                    1.0253718203300592,
+                    1.0279077526603753,
+                    1.0275948650303834,
+                    1.0245364824685468
+                ],
+                [
+                    1.0108236801228596,
+                    1.0075280720951594,
+                    1.0085087561505046,
+                    1.0106597301211617,
+                    1.012377804588974
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.37",
+        "benchmark" : "kt.fluxo.jmh.IncrementIntentBenchmark.fluxo__mvi_reducer",
+        "mode" : "avgt",
+        "threads" : 2,
+        "forks" : 2,
+        "jvm" : "/usr/lib/jvm/temurin-17-jdk-amd64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/runner/work/fluxo/fluxo/benchmarks/jmh/build/tmp/jmh",
+            "-Duser.country",
+            "-Duser.language=en",
+            "-Duser.variant",
+            "-Dkotlinx.coroutines.debug=off"
+        ],
+        "jdkVersion" : "17.0.19",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.19+10",
+        "warmupIterations" : 2,
+        "warmupTime" : "10 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "10 s",
+        "measurementBatchSize" : 1,
+        "primaryMetric" : {
+            "score" : 0.3223600398439488,
+            "scoreError" : 0.01669178148257047,
+            "scoreConfidence" : [
+                0.30566825836137834,
+                0.33905182132651923
+            ],
+            "scorePercentiles" : {
+                "0.0" : 0.31072794984615515,
+                "50.0" : 0.322197967540347,
+                "90.0" : 0.3357912556382945,
+                "95.0" : 0.33610824549151785,
+                "99.0" : 0.33610824549151785,
+                "99.9" : 0.33610824549151785,
+                "99.99" : 0.33610824549151785,
+                "99.999" : 0.33610824549151785,
+                "99.9999" : 0.33610824549151785,
+                "100.0" : 0.33610824549151785
+            },
+            "scoreUnit" : "ms/op",
+            "rawData" : [
+                [
+                    0.33610824549151785,
+                    0.33178455737062534,
+                    0.33076438973895134,
+                    0.33202757509488245,
+                    0.3329383469592839
+                ],
+                [
+                    0.3110503124857066,
+                    0.31072794984615515,
+                    0.31289784916627306,
+                    0.31363154534174265,
+                    0.3116696269443502
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.37",
+        "benchmark" : "kt.fluxo.jmh.IncrementIntentBenchmark.fluxo__mvvmp_intent",
+        "mode" : "avgt",
+        "threads" : 2,
+        "forks" : 2,
+        "jvm" : "/usr/lib/jvm/temurin-17-jdk-amd64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/runner/work/fluxo/fluxo/benchmarks/jmh/build/tmp/jmh",
+            "-Duser.country",
+            "-Duser.language=en",
+            "-Duser.variant",
+            "-Dkotlinx.coroutines.debug=off"
+        ],
+        "jdkVersion" : "17.0.19",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.19+10",
+        "warmupIterations" : 2,
+        "warmupTime" : "10 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "10 s",
+        "measurementBatchSize" : 1,
+        "primaryMetric" : {
+            "score" : 0.8131543501704004,
+            "scoreError" : 0.35587021742342884,
+            "scoreConfidence" : [
+                0.45728413274697155,
+                1.1690245675938291
+            ],
+            "scorePercentiles" : {
+                "0.0" : 0.5888250112673151,
+                "50.0" : 0.8117364014322214,
+                "90.0" : 1.0446653853717833,
+                "95.0" : 1.0453413100999605,
+                "99.0" : 1.0453413100999605,
+                "99.9" : 1.0453413100999605,
+                "99.99" : 1.0453413100999605,
+                "99.999" : 1.0453413100999605,
+                "99.9999" : 1.0453413100999605,
+                "100.0" : 1.0453413100999605
+            },
+            "scoreUnit" : "ms/op",
+            "rawData" : [
+                [
+                    1.0331810129230365,
+                    1.0453413100999605,
+                    1.0385820628181885,
+                    1.0329187645024511,
+                    1.0321347249369965
+                ],
+                [
+                    0.5888250112673151,
+                    0.5913178014612994,
+                    0.588876749499041,
+                    0.5913380779274462,
+                    0.5890279862682686
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    }
+]
+
+
