@@ -124,7 +124,7 @@ mvikotlin = "4.4.0"                 # https://mvnrepository.com/artifact/com.ark
 orbit = "11.0.0"                    # https://mvnrepository.com/artifact/org.orbit-mvi/orbit-core
 reduktor = "0.4"                    # https://github.com/g000sha256/reduktor/tags (frozen upstream; kept as historical benchmark baseline)
 reduxkotlin = "0.6.1"               # https://mvnrepository.com/artifact/org.reduxkotlin/redux-kotlin-threadsafe (1.0.0-alpha02 exists but alpha; staying on 0.6.1 stable)
-respawnFlowMVI = "2.5.0-alpha11"    # https://mvnrepository.com/artifact/pro.respawn.flowmvi/core (3.2.1 GA; R3.4 will migrate alpha→stable)
+respawnFlowMVI = "3.2.1"            # https://mvnrepository.com/artifact/pro.respawn.flowmvi/core
 tinderStateMachine = "0.3.0"        # https://github.com/Tinder/StateMachine/releases (abandoned 2019; frozen as comparison baseline)
 visualfsm = "2.0.0"                 # https://mvnrepository.com/artifact/ru.kontur.mobile.visualfsm/visualfsm-core (4.1.0 GA; R3.5 will migrate 2-major)
 

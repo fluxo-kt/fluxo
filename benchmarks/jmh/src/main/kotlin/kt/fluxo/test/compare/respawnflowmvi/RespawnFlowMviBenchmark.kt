@@ -10,11 +10,12 @@ import kt.fluxo.test.compare.consumeCommonBenchmark
 import kt.fluxo.test.compare.launchCommonBenchmark
 import kt.fluxo.test.compare.launchCommonBenchmarkWithStaticIntent
 import pro.respawn.flowmvi.api.ActionShareBehavior
-import pro.respawn.flowmvi.api.DelicateStoreApi
 import pro.respawn.flowmvi.api.MVIIntent
 import pro.respawn.flowmvi.api.MVIState
 import pro.respawn.flowmvi.api.Store
 import pro.respawn.flowmvi.dsl.store
+import pro.respawn.flowmvi.dsl.updateState
+import pro.respawn.flowmvi.dsl.updateStateImmediate
 import pro.respawn.flowmvi.plugins.Reduce
 import pro.respawn.flowmvi.plugins.reduce
 import kotlin.coroutines.resume
@@ -42,11 +43,11 @@ internal object RespawnFlowMviBenchmark {
 
     fun mviHandlerStaticIncrement(): Int {
         val (store, job) = createStoreAndJob<IntentIncrement> {
-            @OptIn(DelicateStoreApi::class)
             when (it) {
-                // The default option is to use updateState, but it's pretty slow (uses lock, calls plugins, etc.).
-                // `useState` is exactly for performance-critical cases.
-                IntentIncrement.Increment -> useState { copy(value = value + 1) }
+                // `updateState` is the default safe path (lock + plugin invocation) but slow.
+                // `updateStateImmediate` is the lock-free fast path — the FlowMVI 3.x replacement
+                // for the deprecated `useState`, suitable for perf-critical benchmark scenarios.
+                IntentIncrement.Increment -> updateStateImmediate { copy(value = value + 1) }
             }
         }
         return runBlocking {
