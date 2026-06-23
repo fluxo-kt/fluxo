@@ -151,20 +151,28 @@ jobs:
       - name: Open PR
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # `workflow_dispatch` inputs are attacker-influenced when run via API or
+          # by a maintainer with a compromised PAT — never interpolate them into
+          # `run:` blocks; route via env so the shell sees a literal value.
+          TARGET_BRANCH: ${{ github.event.inputs.target_branch || 'dev' }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          branch="jmh-baseline-bootstrap-${{ github.run_id }}"
-          git switch -c "$branch"
+          # Stable head branch → re-running the workflow force-pushes onto the
+          # existing PR instead of accumulating one PR per run.
+          branch="jmh-baseline-bootstrap"
+          git switch -c "$branch" 2>/dev/null || git switch "$branch"
           git add benchmarks/jmh/baselines/main-*.json
           if git diff --staged --quiet; then
             echo "::notice::Baseline files unchanged; no PR needed."
             exit 0
           fi
-          git commit -m "test(jmh): anchor R-cycle baselines"
-          git push -u origin "$branch"
-          gh pr create \
-            --base "${{ github.event.inputs.target_branch || 'dev' }}" \
-            --head "$branch" \
-            --title "test(jmh): anchor R-cycle JMH gating baselines" \
-            --body "Produced by R0.b workflow run ${{ github.run_id }} on macos-latest + ubuntu-latest. Enables \`JMH_BASELINE_CHECK=1\` dual gate in benchmark-summary.main.kts."
+          git commit -m "test(jmh): anchor JMH gating baselines"
+          git push -u --force-with-lease origin "$branch"
+          if [ -z "$(gh pr list --head "$branch" --state open --json number -q '.[0].number')" ]; then
+            gh pr create \
+              --base "$TARGET_BRANCH" \
+              --head "$branch" \
+              --title "test(jmh): anchor JMH gating baselines" \
+              --body "Host-matched JMH baselines on macos-latest + ubuntu-latest. Enables \`JMH_BASELINE_CHECK=1\` dual gate in benchmark-summary.main.kts."
+          fi
