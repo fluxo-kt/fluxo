@@ -100,7 +100,7 @@ For `apiDump`, see Gotcha #4.
 
 - `explicitApi()` is on for all libs; every `public` is intentional.
 - `allWarningsAsErrors = true`; new warnings break the build.
-- **Conventional Commits required.** Allowed types: `feat|fix|test|build|ci|docs|perf|refactor|style|chore|i18n|deps|misc|revert`. PR titles same format. Imperative present tense.
+- **Conventional Commits required.** Allowed types: `feat|fix|test|build|ci|docs|perf|refactor|style|chore|i18n|deps|revert` (canonical list lives in `.commitlintrc.yml`). PR titles same format. Imperative present tense.
 - **Don't introduce dependencies.** Fluxo is "small and light" by stated policy. Public API changes need explicit reasoning in the PR; BCV diff must be committed.
 - Keep git history flat; no merge commits except hotfix branches.
 
