@@ -107,15 +107,15 @@ extensions.configure<org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtensio
     // …) inherits it. A bare layout-dir provider carries no producer, which made Gradle 9 fail
     // ProcessLibraryArtProfileTask with an implicit-dependency error (it scans the generated
     // androidMain root for a sibling `baselineProfiles` dir).
-    inlineOnlySourceSets.forEach { sourceSet ->
-        sourceSets.named(sourceSet) {
-            kotlin.srcDir(inlineOnlySwitcher.map { it.destinationDir.resolve("$sourceSet/kotlin") })
-        }
+    // `matching { }.configureEach { }` is lazy and absence-tolerant — entries in the lists
+    // (e.g. `androidMain`, `nativeMain`) may be missing under harness target-split CI variants.
+    val inlineOnlyNames = inlineOnlySourceSets.toSet()
+    sourceSets.matching { it.name in inlineOnlyNames }.configureEach {
+        kotlin.srcDir(inlineOnlySwitcher.map { it.destinationDir.resolve("$name/kotlin") })
     }
-    (fluxoJsExportSourceSets + "jsMain").forEach { sourceSet ->
-        sourceSets.named(sourceSet) {
-            kotlin.srcDir(fluxoJsExportSwitcher.map { it.destinationDir.resolve("$sourceSet/kotlin") })
-        }
+    val fluxoJsExportNames = (fluxoJsExportSourceSets + "jsMain").toSet()
+    sourceSets.matching { it.name in fluxoJsExportNames }.configureEach {
+        kotlin.srcDir(fluxoJsExportSwitcher.map { it.destinationDir.resolve("$name/kotlin") })
     }
 }
 

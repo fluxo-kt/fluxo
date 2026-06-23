@@ -52,7 +52,7 @@ extensions.configure<org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtensio
     sourceSets.matching { it.name == "androidHostTest" }.configureEach {
         dependsOn(sourceSets.named("commonJvmTest").get())
     }
-    sourceSets.named("androidMain") {
+    sourceSets.matching { it.name == "androidMain" }.configureEach {
         dependencies {
             compileOnly(libs.androidx.annotation)
         }
