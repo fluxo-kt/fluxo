@@ -24,8 +24,13 @@ on:
 
 permissions:
   # `contents: write` is needed for the GitHub Release asset upload step
-  # (Sigstore bundles + CycloneDX SBOMs). All other jobs run read-only.
+  # (Sigstore bundles + CycloneDX SBOMs).
+  # `id-token: write` is needed for Sigstore keyless signing: `dev.sigstore.sign`
+  # exchanges the GH Actions OIDC token at Fulcio for a short-lived code-signing
+  # certificate. Without it, every `sigstoreSign*Publication` task fails with
+  # "Failed to obtain signing certificate" and the release is unsigned.
   contents: write
+  id-token: write
 
 env:
   CI: true
