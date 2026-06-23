@@ -243,6 +243,26 @@ tasks.named("check") {
     dependsOn(checkForbiddenFlags)
 }
 
+// Sigstore keyless signing relies on the GitHub Actions OIDC token issuer
+// (`id-token: write`), only granted to `release.yml` on `v*` tags. On any other
+// invocation (PR/snapshot/local) `sigstoreSign*Publication` fails with "Failed to
+// obtain signing certificate" because no OIDC issuer is reachable. The plugin
+// auto-attaches a task per MavenPublication, so disable them up-front when the
+// release-publish task isn't even in the start parameters — self-aware, no env
+// discipline needed (mirrors the pattern in `settings.gradle.kts`).
+val isReleasePublish = gradle.startParameter.taskNames.any { taskName ->
+    taskName.contains("publishAndReleaseToMavenCentral", ignoreCase = true)
+}
+if (!isReleasePublish) {
+    subprojects {
+        pluginManager.withPlugin("dev.sigstore.sign") {
+            tasks.matching { it.name.startsWith("sigstoreSign") }.configureEach {
+                enabled = false
+            }
+        }
+    }
+}
+
 allprojects {
     // Exclude unused DOM API.
     configurations.all {
