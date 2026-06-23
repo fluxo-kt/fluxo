@@ -44,11 +44,12 @@ fkcSetupMultiplatform(
 }
 
 extensions.configure<org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension> {
-    targets.named("android") {
+    // See fluxo-common/build.gradle.kts for the rationale on the lazy matching idiom.
+    targets.matching { it.name == "android" }.configureEach {
         (this as com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget)
             .withHostTest {}
     }
-    sourceSets.named("androidHostTest") {
+    sourceSets.matching { it.name == "androidHostTest" }.configureEach {
         dependsOn(sourceSets.named("commonJvmTest").get())
     }
     sourceSets.named("androidMain") {

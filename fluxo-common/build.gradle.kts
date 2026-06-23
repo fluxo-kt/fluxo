@@ -95,7 +95,10 @@ fkcSetupMultiplatform(
 }
 
 extensions.configure<org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension> {
-    targets.named("android") {
+    // Lazy + absence-tolerant: harness target-split variants (e.g. windows split_targets)
+    // exclude the android target, and `targets.named("android")` would throw at config time.
+    // `matching { }.configureEach { }` is a no-op when the target isn't registered.
+    targets.matching { it.name == "android" }.configureEach {
         (this as com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget)
             .withHostTest {}
     }
