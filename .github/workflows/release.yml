@@ -33,7 +33,6 @@ env:
   -Dorg.gradle.daemon=false \
   -Dorg.gradle.configuration-cache=false \
   -Dorg.gradle.vfs.watch=false \
-  -Dorg.gradle.unsafe.watch-fs=false \
   "
 
 jobs:
