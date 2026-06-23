@@ -55,7 +55,12 @@ Consumers opt in with that repository plus the `-SNAPSHOT` coordinate (see `READ
 - **verifies the tag matches the resolved project version** and is not a snapshot (fail-fast — a
   `v*` tag can never publish a mismatched or unsigned-snapshot artifact);
 - runs the full release build (`apiCheck androidApiCheck build assemble check`);
-- runs `publishAndReleaseToMavenCentral` (signed; auto-promotes the Central Portal deployment).
+- generates a per-module CycloneDX SBOM (`cyclonedxBom`) before publish;
+- runs `publishAndReleaseToMavenCentral` (PGP-signed for Central + Sigstore-signed via the
+  `dev.sigstore.sign` plugin, which auto-attaches `.sigstore.json` bundles to every
+  `MavenPublication`; both auto-promote the Central Portal deployment);
+- attaches the CycloneDX SBOMs (`<module>-cyclonedx.json`) and Sigstore bundles
+  (`*.sigstore.json`) as GitHub Release assets on the `v*` tag.
 
 > **One-shot.** A tag/publish is not re-runnable against the same version. If the Central Portal
 > deployment stalls in a `VALIDATED` (not `PUBLISHED`) state, finish it with the manual **Publish**
@@ -101,3 +106,40 @@ curl -s https://central.sonatype.com/repository/maven-snapshots/io/github/fluxo-
 
 Always read the live `maven-metadata.xml` to learn the current published version — never assume it
 from git, which can lead the published artifacts.
+
+## Supply-chain verification (Sigstore + CycloneDX SBOM)
+
+Each release attaches two supply-chain assets per published artefact to the GitHub Release:
+
+- **Sigstore bundle** (`<artifact>-<version>.sigstore.json`) — keyless signature over the JAR/POM,
+  produced by `dev.sigstore.sign` against the GitHub OIDC identity of the release workflow. Verifies
+  that the artefact was built by `release.yml` running on a `v*` tag of this repository.
+- **CycloneDX SBOM** (`<module>-cyclonedx.json`) — Software Bill of Materials covering direct and
+  transitive runtime dependencies of each library module, in CycloneDX JSON 1.5+.
+
+### Verify a release's Sigstore bundle
+
+```bash
+# Download a JAR + its bundle from the GH Release page (or Maven Central) and run:
+cosign verify-blob \
+  --bundle fluxo-core-X.Y.Z.jar.sigstore.json \
+  --certificate-identity-regexp '^https://github\.com/fluxo-kt/fluxo/\.github/workflows/release\.yml@refs/tags/v' \
+  --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+  fluxo-core-X.Y.Z.jar
+```
+
+The `--certificate-identity-regexp` anchors the signature to `release.yml` on a `v*` tag — a bundle
+signed by any other workflow or branch will fail verification. Requires
+[cosign](https://docs.sigstore.dev/cosign/installation/) ≥ 2.0.
+
+### Inspect a CycloneDX SBOM
+
+```bash
+# Pretty-print the dependency tree (requires jq):
+jq -r '.components[] | "\(.purl // .name)@\(.version)"' fluxo-core-cyclonedx.json | sort -u
+# Or feed it to any CycloneDX-compatible scanner (e.g. trivy, syft, dependency-track).
+```
+
+SBOMs are produced by the `org.cyclonedx.bom` Gradle plugin (`cyclonedxBom` task) running against
+each library module's runtime classpath; the workflow uploads `<module>/build/reports/bom.json`
+renamed to `<module>-cyclonedx.json` so files survive co-location in the GH Release.

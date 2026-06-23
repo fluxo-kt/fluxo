@@ -4,6 +4,12 @@ plugins {
     // Applied here (not `apply false`): the harness configures but never applies the
     // publication plugin, so it must already be on this library module's classpath.
     alias(libs.plugins.vanniktech.mvn.publish)
+    // Supply-chain hardening (R5.3). Sigstore auto-attaches to all MavenPublications
+    // and emits `.sigstore.json` bundles alongside JARs at publish time.
+    alias(libs.plugins.sigstore.sign)
+    // CycloneDX produces the `cyclonedxBom` task that emits a JSON SBOM of direct +
+    // transitive deps. Release workflow uploads it as a GH Release asset.
+    alias(libs.plugins.cyclonedx.bom)
 }
 
 fkcSetupMultiplatform(

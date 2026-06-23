@@ -23,7 +23,9 @@ on:
       - "v*"
 
 permissions:
-  contents: read
+  # `contents: write` is needed for the GitHub Release asset upload step
+  # (Sigstore bundles + CycloneDX SBOMs). All other jobs run read-only.
+  contents: write
 
 env:
   CI: true
@@ -114,7 +116,51 @@ jobs:
           ./gradlew apiCheck androidApiCheck build assemble check
           --no-configuration-cache --stacktrace --scan
 
+      - name: Generate CycloneDX SBOMs (R5.3)
+        # Emit a per-module Software Bill of Materials for each published library.
+        # Output paths: `<module>/build/reports/bom.json` (CycloneDX-plugin default).
+        # Sigstore signing is auto-attached to every MavenPublication by the
+        # `dev.sigstore.sign` plugin and runs as a dependency of the publish step
+        # below — no extra invocation needed; the bundles land in the staged
+        # publication directory (`build/repo/.../<artifact>-<version>.sigstore.json`).
+        run: >
+          ./gradlew :fluxo-core:cyclonedxBom :fluxo-common:cyclonedxBom :fluxo-data:cyclonedxBom
+          --no-configuration-cache --stacktrace
+
       - name: Publish release to Maven Central
         run: >
           ./gradlew publishAndReleaseToMavenCentral
           --no-configuration-cache --stacktrace --scan
+
+      - name: Collect supply-chain artefacts (SBOMs + Sigstore bundles)
+        # Flatten the per-module SBOMs and Sigstore bundles into a single staging
+        # directory so the Release step can upload them as a single asset glob.
+        # Renames SBOMs to `<artifact>-cyclonedx.json` so they survive co-location.
+        run: |
+          set -euo pipefail
+          stage="$RUNNER_TEMP/release-assets"
+          mkdir -p "$stage"
+          for mod in fluxo-core fluxo-common fluxo-data; do
+            src="$mod/build/reports/bom.json"
+            if [[ -f "$src" ]]; then
+              cp "$src" "$stage/${mod}-cyclonedx.json"
+            else
+              echo "::warning::missing CycloneDX SBOM for $mod ($src)"
+            fi
+          done
+          # Sigstore bundles land alongside artefacts in the staged publication tree.
+          # Globs match both `*.sigstore.json` (current default) and legacy `*.sigstore`.
+          find . -type f \( -name '*.sigstore.json' -o -name '*.sigstore' \) \
+            -not -path './.git/*' -exec cp -n {} "$stage/" \;
+          ls -la "$stage"
+
+      - name: Attach supply-chain artefacts to GitHub Release
+        # Creates (or updates) the GH Release for this tag and uploads SBOMs +
+        # Sigstore bundles as assets. `make_latest: legacy` lets the repo's
+        # release-ordering config decide latest (don't force on every tag).
+        uses: softprops/action-gh-release@2bb465e97f322d3cb2a965294d483e0d26a67aa9 # v3.0.1
+        with:
+          tag_name: ${{ github.ref_name }}
+          files: ${{ runner.temp }}/release-assets/*
+          fail_on_unmatched_files: false
+          generate_release_notes: true

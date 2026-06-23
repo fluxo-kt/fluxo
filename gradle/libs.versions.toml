@@ -232,6 +232,17 @@ kotlinx-atomicfu = { id = "org.jetbrains.kotlinx.atomicfu", version.ref = "atomi
 
 vanniktech-mvn-publish = { id = "com.vanniktech.maven.publish", version.ref = "vanniktech-mvn-publish" }
 
+# Supply-chain: Sigstore SLSA signing — emits per-publication `*.sigstore.json`
+# bundles alongside the maven-publish artefacts. Plugin auto-attaches to every
+# `MavenPublication` on the module it's applied to.
+# https://plugins.gradle.org/plugin/dev.sigstore.sign
+sigstore-sign = { id = "dev.sigstore.sign", version = "2.2.0" }
+
+# Supply-chain: CycloneDX SBOM — `cyclonedxBom` task emits a JSON Software Bill
+# of Materials covering direct + transitive deps with SPDX coordinates.
+# https://plugins.gradle.org/plugin/org.cyclonedx.bom
+cyclonedx-bom = { id = "org.cyclonedx.bom", version = "3.2.4" }
+
 android-app = { id = "com.android.application", version.ref = "android-gradle-plugin" }
 android-lib = { id = "com.android.library", version.ref = "android-gradle-plugin" }
 

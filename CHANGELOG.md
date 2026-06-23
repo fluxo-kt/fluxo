@@ -31,6 +31,11 @@
 - JMH: `compareAgainstBaseline()` helper in `benchmark-summary.main.kts`
   applies the dual gate `|Δ|/σ>2 AND |Δ|/base>5%` when
   `JMH_BASELINE_CHECK=1`; baseline JSON anchoring lands separately via CI.
+- Supply-chain (release-only): `dev.sigstore.sign` 2.2.0 auto-signs every
+  `MavenPublication` with a Sigstore bundle; `org.cyclonedx.bom` 3.2.4 emits a
+  per-module CycloneDX SBOM. The release workflow attaches both as GitHub
+  Release assets (`<artifact>.sigstore.json` + `<module>-cyclonedx.json`).
+  Verification commands are in `RELEASING.md`.
 
 ### Removed
 
