@@ -113,7 +113,6 @@ jobs:
             /Users/runner/.konan
           key: ${{ runner.os }}-konan-${{ hashFiles('**/*.versions.toml') }}
           restore-keys: |
-            ${{ runner.os }}-konan-${{ hashFiles('**/*.versions.toml') }}
             ${{ runner.os }}-konan-
 
       - name: Setup Gradle
