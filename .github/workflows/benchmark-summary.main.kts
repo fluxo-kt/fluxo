@@ -265,6 +265,84 @@ fun Int.enPlural(one: String, other: String): String {
 }
 
 
+// Minimal recursive-descent JSON parser. Replaces a regex extractor that
+// silently dropped entries with secondaryMetrics nesting (e.g., -prof gc).
+// Numbers come back as BigDecimal so the gate's σ-math stays exact.
+private class JsonParser(private val s: String) {
+    private var p = 0
+    fun parse(): Any? { ws(); return value() }
+    private fun ws() { while (p < s.length && s[p].isWhitespace()) p++ }
+    private fun value(): Any? {
+        ws()
+        return when (s[p]) {
+            '{' -> obj()
+            '[' -> arr()
+            '"' -> str()
+            't' -> { p += 4; true }
+            'f' -> { p += 5; false }
+            'n' -> { p += 4; null }
+            else -> num()
+        }
+    }
+    private fun obj(): LinkedHashMap<String, Any?> {
+        p++; val r = LinkedHashMap<String, Any?>(); ws()
+        if (s[p] == '}') { p++; return r }
+        while (true) {
+            ws(); val k = str(); ws(); check(s[p] == ':') { "expected ':' at $p" }; p++
+            r[k] = value(); ws()
+            if (s[p] == ',') { p++; continue }
+            check(s[p] == '}') { "expected ',' or '}' at $p" }; p++; return r
+        }
+    }
+    private fun arr(): MutableList<Any?> {
+        p++; val r = mutableListOf<Any?>(); ws()
+        if (s[p] == ']') { p++; return r }
+        while (true) {
+            r.add(value()); ws()
+            if (s[p] == ',') { p++; continue }
+            check(s[p] == ']') { "expected ',' or ']' at $p" }; p++; return r
+        }
+    }
+    private fun str(): String {
+        check(s[p] == '"') { "expected '\"' at $p" }; p++
+        val sb = StringBuilder()
+        while (s[p] != '"') {
+            if (s[p] == '\\') {
+                p++
+                sb.append(when (val e = s[p++]) {
+                    'n' -> '\n'; 't' -> '\t'; 'r' -> '\r'; 'b' -> '\b'; 'f' -> ''
+                    'u' -> { val h = s.substring(p, p + 4).toInt(16); p += 4; h.toChar() }
+                    else -> e // '"', '\\', '/' fall through
+                })
+            } else sb.append(s[p++])
+        }
+        p++; return sb.toString()
+    }
+    private fun num(): java.math.BigDecimal {
+        val start = p
+        if (s[p] == '-') p++
+        while (p < s.length && (s[p].isDigit() || s[p] in ".eE+-")) p++
+        return s.substring(start, p).toBigDecimal()
+    }
+}
+
+// JMH `-rf json` shape: top-level array of {benchmark, mode, primaryMetric{score, scoreError}, …}.
+private data class JmhJsonEntry(val benchmark: String, val mode: String, val score: BigDecimal, val scoreError: BigDecimal)
+private fun File.parseJmhJson(): List<JmhJsonEntry> {
+    val top = JsonParser(readText()).parse() as? List<*>
+        ?: error("$path: top-level value is not a JSON array")
+    return top.mapNotNull { e ->
+        val o = e as? Map<*, *> ?: return@mapNotNull null
+        val b = o["benchmark"] as? String ?: return@mapNotNull null
+        val m = o["mode"] as? String ?: return@mapNotNull null
+        val pm = o["primaryMetric"] as? Map<*, *> ?: return@mapNotNull null
+        val sc = pm["score"] as? BigDecimal ?: return@mapNotNull null
+        val er = pm["scoreError"] as? BigDecimal ?: BigDecimal.ZERO
+        JmhJsonEntry(b, m, sc, er)
+    }
+}
+
+
 // JMH dual-gate baseline comparison (plan §11).
 // Gated on JMH_BASELINE_CHECK=1 so non-gating runs (PR summary table, local
 // devs) stay unaffected. Fires only when the baseline-comparison CI step
@@ -278,9 +356,14 @@ fun Int.enPlural(one: String, other: String): String {
 // after fresh-baseline regeneration in CI doesn't self-block.
 if (System.getenv("JMH_BASELINE_CHECK")?.lowercase(Locale.US) in arrayOf("1", "true")) run check@ {
     try {
-        val resultsFile = File("benchmarks/jmh/build/results/jmh/results.txt")
-        if (!resultsFile.exists()) {
-            System.err.println("[baseline-check] no current results.txt at ${resultsFile.path}; skipping gate")
+        // Current-run output: prefer JSON when present (richer schema, exact numbers);
+        // fall back to results.txt (default JMH output the summary pipeline parses).
+        val resultsDir = File("benchmarks/jmh/build/results/jmh")
+        val resultsJson = File(resultsDir, "results.json")
+        val resultsTxt = File(resultsDir, "results.txt")
+        val resultsFile = sequenceOf(resultsJson, resultsTxt).firstOrNull { it.exists() }
+        if (resultsFile == null) {
+            System.err.println("[baseline-check] no current results.{json,txt} in ${resultsDir.path}; skipping gate")
             return@check
         }
         val osName = System.getProperty("os.name").lowercase(Locale.US)
@@ -298,47 +381,27 @@ if (System.getenv("JMH_BASELINE_CHECK")?.lowercase(Locale.US) in arrayOf("1", "t
             return@check
         }
 
-            // Minimal JMH-JSON parser. JMH's `-rf json` emits a top-level array
-            // of objects with shallow keys; we only need (benchmark, mode,
-            // primaryMetric.score, primaryMetric.scoreError). Per-entry regex
-            // tolerates whitespace, scientific notation, and field reordering.
-            data class BaselineEntry(val benchmark: String, val mode: String, val score: BigDecimal, val scoreError: BigDecimal)
-            val baselineText = baselineFile.readText()
-            // Allow one level of nesting (primaryMetric / secondaryMetrics are nested objects).
-            // Two levels would need a recursive regex (Kotlin/Java regex doesn't support); JMH's
-            // schema is shallow enough that one level suffices for the (benchmark, mode, score,
-            // scoreError) fields we read.
-            val entryRegex = Regex("\\{(?:[^{}]|\\{[^{}]*\\})*?\"benchmark\"(?:[^{}]|\\{[^{}]*\\})*?\\}", RegexOption.DOT_MATCHES_ALL)
-            val benchmarkRx = Regex("\"benchmark\"\\s*:\\s*\"([^\"]+)\"")
-            val modeRx = Regex("\"mode\"\\s*:\\s*\"([^\"]+)\"")
-            val scoreRx = Regex("\"score\"\\s*:\\s*([\\d.eE+\\-]+)")
-            val errorRx = Regex("\"scoreError\"\\s*:\\s*([\\d.eE+\\-]+)")
-            val baseline = entryRegex.findAll(baselineText).mapNotNull { m ->
-                val raw = m.value
-                val b = benchmarkRx.find(raw)?.groupValues?.get(1) ?: return@mapNotNull null
-                val mo = modeRx.find(raw)?.groupValues?.get(1) ?: return@mapNotNull null
-                val sc = scoreRx.find(raw)?.groupValues?.get(1)?.toBigDecimalOrNull() ?: return@mapNotNull null
-                val er = errorRx.find(raw)?.groupValues?.get(1)?.toBigDecimalOrNull() ?: return@mapNotNull null
-                BaselineEntry(b, mo, sc, er)
-            }.associateBy {
-                // results.txt emits "SimpleClass.method"; JMH JSON emits FQN
-                // "pkg.SimpleClass.method". Normalise both sides to last two
-                // dot-segments so the join works regardless of source format.
-                val simpleFqn = it.benchmark.split('.').takeLast(2).joinToString(".")
-                "$simpleFqn|${it.mode.lowercase(Locale.US)}"
-            }
+        // results.txt emits "SimpleClass.method"; JMH JSON emits FQN
+        // "pkg.SimpleClass.method". Key on last two dot-segments so the join
+        // works regardless of which format either side was read from.
+        fun joinKey(fqn: String, mode: String): String =
+            fqn.split('.').takeLast(2).joinToString(".") + "|" + mode.lowercase(Locale.US)
 
+        val baseline = baselineFile.parseJmhJson().associateBy { joinKey(it.benchmark, it.mode) }
         if (baseline.isEmpty()) {
             System.err.println("[baseline-check] baseline ${baselineFile.path} parsed to 0 entries — refusing to gate (parser regression vs JMH schema change?)")
             return@check
         }
 
-            // Re-parse current results.txt — duplicates the parser above
-            // because that parser's state-by-class is bound to the summary
-            // pipeline. Cheap to repeat (a few dozen lines).
-            data class CurrentEntry(val fqn: String, val mode: String, val score: BigDecimal, val error: BigDecimal?)
+        data class CurrentEntry(val fqn: String, val mode: String, val score: BigDecimal, val error: BigDecimal?)
+        val current: List<CurrentEntry> = if (resultsFile === resultsJson) {
+            resultsFile.parseJmhJson().map { CurrentEntry(it.benchmark, it.mode, it.score, it.scoreError) }
+        } else {
+            // results.txt: header row + space-separated columns; the σ-marker '±' can be
+            // the unicode replacement char on Windows hosts (kept tolerated, see actions
+            // run 3840763260). Same negative-lookbehind split as the summary pipeline.
             val splitRx = Pattern.compile("(?i)(?<![±�])\\s+", Pattern.UNICODE_CHARACTER_CLASS or Pattern.UNICODE_CASE).toRegex()
-            val current = resultsFile.readText().lineSequence().drop(1).mapNotNull { line ->
+            resultsFile.readText().lineSequence().drop(1).mapNotNull { line ->
                 val l = line.trim()
                 if (l.isEmpty()) return@mapNotNull null
                 val parts = l.split(splitRx, 6)
@@ -351,15 +414,14 @@ if (System.getenv("JMH_BASELINE_CHECK")?.lowercase(Locale.US) in arrayOf("1", "t
                 val er = parts.getOrNull(i)?.trimStart('±', '�')?.trimStart()?.toBigDecimalOrNull()
                 CurrentEntry(fqn, mode, sc, er)
             }.toList()
+        }
 
             val bd100 = BigDecimal(100)
             val twoBd = BigDecimal(2)
             val fivePctBd = BigDecimal("0.05")
             data class Verdict(val fqn: String, val mode: String, val curr: BigDecimal, val base: BigDecimal, val baseErr: BigDecimal, val passes: Boolean, val note: String)
             val verdicts = current.mapNotNull { c ->
-                val simpleFqn = c.fqn.split('.').takeLast(2).joinToString(".")
-                val key = "$simpleFqn|${c.mode}"
-                val b = baseline[key] ?: return@mapNotNull null
+                val b = baseline[joinKey(c.fqn, c.mode)] ?: return@mapNotNull null
                 val delta = (c.score - b.score).abs()
                 val deltaPctOfBase = if (b.score.signum() != 0) delta.divide(b.score, 6, RoundingMode.HALF_UP) else BigDecimal.ZERO
                 val significant = b.scoreError.signum() != 0 && delta > b.scoreError * twoBd
