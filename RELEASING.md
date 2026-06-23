@@ -173,20 +173,16 @@ is gated on `dependabot[bot]` only — human contributors regen locally on the P
 command applies before cutting a release tag, so the published graph matches the resolved one:
 
 ```bash
-./gradlew --write-verification-metadata sha256 -Pfluxo.dogfood=false \
+./gradlew --write-verification-metadata sha256 \
   help build apiCheck cyclonedxBom \
   --no-configuration-cache -DDISABLE_TESTS
 ```
 
-Two non-obvious flags carry weight:
-
-- **`-Pfluxo.dogfood=false`** forces the *published* `io.github.fluxo-kt.fluxo-kmp-conf` plugin
-  resolution path (invariant **I1**'s CI side). Off-CI default is composite `includeBuild`, which
-  resolves the harness from the sibling filesystem and never touches Plugin Portal — so the
-  published harness JAR + every transitive POM stay unpinned. CI then explodes with
-  `DependencyVerificationException` on every job that loads the buildscript.
-- **`cyclonedxBom`** in the task list enumerates the transitive POMs the CycloneDX SBOM resolves
-  at release time; omitting it leaves those POMs unpinned and breaks the release-time SBOM step.
+`cyclonedxBom` enumerates the SBOM's transitive POMs that `help build apiCheck` alone doesn't
+resolve. Composite-mode dogfood is auto-disabled under `--write-verification-metadata` by
+`settings.gradle.kts`, so the regen always captures the published harness graph — no flag
+discipline required. AGENTS.md gotcha #29 documents the manual-pin edge cases (transform-input
+classpath artifacts, non-host-OS platform binaries) the task list still doesn't reach.
 
 If you forget either flag, `./gradlew help` (or any CI job) fails fast with "Dependency
 verification failed for…" citing the offending coordinate.

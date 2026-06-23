@@ -71,20 +71,11 @@ jobs:
         uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6
 
       - name: Regenerate metadata against full graph
-        # `help build apiCheck cyclonedxBom` covers configuration + JVM/KMP
-        # compile + ABI + SBOM resolution paths. The CycloneDX plugin pulls
-        # POMs for every transitive (for SPDX coordinate enumeration) that the
-        # regular build doesn't resolve — omitting it leaves those POMs
-        # unpinned and the release-time `cyclonedxBom` step fails strict
-        # verification. `-Pfluxo.dogfood=false` forces the published harness
-        # resolution path (invariant I1's CI side) so the harness JAR + its
-        # transitive POMs land in the metadata file — composite-mode regen
-        # silently skips them and CI then explodes on every job that loads
-        # the buildscript (AGENTS.md gotcha #29). Tests are skipped
-        # (-DDISABLE_TESTS) — test-runtime deps still resolve via `build`'s
-        # dependencies-discovery phase.
+        # `cyclonedxBom` pulls SBOM transitive POMs that `help build apiCheck`
+        # alone doesn't resolve (gotcha #29). Composite-mode dogfood is
+        # auto-disabled under --write-verification-metadata by settings.gradle.kts.
         run: >
-          ./gradlew --write-verification-metadata sha256 -Pfluxo.dogfood=false
+          ./gradlew --write-verification-metadata sha256
           help build apiCheck cyclonedxBom
           --no-configuration-cache -DDISABLE_TESTS --stacktrace
 
