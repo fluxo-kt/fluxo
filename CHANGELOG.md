@@ -25,6 +25,15 @@
   (the KGP-embedded path is inadequate for fluxo's atomic bytecode rewrite —
   AGENTS.md gotcha #16).
 - Test: coroutines 1.11.0; benchmark harness API refresh.
+- Benchmarks (comparison frameworks, JDK-17-bounded): ballast 4.1→5.1.0,
+  flowredux 1.2.1→1.2.2, mobiusKt 1.2.1→1.4.0, mvikotlin 4.0→4.4.0,
+  motorroCommonStateMachine 3.2.0→3.3.0 (4.x line raises bytecode to JDK 21,
+  unsupported on fluxo JDK 17), orbit 7.1.0→11.0.0 (4-major; DSL flattened
+  from `syntax.simple.*` to `syntax.Syntax`), respawnFlowMVI alpha11→3.2.1
+  stable (`useState` renamed to `updateStateImmediate` in 3.x), visualfsm
+  2.0.0→3.0.0 (4.x requires KSP code generation, out-of-scope for the
+  benchmark module). MVICore 2.0.0 deferred — upstream JitPack build is
+  broken on a missing `debugdrawer-base:0.9.0` transitive.
 - Verification: new `checkForbiddenFlags` drift gate rejects 11 exact-match +
   2 prefix-family deprecated `gradle.properties` keys at `check` time, each
   with rationale.
