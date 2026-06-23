@@ -167,8 +167,9 @@ Whenever the resolved graph changes:
 - Wrapper bumps (`gradle-wrapper.properties`)
 - New plugin additions
 
-Dependabot PRs regenerate automatically via `.github/workflows/verify-metadata.yml`. For local
-work, run:
+Dependabot PRs regenerate automatically via `.github/workflows/verify-metadata.yml` (the workflow
+is gated on `dependabot[bot]` only — human contributors regen locally on the PR branch). The same
+command applies before cutting a release tag, so the published graph matches the resolved one:
 
 ```bash
 ./gradlew --write-verification-metadata sha256 help build apiCheck \

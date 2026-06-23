@@ -34,17 +34,17 @@
   2.0.0→3.0.0 (4.x requires KSP code generation, out-of-scope for the
   benchmark module). MVICore 2.0.0 deferred — upstream JitPack build is
   broken on a missing `debugdrawer-base:0.9.0` transitive.
-- Verification: new `checkForbiddenFlags` drift gate rejects 11 exact-match +
-  2 prefix-family deprecated `gradle.properties` keys at `check` time, each
-  with rationale.
+- Verification: new `checkForbiddenFlags` drift gate rejects deprecated /
+  removed-upstream / no-op `gradle.properties` keys at `check` time; each
+  forbidden key carries an inline rationale string.
 - JMH: `compareAgainstBaseline()` helper in `benchmark-summary.main.kts`
   applies the dual gate `|Δ|/σ>2 AND |Δ|/base>5%` when
   `JMH_BASELINE_CHECK=1`; baseline JSON anchoring lands separately via CI.
 - Supply-chain (release-only): `dev.sigstore.sign` 2.2.0 auto-signs every
   `MavenPublication` with a Sigstore bundle; `org.cyclonedx.bom` 3.2.4 emits a
-  per-module CycloneDX SBOM. The release workflow attaches both as GitHub
-  Release assets (`<artifact>.sigstore.json` + `<module>-cyclonedx.json`).
-  Verification commands are in `RELEASING.md`.
+  per-module CycloneDX SBOM (full + direct scopes, JSON + XML). The release
+  workflow attaches all of them, plus the Sigstore bundles, as GitHub Release
+  assets. Verification commands are in `RELEASING.md`.
 - Supply-chain (build-side): Gradle dependency-verification metadata at
   `gradle/verification-metadata.xml` enforces SHA-256 pinning of every resolved
   artefact in the graph. CDN/repo poisoning of any direct or transitive
@@ -61,8 +61,8 @@
   conditional override — absent key falls back to KGP-bundled defaults.
   Karma is replaced by Mocha at the harness level
   (`KotlinJsUtils.kt:142 useMocha`).
-- `gradle/plugins/` legacy harness tree (28 source files) — fully superseded
-  by the `fluxo-kmp-conf` composite (`fkcSetup*` DSL).
+- `gradle/plugins/` legacy harness tree — fully superseded by the
+  `fluxo-kmp-conf` composite (`fkcSetup*` DSL).
 - `Dockerfile` + `.run/Dockerfile.run.xml` — orphan CircleCI deploy artefacts;
   CI has been GitHub Actions since the harness migration.
 - OSSRH snapshot infrastructure — shutdown 2025-06-30; replaced by Sonatype

@@ -22,7 +22,6 @@ rules:
       - chore
       - i18n
       - deps
-      - misc
       - revert
 
   # Title hygiene.

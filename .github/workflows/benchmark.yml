@@ -62,7 +62,6 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6
         with:
-          cache-disabled: ${{ matrix.java == '11' }}
           cache-read-only: ${{ github.ref != 'refs/heads/main' || matrix.java != '17' }}
 
       # setup-gradle@v4+ dropped the `arguments:` input — run Gradle in a dedicated step.

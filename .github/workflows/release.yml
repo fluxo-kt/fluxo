@@ -116,15 +116,18 @@ jobs:
           ./gradlew apiCheck androidApiCheck build assemble check
           --no-configuration-cache --stacktrace --scan
 
-      - name: Generate CycloneDX SBOMs (R5.3)
-        # Emit a per-module Software Bill of Materials for each published library.
-        # Output paths: `<module>/build/reports/bom.json` (CycloneDX-plugin default).
+      - name: Generate CycloneDX SBOMs
+        # Per-module Software Bill of Materials. CycloneDX 3.x emits dual scopes
+        # — `build/reports/cyclonedx/bom.{json,xml}` (full transitive) and
+        # `build/reports/cyclonedx-direct/bom.{json,xml}` (direct deps only).
+        # `./gradlew cyclonedxBom` aggregates across every subproject that applies
+        # the plugin, so adding a new library module needs no edit here.
         # Sigstore signing is auto-attached to every MavenPublication by the
         # `dev.sigstore.sign` plugin and runs as a dependency of the publish step
         # below — no extra invocation needed; the bundles land in the staged
         # publication directory (`build/repo/.../<artifact>-<version>.sigstore.json`).
         run: >
-          ./gradlew :fluxo-core:cyclonedxBom :fluxo-common:cyclonedxBom :fluxo-data:cyclonedxBom
+          ./gradlew cyclonedxBom
           --no-configuration-cache --stacktrace
 
       - name: Publish release to Maven Central
