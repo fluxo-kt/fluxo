@@ -15,18 +15,23 @@ pluginManagement {
     // evaluated before the settings-script body — a top-level val would be out of scope here.
     // providers.*/settingsDir keep it configuration-cache-correct under strict CC.
     //
-    // `--write-verification-metadata` forces composite OFF regardless of any explicit override:
-    // metadata regen MUST capture the *published* plugin graph; composite mode resolves the harness
-    // from the filesystem, skips Plugin Portal, and leaves the published JAR + transitive POMs
-    // unpinned — which then blows up every CI job on the next push (AGENTS.md gotcha #29). Making
-    // the predicate self-aware structurally eliminates the human-discipline-around-a-flag failure
-    // mode.
-    // Public StartParameter API — the property is `writeDependencyVerifications` (plural, no
-    // "Metadata" suffix); it backs the `--write-verification-metadata <sha256,…>` CLI flag and is
-    // empty when no checksums were requested. Verified against gradle-start-parameter-9.6.0.jar.
+    // Baselining tasks (verification-metadata, dependency-guard) MUST capture the *published*
+    // plugin graph; composite mode resolves the harness from the filesystem, skips Plugin Portal,
+    // and produces baselines that miss the published JAR + transitive POMs (or the harness's own
+    // classpath coord on the root `:dependencyGuard`) — which then blows up every CI job on the
+    // next push (AGENTS.md gotcha #29). Making the predicate self-aware on baseline-write tasks
+    // structurally eliminates the human-discipline-around-a-flag failure mode for the whole class.
+    // Public StartParameter API — `writeDependencyVerifications` (plural, no "Metadata" suffix)
+    // backs `--write-verification-metadata <sha256,…>` and is empty when no checksums were
+    // requested. Verified against gradle-start-parameter-9.6.0.jar.
     val isWritingVerificationMetadata =
         gradle.startParameter.writeDependencyVerifications.isNotEmpty()
-    val useLocalHarness = !isWritingVerificationMetadata && (
+    val isWritingDepGuardBaseline = gradle.startParameter.taskNames.any { taskName ->
+        // Match both `:<subproject>:dependencyGuardBaseline` and bare `dependencyGuardBaseline`.
+        taskName.endsWith("dependencyGuardBaseline", ignoreCase = true)
+    }
+    val isWritingBaseline = isWritingVerificationMetadata || isWritingDepGuardBaseline
+    val useLocalHarness = !isWritingBaseline && (
         providers.gradleProperty("fluxo.dogfood").orNull?.toBooleanStrictOrNull()
             ?: (providers.environmentVariable("CI").orNull?.toBooleanStrictOrNull() != true &&
                 settingsDir.resolveSibling("fluxo-kmp-conf").exists())
