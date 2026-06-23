@@ -98,14 +98,18 @@ atomicfu = "0.33.0"
 
 # NPM repo dependencies
 
-js-engineIo = "6.5.4"           # https://www.npmjs.com/package/engine.io?activeTab=versions
-js-karma = "6.4.3"              # https://www.npmjs.com/package/karma?activeTab=versions
-js-mocha = "10.4.0"             # https://www.npmjs.com/package/mocha?activeTab=versions
-js-socketIo = "4.7.5"           # https://www.npmjs.com/package/socket.io?activeTab=versions
-js-uaParserJs = "0.7.37"        # https://www.npmjs.com/package/ua-parser-js?activeTab=versions
-js-webpack = "5.91.0"           # https://www.npmjs.com/package/webpack?activeTab=versions
-js-webpackCli = "5.1.4"         # https://www.npmjs.com/package/webpack-cli?activeTab=versions
-js-webpackDevServer = "4.15.2"  # https://www.npmjs.com/package/webpack-dev-server?activeTab=versions
+# js-karma + js-uaParserJs intentionally absent: harness `setFromCatalog`
+# is a conditional override — absent alias means the harness skips its
+# yarn-resolution override, leaving KGP's bundled defaults. Karma test
+# runner is replaced by Mocha (harness `useMocha` since fluxo-kmp-conf
+# v0.14+, KotlinJsUtils.kt:142). ua-parser-js is a transitive of webpack
+# stack; KGP-bundled version is fine.
+js-engineIo = "6.6.9"           # https://www.npmjs.com/package/engine.io?activeTab=versions
+js-mocha = "11.7.6"             # https://www.npmjs.com/package/mocha?activeTab=versions
+js-socketIo = "4.8.3"           # https://www.npmjs.com/package/socket.io?activeTab=versions
+js-webpack = "5.107.2"          # https://www.npmjs.com/package/webpack?activeTab=versions
+js-webpackCli = "5.1.4"         # https://www.npmjs.com/package/webpack-cli?activeTab=versions (5.x ceiling — KGP transitive pin collision blocks 6+/7+)
+js-webpackDevServer = "4.15.2"  # https://www.npmjs.com/package/webpack-dev-server?activeTab=versions (4.x pair with webpackCli 5.x)
 
 
 # Libraries to compare/benchmark against
