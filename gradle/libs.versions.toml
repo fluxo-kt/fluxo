@@ -113,20 +113,20 @@ js-webpackDevServer = "4.15.2"  # https://www.npmjs.com/package/webpack-dev-serv
 
 
 # Libraries to compare/benchmark against
-ballast = "4.1.0"                   # https://mvnrepository.com/artifact/io.github.copper-leaf/ballast-core
+ballast = "5.1.0"                   # https://mvnrepository.com/artifact/io.github.copper-leaf/ballast-core
 elmslie = "3.0.0"                   # https://repo.maven.apache.org/maven2/money/vivid/elmslie/elmslie-core/maven-metadata.xml
-flowredux = "1.2.1"                 # https://mvnrepository.com/artifact/com.freeletics.flowredux/flowredux
-genakuReduce = "1.0.1"              # https://github.com/genaku/Reduce/tags
-mobiusKt = "1.2.1"                  # https://mvnrepository.com/artifact/org.drewcarlson/mobiuskt-coroutines
-motorroCommonStateMachine = "3.2.0" # https://mvnrepository.com/artifact/com.motorro.commonstatemachine/commonstatemachine
-mvicore = "1.4.0"                   # https://github.com/badoo/MVICore/releases
-mvikotlin = "4.0.0"                 # https://mvnrepository.com/artifact/com.arkivanov.mvikotlin/mvikotlin
-orbit = "7.1.0"                     # https://mvnrepository.com/artifact/org.orbit-mvi/orbit-core
-reduktor = "0.4"                    # https://github.com/g000sha256/reduktor/tags
-reduxkotlin = "0.6.1"               # https://mvnrepository.com/artifact/org.reduxkotlin/redux-kotlin-threadsafe
-respawnFlowMVI = "2.5.0-alpha11"    # https://mvnrepository.com/artifact/pro.respawn.flowmvi/core
-tinderStateMachine = "0.3.0"        # https://github.com/Tinder/StateMachine/releases
-visualfsm = "2.0.0"                 # https://mvnrepository.com/artifact/ru.kontur.mobile.visualfsm/visualfsm-core
+flowredux = "1.2.2"                 # https://mvnrepository.com/artifact/com.freeletics.flowredux/flowredux (no 2.x line; 1.2.2 is current latest)
+genakuReduce = "1.0.1"              # https://github.com/genaku/Reduce/tags (frozen; no newer)
+mobiusKt = "1.4.0"                  # https://mvnrepository.com/artifact/org.drewcarlson/mobiuskt-coroutines
+motorroCommonStateMachine = "3.3.0" # https://mvnrepository.com/artifact/com.motorro.commonstatemachine/commonstatemachine (4.x line requires JDK 21+ — fluxo targets JDK 17; 3.3.0 is the latest JDK-17-compat version)
+mvicore = "1.4.0"                   # https://github.com/badoo/MVICore/releases (2.0.0 GA; R3.2 will migrate with Rx2→Rx3 source rewrite)
+mvikotlin = "4.4.0"                 # https://mvnrepository.com/artifact/com.arkivanov.mvikotlin/mvikotlin
+orbit = "7.1.0"                     # https://mvnrepository.com/artifact/org.orbit-mvi/orbit-core (11.0.0 GA; R3.3 will migrate with 4-major API rewrite)
+reduktor = "0.4"                    # https://github.com/g000sha256/reduktor/tags (frozen upstream; kept as historical benchmark baseline)
+reduxkotlin = "0.6.1"               # https://mvnrepository.com/artifact/org.reduxkotlin/redux-kotlin-threadsafe (1.0.0-alpha02 exists but alpha; staying on 0.6.1 stable)
+respawnFlowMVI = "2.5.0-alpha11"    # https://mvnrepository.com/artifact/pro.respawn.flowmvi/core (3.2.1 GA; R3.4 will migrate alpha→stable)
+tinderStateMachine = "0.3.0"        # https://github.com/Tinder/StateMachine/releases (abandoned 2019; frozen as comparison baseline)
+visualfsm = "2.0.0"                 # https://mvnrepository.com/artifact/ru.kontur.mobile.visualfsm/visualfsm-core (4.1.0 GA; R3.5 will migrate 2-major)
 
 
 [libraries]
