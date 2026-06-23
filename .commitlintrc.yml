@@ -24,11 +24,19 @@ rules:
       - deps
       - revert
 
-  # Title hygiene.
+  # Title hygiene: block sloppy ALLCAPS / Title Case / PascalCase / Sentence case
+  # subjects while permitting acronyms (JMH, KMP, API, BCV, AGP, KSP, JS, KLib, …)
+  # inside otherwise-lowercase subjects. This is `@commitlint/config-conventional`'s
+  # default; the previous strict `[always, lower-case]` rule rejected acronyms,
+  # which conflicts with the de facto repo convention visible in `git log` and the
+  # `jmh-baseline-bootstrap.yml` workflow's hardcoded subject.
   subject-case:
     - 2
-    - always
-    - lower-case
+    - never
+    - - sentence-case
+      - start-case
+      - pascal-case
+      - upper-case
   subject-max-length:
     - 2
     - always
