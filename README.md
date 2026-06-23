@@ -30,14 +30,14 @@ If you need predictable unidirectional data flow (`UDF`) or deterministic cont
 
 Fluxo currently requires JDK 17+, Gradle 9+, Kotlin 2.3+ language/API/runtime compatibility, and Android API 21+ for Android consumers.
 
-### TLDR: Use SNAPSHOT artefact in Gradle (in a safe and reproducible way)
+### TLDR: Use SNAPSHOT artefact in Gradle
 [![Latest snapshot](https://img.shields.io/badge/dynamic/xml?color=f68244&logo=gradle&label=Latest%20snapshot&query=%2F%2Fversion%5Blast%28%29%5D&url=https%3A%2F%2Fcentral.sonatype.com%2Frepository%2Fmaven-snapshots%2Fio%2Fgithub%2Ffluxo-kt%2Ffluxo-core%2Fmaven-metadata.xml)](https://central.sonatype.com/repository/maven-snapshots/io/github/fluxo-kt/fluxo-core/maven-metadata.xml)
-<br>Select a snapshot for the preferred commit using a scheme: `0.1-<SHORT_COMMIT_SHA>-SNAPSHOT`.
+<br>Snapshot version follows the catalog `version` key (currently `0.1.0-SNAPSHOT`); each push to `main` overwrites it on the Central Portal snapshot repository.
 
 ```kotlin
-implementation("io.github.fluxo-kt:fluxo-core:0.1-<SHORT_COMMIT_SHA>-SNAPSHOT")
+implementation("io.github.fluxo-kt:fluxo-core:0.1.0-SNAPSHOT")
 // For common data states
-implementation("io.github.fluxo-kt:fluxo-data:0.1-<SHORT_COMMIT_SHA>-SNAPSHOT")
+implementation("io.github.fluxo-kt:fluxo-data:0.1.0-SNAPSHOT")
 ```
 ```kotlin
 // in `settings.gradle.kts` of the project
@@ -50,7 +50,7 @@ repositories {
 
 ```toml
 [versions]
-fluxo = "0.1-<SHORT_COMMIT_SHA>-SNAPSHOT"
+fluxo = "0.1.0-SNAPSHOT"
 
 [libraries]
 fluxo-core = { module = "io.github.fluxo-kt:fluxo-core", version.ref = "fluxo" }
@@ -242,7 +242,7 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super
 Compares the performance of different MVI state-management libraries.<br>
 **[Deep feature comparison research](https://docs.google.com/spreadsheets/d/1gbwXU5Vp9QGvph1rLu0hv90KqrHNhkZyKTxk_I_yBJk) is in-progress.**
 
-> **Historical reference (pre-K2 / pre-AGP-9 toolchain)** — single-thread simple incrementing intents (16 tests, [2023-09-30](../../actions/runs/6365805466#summary-17283087030)), [updates on CI](../../actions/workflows/benchmark.yml).
+> **Historical reference (pre-K2 / pre-AGP-9 toolchain)** — single-thread simple incrementing intents; [updates on CI](../../actions/workflows/benchmark.yml).
 > <br>_Each **operation** creates a state store, sends 5000 intents with reduction, and checks state updates!_
 
 | Benchmark                                     | Score | Units | Percent |
@@ -278,14 +278,11 @@ For the versions available, see the [tags on this repository](../../tags).
 
 ### Code quality and more
 
-<!-- Update Lines-of-Code value manually from https://codecov.io/gh/fluxo-kt/fluxo -->
-[![Lines-of-Code](https://img.shields.io/badge/Lines--of--Code-1009-blue)](https://codecov.io/gh/fluxo-kt/fluxo)
 [![Hits-of-Code, number of lines changed over time](https://hitsofcode.com/github/fluxo-kt/fluxo?branch=main)](https://hitsofcode.com/)
 <br>
 [![CodeFactor](https://www.codefactor.io/repository/github/fluxo-kt/fluxo/badge/main)](https://www.codefactor.io/repository/github/fluxo-kt/fluxo/overview/main)
 [![CodeBeat](https://codebeat.co/badges/5ed83de6-f399-4880-9a94-d42d1ab43b89)](https://codebeat.co/projects/github-com-fluxo-kt-fluxo-main)
 [![Codacy](https://app.codacy.com/project/badge/Grade/ea7dfbbaf83441eea468f4f083604280)](https://www.codacy.com/gh/fluxo-kt/fluxo/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=fluxo-kt/fluxo&amp;utm_campaign=Badge_Grade)
-[![Sonatype Lift](https://img.shields.io/badge/Sonatype-Lift-green)](https://lift.sonatype.com/results/github.com/fluxo-kt/fluxo)
 <br>
 [![CodeClimate](https://api.codeclimate.com/v1/badges/af292519a2481f9a47a6/maintainability)](https://codeclimate.com/github/fluxo-kt/fluxo-mvi/maintainability)
 
