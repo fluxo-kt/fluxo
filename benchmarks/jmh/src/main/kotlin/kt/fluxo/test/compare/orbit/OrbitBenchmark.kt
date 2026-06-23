@@ -11,10 +11,9 @@ import kt.fluxo.test.compare.launchCommonBenchmark
 import kt.fluxo.test.compare.launchCommonBenchmarkWithStaticIntent
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.annotation.OrbitExperimental
+import org.orbitmvi.orbit.blockingIntent
 import org.orbitmvi.orbit.container
-import org.orbitmvi.orbit.syntax.simple.SimpleSyntax
-import org.orbitmvi.orbit.syntax.simple.blockingIntent
-import org.orbitmvi.orbit.syntax.simple.reduce
+import org.orbitmvi.orbit.syntax.Syntax
 
 @Suppress("InjectDispatcher")
 @OptIn(OrbitExperimental::class)
@@ -22,7 +21,7 @@ internal object OrbitBenchmark {
     fun mvvmpIntentStaticIncrement(): Int {
         val (host, job) = createHostAndJob()
         runBlocking {
-            val intent: suspend SimpleSyntax<Int, Nothing>.() -> Unit = { reduce { state + 1 } }
+            val intent: suspend Syntax<Int, Nothing>.() -> Unit = { reduce { state + 1 } }
             val launchDef = launchCommonBenchmarkWithStaticIntent(intent) { host.blockingIntent(transformer = it) }
             host.container.stateFlow.consumeCommonBenchmark(launchDef, job)
         }
