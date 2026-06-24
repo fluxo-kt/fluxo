@@ -30,8 +30,8 @@ kotlinApiVersion = "2.3"
 # `kotlinCoreLibraries` (stdlib) MUST NOT exceed `kotlin` (compiler): a runtime newer than the
 # compiler emits a version-mismatch warning that `allWarningsAsErrors` turns fatal on CI/release.
 # Keep them aligned; the harness fails fast on skew (opt-out: -Pfluxo.allowKotlinStdlibSkew).
-kotlin = "2.3.21"
-kotlinCoreLibraries = "2.3.21"
+kotlin = "2.4.0"
+kotlinCoreLibraries = "2.4.0"
 
 # https://github.com/google/ksp/releases
 ksp = "2.3.9"
