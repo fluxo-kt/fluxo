@@ -73,7 +73,7 @@ kover = "0.9.8"
 # plugin through its compiled MavenPublishBaseExtension calls, so the consumer must
 # match that API to avoid version skew.
 # https://github.com/vanniktech/gradle-maven-publish-plugin/releases
-vanniktech-mvn-publish = "0.36.0"
+vanniktech-mvn-publish = "0.37.0"
 
 # Compose Multiplatform — Plugin Portal lags Maven Central; 1.9.3 is Portal's current stable.
 # Fluxo has zero runtime Compose; entry exists only so harness can self-detect plugin classpath.
