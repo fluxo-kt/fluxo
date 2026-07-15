@@ -58,7 +58,7 @@ bcv = "0.18.1"
 # https://maven.google.com/web/index.html#com.android.tools.build:gradle
 # https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google
 # https://developer.android.com/build/releases/gradle-plugin#updating-plugin
-android-gradle-plugin = "9.2.1"
+android-gradle-plugin = "9.3.0"
 
 # https://github.com/detekt/detekt/releases
 detekt = "1.23.8"
