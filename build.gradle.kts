@@ -292,3 +292,68 @@ allprojects {
         }
     }
 }
+
+// Dependency verification for toolchain archives of OTHER hosts.
+// Kotlin/Native, Node.js and Binaryen are downloaded as host-specific archives, so a regen of
+// `gradle/verification-metadata.xml` on one OS records only that host's archives, and strict
+// verification then fails on every other OS (CI runs macOS, Ubuntu and Windows). Resolving the
+// other hosts' archives through Gradle while `--write-verification-metadata` runs records their real
+// checksums, which replaces hand-pinning hashes from upstream SHASUMS files on every toolchain bump.
+// Run it in the same invocation as the metadata write; `./updateBaselines` does.
+tasks.register("resolveCrossHostToolchains") {
+    description = "Resolves every host's Kotlin/Native, Node.js and Binaryen archive so verification metadata covers all hosts."
+    group = "verification"
+    notCompatibleWithConfigurationCache("resolves detached configurations through temporary repositories")
+    val kotlinVersion = org.jetbrains.kotlin.gradle.plugin.getKotlinPluginVersion(logger)
+    doLast {
+        // The env specs live on whichever projects apply the JS/Wasm targets, not necessarily the root.
+        val nodeVersions = allprojects.flatMap {
+            listOfNotNull(
+                it.extensions.findByType<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsEnvSpec>()?.version?.orNull,
+                it.extensions.findByType<org.jetbrains.kotlin.gradle.targets.wasm.nodejs.WasmNodeJsEnvSpec>()?.version?.orNull,
+            )
+        }.toSet()
+        @OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
+        val binaryenVersions = allprojects.mapNotNull {
+            it.extensions.findByType<org.jetbrains.kotlin.gradle.targets.wasm.binaryen.BinaryenEnvSpec>()?.version?.orNull
+        }.toSet()
+
+        fun resolve(coordinates: List<String>): Int {
+            val deps = coordinates.map { dependencies.create(it) }.toTypedArray()
+            return configurations.detachedConfiguration(*deps).apply { isTransitive = false }.resolve().size
+        }
+
+        // Kotlin/Native prebuilt archives come from Maven Central (settings repositories). Resolve them
+        // BEFORE adding the temporary repositories below: any project-level repository makes Gradle ignore
+        // the settings repositories for this project.
+        val konanHosts = listOf("linux-x86_64@tar.gz", "macos-aarch64@tar.gz", "macos-x86_64@tar.gz", "windows-x86_64@zip")
+        val konan = resolve(konanHosts.map { "org.jetbrains.kotlin:kotlin-native-prebuilt:$kotlinVersion:$it" })
+
+        // Same repository layouts KGP uses for its own downloads.
+        val temporary = listOf(
+            repositories.ivy {
+                url = uri("https://nodejs.org/dist")
+                patternLayout { artifact("v[revision]/[artifact](-v[revision]-[classifier]).[ext]") }
+                metadataSources { artifact() }
+                content { includeModule("org.nodejs", "node") }
+            },
+            repositories.ivy {
+                url = uri("https://github.com/WebAssembly/binaryen/releases/download")
+                patternLayout { artifact("version_[revision]/binaryen-version_[revision]-[classifier].[ext]") }
+                metadataSources { artifact() }
+                content { includeModule("com.github.webassembly", "binaryen") }
+            },
+        )
+        try {
+            val nodePlatforms = listOf("darwin-arm64@tar.gz", "darwin-x64@tar.gz", "linux-arm64@tar.gz", "linux-x64@tar.gz", "win-x64@zip")
+            val binaryenPlatforms = listOf("aarch64-linux", "arm64-macos", "arm64-windows", "x86_64-linux", "x86_64-macos", "x86_64-windows")
+            // One configuration per version: within a single configuration, conflict resolution would keep only the
+            // highest version of a module and silently skip the others (JS and Wasm can pin different Node versions).
+            val node = nodeVersions.sumOf { v -> resolve(nodePlatforms.map { "org.nodejs:node:$v:$it" }) }
+            val binaryen = binaryenVersions.sumOf { v -> resolve(binaryenPlatforms.map { "com.github.webassembly:binaryen:$v:$it@tar.gz" }) }
+            logger.lifecycle("Resolved cross-host toolchain archives: Kotlin/Native $konan, Node.js $node $nodeVersions, Binaryen $binaryen $binaryenVersions")
+        } finally {
+            repositories.removeAll(temporary.toSet())
+        }
+    }
+}

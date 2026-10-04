@@ -1,25 +1,56 @@
 #!/bin/sh
+# Regenerates every committed baseline with the environment CI checks them in.
+#
+#   ./updateBaselines              all baselines: yarn locks, dependency guard, verification metadata,
+#                                  API dumps
+#   ./updateBaselines --deps-only  only what a dependency change moves: yarn locks, dependency guard,
+#                                  verification metadata (the Dependabot workflow runs this)
+#   --dry-run                      configure everything, change nothing (CI runs this so a plugin that
+#                                  breaks the regen fails on its own change, not at the next update)
+#
+# Never stops Gradle daemons: on a shared machine `./gradlew --stop` kills every other build.
+set -eu
 
-# Avoid error when process cannot access the file because it is being used by another process.
-./gradlew --stop
+deps_only=false
+dry_run=""
+for arg in "$@"; do
+  case "$arg" in
+    --deps-only) deps_only=true ;;
+    --dry-run) dry_run="--dry-run" ;;
+    *) echo "Unknown option: $arg (expected --deps-only and/or --dry-run)" >&2; exit 2 ;;
+  esac
+done
 
-# Lint will recreate baselines only if they are missing, so delete them first
-find . -name "lint-baseline.xml" -type f -print -delete
-
-# 1) Configuration cache is disabled as many plugins, including Kotlin, don't support it well enough
-# 2) Use continue options to prevent stop on occasional error
-# 3) Build cache is disabled for the precise API dump
-
+# Caching and configuration cache off, incremental off: baselines must come from a clean computation.
+# RELEASE=true: the API dump CI publishes differs from a debug-mode dump.
 export CI=true
 export RELEASE=true
-export GRADLE_OPTS="-Dorg.gradle.caching=false -Dorg.gradle.configuration-cache=false -Dorg.gradle.logging.stacktrace=all
- -Dkotlin.incremental=false -Dlint.baselines.continue=true"
+export GRADLE_OPTS="-Dorg.gradle.caching=false -Dorg.gradle.configuration-cache=false -Dorg.gradle.logging.stacktrace=all -Dkotlin.incremental=false"
 
-# Update only Lint baselines
-#./gradlew lint lintDebug lintRelease -Pci --console=plain --continue
+if [ -z "$dry_run" ]; then
+  # KGP keeps build/js/package.json UP-TO-DATE when only yarn resolutions change, so the lock upgrade would
+  # silently keep the old versions; deleting the generated npm projects forces them to be rewritten.
+  rm -rf build/js build/wasm
+  # Gradle's metadata writer only appends: entries for versions no longer used would stay forever.
+  rm -f gradle/verification-metadata.xml
+fi
 
-./gradlew lintAnalyzeAndroidHostTest \
- dependencyGuardBaseline \
- kotlinUpgradeYarnLock kotlinStoreYarnLock \
- kotlinWasmUpgradeYarnLock kotlinWasmStoreYarnLock \
- -Pci --console=plain --continue
+baseline_tasks="dependencyGuardBaseline kotlinUpgradeYarnLock kotlinStoreYarnLock kotlinWasmUpgradeYarnLock kotlinWasmStoreYarnLock"
+rerun=""
+if [ "$deps_only" = false ]; then
+  baseline_tasks="$baseline_tasks apiDump"
+  # A stale up-to-date output yields an API dump that differs from CI's.
+  rerun="--rerun-tasks"
+fi
+
+# Both invocations write verification metadata: the first so a new dependency version resolves at all
+# before its checksum exists, the second to cover the full CI graph. The second runs `build` WITH tests
+# (test-only configurations must resolve; -DDISABLE_TESTS drops them) and checks the fresh baselines.
+# shellcheck disable=SC2086
+./gradlew --write-verification-metadata sha256 $baseline_tasks $rerun $dry_run -Pci --console=plain --continue
+# shellcheck disable=SC2086
+./gradlew --write-verification-metadata sha256 build cyclonedxBom resolveCrossHostToolchains $dry_run -Pci --console=plain --continue
+
+if [ -n "$dry_run" ]; then
+  rm -f gradle/verification-metadata.dryrun.xml
+fi
