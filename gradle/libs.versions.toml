@@ -240,7 +240,7 @@ sigstore-sign = { id = "dev.sigstore.sign", version = "2.2.0" }
 # Supply-chain: CycloneDX SBOM — `cyclonedxBom` task emits a JSON Software Bill
 # of Materials covering direct + transitive deps with SPDX coordinates.
 # https://plugins.gradle.org/plugin/org.cyclonedx.bom
-cyclonedx-bom = { id = "org.cyclonedx.bom", version = "3.2.4" }
+cyclonedx-bom = { id = "org.cyclonedx.bom", version = "3.4.1" }
 
 android-app = { id = "com.android.application", version.ref = "android-gradle-plugin" }
 android-lib = { id = "com.android.library", version.ref = "android-gradle-plugin" }

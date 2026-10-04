@@ -197,7 +197,7 @@ abstract class CheckForbiddenFlagsTask : DefaultTask() {
     }
 }
 
-val checkForbiddenFlags by tasks.registering(CheckForbiddenFlagsTask::class) {
+val checkForbiddenFlags = tasks.register<CheckForbiddenFlagsTask>("checkForbiddenFlags") {
     description = "Rejects deprecated/removed/no-op Gradle-properties keys; drift gate."
     group = "verification"
     propertiesFile.set(layout.projectDirectory.file("gradle.properties"))
