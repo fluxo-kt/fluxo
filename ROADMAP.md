@@ -1,6 +1,12 @@
 
 ## Roadmap
 
+* [ ] **Restore static analysis (high priority).** Detekt, Spotless and the harness lint setup are off:
+  fluxo-kmp-conf enables them only with `setupVerification = true`, which the root build never sets
+  (`enableSpotless = true` is inert without it). Measured 2026-10-04 with the flag on: Spotless reformats ~84 files,
+  detekt reports ~570 library issues (mostly fluxo-core common code) and ~170 in benchmarks, and the Android detekt
+  tasks fail variant resolution with fluxo-kmp-conf 0.15.1 on AGP 9 (harness defect). Plan: one reformat commit,
+  fix real findings, baseline the rest with reasons, enable Android detekt once the harness fix ships.
 * [ ] Support new Kotlin `AutoCloseable` interface
   ([since Kotlin 1.8.20](https://kotlinlang.org/docs/whatsnew-eap.html#experimental-support-for-autocloseable-interface-in-standard-library),
   [Android API level 19](https://developer.android.com/reference/java/lang/AutoCloseable))

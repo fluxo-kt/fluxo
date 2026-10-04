@@ -35,7 +35,7 @@ The single source of truth for the published version is the `version` key in
 CI publishing is wired across two workflows; both feed vanniktech's Central Portal credentials via
 `ORG_GRADLE_PROJECT_*` environment variables (the plugin reads them as Gradle project properties).
 
-### Snapshots — on every push to `main`
+### Snapshots — on every push to the GitHub default branch
 
 `.github/workflows/build.yml` runs `publishToMavenCentral` (the **unsigned** snapshot task — the
 harness marks PGP signing required only for non-snapshot versions). Snapshots land in the Central
@@ -168,23 +168,24 @@ Whenever the resolved graph changes:
 - Wrapper bumps (`gradle-wrapper.properties`)
 - New plugin additions
 
-Dependabot PRs regenerate automatically via `.github/workflows/verify-metadata.yml` (the workflow
-is gated on `dependabot[bot]` only — human contributors regen locally on the PR branch). The same
-command applies before cutting a release tag, so the published graph matches the resolved one:
+Dependabot PRs regenerate automatically via `.github/workflows/verify-metadata.yml` (gated on
+`dependabot[bot]`; it pushes the result and dispatches CI). Human contributors run the same command
+on macOS before pushing, and before cutting a release tag so the published graph matches the
+resolved one:
 
 ```bash
-./gradlew --write-verification-metadata sha256 \
-  help build apiCheck cyclonedxBom \
-  --no-configuration-cache -DDISABLE_TESTS
+./updateBaselines --deps-only   # metadata, dependency guard, yarn locks
+./updateBaselines               # also API dumps
 ```
 
-`cyclonedxBom` enumerates the SBOM's transitive POMs that `help build apiCheck` alone doesn't
-resolve. Composite-mode dogfood is auto-disabled under `--write-verification-metadata` by
-`settings.gradle.kts`, so the regen always captures the published harness graph — no flag
-discipline required. AGENTS.md gotcha #29 documents the manual-pin edge cases (transform-input
-classpath artifacts, non-host-OS platform binaries) the task list still doesn't reach.
+The script deletes the file first (Gradle's writer only appends, so stale versions would stay),
+resolves the CI-identical graph including test-only configurations, the SBOM's transitive POMs
+(`cyclonedxBom`) and every other host's Kotlin/Native, Node and Binaryen archives
+(`resolveCrossHostToolchains`). Run it on macOS: only a macOS host resolves the Apple-target
+artefacts. Composite-mode dogfood is auto-disabled under `--write-verification-metadata` by
+`settings.gradle.kts`, so the regen always captures the published harness graph.
 
-If you forget either flag, `./gradlew help` (or any CI job) fails fast with "Dependency
+If you skip the regen, `./gradlew help` (or any CI job) fails fast with "Dependency
 verification failed for…" citing the offending coordinate.
 
 ### Disabling temporarily (not recommended)
