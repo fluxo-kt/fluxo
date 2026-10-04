@@ -7,7 +7,8 @@ on:
   schedule:
     - cron: '15 4 * * 2'
   push:
-    branches: [main]
+    # Scorecard scores the default branch.
+    branches: [dev]
 
 # Top-level least privilege; per-job permissions grant what each step needs.
 permissions: read-all

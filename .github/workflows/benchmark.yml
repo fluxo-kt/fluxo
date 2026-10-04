@@ -11,7 +11,7 @@ on:
 
 concurrency:
   # JMH runs are long; a second push to the same ref preempts the previous one
-  # so we don't pay for two stale runs racing. Scheduled cron uses ref=main, so
+  # so we don't pay for two stale runs racing. Scheduled cron uses the default branch, so
   # cancel-in-progress also stops a manually-triggered run if cron starts.
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -62,7 +62,7 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6
         with:
-          cache-read-only: ${{ github.ref != 'refs/heads/main' || matrix.java != '17' }}
+          cache-read-only: ${{ github.ref != format('refs/heads/{0}', github.event.repository.default_branch) || matrix.java != '17' }}
 
       # setup-gradle@v4+ dropped the `arguments:` input — run Gradle in a dedicated step.
       # jmh is configuration-cache-incompatible, hence the explicit `--no-configuration-cache`.

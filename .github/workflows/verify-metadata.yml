@@ -1,25 +1,19 @@
-name: Dependency Verification Metadata
+name: Dependency Baselines
 
-# R5.5 — Gradle dependency-verification supports SHA-256 (and optionally PGP)
-# pinning of every artefact in the resolved graph at `gradle/verification-metadata.xml`.
-# Strict mode (set in the file) makes the daemon refuse any artefact whose hash
-# isn't pre-recorded, defending against repo/CDN poisoning.
+# Dependabot cannot run Gradle, but every dependency bump moves committed baselines: the SHA-256 pins in
+# `gradle/verification-metadata.xml` (strict mode refuses any artefact whose hash is not recorded, which
+# defends against repository/CDN poisoning), the dependency-guard snapshots and the yarn locks. This
+# workflow regenerates exactly those on Dependabot PRs and pushes them onto the PR head. API dumps are
+# deliberately NOT regenerated here: an ABI change caused by a dependency must stay visible for review.
 #
-# This workflow auto-regenerates the metadata file on Dependabot PRs (Dependabot
-# can't run Gradle on its own) and force-with-lease pushes the result back onto
-# the PR head, so the developer doesn't have to remember the regen command.
-#
-# Safety mirror of pr-baseline.yml: uses `pull_request_target` so the workflow
-# runs with BASE-repo secrets/permissions, and `--force-with-lease=ref:sha`
-# captures the head SHA at workflow-start time to refuse pushes if the PR head
-# moved between trigger and regen.
+# Safety mirror of pr-baseline.yml: `pull_request_target` runs with base-repo permissions, and
+# `--force-with-lease=ref:sha` refuses the push if the PR head moved after the trigger.
 
 on:
   pull_request_target:
     types: [opened, synchronize, reopened]
-    branches: [main, dev]
     paths:
-      # Only run when something has likely shifted the dep graph.
+      # Only run when something has likely shifted the dependency graph.
       - 'gradle/libs.versions.toml'
       - 'gradle/wrapper/gradle-wrapper.properties'
       - '**/build.gradle.kts'
@@ -28,6 +22,8 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  # A push made with GITHUB_TOKEN triggers no workflow, so CI is dispatched explicitly afterwards.
+  actions: write
 
 concurrency:
   group: verify-metadata-${{ github.event.pull_request.number }}
@@ -35,23 +31,17 @@ concurrency:
 
 jobs:
   regen:
-    # Dependabot-only (operates in same repo only — fork-PR enforcement is
-    # belt-and-braces here): humans regen locally via the documented command in
-    # CHANGELOG/RELEASING. Running on every human PR would force-push their
-    # branch on every commit.
+    # Dependabot-only, same-repo only: humans run `./updateBaselines` locally, and force-pushing a
+    # human's branch on every commit would fight them.
     if: >-
       github.event.pull_request.user.login == 'dependabot[bot]' &&
       github.event.pull_request.head.repo.full_name == github.repository
-    name: Regenerate verification-metadata.xml
-    runs-on: ubuntu-latest
-    timeout-minutes: 35
+    name: Regenerate dependency baselines
+    # macOS: only a macOS host resolves the Apple-target artefacts; the other hosts' toolchain
+    # archives are covered by the `resolveCrossHostToolchains` task inside the regen.
+    runs-on: macos-latest
+    timeout-minutes: 55
     steps:
-      - name: Harden runner
-        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
-        with:
-          egress-policy: audit
-          disable-sudo: true
-
       - name: Checkout PR head
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
         with:
@@ -70,31 +60,28 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6
 
-      - name: Regenerate metadata against full graph
-        # `cyclonedxBom` pulls SBOM transitive POMs that `help build apiCheck`
-        # alone doesn't resolve (gotcha #29). Composite-mode dogfood is
-        # auto-disabled under --write-verification-metadata by settings.gradle.kts.
-        run: >
-          ./gradlew --write-verification-metadata sha256
-          help build apiCheck cyclonedxBom
-          --no-configuration-cache -DDISABLE_TESTS --stacktrace
+      - name: Regenerate dependency baselines
+        run: ./updateBaselines --deps-only
 
-      - name: Commit + force-with-lease push
+      - name: Commit, push and dispatch CI
         env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           HEAD_REF: ${{ github.event.pull_request.head.ref }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add gradle/verification-metadata.xml 2>/dev/null || true
+          git add gradle/verification-metadata.xml dependencies .kotlin-js-store kotlin-js-store
 
           if git diff --staged --quiet; then
-            echo "::notice::Metadata file unchanged."
+            echo "::notice::Dependency baselines unchanged."
             exit 0
           fi
 
-          git commit -m "build(deps): regen verification-metadata.xml for Dependabot bump"
+          git commit -m "build(deps): regenerate dependency baselines for Dependabot bump"
 
           git push --force-with-lease="refs/heads/${HEAD_REF}:${HEAD_SHA}" \
             origin "HEAD:${HEAD_REF}"
+
+          gh workflow run build.yml --ref "${HEAD_REF}"

@@ -7,7 +7,7 @@ name: Release
 # is 100% vanniktech maven-publish → Central Portal (OSSRH is retired); releases are
 # PGP-signed (the harness marks signing required for non-snapshot versions), so all
 # four secrets below must be present. Snapshots publish unsigned from build.yml on
-# main pushes — this workflow is releases only.
+# default-branch pushes — this workflow is releases only.
 #
 # Required repository secrets (maintainer-provisioned; GitHub Settings → Secrets):
 #   MAVEN_CENTRAL_USERNAME / MAVEN_CENTRAL_PASSWORD  Central Portal user token

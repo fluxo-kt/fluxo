@@ -2,7 +2,8 @@ name: Submit Gradle dependencies
 
 on:
   push:
-    branches: [ main ]
+    # Dependabot alerts are computed from the default branch's submitted graph.
+    branches: [ dev ]
     paths-ignore:
       - '**-check.yml'
       - '**-validation.yml'
