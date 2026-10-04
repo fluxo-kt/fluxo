@@ -3,6 +3,7 @@
 # Documentation for all configuration options:
 # https://docs.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
 
+# Review requests come from .github/CODEOWNERS: Dependabot removed the `reviewers` option.
 version: 2
 updates:
   - package-ecosystem: "gradle"
@@ -11,8 +12,6 @@ updates:
       prefix: "build(deps)"
     schedule:
       interval: "weekly"
-    reviewers:
-      - "amal"
     labels:
       - "gradle"
       - "dependencies"
@@ -41,8 +40,11 @@ updates:
         patterns:
           - "io.gitlab.arturbosch.detekt"
           - "io.gitlab.arturbosch.detekt:*"
-      vanniktech:
+      # The publishing plugin must match the version the published fluxo-kmp-conf harness was built
+      # against (the harness configures it reflectively), so both move in one PR.
+      harness:
         patterns:
+          - "io.github.fluxo-kt.fluxo-kmp-conf*"
           - "com.vanniktech*"
       dokka:
         patterns:
@@ -52,11 +54,9 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     commit-message:
-      prefix: "ci(GitHub)"
+      prefix: "ci(github)"
     schedule:
       interval: "weekly"
-    reviewers:
-      - "amal"
     labels:
       - "gh-action"
       - "dependencies"
@@ -69,17 +69,3 @@ updates:
         patterns:
           - "*"
 
-  - package-ecosystem: "npm"
-    directory: "/"
-    commit-message:
-      prefix: "build(deps)"
-    schedule:
-      interval: "weekly"
-    reviewers:
-      - "amal"
-    labels:
-      - "js"
-      - "dependencies"
-    open-pull-requests-limit: 5
-    cooldown:
-      default-days: 7
