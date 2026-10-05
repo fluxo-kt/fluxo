@@ -166,27 +166,30 @@ rxjava2 = { module = "io.reactivex.rxjava2:rxjava", version.strictly = "2.2.21" 
 # build or classpath dependencies for the forced update (security recommendations)
 
 # https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
-jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version = "2.22.0" }
-# https://mvnrepository.com/artifact/org.jsoup/jsoup
-jsoup = { module = "org.jsoup:jsoup", version = "1.22.2" }
-# https://mvnrepository.com/artifact/org.json/json
-org-json = { module = "org.json:json", version = "20260522" }
+jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version = "2.22.3" }
 # https://mvnrepository.com/artifact/com.fasterxml.woodstox/woodstox-core
-woodstox-core = { module = "com.fasterxml.woodstox:woodstox-core", version = "7.2.1" }
+woodstox-core = { module = "com.fasterxml.woodstox:woodstox-core", version = "7.3.0" }
+# https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk18on
+bcprov = { module = "org.bouncycastle:bcprov-jdk18on", version = "1.86" }
+# https://mvnrepository.com/artifact/org.freemarker/freemarker
+freemarker = { module = "org.freemarker:freemarker", version = "2.3.35" }
 
 
 [bundles]
-# List of deps with forced versions
+# The harness forces every `pinned` and `pinned-*` bundle onto all configurations it can still change.
 pinned = [
     "androidx-annotation",
     "jetbrains-annotation",
     "jsr305",
-
-    # security recommendations
+]
+# Patched versions of vulnerable transitive build-classpath libraries. The root build.gradle.kts also
+# constrains its buildscript classpath with this bundle: the harness's pins arrive too late for the
+# plugin classpath. Delete an entry once no plugin brings a vulnerable version.
+pinned-security = [
     "jackson-databind",
-    "jsoup",
-    "org-json",
     "woodstox-core",
+    "bcprov",
+    "freemarker",
 ]
 
 

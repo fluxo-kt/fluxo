@@ -12,6 +12,20 @@ import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
 
+// Security pins (catalog bundle `pinned-security`) for the classes the build actually runs. The harness pins the
+// same bundle with `eachDependency`, but it registers them inside its own apply(), after `plugins {}`
+// has resolved and loaded the plugin classpath, so they only change later re-resolutions such as
+// `buildEnvironment` and the dependency-guard snapshot (measured: the root script's classloader loaded
+// bcprov 1.80.2 and freemarker 2.3.32 while both reports showed the pins). `buildscript {}` runs
+// before `plugins {}`, so these constraints reach the real classpath. Constraints only raise versions.
+buildscript {
+    dependencies {
+        constraints {
+            libs.bundles.pinned.security.get().forEach { add("classpath", "${it.module}:${it.version}") }
+        }
+    }
+}
+
 plugins {
     alias(libs.plugins.android.lib) apply false
     alias(libs.plugins.kotlin.multiplatform) apply false
