@@ -20,10 +20,6 @@ on:
 permissions:
   contents: read
 
-env:
-  # gradle.properties verifies leniently for local builds; CI must override it (settings.gradle.kts enforces).
-  GRADLE_OPTS: "-Dorg.gradle.dependency.verification=strict"
-
 jobs:
   submit:
     name: Dependencies
@@ -66,3 +62,6 @@ jobs:
         uses: gradle/actions/dependency-submission@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
         with:
           cache-read-only: true
+          # The action runs Gradle with -Dorg.gradle.dependency.verification=off, which overrides GRADLE_OPTS and
+          # trips the settings.gradle.kts CI guard. A later -D wins, so strict verification is restored here.
+          additional-arguments: -Dorg.gradle.dependency.verification=strict
