@@ -150,9 +150,11 @@ supply-chain review of fluxo's own declared deps, full for downstream-scanner in
 ## Dependency-verification metadata (build-side supply-chain)
 
 `gradle/verification-metadata.xml` pins SHA-256 of every artefact in the resolved graph (direct +
-transitive, across every KMP target's klib + every Android variant). With `verify-metadata=true`
-the daemon refuses any artefact whose hash isn't pre-recorded — repo/CDN poisoning of any pin in
-the catalog is rejected at resolve time, not after the build has compromised the workstation.
+transitive, across every KMP target's klib + every Android variant). CI verifies strictly: it refuses
+any artefact whose hash isn't pre-recorded, so repo/CDN poisoning fails the build at resolve time,
+before anything is built or published. Local builds only print mismatches (`gradle.properties` sets
+`org.gradle.dependency.verification=lenient`; AGENTS.md gotcha #29 explains why), so a workstation
+is not protected by this file.
 
 PGP signature pinning (`verify-signatures=true`) is intentionally left advisory for now: it would
 require curating the trusted-key list for every publisher (jetbrains, google, sonatype-central,
@@ -185,12 +187,13 @@ resolves the CI-identical graph including test-only configurations, the SBOM's t
 artefacts. Composite-mode dogfood is auto-disabled under `--write-verification-metadata` by
 `settings.gradle.kts`, so the regen always captures the published harness graph.
 
-If you skip the regen, `./gradlew help` (or any CI job) fails fast with "Dependency
-verification failed for…" citing the offending coordinate.
+If you skip the regen, every CI job fails fast with "Dependency verification failed for…" citing
+the offending coordinate; a local build prints the same report and carries on. To see CI's verdict
+locally, add `--dependency-verification strict`.
 
-### Disabling temporarily (not recommended)
+### No CI bypass
 
-If a critical artefact must be unblocked while a fix is in flight, prefer regenerating over
-turning verification off. As a last resort, pass `--dependency-verification lenient` to a single
-invocation (logs warnings, does not fail) — never flip `verify-metadata` to `false` in the
+CI cannot run lenient: `settings.gradle.kts` fails a `CI=true` build that is not strict (only
+metadata writes and the `-Pfluxo.kotlin` pre-release lane are exempt). An artefact blocked on CI is
+unblocked by regenerating the metadata, never by flipping `verify-metadata` to `false` in the
 checked-in file.

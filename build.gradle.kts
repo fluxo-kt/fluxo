@@ -360,8 +360,8 @@ allprojects {
 // (GitHub, read 2026-10-05): brace-expansion 2.x < 2.1.7, js-yaml 4.x < 4.3.2, diff 6–8 < 8.0.3,
 // serialize-javascript < 7.1.2. diff and serialize-javascript cross a major from what mocha requests; JS tests
 // pass with them. mocha itself stays at KGP's bundled version: mocha 12 breaks KGP's test reporter (zero tests
-// run). KGP keeps build/js/package.json up to date on a resolution-only change, so `./updateBaselines` deletes
-// build/js before upgrading the lock.
+// run). On a resolution-only change KGP considers build/js/package.json up to date and leaves it stale, so
+// `./updateBaselines` deletes build/js before upgrading the lock.
 plugins.withType<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin> {
     the<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension>().apply {
         resolution("brace-expansion", "2.1.7")

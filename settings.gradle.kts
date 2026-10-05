@@ -97,6 +97,8 @@ include(":fluxo-data")
 // a non-generic host (CI Windows: mingw only) or a KMP_TARGETS selection. Such builds skip the module;
 // benchmark.yml builds it on every OS without narrowing. The flags are read the way fluxo-kmp-conf reads them:
 // split_targets is on when present as an env var or system property, or truthy as a Gradle property.
+// Deliberately coarse: any narrowing skips the module, even one that keeps the JVM target (KMP_TARGETS=JVM, a split
+// build on the generic host), because telling them apart would copy fluxo-kmp-conf's target table here.
 val isTargetSetNarrowed = listOf("split_targets", "SPLIT_TARGETS").any {
     providers.environmentVariable(it).isPresent || providers.systemProperty(it).isPresent ||
         providers.gradleProperty(it).orNull?.lowercase() in setOf("true", "1", "on", "y", "yes")
