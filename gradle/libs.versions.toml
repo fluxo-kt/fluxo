@@ -32,6 +32,8 @@ kotlinApiVersion = "2.3"
 # Kotlin 2.3 consumers (the kotlinx convention). It must not exceed `kotlin`: the harness rejects that skew.
 # JS/Wasm resolve the compiler's stdlib instead (rule in the root build.gradle.kts).
 kotlin = "2.4.20"
+# https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk18on
+bouncycastle = "1.86"
 kotlinCoreLibraries = "2.3.21"
 
 # https://github.com/google/ksp/releases
@@ -162,7 +164,19 @@ jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", ver
 # https://mvnrepository.com/artifact/com.fasterxml.woodstox/woodstox-core
 woodstox-core = { module = "com.fasterxml.woodstox:woodstox-core", version = "7.3.0" }
 # https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk18on
-bcprov = { module = "org.bouncycastle:bcprov-jdk18on", version = "1.86" }
+bcprov = { module = "org.bouncycastle:bcprov-jdk18on", version.ref = "bouncycastle" }
+# One BouncyCastle release train: bcpkix must match bcprov.
+bcpkix = { module = "org.bouncycastle:bcpkix-jdk18on", version.ref = "bouncycastle" }
+# AGP lint/sdk-common bring commons-lang3, httpclient, jdom2 and jose4j; sigstore-java brings httpclient5/httpcore5;
+# KGP's swift-export tooling brings opentelemetry-api.
+commons-lang3 = { module = "org.apache.commons:commons-lang3", version = "3.21.0" }
+httpclient = { module = "org.apache.httpcomponents:httpclient", version = "4.5.14" }
+httpclient5 = { module = "org.apache.httpcomponents.client5:httpclient5", version = "5.6.4" }
+httpcore5 = { module = "org.apache.httpcomponents.core5:httpcore5", version = "5.4.4" }
+httpcore5-h2 = { module = "org.apache.httpcomponents.core5:httpcore5-h2", version = "5.4.4" }
+jdom2 = { module = "org.jdom:jdom2", version = "2.0.6.1" }
+jose4j = { module = "org.bitbucket.b_c:jose4j", version = "0.9.7" }
+opentelemetry-api = { module = "io.opentelemetry:opentelemetry-api", version = "1.66.0" }
 # https://mvnrepository.com/artifact/org.freemarker/freemarker
 freemarker = { module = "org.freemarker:freemarker", version = "2.3.35" }
 
@@ -181,7 +195,16 @@ pinned-security = [
     "jackson-databind",
     "woodstox-core",
     "bcprov",
+    "bcpkix",
     "freemarker",
+    "commons-lang3",
+    "httpclient",
+    "httpclient5",
+    "httpcore5",
+    "httpcore5-h2",
+    "jdom2",
+    "jose4j",
+    "opentelemetry-api",
 ]
 
 

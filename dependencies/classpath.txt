@@ -105,14 +105,14 @@ net.sf.jopt-simple:jopt-simple:4.9
 net.sf.kxml:kxml2:2.3.0
 org.antlr:antlr4-runtime:4.11.1
 org.apache.commons:commons-compress:1.27.1
-org.apache.commons:commons-lang3:3.16.0
+org.apache.commons:commons-lang3:3.21.0
 org.apache.httpcomponents:httpclient:4.5.14
 org.apache.httpcomponents:httpcore:4.4.16
 org.apache.httpcomponents:httpmime:4.5.6
-org.bitbucket.b_c:jose4j:0.9.5
-org.bouncycastle:bcpkix-jdk18on:1.80.2
+org.bitbucket.b_c:jose4j:0.9.7
+org.bouncycastle:bcpkix-jdk18on:1.86
 org.bouncycastle:bcprov-jdk18on:1.86
-org.bouncycastle:bcutil-jdk18on:1.80.2
+org.bouncycastle:bcutil-jdk18on:1.86
 org.checkerframework:checker-qual:3.43.0
 org.codehaus.woodstox:stax2-api:4.3.1
 org.eclipse.jgit:org.eclipse.jgit:7.5.0.202512021534-r
@@ -120,7 +120,7 @@ org.eclipse.platform:org.eclipse.osgi:3.24.100
 org.freemarker:freemarker:2.3.35
 org.glassfish.jaxb:jaxb-runtime:2.3.2
 org.glassfish.jaxb:txw2:2.3.2
-org.jdom:jdom2:2.0.6
+org.jdom:jdom2:2.0.6.1
 org.jetbrains.dokka:dokka-core:2.2.0
 org.jetbrains.dokka:dokka-gradle-plugin:2.2.0
 org.jetbrains.dokka:org.jetbrains.dokka.gradle.plugin:2.2.0
