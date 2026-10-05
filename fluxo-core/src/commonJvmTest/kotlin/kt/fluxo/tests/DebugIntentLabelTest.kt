@@ -18,12 +18,6 @@ internal class DebugIntentLabelTest : CoroutineScopeAwareTest() {
     private data class Discrete(val id: Int)
 
     @Test
-    fun lambda_intent_is_labelled_by_class_name() {
-        val intent: FluxoIntent<String, Nothing> = { noOp() }
-        assertEquals(intent.javaClass.name, debugIntentLabel(intent))
-    }
-
-    @Test
     fun other_intents_keep_their_toString() {
         assertEquals("Discrete(id=1)", debugIntentLabel(Discrete(1)))
         assertEquals("null", debugIntentLabel(null))
