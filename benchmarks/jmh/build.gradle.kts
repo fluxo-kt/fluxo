@@ -140,7 +140,7 @@ jmh {
     })
 
     // Result format. Defaults to TEXT (parsed by `benchmark-summary.main.kts`'s current-result
-    // path). Override via `-Pjmh_rf=JSON` for the R0.b baseline-bootstrap workflow — the helper's
+    // path). Override via `-Pjmh_rf=JSON` for the baseline-bootstrap workflow — the helper's
     // baseline path expects the JSON schema (top-level array with `primaryMetric` objects).
     resultFormat.set((envOrPropValue("jmh_rf") ?: "TEXT").also {
         if (jmhStart) logger.lifecycle("JMH resultFormat='$it'")

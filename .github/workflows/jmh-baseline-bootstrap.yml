@@ -1,10 +1,10 @@
 name: JMH Baseline Bootstrap
 
-# R0.b — One-shot bootstrap that produces the host-matched JMH gating
+# One-shot bootstrap that produces the host-matched JMH gating
 # baselines at `benchmarks/jmh/baselines/main-{darwin,linux}.json` on
 # authoritative CI runners (macos-latest + ubuntu-latest).
 #
-# `benchmark-summary.main.kts` (committed in R0) reads these JSONs when
+# `benchmark-summary.main.kts` reads these JSONs when
 # `JMH_BASELINE_CHECK=1` and applies the dual gate `|Δ|/σ>2 AND |Δ|/base>5%`
 # per benchmark. Without the JSONs the gate is silently skipped — see the
 # `[baseline-check] no baseline at …` log line in the script.
@@ -80,7 +80,7 @@ jobs:
         uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
 
       - name: Run JMH with gating config + emit JSON
-        # Same config as plan §11 gating profile: forks=2, warmupIterations=2,
+        # Gating profile: forks=2, warmupIterations=2,
         # iterations=5, threads=2 (the benchmarks/jmh/build.gradle.kts default
         # is a smoke profile: forks=1, iter=4). Property names match the
         # `envOrPropInt("jmh_*")` reads in build.gradle.kts:
