@@ -55,13 +55,13 @@ jobs:
       - name: Disable configuration cache
         run: sed -i 's/org.gradle.configuration-cache=true/org.gradle.configuration-cache=false/' gradle.properties
 
-      # Gradle's own dependency-graph plugin resolves every configuration of every project. The previous
-      # third-party action parsed `gradle dependencies` text and failed on every run, which left the
-      # submitted graph (and so the Dependabot alerts) frozen at an old snapshot.
+      # Gradle's own dependency-graph plugin resolves every configuration of every project. Rejected: actions
+      # that parse `gradle dependencies` text (mikepenz/gradle-dependency-submission) — it failed on every run,
+      # so the submitted graph and the Dependabot alerts computed from it went stale.
       - name: Submit Gradle Dependency Graph
         uses: gradle/actions/dependency-submission@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
         with:
           cache-read-only: true
-          # The action runs Gradle with -Dorg.gradle.dependency.verification=off, which overrides GRADLE_OPTS and
-          # trips the settings.gradle.kts CI guard. A later -D wins, so strict verification is restored here.
+          # The action passes -Dorg.gradle.dependency.verification=off, which overrides GRADLE_OPTS (the
+          # settings.gradle.kts CI guard then fails the build). The last -D wins, so this restores strict.
           additional-arguments: -Dorg.gradle.dependency.verification=strict
