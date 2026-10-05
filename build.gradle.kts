@@ -74,7 +74,6 @@ fkcSetupRaw {
         klibValidationEnabled = true
     }
 
-    experimentalLatestCompilation = true
     allWarningsAsErrors = true
     useIndyLambdas = isRelease
     optInInternal = true
