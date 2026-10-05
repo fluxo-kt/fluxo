@@ -96,19 +96,19 @@ atomicfu = "0.33.0"
 
 # Libraries to compare/benchmark against
 ballast = "5.1.0"                   # https://mvnrepository.com/artifact/io.github.copper-leaf/ballast-core
-elmslie = "3.0.0"                   # https://repo.maven.apache.org/maven2/money/vivid/elmslie/elmslie-core/maven-metadata.xml
+elmslie = "3.1.0"                   # https://repo.maven.apache.org/maven2/money/vivid/elmslie/elmslie-core/maven-metadata.xml
 flowredux = "1.2.2"                 # https://mvnrepository.com/artifact/com.freeletics.flowredux/flowredux (no 2.x line; 1.2.2 is current latest)
-genakuReduce = "1.0.1"              # https://github.com/genaku/Reduce/tags (frozen; no newer)
+genakuReduce = "1.0.2"              # https://github.com/genaku/Reduce/tags
 mobiusKt = "1.4.0"                  # https://mvnrepository.com/artifact/org.drewcarlson/mobiuskt-coroutines
-motorroCommonStateMachine = "3.3.0" # https://mvnrepository.com/artifact/com.motorro.commonstatemachine/commonstatemachine (4.x line requires JDK 21+ — fluxo targets JDK 17; 3.3.0 is the latest JDK-17-compat version)
+motorroCommonStateMachine = "4.0.2" # https://mvnrepository.com/artifact/com.motorro.commonstatemachine/commonstatemachine
 mvicore = "1.4.0"                   # https://github.com/badoo/MVICore/releases (2.0.0 tagged 2025-04-02 with Rx3 merge but JitPack build fails on a stale transitive `com.github.lenguyenthanh.debugdrawer:debugdrawer-base:0.9.0` — upstream-blocked, no Maven Central mirror exists; staying on 1.4.0 with Rx2)
 mvikotlin = "4.4.0"                 # https://mvnrepository.com/artifact/com.arkivanov.mvikotlin/mvikotlin
-orbit = "11.0.0"                    # https://mvnrepository.com/artifact/org.orbit-mvi/orbit-core
+orbit = "12.0.1"                    # https://mvnrepository.com/artifact/org.orbit-mvi/orbit-core
 reduktor = "0.4"                    # https://github.com/g000sha256/reduktor/tags (frozen upstream; kept as historical benchmark baseline)
-reduxkotlin = "0.6.1"               # https://mvnrepository.com/artifact/org.reduxkotlin/redux-kotlin-threadsafe (1.0.0-alpha02 exists but alpha; staying on 0.6.1 stable)
+reduxkotlin = "0.6.2"               # https://mvnrepository.com/artifact/org.reduxkotlin/redux-kotlin-threadsafe
 respawnFlowMVI = "3.2.1"            # https://mvnrepository.com/artifact/pro.respawn.flowmvi/core
 tinderStateMachine = "0.3.0"        # https://github.com/Tinder/StateMachine/releases (abandoned 2019; frozen as comparison baseline)
-visualfsm = "3.0.0"                 # https://mvnrepository.com/artifact/ru.kontur.mobile.visualfsm/visualfsm-core (4.x requires KSP code-generation: Transition.getFromState throws "Code generation not configured" without the generated factory wiring _fromState/_toState; 4.1.0 additionally raises bytecode to Java 21 — fluxo runs JDK 17. 3.0.0 retains the deprecated `Transition(KClass, KClass)` constructor that lets us declare transitions without KSP, while still picking up the 1-major bump over 2.0.0)
+visualfsm = "4.1.0"                 # https://mvnrepository.com/artifact/ru.kontur.mobile.visualfsm/visualfsm-core (4.x wires transitions through KSP-generated factories; its KSP processor is Java 21 bytecode and loads in the Gradle daemon, hence the JDK 25 daemon)
 
 
 [libraries]

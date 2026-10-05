@@ -9,10 +9,10 @@ import kt.fluxo.test.compare.BENCHMARK_ARG
 import kt.fluxo.test.compare.consumeCommonBenchmark
 import kt.fluxo.test.compare.launchCommonBenchmark
 import kt.fluxo.test.compare.launchCommonBenchmarkWithStaticIntent
-import org.orbitmvi.orbit.ContainerHost
+import org.orbitmvi.orbit.OrbitContainerHost
 import org.orbitmvi.orbit.annotation.OrbitExperimental
 import org.orbitmvi.orbit.blockingIntent
-import org.orbitmvi.orbit.container
+import org.orbitmvi.orbit.orbitContainer
 import org.orbitmvi.orbit.syntax.Syntax
 
 @Suppress("InjectDispatcher")
@@ -37,11 +37,11 @@ internal object OrbitBenchmark {
         return host.container.stateFlow.value
     }
 
-    private fun createHostAndJob(): Pair<ContainerHost<Int, Nothing>, Job> {
+    private fun createHostAndJob(): Pair<OrbitContainerHost<Int, Int, Nothing>, Job> {
         val job = SupervisorJob()
         val dispatcher = Dispatchers.Unconfined
-        val host = object : ContainerHost<Int, Nothing> {
-            override val container = CoroutineScope(dispatcher + job).container<Int, Nothing>(0)
+        val host = object : OrbitContainerHost<Int, Int, Nothing> {
+            override val container = CoroutineScope(dispatcher + job).orbitContainer<Int, Nothing>(0)
         }
         return host to job
     }

@@ -1,17 +1,20 @@
 plugins {
     alias(libs.plugins.jmh)
+    // VisualFSM 4 generates its transition factories with KSP.
+    alias(libs.plugins.kotlin.ksp)
 }
 
 fkcSetupKotlinApp(
     optIns = listOf("kt.fluxo.common.annotation.ExperimentalFluxoApi"),
 ) {
     kotlinLangVersion = "2.3"
-    javaLangTarget = "17"
+    // Unpublished app: comparison libraries ship Java 21 bytecode (motorro CSM 4, VisualFSM 4), so the
+    // benchmarks compile and run on the Gradle daemon's JDK, which every build environment already has.
+    javaLangTarget = "25"
 
     setupCoroutines = true
     setupDependencies = true
     addStdlibDependency = true
-    experimentalLatestCompilation = false
 
     // Internal benchmark app — opt out of the root-inherited library publication.
     enablePublication = false
@@ -52,8 +55,9 @@ dependencies {
     // Respawn FlowMVI
     implementation("pro.respawn.flowmvi:core:" + libs.versions.respawnFlowMVI.get())
 
-    // Respawn FlowMVI
+    // VisualFSM
     implementation("ru.kontur.mobile.visualfsm:visualfsm-core:" + libs.versions.visualfsm.get())
+    ksp("ru.kontur.mobile.visualfsm:visualfsm-compiler:" + libs.versions.visualfsm.get())
 
     // Freeletics FlowRedux
     implementation("com.freeletics.flowredux:flowredux:" + libs.versions.flowredux.get())
