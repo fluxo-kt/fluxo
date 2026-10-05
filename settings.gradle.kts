@@ -93,4 +93,15 @@ include(":fluxo-common")
 include(":fluxo-core")
 include(":fluxo-data")
 
-include(":benchmarks:jmh")
+// The JVM-only benchmarks need fluxo-core's JVM target, which a narrowed target set may lack: a split-targets build on
+// a non-generic host (CI Windows: mingw only) or a KMP_TARGETS selection. Such builds skip the module;
+// benchmark.yml builds it on every OS without narrowing. The flags are read the way fluxo-kmp-conf reads them:
+// split_targets is on when present as an env var or system property, or truthy as a Gradle property.
+val isTargetSetNarrowed = listOf("split_targets", "SPLIT_TARGETS").any {
+    providers.environmentVariable(it).isPresent || providers.systemProperty(it).isPresent ||
+        providers.gradleProperty(it).orNull?.lowercase() in setOf("true", "1", "on", "y", "yes")
+} || listOf(providers.environmentVariable("KMP_TARGETS"), providers.systemProperty("KMP_TARGETS"), providers.gradleProperty("KMP_TARGETS"))
+    .any { !it.orNull.isNullOrEmpty() }
+if (!isTargetSetNarrowed) {
+    include(":benchmarks:jmh")
+}
