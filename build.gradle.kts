@@ -75,6 +75,10 @@ fkcSetupRaw {
     }
 
     allWarningsAsErrors = true
+    // Compile and test on the JDK of the bytecode target (javaLangTarget), not on the Gradle daemon's JDK:
+    // the daemon runs a newer JDK (gradle/gradle-daemon-jvm.properties), and without a toolchain kotlinc
+    // would compile against its class library and JVM tests would run on it instead of the consumer floor.
+    setupJvmToolchain = true
     useIndyLambdas = isRelease
     optInInternal = true
     optIns = listOf(
