@@ -31,8 +31,10 @@ pluginManagement {
     // only a -D/command-line override can do (the mode is fixed before this script runs). Fail a CI
     // build that forgot the override instead of letting it silently accept unpinned artefacts.
     // Writing metadata is exempt: verification does not gate a regeneration.
+    // Kotlin pre-release builds (-Pfluxo.kotlin) are exempt too: their artefacts are deliberately unpinned.
     if (providers.environmentVariable("CI").orNull?.toBooleanStrictOrNull() == true &&
         !isWritingVerificationMetadata &&
+        !providers.gradleProperty("fluxo.kotlin").isPresent &&
         gradle.startParameter.dependencyVerificationMode !=
         org.gradle.api.artifacts.verification.DependencyVerificationMode.STRICT
     ) {
@@ -63,6 +65,13 @@ plugins {
 }
 
 dependencyResolutionManagement {
+    // -Pfluxo.kotlin=<version> builds against another Kotlin (the pre-release workflow). It overrides one version
+    // of the auto-imported gradle/libs.versions.toml: creating `libs` WITHOUT from() merges with the auto-import,
+    // while adding from() fails with "you can only call the 'from' method a single time".
+    providers.gradleProperty("fluxo.kotlin").orNull?.let { version ->
+        versionCatalogs { create("libs") { version("kotlin", version) } }
+    }
+
     // :kotlinNodeJsSetup requires adding of project repository
     // repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
 

@@ -1,0 +1,99 @@
+name: Kotlin pre-release
+
+# Early warning: builds fluxo against the newest Kotlin 2.5 pre-release so a compiler or KGP change that
+# breaks fluxo shows up before the stable release. Not a required check; a red run is a signal to read, not
+# a blocker. The build overrides the catalog `kotlin` version with -Pfluxo.kotlin (settings.gradle.kts),
+# which also narrows the default targets to those Kotlin 2.5 still supports (root build.gradle.kts).
+#
+# Deliberately looser than build.yml, because the pre-release graph is not what is published:
+# - lenient dependency verification: its artefacts are not pinned in gradle/verification-metadata.xml
+#   (settings.gradle.kts exempts builds with fluxo.kotlin from the strict-CI guard);
+# - yarn locks upgraded in the runner: the pre-release KGP bundles other npm tool versions;
+# - no klibApiCheck (the narrowed target set differs from the committed klib dump) and no dependencyGuard
+#   (the resolved graph differs from the committed snapshots).
+
+on:
+  push:
+    branches: [ dev ]
+    paths-ignore:
+      - '**.md'
+      - '**.txt'
+  schedule:
+    # Weekly, so a new pre-release is picked up even without pushes.
+    - cron: '0 5 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CI: true
+  GRADLE_OPTS: "\
+  -Dorg.gradle.configuration-cache=false \
+  -Dorg.gradle.vfs.watch=false \
+  "
+
+jobs:
+  build:
+    name: Build against the newest Kotlin 2.5 pre-release
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
+        with:
+          disable-sudo: true
+          egress-policy: audit
+
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up JDKs
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          # 17: compile/test toolchain (javaLangTarget); 25 last = JAVA_HOME, the Gradle daemon JDK.
+          java-version: |
+            17
+            25
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+        with:
+          # The pre-release graph must not overwrite the main build's cache entries.
+          cache-read-only: true
+
+      - name: Resolve the newest Kotlin 2.5 pre-release
+        id: kotlin
+        # Maven metadata lists versions in publication order, so the last 2.5.* entry is the newest one;
+        # a version sort would rank 2.5.0-RC2 above the final 2.5.0.
+        run: |
+          version=$(curl -fsSL https://repo1.maven.org/maven2/org/jetbrains/kotlin/kotlin-gradle-plugin/maven-metadata.xml \
+            | grep -o '<version>2\.5\.[^<]*' | sed 's/<version>//' | tail -n 1)
+          if [ -z "$version" ]; then
+            echo "::error::No Kotlin 2.5 version found in Maven Central metadata."
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "Building against Kotlin **$version**." >> "$GITHUB_STEP_SUMMARY"
+
+      # A separate invocation: in the same one as `build`, Gradle runs kotlinStoreYarnLock (a JS test dependency)
+      # before kotlinUpgradeYarnLock, and it fails on the changed lock.
+      - name: Upgrade yarn locks
+        env:
+          KOTLIN_VERSION: ${{ steps.kotlin.outputs.version }}
+        run: >
+          ./gradlew kotlinUpgradeYarnLock kotlinWasmUpgradeYarnLock
+          "-Pfluxo.kotlin=$KOTLIN_VERSION" --dependency-verification=lenient --stacktrace
+
+      - name: Build
+        env:
+          KOTLIN_VERSION: ${{ steps.kotlin.outputs.version }}
+        run: >
+          ./gradlew build -x klibApiCheck -x dependencyGuard
+          "-Pfluxo.kotlin=$KOTLIN_VERSION" --dependency-verification=lenient
+          --continue --stacktrace

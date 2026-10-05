@@ -49,7 +49,20 @@ fkcSetupRaw {
 
     // Default KMP setup.
     defaults {
-        allDefaultTargets()
+        if (providers.gradleProperty("fluxo.kotlin").isPresent) {
+            // Kotlin pre-release build only: Kotlin 2.5 removes watchosArm32, macosX64, tvosX64 and watchosX64, and the
+            // published harness's default target list still calls watchosArm32 (NoSuchMethodError). Dropping these
+            // targets for real when adopting 2.5 is a consumer-visible ABI change and needs its own decision.
+            allDefaultTargets(macos = false, tvos = false, watchos = false)
+            macosArm64()
+            tvosArm64()
+            tvosSimulatorArm64()
+            watchosArm64()
+            watchosDeviceArm64()
+            watchosSimulatorArm64()
+        } else {
+            allDefaultTargets()
+        }
     }
 
     projectName = "Fluxo"
