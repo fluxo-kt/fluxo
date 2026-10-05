@@ -28,7 +28,7 @@ If you need predictable unidirectional data flow (`UDF`) or deterministic cont
 
 ### Requirements
 
-Fluxo currently requires JDK 17+, Gradle 9+, Kotlin 2.3+ language/API/runtime compatibility, and Android API 21+ for Android consumers.
+Fluxo currently requires JDK 17+ and Android API 21+. JVM and Android consumers need Kotlin 2.3+; JS, Wasm and Native consumers need Kotlin 2.4+ (klib artefacts carry the ABI of the Kotlin 2.4 compiler that builds them).
 
 ### TLDR: Use SNAPSHOT artefact in Gradle
 [![Latest snapshot](https://img.shields.io/badge/dynamic/xml?color=f68244&logo=gradle&label=Latest%20snapshot&query=%2F%2Fversion%5Blast%28%29%5D&url=https%3A%2F%2Fcentral.sonatype.com%2Frepository%2Fmaven-snapshots%2Fio%2Fgithub%2Ffluxo-kt%2Ffluxo-core%2Fmaven-metadata.xml)](https://central.sonatype.com/repository/maven-snapshots/io/github/fluxo-kt/fluxo-core/maven-metadata.xml)
@@ -329,7 +329,7 @@ aka Redux/MVI with [contextual reduction][contextual-reduction].
 [orbit-mvvm+]: https://github.com/orbit-mvi/orbit-mvi/blob/6b6f290/README.md#what-is-orbit
 [contextual-reduction]: https://dev.to/feresr/a-case-against-the-mvi-architecture-pattern-1add
 
-[badge-kotlin]: http://img.shields.io/badge/Kotlin-2.3-7F52FF?logo=kotlin&logoWidth=10&logoColor=7F52FF&labelColor=2B2B2B
+[badge-kotlin]: http://img.shields.io/badge/Kotlin-2.4-7F52FF?logo=kotlin&logoWidth=10&logoColor=7F52FF&labelColor=2B2B2B
 [badge-kotlin-link]: https://github.com/JetBrains/kotlin/releases
 
 [badge-kmp]: http://img.shields.io/badge/Kotlin-Multiplatform-7F52FF?logo=kotlin&logoColor=7F52FF&labelColor=2B2B2B
