@@ -336,7 +336,16 @@ allprojects {
 
                     sourceLink {
                         localDirectory.set(rootDir)
-                        remoteUrl.set(URI("https://github.com/fluxo-kt/fluxo/blob/main"))
+                        // Releases link to their vX.Y.Z tag (RELEASING.md), snapshots to dev, the default branch.
+                        // Lazy: the harness assigns the project version during configuration. Inert until a module
+                        // sets useDokka = true: fluxo-kmp-conf applies Dokka only then, and only for release versions.
+                        remoteUrl.set(
+                            provider {
+                                val projectVersion = version.toString()
+                                val ref = if (projectVersion.endsWith("-SNAPSHOT")) "dev" else "v$projectVersion"
+                                URI("https://github.com/fluxo-kt/fluxo/blob/$ref")
+                            },
+                        )
                         remoteLineSuffix.set("#L")
                     }
                 }
