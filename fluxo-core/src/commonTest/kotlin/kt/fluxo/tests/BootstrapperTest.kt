@@ -13,7 +13,6 @@ import kt.fluxo.core.repeatOnSubscription
 import kt.fluxo.core.updateState
 import kt.fluxo.test.CoroutineScopeAwareTest
 import kt.fluxo.test.IgnoreJs
-import kt.fluxo.test.IgnoreJvm
 import kt.fluxo.test.runBlocking
 import kt.fluxo.test.runUnitTest
 import kotlin.test.Ignore
@@ -79,11 +78,6 @@ internal class BootstrapperTest : CoroutineScopeAwareTest() {
         assertTrue(store.isActive, "store should be active")
     }
 
-    // TODO: After waiting for 5s, the test coroutine is not completing
-    //  :jvmTest mac
-    //  :testReleaseUnitTest mac
-    //  https://github.com/fluxo-kt/fluxo/actions/runs/4797515958/jobs/8534599655#step:8:506
-    //  https://github.com/fluxo-kt/fluxo/actions/runs/4797515958/jobs/8534599655#step:8:1030
     @Test
     fun b_intent() = runUnitTest {
         var hadIntent = false
@@ -93,12 +87,14 @@ internal class BootstrapperTest : CoroutineScopeAwareTest() {
             onCreate {
                 val intent: FluxoIntent<String, Nothing> = {
                     hadIntent = true
+                    noOp()
                 }
                 send(intent).join()
             }
         }
         assertNotNull(store.start(), "Expected Job for explicit lazy start").join()
         assertTrue(hadIntent, "bootstrapper should call intent successfully")
+        assertTrue(store.isActive, "store should be active")
     }
 
     @Test
@@ -137,13 +133,7 @@ internal class BootstrapperTest : CoroutineScopeAwareTest() {
         assertEquals("se1", store.sideEffectFlow.first())
     }
 
-    // FIXME: UncompletedCoroutinesError: After waiting for 5s, the test coroutine is not completing
-    //  jvm
-    //  https://github.com/fluxo-kt/fluxo/actions/runs/4756275550/jobs/8451589421#step:8:404
-    //  https://github.com/fluxo-kt/fluxo/actions/runs/4759202632/jobs/8458210085#step:8:548
-    //  https://github.com/fluxo-kt/fluxo/actions/runs/4600266159/jobs/8126636920#step:8:397
     @Test
-    @IgnoreJvm
     fun b_side_job() = runUnitTest {
         val store = backgroundScope.container<String, String>(INIT) {
             debugChecks = true
