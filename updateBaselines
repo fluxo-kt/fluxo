@@ -46,12 +46,12 @@ fi
 # Both invocations write verification metadata: the first so a new dependency version resolves at all
 # before its checksum exists, the second to cover the full CI graph. The second runs `build` WITH tests
 # (test-only configurations must resolve; -DDISABLE_TESTS drops them) and checks the fresh baselines.
-# --refresh-dependencies: the writer records only the metadata files Gradle reads, and with a warm cache it
-# reads cached descriptors instead of parent POMs and imported BOMs, so those go unrecorded and a cold-cache
-# CI build fails strict verification on them. Refreshing re-reads every metadata file (artefacts whose
-# checksum is unchanged are not downloaded again).
+# --refresh-dependencies (second invocation only, its graph contains the first's): the writer records only the
+# metadata files Gradle reads, and with a warm cache it reads cached descriptors instead of parent POMs and
+# imported BOMs, so those go unrecorded and a cold-cache CI build fails strict verification on them. Refreshing
+# re-reads every metadata file (artefacts whose checksum is unchanged are not downloaded again).
 # shellcheck disable=SC2086
-./gradlew --write-verification-metadata sha256 --refresh-dependencies $baseline_tasks $rerun $dry_run -Pci --console=plain --continue
+./gradlew --write-verification-metadata sha256 $baseline_tasks $rerun $dry_run -Pci --console=plain --continue
 # shellcheck disable=SC2086
 ./gradlew --write-verification-metadata sha256 --refresh-dependencies build cyclonedxBom resolveCrossHostToolchains $dry_run -Pci --console=plain --continue
 
