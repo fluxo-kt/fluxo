@@ -35,9 +35,11 @@ The single source of truth for the published version is the `version` key in
 CI publishing is wired across two workflows; both feed vanniktech's Central Portal credentials via
 `ORG_GRADLE_PROJECT_*` environment variables (the plugin reads them as Gradle project properties).
 
-### Snapshots — on every push to the GitHub default branch
+### Snapshots — on push to `main`
 
-`.github/workflows/build.yml` runs `publishToMavenCentral` (the **unsigned** snapshot task — the
+Not on every `dev` push: a snapshot per commit has no consumer. The Central Portal namespace
+`io.github.fluxo-kt` must have SNAPSHOTs enabled (Namespaces → dropdown → Enable SNAPSHOTs), or the
+upload fails with 403. `.github/workflows/build.yml` runs `publishToMavenCentral` (the **unsigned** snapshot task — the
 harness marks PGP signing required only for non-snapshot versions). Snapshots land in the Central
 Portal snapshots repository: `https://central.sonatype.com/repository/maven-snapshots/`.
 

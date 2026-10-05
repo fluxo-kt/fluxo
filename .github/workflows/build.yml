@@ -201,11 +201,13 @@ jobs:
         with:
           report_paths: '**/build/test-results/*/TEST-*.xml'
 
+      # Snapshots publish only from `main` (the release line), never from every `dev` push: a snapshot per
+      # commit has no consumer, and the Central namespace must have SNAPSHOTs enabled (403 otherwise).
       - name: 'Check release API and publish SNAPSHOT'
         id: snapshot
         if: matrix.os == 'macos-latest' && matrix.java == '17'
           && steps.check.outcome == 'success'
-          && github.event_name == 'push' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch) && github.repository == 'fluxo-kt/fluxo'
+          && github.event_name == 'push' && github.ref == 'refs/heads/main' && github.repository == 'fluxo-kt/fluxo'
         env:
           # Vanniktech reads Central Portal credentials from these Gradle-property
           # env vars (ORG_GRADLE_PROJECT_*). The previous OSSRH_* names reached the
