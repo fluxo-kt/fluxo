@@ -55,6 +55,14 @@ jobs:
       - name: Disable configuration cache
         run: sed -i 's/org.gradle.configuration-cache=true/org.gradle.configuration-cache=false/' gradle.properties
 
+      # The verification metadata also covers init-script classpaths, so the action's own init plugin (its version
+      # is chosen inside the action, so it cannot be pinned) fails strict verification. Trust exactly that
+      # coordinate on this runner; every project dependency stays strictly verified.
+      - name: Trust the dependency-graph init plugin
+        run: |
+          sed -i 's|<verify-signatures>false</verify-signatures>|&<trusted-artifacts><trust group="org.gradle" name="github-dependency-graph-gradle-plugin"/></trusted-artifacts>|' gradle/verification-metadata.xml
+          grep -q 'github-dependency-graph-gradle-plugin' gradle/verification-metadata.xml
+
       # Gradle's own dependency-graph plugin resolves every configuration of every project. Rejected: actions
       # that parse `gradle dependencies` text (mikepenz/gradle-dependency-submission) — it failed on every run,
       # so the submitted graph and the Dependabot alerts computed from it went stale.
