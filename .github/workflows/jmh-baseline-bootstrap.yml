@@ -34,6 +34,10 @@ concurrency:
   group: jmh-baseline-bootstrap
   cancel-in-progress: false
 
+env:
+  # gradle.properties verifies leniently for local builds; CI must override it (settings.gradle.kts enforces).
+  GRADLE_OPTS: "-Dorg.gradle.dependency.verification=strict"
+
 jobs:
   produce:
     name: Produce ${{ matrix.host_key }} baseline

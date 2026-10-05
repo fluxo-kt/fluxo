@@ -40,6 +40,7 @@ env:
   -Dorg.gradle.daemon=false \
   -Dorg.gradle.configuration-cache=false \
   -Dorg.gradle.vfs.watch=false \
+  -Dorg.gradle.dependency.verification=strict \
   "
 
 jobs:

@@ -30,6 +30,11 @@ concurrency:
   group: pr-baseline-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
+env:
+  # The fallback gradlew path does not write verification metadata, so the settings.gradle.kts
+  # CI guard requires the strict override (gradle.properties is lenient for local builds).
+  GRADLE_OPTS: "-Dorg.gradle.dependency.verification=strict"
+
 jobs:
   regen:
     # Same-repo only (no forks): see the safety note above. Forks must regen

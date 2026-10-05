@@ -20,6 +20,10 @@ on:
 permissions:
   contents: read
 
+env:
+  # gradle.properties verifies leniently for local builds; CI must override it (settings.gradle.kts enforces).
+  GRADLE_OPTS: "-Dorg.gradle.dependency.verification=strict"
+
 jobs:
   submit:
     name: Dependencies

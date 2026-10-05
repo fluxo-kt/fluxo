@@ -39,6 +39,7 @@ env:
   GRADLE_OPTS: "\
   -Dorg.gradle.configuration-cache=false \
   -Dorg.gradle.vfs.watch=false \
+  -Dorg.gradle.dependency.verification=strict \
   "
 
 jobs:
