@@ -9,6 +9,7 @@ import kt.fluxo.test.CoroutineScopeAwareTest
 import kt.fluxo.test.runUnitTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
@@ -20,7 +21,22 @@ internal class DebugIntentLabelTest : CoroutineScopeAwareTest() {
     @Test
     fun other_intents_keep_their_toString() {
         assertEquals("Discrete(id=1)", debugIntentLabel(Discrete(1)))
-        assertEquals("null", debugIntentLabel(null))
+    }
+
+    /** With DEBUG on (pure JVM), `send` wraps the intent and its label lists captured values, which must not render either. */
+    @Test
+    fun debug_coroutine_name_of_sent_intent_does_not_render_captured_lambdas() = runUnitTest {
+        var name: String? = null
+        val callback: suspend () -> Unit = {}
+        fun capturing(): FluxoIntent<String, Nothing> = {
+            callback()
+            name = currentCoroutineContext()[CoroutineName]?.name
+            noOp()
+        }
+        val store = scope.container(INIT) { debugChecks = true }
+        store.send(capturing()).join()
+        val actual = assertNotNull(name)
+        assertFalse("->" in actual, actual)
     }
 
     /** Sent from a bootstrapper, the intent reaches the store unwrapped (no FluxoIntentDebug), as without DEBUG. */

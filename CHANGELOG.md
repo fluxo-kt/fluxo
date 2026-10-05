@@ -23,7 +23,8 @@
   `debugChecks` on (the pure-JVM default) and kotlin-reflect on the classpath, every
   lambda intent's coroutine name called the lambda's `toString()`, which renders its
   signature through full reflection: 0.5–2 s on first use. Coroutine names and guardian
-  errors now show the lambda's class name, which also points at its source.
+  errors now show the lambda's class name, which also points at its source; so do lambdas
+  captured by an intent and listed in its debug label.
 
 ### Internal (no consumer impact)
 

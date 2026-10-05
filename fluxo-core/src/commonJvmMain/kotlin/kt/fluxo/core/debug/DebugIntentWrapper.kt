@@ -113,7 +113,8 @@ private data class FluxoIntentDebug<S, SE : Any>(
         val sb = StringBuilder()
         sb.append(if (methodName.isNullOrEmpty()) "<unknown>" else methodName)
         if (arguments.isNotEmpty()) {
-            arguments.joinTo(sb, separator = ", ", prefix = "(", postfix = ")") { (n, v) -> "$n=$v" }
+            // A captured value can itself be a lambda or function reference.
+            arguments.joinTo(sb, separator = ", ", prefix = "(", postfix = ")") { (n, v) -> "$n=${debugIntentLabel(v)}" }
         }
         return sb.toString()
     }
@@ -127,6 +128,7 @@ private val emptyArgumentsCache = emptyArray<Pair<String, Field>>()
 internal actual inline fun Any.debugClassName(): String? = javaClass.name
 
 // FunctionBase marks compiler-generated lambdas, suspend lambdas and function references, whose toString() goes
-// through reflection. FluxoIntentDebug and indy lambdas don't implement it and keep their cheap toString().
+// through reflection. Indy lambdas don't implement it and keep their cheap toString(); so does FluxoIntentDebug,
+// whose toString() labels its captured values with this function.
 internal actual fun debugIntentLabel(intent: Any?): String =
     if (intent is FunctionBase<*>) intent.javaClass.name else intent.toString()
