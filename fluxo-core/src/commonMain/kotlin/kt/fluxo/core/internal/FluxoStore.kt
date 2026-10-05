@@ -39,6 +39,7 @@ import kt.fluxo.core.IntentHandler
 import kt.fluxo.core.SideEffectStrategy
 import kt.fluxo.core.SideJob
 import kt.fluxo.core.data.GuaranteedEffect
+import kt.fluxo.core.debug.debugIntentLabel
 import kt.fluxo.core.dsl.StoreScope
 import kt.fluxo.core.factory.StoreDecorator
 import kt.fluxo.core.intent.IntentStrategy
@@ -306,7 +307,7 @@ internal class FluxoStore<Intent, State, SideEffect : Any>(
         if (!debugChecks) {
             decorator.onIntent(intent)
         } else {
-            withContext(CoroutineName("$F[$name <= Intent $intent]")) {
+            withContext(CoroutineName("$F[$name <= Intent ${debugIntentLabel(intent)}]")) {
                 decorator.onIntent(intent)
             }
         }

@@ -15,6 +15,7 @@ import java.lang.reflect.Field
 import java.lang.reflect.Modifier
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.coroutines.Continuation
+import kotlin.jvm.internal.FunctionBase
 
 // TODO: Only for test/debug variants?
 @Suppress("UNCHECKED_CAST", "ReturnCount")
@@ -124,3 +125,8 @@ private val emptyArgumentsCache = emptyArray<Pair<String, Field>>()
 
 @InlineOnly
 internal actual inline fun Any.debugClassName(): String? = javaClass.name
+
+// FunctionBase marks compiler-generated lambdas, suspend lambdas and function references, whose toString() goes
+// through reflection. FluxoIntentDebug and indy lambdas don't implement it and keep their cheap toString().
+internal actual fun debugIntentLabel(intent: Any?): String =
+    if (intent is FunctionBase<*>) intent.javaClass.name else intent.toString()

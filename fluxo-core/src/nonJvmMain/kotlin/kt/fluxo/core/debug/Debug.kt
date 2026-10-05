@@ -15,3 +15,6 @@ internal actual val DEBUG: Boolean = false
 /** No native implementation */
 @InlineOnly
 internal actual inline fun <I> debugIntentWrapper(intent: I): I = intent
+
+@InlineOnly
+internal actual inline fun debugIntentLabel(intent: Any?): String = intent.toString()

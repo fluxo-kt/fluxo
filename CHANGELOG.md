@@ -17,6 +17,14 @@
   `coroutineContext[ContinuationInterceptor]` instead. Same JVM key under the
   hood; the deprecation is to align with the multiplatform contract.
 
+### Fixed
+
+- **Debug checks no longer render lambda intents through kotlin-reflect.** With
+  `debugChecks` on (the pure-JVM default) and kotlin-reflect on the classpath, every
+  lambda intent's coroutine name called the lambda's `toString()`, which renders its
+  signature through full reflection: 0.5–2 s on first use. Coroutine names and guardian
+  errors now show the lambda's class name, which also points at its source.
+
 ### Internal (no consumer impact)
 
 - Build toolchain: Kotlin 2.4.20 / Gradle 9.8.0 / AGP 9.4.1 KMP plugin, compile and

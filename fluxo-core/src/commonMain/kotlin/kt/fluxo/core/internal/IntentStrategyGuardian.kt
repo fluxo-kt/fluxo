@@ -5,6 +5,7 @@ import kt.fluxo.common.annotation.InternalFluxoApi
 import kt.fluxo.core.FluxoRuntimeException
 import kt.fluxo.core.Store
 import kt.fluxo.core.debug.debugClassName
+import kt.fluxo.core.debug.debugIntentLabel
 import kotlin.contracts.contract
 
 /**
@@ -103,7 +104,10 @@ internal class IntentStrategyGuardian(
             }
             return when {
                 isBootstrap -> if (name.isNullOrEmpty()) "" else " ($name)"
-                else -> if (name.isNullOrEmpty()) " (intent=$intent)" else " (intent=$intent; $name)"
+                else -> {
+                    val label = debugIntentLabel(intent)
+                    if (name.isNullOrEmpty()) " (intent=$label)" else " (intent=$label; $name)"
+                }
             }
         }
 
