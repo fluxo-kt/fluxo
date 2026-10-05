@@ -277,12 +277,34 @@ if (!isReleasePublish) {
     }
 }
 
+// Split consumer floor: JVM/Android artefacts stay usable from Kotlin 2.3 (language/API 2.3, published stdlib
+// `kotlinCoreLibraries`), while JS/Wasm compile against the compiler's own stdlib. Kotlin/JS and Wasm reject a
+// stdlib klib whose ABI is older than the compiler's ("ABI version (2.3.0) is not compatible"), even with
+// `-language-version 2.3`; lowering the klib ABI needs a flag that marks binaries pre-release, so JS/Wasm
+// consumers need the compiler's Kotlin version anyway. The rule changes resolution only: published metadata
+// keeps the declared versions. It covers kotlin-test too (a per-source-set stdlib dependency missed it).
+// Read here, not inside allprojects {}: the catalog accessor is a root-script member.
+val kotlinCompilerVersion = libs.versions.kotlin.get()
+val kotlinStdlibJs = libs.kotlin.stdlib.js.get().let { "${it.module}:${it.version}" }
+val compilerStdlibPlatforms = setOf(
+    org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType.js,
+    org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType.wasm,
+)
+
 allprojects {
-    // Exclude unused DOM API.
     configurations.all {
+        val platform = attributes
         resolutionStrategy.eachDependency {
-            if (requested.module.name == "kotlin-dom-api-compat") {
-                useTarget(libs.kotlin.stdlib.js)
+            val name = requested.name
+            if (name == "kotlin-dom-api-compat") {
+                // Exclude unused DOM API.
+                useTarget(kotlinStdlibJs)
+            } else if (requested.group == "org.jetbrains.kotlin" &&
+                (name.startsWith("kotlin-stdlib") || name.startsWith("kotlin-test")) &&
+                platform.getAttribute(org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType.attribute) in compilerStdlibPlatforms
+            ) {
+                useVersion(kotlinCompilerVersion)
+                because("Kotlin/JS and Wasm need a stdlib klib with the compiler's ABI version")
             }
         }
     }

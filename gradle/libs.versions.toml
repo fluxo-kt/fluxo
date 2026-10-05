@@ -27,10 +27,11 @@ kotlinApiVersion = "2.3"
 
 # https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-gradle-plugin
 # WARN: Don't forget to update kotlin version badge in ../README.md
-# `kotlinCoreLibraries` (stdlib) MUST NOT exceed `kotlin` (compiler): a runtime newer than the
-# compiler emits a version-mismatch warning that `allWarningsAsErrors` turns fatal on CI/release.
-# Keep them aligned; the harness fails fast on skew (opt-out: -Pfluxo.allowKotlinStdlibSkew).
-kotlin = "2.3.21"
+# `kotlinCoreLibraries` is the stdlib version published JVM/Android artefacts declare. It stays at the
+# consumer floor (`kotlinLangVersion`), below the compiler, so fluxo never forces a newer stdlib onto
+# Kotlin 2.3 consumers (the kotlinx convention). It must not exceed `kotlin`: the harness rejects that skew.
+# JS/Wasm resolve the compiler's stdlib instead (rule in the root build.gradle.kts).
+kotlin = "2.4.20"
 kotlinCoreLibraries = "2.3.21"
 
 # https://github.com/google/ksp/releases
@@ -123,7 +124,8 @@ visualfsm = "3.0.0"                 # https://mvnrepository.com/artifact/ru.kont
 [libraries]
 
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlinCoreLibraries" }
-kotlin-stdlib-js = { module = "org.jetbrains.kotlin:kotlin-stdlib-js", version.ref = "kotlinCoreLibraries" }
+# JS needs the compiler's stdlib (klib ABI), so it is declared at the compiler version.
+kotlin-stdlib-js = { module = "org.jetbrains.kotlin:kotlin-stdlib-js", version.ref = "kotlin" }
 
 kotlinx-atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
 
