@@ -36,9 +36,6 @@ kotlinCoreLibraries = "2.3.21"
 # https://github.com/google/ksp/releases
 ksp = "2.3.9"
 
-# https://github.com/arkivanov/Essenty/releases
-essenty = "2.5.0"
-
 # Dokka is a documentation engine for Kotlin/Java
 # https://github.com/Kotlin/dokka/releases
 # https://mvnrepository.com/artifact/org.jetbrains.dokka/dokka-gradle-plugin?repo=space-kotlin-dokka-dev
@@ -74,11 +71,6 @@ kover = "0.9.8"
 # match that API to avoid version skew.
 # https://github.com/vanniktech/gradle-maven-publish-plugin/releases
 vanniktech-mvn-publish = "0.36.0"
-
-# Compose Multiplatform — Plugin Portal lags Maven Central; 1.9.3 is Portal's current stable.
-# Fluxo has zero runtime Compose; entry exists only so harness can self-detect plugin classpath.
-# https://github.com/JetBrains/compose-multiplatform/releases
-jetbrains-compose = "1.9.3"
 
 # Android Jetpack
 # https://developer.android.com/jetpack/androidx/versions
@@ -134,7 +126,6 @@ kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "
 kotlin-stdlib-js = { module = "org.jetbrains.kotlin:kotlin-stdlib-js", version.ref = "kotlinCoreLibraries" }
 
 kotlinx-atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
-kotlin-parcelize-runtime = { module = "org.jetbrains.kotlin:kotlin-parcelize-runtime", version.ref = "kotlin" }
 
 # https://github.com/Kotlin/kotlinx-datetime/tags
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.8.0" }
@@ -155,32 +146,16 @@ androidx-annotation = { module = "androidx.annotation:annotation", version.ref =
 # https://mvnrepository.com/artifact/com.google.code.findbugs/jsr305
 jsr305 = { module = "com.google.code.findbugs:jsr305", version = "3.0.2" }
 
-essenty-instance-keeper = { module = "com.arkivanov.essenty:instance-keeper", version.ref = "essenty" }
-essenty-lifecycle = { module = "com.arkivanov.essenty:lifecycle", version.ref = "essenty" }
-
 # https://mvnrepository.com/artifact/junit/junit
 test-junit = { module = "junit:junit", version = "4.13.2"  }
 # https://github.com/cashapp/turbine/releases
 test-turbine = { module = "app.cash.turbine:turbine", version = "1.2.1" }
 
-plugin-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
-plugin-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
-plugin-android = { module = "com.android.tools.build:gradle", version.ref = "android-gradle-plugin" }
-plugin-ksp = { module = "com.google.devtools.ksp:symbol-processing-gradle-plugin", version.ref = "ksp" }
-plugin-jetbrains-compose = { group = "org.jetbrains.compose", name = "compose-gradle-plugin", version.ref = "jetbrains-compose" }
-
-# https://github.com/mrmans0n/compose-rules/releases
-# https://mvnrepository.com/artifact/io.nlopez.compose.rules/detekt
-detekt-compose = { module = "io.nlopez.compose.rules:detekt", version = "0.4.28" }
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 detekt-core = { module = "io.gitlab.arturbosch.detekt:detekt-core", version.ref = "detekt" }
 
 jmh-core = { module = "org.openjdk.jmh:jmh-core", version.ref = "jmh" }
 jmh-generator-annprocess = { module = "org.openjdk.jmh:jmh-generator-annprocess", version.ref = "jmh" }
-
-plugin-binCompatValidator = { module = "org.jetbrains.kotlinx:binary-compatibility-validator", version.ref = "bcv" }
-
-plugin-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
 
 # Benchmark dependencies
 
