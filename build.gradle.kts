@@ -328,6 +328,23 @@ allprojects {
     }
 }
 
+// Yarn resolutions for vulnerable transitive npm packages of KGP's JS test tooling (mocha, webpack). Each is
+// the newest release in the major line the lock already uses, at or above every advisory's first patched
+// version; delete an entry once KGP's bundled tooling pulls a patched version by itself. Advisories
+// (GitHub, read 2026-10-05): brace-expansion 2.x < 2.1.7, js-yaml 4.x < 4.3.2, diff 6–8 < 8.0.3,
+// serialize-javascript < 7.1.2. diff and serialize-javascript cross a major from what mocha requests; JS tests
+// pass with them. mocha itself stays at KGP's bundled version: mocha 12 breaks KGP's test reporter (zero tests
+// run). KGP keeps build/js/package.json up to date on a resolution-only change, so `./updateBaselines` deletes
+// build/js before upgrading the lock.
+plugins.withType<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin> {
+    the<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension>().apply {
+        resolution("brace-expansion", "2.1.7")
+        resolution("js-yaml", "4.3.2")
+        resolution("diff", "8.0.4")
+        resolution("serialize-javascript", "7.1.2")
+    }
+}
+
 // Dependency verification for toolchain archives of OTHER hosts.
 // Kotlin/Native, Node.js and Binaryen are downloaded as host-specific archives, so a regen of
 // `gradle/verification-metadata.xml` on one OS records only that host's archives, and strict
