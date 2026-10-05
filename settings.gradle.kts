@@ -26,6 +26,21 @@ pluginManagement {
     // requested. Verified against gradle-start-parameter-9.6.0.jar.
     val isWritingVerificationMetadata =
         gradle.startParameter.writeDependencyVerifications.isNotEmpty()
+
+    // gradle.properties makes verification lenient for local builds; CI must verify strictly, which
+    // only a -D/command-line override can do (the mode is fixed before this script runs). Fail a CI
+    // build that forgot the override instead of letting it silently accept unpinned artefacts.
+    // Writing metadata is exempt: verification does not gate a regeneration.
+    if (providers.environmentVariable("CI").orNull?.toBooleanStrictOrNull() == true &&
+        !isWritingVerificationMetadata &&
+        gradle.startParameter.dependencyVerificationMode !=
+        org.gradle.api.artifacts.verification.DependencyVerificationMode.STRICT
+    ) {
+        throw GradleException(
+            "CI builds must verify dependencies strictly: add " +
+                "-Dorg.gradle.dependency.verification=strict to GRADLE_OPTS (see gradle.properties)."
+        )
+    }
     val isWritingDepGuardBaseline = gradle.startParameter.taskNames.any { taskName ->
         // Match both `:<subproject>:dependencyGuardBaseline` and bare `dependencyGuardBaseline`.
         taskName.endsWith("dependencyGuardBaseline", ignoreCase = true)
