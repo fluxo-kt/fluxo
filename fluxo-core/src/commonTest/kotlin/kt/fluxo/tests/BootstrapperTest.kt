@@ -15,7 +15,6 @@ import kt.fluxo.test.CoroutineScopeAwareTest
 import kt.fluxo.test.IgnoreJs
 import kt.fluxo.test.runBlocking
 import kt.fluxo.test.runUnitTest
-import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -145,27 +144,6 @@ internal class BootstrapperTest : CoroutineScopeAwareTest() {
         }
         assertEquals("$INIT.sideJob", store.first { it != INIT })
         store.closeAndWait()
-    }
-
-    // TODO: Failed on win with "After waiting for 5s, the test coroutine is not completing"
-    // jvm, android
-    //  https://github.com/fluxo-kt/fluxo/actions/runs/4600266159/jobs/8126636920#step:8:397
-    @Test
-    @Ignore // TODO: Should be returned after `fluxo-event-stream` will be added
-    fun b_cancellation() = runUnitTest {
-//        val def = CompletableDeferred<FluxoEvent<*, *, *>>()
-//        scope.container(INIT) {
-//            debugChecks = false
-//            bootstrapper = {
-//                cancel()
-//            }
-//            onEvent {
-//                if (it is FluxoEvent.BootstrapperCancelled) {
-//                    def.complete(it)
-//                }
-//            }
-//        }.start()
-//        assertIs<FluxoEvent.BootstrapperCancelled<*, *, *>>(def.await())
     }
 
     // TODO: TimeoutCancellationException: Timed out waiting for 2000 ms

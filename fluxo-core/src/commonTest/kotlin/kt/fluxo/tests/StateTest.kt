@@ -91,12 +91,9 @@ internal class StateTest : CoroutineScopeAwareTest() {
     private inner class Middleware(
         initialState: TestState,
         scope: CoroutineScope = this.scope,
-//        onEvent: ((event: FluxoEvent<*, TestState, *>) -> Unit)? = null,
     ) : ContainerHostS<TestState> {
         override val container = scope.container(initialState) {
             debugChecks = true
-            // TODO: Should be returned after `fluxo-event-stream` will be added
-//            onEvent?.let { interceptor(it) }
         }
 
         fun something(action: Int) = intent {

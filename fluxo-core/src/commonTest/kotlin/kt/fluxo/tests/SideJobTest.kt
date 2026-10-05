@@ -18,7 +18,6 @@ import kt.fluxo.core.store
 import kt.fluxo.core.updateState
 import kt.fluxo.test.runUnitTest
 import kotlin.coroutines.EmptyCoroutineContext
-import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -174,31 +173,17 @@ internal class SideJobTest {
     }
 
     @Test
-    @Ignore // TODO: Should be returned after `fluxo-event-stream` will be added
     fun sj_error() = runUnitTest {
-        var caught: Throwable? = null
+        val caught = CompletableDeferred<Throwable>()
         val store = backgroundScope.container<String, String>("init") {
-            onError { caught = it }
+            onError { caught.complete(it) }
         }
         store.intent {
             sideJob {
                 throw UnsupportedOperationException()
             }
         }
-        // FIXME:
-//        store.eventsFlow.test {
-//            while (true) {
-//                val event = awaitItem()
-//                if (event is FluxoEvent.SideJobError) {
-//                    assertFalse(event.wasRestarted)
-//                    assertEquals(DEFAULT_SIDE_JOB, event.key)
-//                    assertIs<UnsupportedOperationException>(event.e)
-//                    cancelAndIgnoreRemainingEvents()
-//                    break
-//                }
-//            }
-//        }
-        assertIs<UnsupportedOperationException>(caught)
+        assertIs<UnsupportedOperationException>(caught.await())
         assertTrue(store.isActive, "Store is closed. Expected to be active")
         store.closeAndWait()
     }

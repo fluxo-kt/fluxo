@@ -3,14 +3,16 @@
 
 * [ ] **Restore static analysis (high priority).** Detekt, Spotless and the harness lint setup are off:
   fluxo-kmp-conf enables them only with `setupVerification = true`, which the root build never sets
-  (`enableSpotless = true` is inert without it). Measured 2026-10-04 with the flag on: Spotless reformats ~84 files,
-  detekt reports ~570 library issues (mostly fluxo-core common code) and ~170 in benchmarks, and the Android detekt
-  tasks fail variant resolution with fluxo-kmp-conf 0.15.1 on AGP 9 (harness defect, fixed on the harness `dev`
-  branch, unreleased as of 2026-10-05). Plan: one reformat commit, fix real findings, baseline the rest with reasons,
-  enable Android detekt once the harness fix ships.
+  (`enableSpotless = true` is inert without it). With the flag on, Spotless reformats a large share of the sources,
+  detekt reports several hundred findings (mostly fluxo-core common code), and the Android detekt tasks fail variant
+  resolution with fluxo-kmp-conf 0.15.1 on AGP 9 (a harness defect). Plan: one reformat commit, fix real findings,
+  baseline the rest with reasons, enable Android detekt with the first fluxo-kmp-conf release that fixes it.
 * [ ] **Activate the TypeScript-declaration API lane.** `tsApiChecks` passes vacuously and `api/js/*.d.ts` is stale
   (AGENTS.md gotcha #5). Needs a fluxo-bcv-js release containing commit be5369c; then bump it and review the first
   regenerated `.d.ts` dumps hunk by hunk as real API changes.
+* [ ] **Store event stream** (`FluxoEvent` flow plus an interceptor hook in the store setup). Planned events, each to
+  get a test once it exists: bootstrapper cancelled, side-job error (with its key and whether it was a restart),
+  side effect undelivered (CONSUME and RECEIVE strategies with a conflated buffer).
 * [ ] Support new Kotlin `AutoCloseable` interface
   ([since Kotlin 1.8.20](https://kotlinlang.org/docs/whatsnew-eap.html#experimental-support-for-autocloseable-interface-in-standard-library),
   [Android API level 19](https://developer.android.com/reference/java/lang/AutoCloseable))

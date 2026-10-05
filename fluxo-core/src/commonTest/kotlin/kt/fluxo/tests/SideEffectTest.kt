@@ -3,7 +3,6 @@ package kt.fluxo.tests
 import app.cash.turbine.test
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.take
@@ -20,7 +19,6 @@ import kt.fluxo.test.IgnoreJs
 import kt.fluxo.test.getValue
 import kt.fluxo.test.runUnitTest
 import kt.fluxo.test.setValue
-import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -252,46 +250,5 @@ internal class SideEffectTest {
         collect.join()
         container.closeAndWait()
         assertTrue(hasCloses, "Expected to have closed effects (strategy: ${strategy.debugClassName()})")
-    }
-
-
-    // TODO: Timeout of 10000ms exceeded
-    // js, node/browser
-    // macosX64Background
-    // jvm, testReleaseUnit
-    // https://github.com/fluxo-kt/fluxo/actions/runs/3713049727/jobs/6295263119#step:6:593
-    // https://github.com/fluxo-kt/fluxo/actions/runs/3713049727/jobs/6295263119#step:6:617
-    // https://github.com/fluxo-kt/fluxo/actions/runs/3713367491/jobs/6295930135#step:6:563
-    // https://github.com/fluxo-kt/fluxo/actions/runs/3713762763/jobs/6296805652#step:6:291
-    // https://github.com/fluxo-kt/fluxo/actions/runs/3714168176/jobs/6297720613#step:6:271
-    @Test
-    @Ignore // TODO: Should be returned after `fluxo-event-stream` will be added
-    fun undelivered_side_effects__consume_strategy() = undelivered_side_effects(SideEffectStrategy.CONSUME)
-
-    @Test
-    @Ignore // TODO: Should be returned after `fluxo-event-stream` will be added
-    fun undelivered_side_effects__receive_strategy() = undelivered_side_effects(SideEffectStrategy.RECEIVE)
-
-    private fun undelivered_side_effects(strategy: SideEffectStrategy) = runUnitTest {
-        val container = backgroundScope.container<Unit, Int>(initialState = Unit, setup = {
-            sideEffectStrategy = strategy
-            sideEffectBufferSize = Channel.CONFLATED
-        })
-        var hasUndelivered by MutableStateFlow(false)
-        val intercept = backgroundScope.launch {
-            // FIXME:
-            // container.eventsFlow.first { it is FluxoEvent.SideEffectUndelivered }
-            // hasUndelivered = true
-        }
-        launch {
-            val effects = container.sideEffectFlow.take(16).toList()
-            assertTrue(effects.isNotEmpty(), "effects.size = ${effects.size} (strategy: ${strategy.debugClassName()})")
-        }
-        repeat(200) {
-            container.postSideEffect(it)
-        }
-        intercept.join()
-        assertTrue(hasUndelivered, "Expected to have undelivered side effects (strategy: ${strategy.debugClassName()})")
-        container.closeAndWait()
     }
 }
