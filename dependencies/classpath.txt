@@ -83,9 +83,9 @@ com.squareup:javapoet:1.13.0
 com.squareup:javawriter:2.5.0
 com.sun.istack:istack-commons-runtime:3.0.8
 com.sun.xml.fastinfoset:FastInfoset:1.2.16
-com.vanniktech.maven.publish:com.vanniktech.maven.publish.gradle.plugin:0.36.0
-com.vanniktech:central-portal:0.36.0
-com.vanniktech:gradle-maven-publish-plugin:0.36.0
+com.vanniktech.maven.publish:com.vanniktech.maven.publish.gradle.plugin:0.37.0
+com.vanniktech:central-portal:0.37.0
+com.vanniktech:gradle-maven-publish-plugin:0.37.0
 commons-codec:commons-codec:1.20.0
 commons-io:commons-io:2.16.1
 commons-logging:commons-logging:1.2
@@ -172,7 +172,7 @@ org.ow2.asm:asm-commons:9.9
 org.ow2.asm:asm-tree:9.9
 org.ow2.asm:asm-util:9.9
 org.ow2.asm:asm:9.9.1
-org.slf4j:slf4j-api:2.0.17
+org.slf4j:slf4j-api:2.0.18
 org.tensorflow:tensorflow-lite-metadata:0.2.0
 org.tomlj:tomlj:1.1.1
 org.tukaani:xz:1.9

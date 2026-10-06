@@ -40,8 +40,8 @@ updates:
         patterns:
           - "io.gitlab.arturbosch.detekt"
           - "io.gitlab.arturbosch.detekt:*"
-      # The publishing plugin must match the version the published fluxo-kmp-conf harness was built
-      # against (the harness configures it reflectively), so both move in one PR.
+      # The harness configures the publishing plugin through calls compiled against its own version, so
+      # both move in one PR; the catalog comment on vanniktech-mvn-publish says how to check a bump.
       harness:
         patterns:
           - "io.github.fluxo-kt.fluxo-kmp-conf*"

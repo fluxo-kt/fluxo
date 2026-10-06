@@ -69,11 +69,12 @@ detekt = "1.23.8"
 kover = "0.9.11"
 
 # Vanniktech Maven Publish — Central Portal publication for the library modules.
-# Pinned to the fluxo-kmp-conf harness version: the harness applies/configures this
-# plugin through its compiled MavenPublishBaseExtension calls, so the consumer must
-# match that API to avoid version skew.
+# The fluxo-kmp-conf harness configures this plugin through calls compiled against its own
+# version, so a version different from the harness's can break configuration. Before taking
+# one, publish locally with both versions (`-Dmaven.repo.local=<dir> :fluxo-common:publishToMavenLocal`)
+# and diff the two repositories: every difference must be one the plugin's changelog announces.
 # https://github.com/vanniktech/gradle-maven-publish-plugin/releases
-vanniktech-mvn-publish = "0.36.0"
+vanniktech-mvn-publish = "0.37.0"
 
 # Android Jetpack
 # https://developer.android.com/jetpack/androidx/versions
