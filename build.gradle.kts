@@ -75,7 +75,13 @@ fkcSetupRaw {
     githubProject = "fluxo-kt/fluxo"
     fun env(name: String) = providers.environmentVariable(name).get()
     group = if (jitpack) "${env("GROUP")}.${env("ARTIFACT")}" else "io.github.fluxo-kt"
-    if (jitpack) version = env("VERSION")
+    if (jitpack) {
+        version = env("VERSION")
+        // A `<branch>-SNAPSHOT` request must publish under that exact version, but the harness rewrites SNAPSHOT
+        // versions to `<major.minor>-<commit>-SNAPSHOT` unless this is off. Archives stay reproducible:
+        // Gradle 9 normalises archive timestamps, order and permissions by default.
+        reproducibleArtifacts = false
+    }
 
     // Publish all library modules to Maven Central (Central Portal) via vanniktech.
     // POM name/URL/SCM derive from projectName/githubProject/group above; license
@@ -86,8 +92,8 @@ fkcSetupRaw {
         developerName = "Art Shendrik"
         developerEmail = "artyom.shendrik@gmail.com"
     }
-    // Release javadoc jars carry Dokka HTML API docs. The harness applies Dokka only for non-SNAPSHOT versions
-    // (the output is large), so snapshots and ordinary builds keep a plain javadoc jar and never run Dokka.
+    // Release javadoc jars carry Dokka HTML API docs. The harness wires Dokka into the javadoc jar only for
+    // non-SNAPSHOT versions (the output is large); snapshots publish an empty javadoc jar, which Central accepts.
     // Not on JitPack: its commit version counts as a release, and the source links would name a nonexistent tag.
     useDokka = !jitpack
 
