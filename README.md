@@ -30,9 +30,22 @@ If you need predictable unidirectional data flow (`UDF`) or deterministic cont
 
 Fluxo currently requires JDK 17+ and Android API 21+. JVM and Android consumers need Kotlin 2.3+; JS, Wasm and Native consumers need Kotlin 2.4+ (klib artefacts carry the ABI of the Kotlin 2.4 compiler that builds them).
 
-### TLDR: Use SNAPSHOT artefact in Gradle
+### TLDR: use any commit via JitPack
+
+JitPack builds the libraries from a commit on its first request. That build takes minutes, longer than Gradle's
+HTTP timeout, so the first resolution of a new commit can fail; it succeeds once the build has finished
+(its log is at `https://jitpack.io/com/github/fluxo-kt/fluxo/<commit>/build.log`):
+
+```kotlin
+implementation("com.github.fluxo-kt.fluxo:fluxo-core:<commit>")
+// For common data states
+implementation("com.github.fluxo-kt.fluxo:fluxo-data:<commit>")
+// in `settings.gradle.kts`: repositories { maven("https://jitpack.io") }
+```
+
+### SNAPSHOT artefacts (not published yet)
 [![Latest snapshot](https://img.shields.io/badge/dynamic/xml?color=f68244&logo=gradle&label=Latest%20snapshot&query=%2F%2Fversion%5Blast%28%29%5D&url=https%3A%2F%2Fcentral.sonatype.com%2Frepository%2Fmaven-snapshots%2Fio%2Fgithub%2Ffluxo-kt%2Ffluxo-core%2Fmaven-metadata.xml)](https://central.sonatype.com/repository/maven-snapshots/io/github/fluxo-kt/fluxo-core/maven-metadata.xml)
-<br>Snapshot version follows the catalog `version` key (currently `0.1.0-SNAPSHOT`); each push to `main` overwrites it on the Central Portal snapshot repository.
+<br>Snapshot version follows the catalog `version` key (currently `0.1.0-SNAPSHOT`); pushes to `main` will publish it to the Central Portal snapshot repository once the namespace enables snapshots; until then these coordinates do not resolve.
 
 ```kotlin
 implementation("io.github.fluxo-kt:fluxo-core:0.1.0-SNAPSHOT")
@@ -57,18 +70,6 @@ fluxo-core = { module = "io.github.fluxo-kt:fluxo-core", version.ref = "fluxo" }
 fluxo-data = { module = "io.github.fluxo-kt:fluxo-data", version.ref = "fluxo" }
 ```
 </details>
-
-### Any commit via JitPack
-
-JitPack builds the libraries from a commit on its first request. That build takes minutes, longer than Gradle's
-HTTP timeout, so the first resolution of a new commit can fail; it succeeds once the build has finished
-(its log is at `https://jitpack.io/com/github/fluxo-kt/fluxo/<commit>/build.log`):
-
-```kotlin
-implementation("com.github.fluxo-kt.fluxo:fluxo-core:<commit>")
-// in `settings.gradle.kts`: repositories { maven("https://jitpack.io") }
-```
-
 
 
 ### Code examples
