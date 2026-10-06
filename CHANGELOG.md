@@ -26,6 +26,11 @@
   errors now show the lambda's class name, which also points at its source; so do lambdas
   captured by an intent and listed in its debug label.
 
+### Added
+
+- **API docs in release javadoc jars.** Release artefacts publish Dokka-generated HTML
+  docs (with source links to the release tag) instead of an empty javadoc jar.
+
 ### Internal (no consumer impact)
 
 - Build toolchain: Kotlin 2.4.20 / Gradle 9.8.0 / AGP 9.4.1 KMP plugin, compile and
@@ -53,7 +58,8 @@
   forbidden key carries an inline rationale string.
 - JMH: `compareAgainstBaseline()` helper in `benchmark-summary.main.kts`
   applies the dual gate `|Δ|/σ>2 AND |Δ|/base>5%` when
-  `JMH_BASELINE_CHECK=1`; baseline JSON anchoring lands separately via CI.
+  `JMH_BASELINE_CHECK=1`; the benchmark workflow enables it against JDK 25 baselines
+  measured on the CI hosts with the same JMH profile.
 - Supply-chain (release-only): `dev.sigstore.sign` 2.2.0 auto-signs every
   `MavenPublication` with a Sigstore bundle; `org.cyclonedx.bom` 3.2.4 emits a
   per-module CycloneDX SBOM (full + direct scopes, JSON + XML). The release
