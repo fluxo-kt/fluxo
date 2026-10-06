@@ -186,11 +186,12 @@ resolved one:
 The script deletes the file first (Gradle's writer only appends, so stale versions would stay),
 resolves the CI-identical graph including test-only configurations, the SBOM's transitive POMs
 (`cyclonedxBom`) and every other host's Kotlin/Native, Node and Binaryen archives
-(`resolveCrossHostToolchains`). Run it on macOS: only a macOS host resolves the Apple-target
-artefacts. Composite-mode dogfood is auto-disabled under `--write-verification-metadata` by
+(`resolveCrossHostToolchains`), and the Dokka generator that only release builds run
+(`dokkaGeneratePublicationHtml`). Run it on macOS: Linux and Windows skip the Apple test and link
+tasks, so their artefacts would go unpinned. Composite-mode dogfood is auto-disabled under `--write-verification-metadata` by
 `settings.gradle.kts`, so the regen always captures the published harness graph.
 
-If you skip the regen, every CI job fails fast with "Dependency verification failed for…" citing
+If you skip the regen, every strict CI job fails fast with "Dependency verification failed for…" citing
 the offending coordinate; a local build prints the same report and carries on. To see CI's verdict
 locally, add `--dependency-verification strict`.
 

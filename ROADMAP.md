@@ -10,14 +10,14 @@
 * [ ] **Activate the TypeScript-declaration API lane.** `tsApiChecks` passes vacuously and `api/js/*.d.ts` is stale
   (AGENTS.md gotcha #5). Needs a fluxo-bcv-js release containing commit be5369c; then bump it and review the first
   regenerated `.d.ts` dumps hunk by hunk as real API changes.
-* [ ] **Bring every CI lane under 5 minutes** (not a current priority while local builds stay fast). Each Build OS job takes several to tens of minutes
-  (macOS slowest), the Kotlin pre-release lane about ten, and the benchmark job over an hour per OS. A lane that slow
-  gives no feedback during ordinary work. First read where the time goes (each Build run publishes a Gradle build
-  scan), then shard or cut what dominates. Never drop targets, tests or strict dependency verification to win time.
+* [ ] **Bring every CI lane under 5 minutes** (not a current priority while local builds stay fast). The Build OS jobs,
+  the Kotlin pre-release lane and above all the benchmark job are far over it, so they give no feedback during
+  ordinary work. First read where the time goes (each Build run publishes a Gradle build scan), then shard or cut what
+  dominates. Never drop targets, tests or strict dependency verification to win time.
   Also: `build.yml` runs on both `push` (any branch) and `pull_request`, so every same-repo PR, Dependabot's included,
-  builds twice on three OSes. The Dependabot baseline regeneration (`baselines.yml`) costs as much as a macOS
-  Build, because `./updateBaselines` runs the full `build` graph so test-only artefacts get pinned; a resolve-only task
-  over the test configurations would cut it, once proven to pin the same set on a cold cache.
+  builds twice on three OSes. The Dependabot baseline regeneration (`baselines.yml`) runs the full `build` graph so
+  test-only artefacts get pinned; a resolve-only task over the test configurations would cut it, once proven to pin
+  the same set on a cold cache.
 * [ ] **Store event stream** (`FluxoEvent` flow plus an interceptor hook in the store setup). Planned events, each to
   get a test once it exists: bootstrapper cancelled, side-job error (with its key and whether it was a restart),
   side effect undelivered (CONSUME and RECEIVE strategies with a conflated buffer).
