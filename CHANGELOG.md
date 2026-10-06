@@ -25,11 +25,16 @@
   signature through full reflection: 0.5–2 s on first use. Coroutine names and guardian
   errors now show the lambda's class name, which also points at its source; so do lambdas
   captured by an intent and listed in its debug label.
+- **`fluxo-core` exposes kotlinx-coroutines (1.11.0) as an API dependency.** Its public
+  types (`Store` is a `StateFlow` and `CoroutineScope`) come from coroutines, which consumers
+  previously had to declare themselves or fail with `Unresolved reference 'kotlinx'`.
 
 ### Added
 
 - **API docs in release javadoc jars.** Release artefacts publish Dokka-generated HTML
   docs (with source links to the release tag) instead of an empty javadoc jar.
+- **Any commit via JitPack**: `com.github.fluxo-kt.fluxo:<module>:<commit>` from
+  `https://jitpack.io`, every target included (see `README.md`).
 
 ### Internal (no consumer impact)
 
@@ -45,7 +50,7 @@
 - Build: standalone `kotlinx-atomicfu` plugin retained on the modern plugin id
   (the KGP-embedded path is inadequate for fluxo's atomic bytecode rewrite —
   AGENTS.md gotcha #16).
-- Test: coroutines 1.11.0; benchmark harness API refresh.
+- Benchmark harness API refresh.
 - Benchmarks (comparison frameworks, run on JDK 25): ballast 4.1→5.1.0,
   elmslie 3.1.0, flowredux 1.2.1→2.1.1 (`com.freeletics.flowredux2`), genaku Reduce 1.0.2, mobiusKt 1.2.1→1.4.0,
   mvikotlin 4.0→4.4.0, motorroCommonStateMachine 3.2.0→4.0.2, orbit 7.1.0→12.0.1
