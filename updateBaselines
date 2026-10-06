@@ -5,8 +5,8 @@
 #                                  API dumps
 #   ./updateBaselines --deps-only  only what a dependency change moves: yarn locks, dependency guard,
 #                                  verification metadata (the Dependabot workflow runs this)
-#   --dry-run                      configure everything, change nothing (CI runs this so a plugin that
-#                                  breaks the regen fails on its own change, not at the next update)
+#   --dry-run                      configure everything, change nothing (CI runs this so a configuration-time
+#                                  break of the regen fails on its own change, not at the next update)
 #
 # Never stops Gradle daemons: on a shared machine `./gradlew --stop` kills every other build.
 set -eu
@@ -21,8 +21,19 @@ for arg in "$@"; do
   esac
 done
 
+# The deletes and ./gradlew below are relative paths: run from the repository root whatever the caller's cwd.
+cd "$(dirname "$0")"
+
+# Only macOS builds the Apple test and link tasks; elsewhere their artefacts would silently go unpinned and every
+# strict CI job would then fail. A dry run writes nothing, so CI may run it on any host.
+if [ -z "$dry_run" ] && [ "$(uname -s)" != Darwin ]; then
+  echo "Run ./updateBaselines on macOS (or pass --dry-run): other hosts miss the Apple-target artefacts." >&2
+  exit 2
+fi
+
 # Caching and configuration cache off, incremental off: baselines must come from a clean computation.
 # RELEASE=true: the API dump CI publishes differs from a debug-mode dump.
+# GRADLE_OPTS is replaced, not extended, so the regen does not depend on the caller's environment.
 export CI=true
 export RELEASE=true
 export GRADLE_OPTS="-Dorg.gradle.caching=false -Dorg.gradle.configuration-cache=false -Dorg.gradle.logging.stacktrace=all -Dkotlin.incremental=false"
@@ -43,8 +54,8 @@ if [ "$deps_only" = false ]; then
   rerun="--rerun-tasks"
 fi
 
-# Both invocations write verification metadata: the first so a new dependency version resolves at all
-# before its checksum exists, the second to cover the full CI graph. The second runs `build` WITH tests
+# Both invocations write verification metadata: settings.gradle.kts fails a CI=true build that neither verifies
+# strictly nor writes metadata, and the second invocation covers the full CI graph. The second runs `build` WITH tests
 # (test-only configurations must resolve; -DDISABLE_TESTS drops them) and checks the fresh baselines;
 # cyclonedxBom reaches SBOM-only transitive POMs; resolveCrossHostToolchains downloads the other CI hosts'
 # Kotlin/Native, Node and Binaryen archives, which this host's build never fetches; dokkaGeneratePublicationHtml
