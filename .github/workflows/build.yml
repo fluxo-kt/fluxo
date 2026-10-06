@@ -182,7 +182,8 @@ jobs:
             !**/build/reports/dependency-analysis/
 
       - name: Upload merged sarif (Lint)
-        if: (success() || failure()) && matrix.os == 'macos-latest'
+        # Skipped while lint and detekt are not set up; resumes by itself once the build writes the report again.
+        if: (success() || failure()) && matrix.os == 'macos-latest' && hashFiles('build/lint-merged.sarif') != ''
           && (github.event_name == 'pull_request' || github.ref == format('refs/heads/{0}', github.event.repository.default_branch))
         uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
         continue-on-error: true
@@ -191,7 +192,8 @@ jobs:
           category: lint
 
       - name: Upload merged sarif (Detekt)
-        if: (success() || failure()) && matrix.os == 'macos-latest'
+        # Skipped while lint and detekt are not set up; resumes by itself once the build writes the report again.
+        if: (success() || failure()) && matrix.os == 'macos-latest' && hashFiles('build/detekt-merged.sarif') != ''
           && (github.event_name == 'pull_request' || github.ref == format('refs/heads/{0}', github.event.repository.default_branch))
         uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
         continue-on-error: true
