@@ -133,6 +133,8 @@ jobs:
           git commit -m "build(deps): regenerate baselines" -m "[dependabot skip]"
           git push --force-with-lease="refs/heads/${HEAD_REF}:${HEAD_SHA}" origin "HEAD:${HEAD_REF}"
 
+          # GitHub also opens a pull_request Build for this bot push; it waits for approval and ends as a jobless failure.
+          # Ignore it: the dispatched Build below runs the real checks and reports them as the "Build (dispatched)" status.
           sha=$(git rev-parse HEAD)
           gh api "repos/${REPO}/statuses/${sha}" -f state=pending -f context="Build (dispatched)" \
             -f description="Build dispatched after the baseline push"
