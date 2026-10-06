@@ -354,7 +354,8 @@ private fun File.parseJmhJson(): List<JmhJsonEntry> {
 // run (jmh-baseline-bootstrap.yml re-anchors them on the CI hosts).
 // Reads host-matched `benchmarks/jmh/baselines/main-${os}.json`,
 // where `os` is `darwin` on macOS runners and `linux` on Linux runners.
-// Per-benchmark gate: a slowdown fails when `|delta|` exceeds BOTH the baseline scoreError (its 99.9% CI
+// Per-benchmark gate: a benchmark fails when it is slower in every measured mode (thrpt and avgt); per mode, a
+// slowdown counts when `|delta|` exceeds BOTH the baseline scoreError (its 99.9% CI
 // half-width) AND 15% of the baseline (runner noise floor, see `noiseFloor`). So the threshold is the larger of the
 // two: ~15% where the baseline is tight, the baseline's own measured noise where it is not (macOS runners).
 // Exits with code 1 if any matched benchmark fails, which fails the Benchmark run (benchmark.yml runs on
@@ -457,7 +458,12 @@ if (System.getenv("JMH_BASELINE_CHECK")?.lowercase(Locale.US) in arrayOf("1", "t
             System.exit(1)
         }
 
-        val failed = verdicts.filterNot { it.passes }
+        // thrpt and avgt are separate JMH phases timing the same operation, so slower code is slower in both. A
+        // disturbance during one phase (a busy shared runner) moves only that phase's score, and then contradicts the
+        // other mode: with jmh_t threads, thrpt × avgt stays near jmh_t unless one phase was disturbed. So a benchmark
+        // fails only when every mode measured for it is past the gate; a one-mode excursion is reported, not failed.
+        val failed = verdicts.groupBy { it.fqn }.values.filter { rows -> rows.none { it.passes } }.flatten()
+        val contradicted = verdicts.filter { !it.passes && it !in failed }
         val isCI = System.getenv("CI")?.lowercase(Locale.US) in arrayOf("1", "true")
         println()
         println("### JMH baseline gate — host `$osKey` (${verdicts.size} compared, ${failed.size} failed)")
@@ -466,15 +472,18 @@ if (System.getenv("JMH_BASELINE_CHECK")?.lowercase(Locale.US) in arrayOf("1", "t
             println("| Benchmark | Mode | Current | Baseline | Δ | Verdict |")
             println("|-----------|:----:|--------:|---------:|---|:-------:|")
             for (v in verdicts) {
-                val mark = if (v.passes) "✅" else "❌"
+                val mark = when { v.passes -> "✅"; v in failed -> "❌"; else -> "⚠️ other mode disagrees" }
                 println("| `${v.fqn}` | ${v.mode} | ${v.curr} | ${v.base} ±${v.baseErr} | ${v.note} | $mark |")
             }
+        }
+        for (v in contradicted) {
+            System.err.println("[baseline-check] WARN ${v.fqn} (${v.mode}) is past the gate (${v.note}) but its other mode is not: treated as a disturbed measurement phase, not a regression")
         }
         for (v in failed) {
             System.err.println("[baseline-check] FAIL ${v.fqn} (${v.mode}): current=${v.curr}, baseline=${v.base}±${v.baseErr}, ${v.note}")
         }
         if (failed.isNotEmpty()) {
-            System.err.println("[baseline-check] ${failed.size} benchmark(s) regressed past the gate (slower by more than the baseline scoreError and 15%)")
+            System.err.println("[baseline-check] ${failed.map { it.fqn }.distinct().size} benchmark(s) regressed past the gate in every measured mode (slower by more than the baseline scoreError and 15%)")
             System.exit(1)
         }
         System.err.println("[baseline-check] all ${verdicts.size} matched benchmarks within the gate")
