@@ -14,6 +14,8 @@
   (macOS slowest), the Kotlin pre-release lane about ten, and the benchmark job over an hour per OS. A lane that slow
   gives no feedback during ordinary work. First read where the time goes (each Build run publishes a Gradle build
   scan), then shard or cut what dominates. Never drop targets, tests or strict dependency verification to win time.
+  Also: `build.yml` runs on both `push` (any branch) and `pull_request`, so every same-repo PR, Dependabot's included,
+  builds twice on three OSes.
 * [ ] **Store event stream** (`FluxoEvent` flow plus an interceptor hook in the store setup). Planned events, each to
   get a test once it exists: bootstrapper cancelled, side-job error (with its key and whether it was a restart),
   side effect undelivered (CONSUME and RECEIVE strategies with a conflated buffer).
