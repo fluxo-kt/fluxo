@@ -128,7 +128,9 @@ jobs:
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "build(deps): regenerate baselines"
+          # The marker lets Dependabot keep rebasing its PR over this commit (it stops at any other extra commit), so a
+          # conflict with another merged update self-heals: the rebase drops this commit and re-triggers the regen.
+          git commit -m "build(deps): regenerate baselines" -m "[dependabot skip]"
           git push --force-with-lease="refs/heads/${HEAD_REF}:${HEAD_SHA}" origin "HEAD:${HEAD_REF}"
 
           sha=$(git rev-parse HEAD)
