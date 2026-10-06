@@ -31,6 +31,9 @@
 
 ### Added
 
+- **wasmWasi target.** `fluxo-common`, `fluxo-core` and `fluxo-data` publish
+  `-wasm-wasi` artefacts for WASI runtimes, which need no JS environment (tests
+  run on Node's WASI).
 - **API docs in release javadoc jars.** Release artefacts publish Dokka-generated HTML
   docs (with source links to the release tag) instead of an empty javadoc jar.
 - **Any commit via JitPack**: `com.github.fluxo-kt.fluxo:<module>:<commit>` from

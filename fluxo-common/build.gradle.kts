@@ -14,7 +14,7 @@ val inlineOnlyGeneratedDir = layout.buildDirectory.dir("generated/inlineOnlySwit
 val inlineOnlyPackageDir = "kt/fluxo/common/annotation"
 val inlineOnlySourceSets = listOf("androidMain", "jvmMain", "nonJvmMain")
 val fluxoJsExportGeneratedDir = layout.buildDirectory.dir("generated/fluxoJsExport")
-val fluxoJsExportSourceSets = listOf("androidMain", "jvmMain", "nativeMain", "wasmJsMain")
+val fluxoJsExportSourceSets = listOf("androidMain", "jvmMain", "nativeMain", "wasmJsMain", "wasmWasiMain")
 val inlineOnlyNoOpContent = """
             package kt.fluxo.common.annotation
 

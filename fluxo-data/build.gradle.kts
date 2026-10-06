@@ -28,13 +28,15 @@ fkcSetupMultiplatform(
         implementation(kotlin("test"))
         implementation(libs.kotlinx.coroutines.test)
     }
-    commonJs.test.dependencies {
-        implementation(libs.kotlinx.browser)
-    }
 }
 
 extensions.configure<org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension> {
     // See fluxo-common/build.gradle.kts for the rationale on the lazy matching idiom.
+    // JS tests need kotlinx-browser: the root build swaps out kotlin-dom-api-compat, and the coroutines test runtime
+    // calls `kotlinx.browser.window` (IrLinkageError without it). Not on wasmWasi, which has no browser variant.
+    sourceSets.matching { it.name == "jsTest" || it.name == "wasmJsTest" }.configureEach {
+        dependencies { implementation(libs.kotlinx.browser) }
+    }
     targets.matching { it.name == "android" }.configureEach {
         (this as com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget)
             .withHostTest {}

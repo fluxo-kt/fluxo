@@ -174,7 +174,7 @@ Basic usage is elementary, yet you can take advantage of fine-tuning and super
   * Also, Fluxo [`Store`][Store] is a [`CoroutineScope`][CoroutineScope] itself, so you can integrate it with
     any existing coroutine workflow and treat just as a usual coroutine scope.
 * **Multiplatform**, supports all KMP/KMM[^7] targets (**Android**, **iOS**, **JVM**,
-  **JS**, **Linux**, **Windows/MinGW**, **macOS**, **watchOS**, **tvOS**).
+  **JS**, **Wasm** (browser/Node and WASI), **Linux**, **Windows/MinGW**, **macOS**, **watchOS**, **tvOS**).
 * Different usage styles:
   * Strict **Redux/MVI**[^4] (the highest correctness guarantees, but may be subjectively less readable and intuitive)
   * Flexible **MVVM+**[^3] (intuitively readable, may be easier to maintain, has support for every feature and more :)
