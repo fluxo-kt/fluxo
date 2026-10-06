@@ -56,12 +56,10 @@
 - Verification: new `checkForbiddenFlags` drift gate rejects deprecated /
   removed-upstream / no-op `gradle.properties` keys at `check` time; each
   forbidden key carries an inline rationale string.
-- JMH: `compareAgainstBaseline()` helper in `benchmark-summary.main.kts`
-  applies the dual gate `|Δ|/σ>2 AND |Δ|/base>5%` when
-  `JMH_BASELINE_CHECK=1`; the benchmark workflow enables it against JDK 25 baselines
-  measured on the CI hosts with the same JMH profile.
-- Supply-chain (release-only): `dev.sigstore.sign` 2.2.0 auto-signs every
-  `MavenPublication` with a Sigstore bundle; `org.cyclonedx.bom` 3.2.4 emits a
+- JMH: the benchmark workflow fails a run when a Fluxo benchmark is slower than its JDK 25 CI-host baseline
+  (same JMH profile) by more than both its baseline score error (99.9% CI) and 15%, the runner noise floor.
+- Supply-chain (release-only): `dev.sigstore.sign` auto-signs every
+  `MavenPublication` with a Sigstore bundle; `org.cyclonedx.bom` emits a
   per-module CycloneDX SBOM (full + direct scopes, JSON + XML). The release
   workflow attaches all of them, plus the Sigstore bundles, as GitHub Release
   assets. Verification commands are in `RELEASING.md`.

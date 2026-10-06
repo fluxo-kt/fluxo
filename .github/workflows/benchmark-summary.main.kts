@@ -354,10 +354,11 @@ private fun File.parseJmhJson(): List<JmhJsonEntry> {
 // run (jmh-baseline-bootstrap.yml re-anchors them on the CI hosts).
 // Reads host-matched `benchmarks/jmh/baselines/main-${os}.json`,
 // where `os` is `darwin` on macOS runners and `linux` on Linux runners.
-// Per-benchmark dual gate: `|delta|/baselineStderr > 2.0 AND |delta|/baseline > 5%`.
-// Both conditions necessary — effect must be both statistically significant
-// AND non-trivial. Either alone is noise.
-// Exits with code 1 if any matched benchmark fails the gate, blocking merge.
+// Per-benchmark gate: a slowdown fails when `|delta|` exceeds BOTH the baseline scoreError (its 99.9% CI
+// half-width) AND 15% of the baseline (runner noise floor, see `noiseFloor`). So the threshold is the larger of the
+// two: ~15% where the baseline is tight, the baseline's own measured noise where it is not (macOS runners).
+// Exits with code 1 if any matched benchmark fails, which fails the Benchmark run (benchmark.yml runs on
+// benchmark changes and weekly; it is not a pull-request check).
 // Missing baseline file is treated as "no gate" (warn + exit 0), so first-run
 // after fresh-baseline regeneration in CI doesn't self-block.
 if (System.getenv("JMH_BASELINE_CHECK")?.lowercase(Locale.US) in arrayOf("1", "true")) run check@ {
@@ -414,19 +415,23 @@ if (System.getenv("JMH_BASELINE_CHECK")?.lowercase(Locale.US) in arrayOf("1", "t
         }.toList()
 
         val bd100 = BigDecimal(100)
-        val twoBd = BigDecimal(2)
-        val fivePctBd = BigDecimal("0.05")
+        // Runner-to-runner noise floor. JMH's scoreError is the 99.9% CI of ONE run on ONE machine; it says nothing
+        // about another hosted runner. Weekly runs of one unchanged commit on ubuntu-latest spread up to 13% (avgt) and
+        // 9% (thrpt), so any smaller floor fails on noise alone. Re-measure before lowering it.
+        val noiseFloor = BigDecimal("0.15")
         data class Verdict(val fqn: String, val mode: String, val curr: BigDecimal, val base: BigDecimal, val baseErr: BigDecimal, val passes: Boolean, val note: String)
         val verdicts = current.mapNotNull { c ->
             val b = baseline[joinKey(c.fqn, c.mode)] ?: return@mapNotNull null
+            // One-sided: only a slowdown fails (lower throughput, higher average time); a speed-up is reported only.
+            val regression = if (c.mode == "avgt") c.score - b.score else b.score - c.score
             val delta = (c.score - b.score).abs()
             val deltaPctOfBase = if (b.score.signum() != 0) delta.divide(b.score, 6, RoundingMode.HALF_UP) else BigDecimal.ZERO
-            val significant = b.scoreError.signum() != 0 && delta > b.scoreError * twoBd
-            val nonTrivial = deltaPctOfBase > fivePctBd
-            val passes = !(significant && nonTrivial)
+            val significant = b.scoreError.signum() != 0 && delta > b.scoreError
+            val nonTrivial = deltaPctOfBase > noiseFloor
+            val passes = !(regression.signum() > 0 && significant && nonTrivial)
             val pctStr = deltaPctOfBase.multiply(bd100).setScale(1, RoundingMode.HALF_DOWN)
             val sigmaStr = if (b.scoreError.signum() == 0) "∞" else delta.divide(b.scoreError, 2, RoundingMode.HALF_UP).toPlainString()
-            val note = "Δ=$pctStr%, ${sigmaStr}σ"
+            val note = "Δ=$pctStr%, ${sigmaStr}×err"
             Verdict(c.fqn, c.mode, c.score, b.score, b.scoreError, passes, note)
         }
 
@@ -452,10 +457,10 @@ if (System.getenv("JMH_BASELINE_CHECK")?.lowercase(Locale.US) in arrayOf("1", "t
             System.err.println("[baseline-check] FAIL ${v.fqn} (${v.mode}): current=${v.curr}, baseline=${v.base}±${v.baseErr}, ${v.note}")
         }
         if (failed.isNotEmpty()) {
-            System.err.println("[baseline-check] ${failed.size} benchmark(s) regressed past dual gate (|Δ|/σ>2 AND |Δ|/base>5%) — blocking merge")
+            System.err.println("[baseline-check] ${failed.size} benchmark(s) regressed past the gate (slower by more than the baseline scoreError and 15%)")
             System.exit(1)
         }
-        System.err.println("[baseline-check] all ${verdicts.size} matched benchmarks within dual gate")
+        System.err.println("[baseline-check] all ${verdicts.size} matched benchmarks within the gate")
     } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
         System.err.println("[baseline-check] unexpected error: $e")
         @Suppress("PrintStackTrace")
