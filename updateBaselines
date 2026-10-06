@@ -47,7 +47,8 @@ fi
 # before its checksum exists, the second to cover the full CI graph. The second runs `build` WITH tests
 # (test-only configurations must resolve; -DDISABLE_TESTS drops them) and checks the fresh baselines;
 # cyclonedxBom reaches SBOM-only transitive POMs; resolveCrossHostToolchains downloads the other CI hosts'
-# Kotlin/Native, Node and Binaryen archives, which this host's build never fetches.
+# Kotlin/Native, Node and Binaryen archives, which this host's build never fetches; dokkaGeneratePublicationHtml
+# resolves the Dokka generator that only release builds run (their javadoc jars), so a release stays strict-clean.
 # --refresh-dependencies (second invocation only, its graph contains the first's): the writer records only the
 # metadata files Gradle reads, and with a warm cache it reads cached descriptors instead of parent POMs and
 # imported BOMs, so those go unrecorded and a cold-cache CI build fails strict verification on them. Refreshing
@@ -55,7 +56,7 @@ fi
 # shellcheck disable=SC2086
 ./gradlew --write-verification-metadata sha256 $baseline_tasks $rerun $dry_run -Pci --console=plain --continue
 # shellcheck disable=SC2086
-./gradlew --write-verification-metadata sha256 --refresh-dependencies build cyclonedxBom resolveCrossHostToolchains $dry_run -Pci --console=plain --continue
+./gradlew --write-verification-metadata sha256 --refresh-dependencies build cyclonedxBom resolveCrossHostToolchains dokkaGeneratePublicationHtml $dry_run -Pci --console=plain --continue
 
 if [ -n "$dry_run" ]; then
   rm -f gradle/verification-metadata.dryrun.xml

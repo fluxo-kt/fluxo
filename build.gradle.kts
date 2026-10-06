@@ -79,6 +79,9 @@ fkcSetupRaw {
         developerName = "Art Shendrik"
         developerEmail = "artyom.shendrik@gmail.com"
     }
+    // Release javadoc jars carry Dokka HTML API docs. The harness applies Dokka only for non-SNAPSHOT versions
+    // (the output is large), so snapshots and ordinary builds keep a plain javadoc jar and never run Dokka.
+    useDokka = true
 
     enableSpotless = true
     enableApiValidation = true
@@ -337,8 +340,8 @@ allprojects {
                     sourceLink {
                         localDirectory.set(rootDir)
                         // Releases link to their vX.Y.Z tag (RELEASING.md), snapshots to main, the branch they publish from.
-                        // Lazy: the harness assigns the project version during configuration. Inert until a module
-                        // sets useDokka = true: fluxo-kmp-conf applies Dokka only then, and only for release versions.
+                        // Lazy: the harness assigns the project version during configuration. Dokka runs only for
+                        // release versions (useDokka above), so the snapshot branch is a fallback, not a live path.
                         remoteUrl.set(
                             provider {
                                 val projectVersion = version.toString()

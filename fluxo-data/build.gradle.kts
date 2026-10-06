@@ -2,9 +2,12 @@ plugins {
     alias(libs.plugins.kotlinx.kover)
     // Publication plugin: the harness configures but requires it applied here.
     alias(libs.plugins.vanniktech.mvn.publish)
-    // Supply-chain (R5.3): per-publication Sigstore signing + CycloneDX SBOM.
+    // Supply chain: per-publication Sigstore signing + CycloneDX SBOM.
     alias(libs.plugins.sigstore.sign)
     alias(libs.plugins.cyclonedx.bom)
+    // Release javadoc jars (root `useDokka`). Applied in every build, not only releases, so that `./updateBaselines`
+    // can run Dokka and pin its generator dependencies; a release verifies them strictly.
+    alias(libs.plugins.kotlin.dokka)
 }
 
 fkcSetupMultiplatform(

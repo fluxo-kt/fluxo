@@ -181,6 +181,9 @@ jose4j = { module = "org.bitbucket.b_c:jose4j", version = "0.9.7" }
 opentelemetry-api = { module = "io.opentelemetry:opentelemetry-api", version = "1.66.0" }
 # https://mvnrepository.com/artifact/org.freemarker/freemarker
 freemarker = { module = "org.freemarker:freemarker", version = "2.3.35" }
+# Dokka 2.2.0's HTML generator brings jsoup 1.16.1 (GHSA-65r4-943x-97jj: < 1.23.2).
+# https://mvnrepository.com/artifact/org.jsoup/jsoup
+jsoup = { module = "org.jsoup:jsoup", version = "1.23.2" }
 
 
 [bundles]
@@ -207,6 +210,7 @@ pinned-security = [
     "jdom2",
     "jose4j",
     "opentelemetry-api",
+    "jsoup",
 ]
 
 
