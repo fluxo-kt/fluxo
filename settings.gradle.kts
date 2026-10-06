@@ -6,12 +6,11 @@ pluginManagement {
     repositories {
         google()
         gradlePluginPortal()
-        maven("https://jitpack.io")
     }
 
     // Dogfood the in-repo harness locally; on CI — or any fresh checkout without the sibling —
     // resolve the PUBLISHED io.github.fluxo-kt.fluxo-kmp-conf plugin, so CI builds exactly what
-    // external consumers get (invariant I1). Computed inside pluginManagement because that block is
+    // external consumers get. Computed inside pluginManagement because that block is
     // evaluated before the settings-script body — a top-level val would be out of scope here.
     // providers.*/settingsDir keep it configuration-cache-correct under strict CC.
     //
@@ -23,7 +22,7 @@ pluginManagement {
     // structurally eliminates the human-discipline-around-a-flag failure mode for the whole class.
     // Public StartParameter API — `writeDependencyVerifications` (plural, no "Metadata" suffix)
     // backs `--write-verification-metadata <sha256,…>` and is empty when no checksums were
-    // requested. Verified against gradle-start-parameter-9.6.0.jar.
+    // requested.
     val isWritingVerificationMetadata =
         gradle.startParameter.writeDependencyVerifications.isNotEmpty()
 
@@ -78,7 +77,8 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven(url = "https://jitpack.io")
+        // Only the benchmarks' comparison libraries live on JitPack; anything else must never be looked up there.
+        maven(url = "https://jitpack.io") { mavenContent { includeGroupByRegex("""com\.github\..+""") } }
         // No snapshot repository on purpose: this build resolves only released
         // dependencies. `0.1.0-SNAPSHOT` is the version this project *publishes*
         // to the Central Portal snapshot repo, never one it consumes. (The retired
