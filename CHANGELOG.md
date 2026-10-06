@@ -63,7 +63,8 @@
   removed-upstream / no-op `gradle.properties` keys at `check` time; each
   forbidden key carries an inline rationale string.
 - JMH: the benchmark workflow fails a run when a Fluxo benchmark is slower than its JDK 25 CI-host baseline
-  (same JMH profile) by more than both its baseline score error (99.9% CI) and 15%, the runner noise floor.
+  (same JMH profile) in every measured mode, each by more than both its baseline score error (99.9% CI) and 15%,
+  the runner noise floor.
 - Supply-chain (release-only): `dev.sigstore.sign` auto-signs every
   `MavenPublication` with a Sigstore bundle; `org.cyclonedx.bom` emits a
   per-module CycloneDX SBOM (full + direct scopes, JSON + XML). The release
