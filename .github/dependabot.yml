@@ -16,7 +16,7 @@ updates:
       - "gradle"
       - "dependencies"
     # Explicit cap so a backlog can never silently saturate the default limit (5)
-    # and stall all new updates again (the 2024 stall). Grouping keeps the real PR
+    # and stall all new updates. Grouping keeps the real PR
     # count well below this.
     open-pull-requests-limit: 10
     cooldown:
@@ -36,12 +36,11 @@ updates:
           - "org.jetbrains.kotlin:*"
           - "org.jetbrains.kotlin.*"
           - "com.google.devtools.ksp"
-          - "com.google.devtools.ksp:*"
       agp:
+        # Dependabot names catalog plugins by plugin id, not by the AGP Maven coordinates.
         patterns:
-          - "com.android.tools.build:*"
-          - "com.android.tools:r8"
-          - "com.android.lint*"
+          - "com.android.application"
+          - "com.android.library"
       detekt:
         patterns:
           - "io.gitlab.arturbosch.detekt"
@@ -54,7 +53,6 @@ updates:
           - "com.vanniktech*"
       dokka:
         patterns:
-          - "org.jetbrains.dokka"
           - "org.jetbrains.dokka*"
 
   - package-ecosystem: "github-actions"
@@ -69,7 +67,7 @@ updates:
     open-pull-requests-limit: 10
     cooldown:
       default-days: 7
-    # All action bumps in one PR — the ecosystem this migration just modernised.
+    # All action bumps in one PR: they are reviewed together as SHA pins.
     groups:
       gh-actions:
         patterns:
