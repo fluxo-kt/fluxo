@@ -1,0 +1,137 @@
+name: Baselines
+
+# Regenerates committed baselines on a PR and pushes them onto the PR head:
+# - Dependabot Gradle PRs, automatically: `./updateBaselines --deps-only` (verification-metadata SHA-256 pins,
+#   dependency-guard snapshots, yarn locks). API dumps are not regenerated there: an ABI change caused by a
+#   dependency must stay visible for review.
+# - Any same-repo PR, when a maintainer adds the `baseline-regen` label (create the label once): full
+#   `./updateBaselines`, API dumps included; adding the label is the review consent.
+#
+# Security (`pull_request_target` runs with base-repo permissions; the regen executes the PR's build logic and
+# freshly bumped dependencies, with checksum verification off because it is writing the checksums):
+# - `regen` runs that code with a read-only token, no persisted git credentials and a read-only Gradle cache,
+#   and hands its result over only as a patch artefact.
+# - `push` runs no PR code. It accepts the patch only if every path is a baseline file, then commits, pushes with
+#   `--force-with-lease` (refused if the PR head moved after the trigger) and dispatches CI.
+# - Fork PRs never run (same-repo gate).
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, labeled]
+
+permissions: {}
+
+jobs:
+  regen:
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository && (
+        (github.event.action != 'labeled' &&
+          github.event.pull_request.user.login == 'dependabot[bot]' &&
+          startsWith(github.event.pull_request.head.ref, 'dependabot/gradle/')) ||
+        (github.event.action == 'labeled' && github.event.label.name == 'baseline-regen'))
+    # Job-level, so events whose job is skipped (e.g. Dependabot adding its own labels) never cancel a running regen.
+    concurrency:
+      group: baselines-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
+    name: Regenerate baselines
+    # macOS: only a macOS host resolves the Apple-target artefacts; the other hosts' toolchain archives are
+    # covered by the `resolveCrossHostToolchains` task inside the regen.
+    runs-on: macos-latest
+    # Bounds a hang only: a full-graph regen takes most of an hour on a hosted macOS runner.
+    timeout-minutes: 90
+    permissions:
+      contents: read
+    outputs:
+      changed: ${{ steps.diff.outputs.changed }}
+    steps:
+      - name: Checkout PR head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+
+      - name: Set up JDKs
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          # 17: compile/test toolchain (javaLangTarget); 25 last = JAVA_HOME, the Gradle daemon JDK.
+          java-version: |
+            17
+            25
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+        with:
+          # Unverified PR dependencies must not reach the cache that default-branch builds restore.
+          cache-read-only: true
+
+      - name: Regenerate baselines
+        env:
+          MODE: ${{ github.event.action == 'labeled' && 'full' || '--deps-only' }}
+        run: |
+          if [ "$MODE" = full ]; then ./updateBaselines; else ./updateBaselines --deps-only; fi
+
+      - name: Collect baseline patch
+        id: diff
+        run: |
+          git add -A
+          git diff --staged --binary -- gradle/verification-metadata.xml ':(glob)**/dependencies/*.txt' \
+            ':(glob)**/yarn.lock' ':(glob)**/api/**' > baselines.patch
+          if [ -s baselines.patch ]; then echo changed=true >> "$GITHUB_OUTPUT"; else echo "::notice::Baselines unchanged."; fi
+
+      - name: Upload baseline patch
+        if: steps.diff.outputs.changed == 'true'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: baselines-patch
+          path: baselines.patch
+          retention-days: 1
+
+  push:
+    needs: regen
+    if: needs.regen.outputs.changed == 'true'
+    name: Push baselines and dispatch CI
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      # `gh workflow run`: a push made with GITHUB_TOKEN starts no workflow run of its own (only an
+      # approval-gated, job-less `pull_request` run), so CI is dispatched explicitly.
+      actions: write
+      # The dispatched Build is not linked to the PR, so its result travels as a commit status (build.yml).
+      statuses: write
+    steps:
+      - name: Checkout PR head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: true
+
+      - name: Download baseline patch
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: baselines-patch
+          path: ${{ runner.temp }}
+
+      - name: Commit, push and dispatch CI
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PATCH: ${{ runner.temp }}/baselines.patch
+        run: |
+          # The patch comes from a job that ran untrusted code: refuse any path that is not a baseline file.
+          bad=$(git apply --numstat "$PATCH" | cut -f3 | grep -v -E \
+            '^(gradle/verification-metadata\.xml|([^/]+/)*dependencies/[^/]+\.txt|(\.kotlin-js-store|kotlin-js-store/wasm)/yarn\.lock|[^/]+/api/.+)$' || true)
+          if [ -n "$bad" ]; then echo "::error::Patch touches non-baseline paths:"; echo "$bad"; exit 1; fi
+          git apply --index "$PATCH"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "build(deps): regenerate baselines"
+          git push --force-with-lease="refs/heads/${HEAD_REF}:${HEAD_SHA}" origin "HEAD:${HEAD_REF}"
+
+          sha=$(git rev-parse HEAD)
+          gh api "repos/${REPO}/statuses/${sha}" -f state=pending -f context="Build (dispatched)" \
+            -f description="Build dispatched after the baseline push"
+          gh workflow run build.yml --ref "${HEAD_REF}"

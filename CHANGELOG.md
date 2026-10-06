@@ -70,7 +70,7 @@
   artefact in the graph. CDN/repo poisoning of any direct or transitive
   dependency is rejected at resolve time. PGP signature pinning is left
   advisory for now (`verify-signatures=false`); SHA-256 alone defends against
-  artefact substitution. New workflow `verify-metadata.yml` auto-regenerates
+  artefact substitution. New workflow `baselines.yml` auto-regenerates
   the file on Dependabot PRs and force-with-lease-pushes the update back.
 
 ### Removed

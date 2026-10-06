@@ -21,8 +21,8 @@ on:
       - '**.txt'
       - '**benchmark.yml'
       - '**dependabot.yml'
-  # The Dependabot regen workflow dispatches this after pushing regenerated baselines:
-  # a push made with GITHUB_TOKEN triggers no workflow except workflow_dispatch.
+  # baselines.yml dispatches this after pushing regenerated baselines (a GITHUB_TOKEN push starts no normal run);
+  # the `dispatched-status` job reports the result on the PR.
   workflow_dispatch:
 
 concurrency:
@@ -85,6 +85,11 @@ jobs:
     timeout-minutes: 55
     runs-on: ${{ matrix.os }}
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
+    # The repository default token is read-only.
+    permissions:
+      contents: read
+      checks: write # JUnit report check on default-branch pushes
+      pull-requests: write # setup-gradle's job summary as a PR comment on failure
 
     steps:
       - name: Harden Runner
@@ -225,3 +230,21 @@ jobs:
         env:
           RELEASE: true
         run: ./gradlew apiCheck androidApiCheck --stacktrace --scan
+
+  dispatched-status:
+    # A dispatched run (baselines.yml after its push) is not linked to the PR, so the PR checks would never show
+    # it; report the result as a commit status, which the PR does show.
+    if: always() && github.event_name == 'workflow_dispatch'
+    needs: os-checks
+    name: Report dispatched build status
+    runs-on: ubuntu-latest
+    permissions:
+      statuses: write
+    steps:
+      - env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          STATE: ${{ needs.os-checks.result == 'success' && 'success' || 'failure' }}
+          URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: >-
+          gh api "repos/${{ github.repository }}/statuses/${{ github.sha }}"
+          -f state="$STATE" -f context="Build (dispatched)" -f target_url="$URL"

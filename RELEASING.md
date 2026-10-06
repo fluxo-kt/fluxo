@@ -172,8 +172,9 @@ Whenever the resolved graph changes:
 - Wrapper bumps (`gradle-wrapper.properties`)
 - New plugin additions
 
-Dependabot PRs regenerate automatically via `.github/workflows/verify-metadata.yml` (gated on
-`dependabot[bot]`; it pushes the result and dispatches CI). Human contributors run the same command
+Dependabot Gradle PRs regenerate automatically via `.github/workflows/baselines.yml`, which pushes the result
+and dispatches CI; on any same-repo PR, the `baseline-regen` label runs the full regeneration, API dumps included.
+Human contributors run the same command
 on macOS before pushing, and before cutting a release tag so the published graph matches the
 resolved one:
 

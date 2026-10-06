@@ -15,7 +15,7 @@
   gives no feedback during ordinary work. First read where the time goes (each Build run publishes a Gradle build
   scan), then shard or cut what dominates. Never drop targets, tests or strict dependency verification to win time.
   Also: `build.yml` runs on both `push` (any branch) and `pull_request`, so every same-repo PR, Dependabot's included,
-  builds twice on three OSes. The Dependabot baseline regeneration (`verify-metadata.yml`) costs as much as a macOS
+  builds twice on three OSes. The Dependabot baseline regeneration (`baselines.yml`) costs as much as a macOS
   Build, because `./updateBaselines` runs the full `build` graph so test-only artefacts get pinned; a resolve-only task
   over the test configurations would cut it, once proven to pin the same set on a cold cache.
 * [ ] **Store event stream** (`FluxoEvent` flow plus an interceptor hook in the store setup). Planned events, each to
