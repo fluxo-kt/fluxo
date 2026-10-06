@@ -43,6 +43,11 @@ plugins {
 
 val isRelease by isRelease()
 
+// JitPack (jitpack.yml) builds a commit on request and serves what lands in ~/.m2 as
+// com.github.fluxo-kt.fluxo:<module>:<commit>. Gradle module metadata links every platform variant by group and
+// version, so a JitPack build must publish under exactly those coordinates, not the Maven Central ones.
+val jitpack = providers.environmentVariable("JITPACK").orNull == "true"
+
 // Setup project defaults.
 fkcSetupRaw {
     explicitApi()
@@ -68,7 +73,9 @@ fkcSetupRaw {
     projectName = "Fluxo"
     description = "Kotlin Multiplatform MVI / MVVM+ framework"
     githubProject = "fluxo-kt/fluxo"
-    group = "io.github.fluxo-kt"
+    fun env(name: String) = providers.environmentVariable(name).get()
+    group = if (jitpack) "${env("GROUP")}.${env("ARTIFACT")}" else "io.github.fluxo-kt"
+    if (jitpack) version = env("VERSION")
 
     // Publish all library modules to Maven Central (Central Portal) via vanniktech.
     // POM name/URL/SCM derive from projectName/githubProject/group above; license
@@ -81,7 +88,8 @@ fkcSetupRaw {
     }
     // Release javadoc jars carry Dokka HTML API docs. The harness applies Dokka only for non-SNAPSHOT versions
     // (the output is large), so snapshots and ordinary builds keep a plain javadoc jar and never run Dokka.
-    useDokka = true
+    // Not on JitPack: its commit version counts as a release, and the source links would name a nonexistent tag.
+    useDokka = !jitpack
 
     enableSpotless = true
     enableApiValidation = true

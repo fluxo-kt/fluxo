@@ -1,0 +1,15 @@
+# JitPack builds fluxo from any commit on request, for consumers who need unreleased code: add the
+# https://jitpack.io repository and depend on com.github.fluxo-kt.fluxo:<module>:<commit>. Releases and snapshots
+# are published to Maven Central; root build.gradle.kts switches to JitPack's coordinates when JITPACK=true.
+jdk:
+  # Runs the Gradle launcher (Gradle 9 needs 17+) and is the JVM toolchain the libraries compile against.
+  - openjdk17
+before_install:
+  # The Gradle daemon must run on JDK 25 (gradle/gradle-daemon-jvm.properties) and toolchain downloads are off.
+  # Adoptium's "latest" endpoint has no patch version to go stale; Gradle auto-detects JDKs in the SDKMAN folder.
+  - mkdir -p ~/.sdkman/candidates/java/25-tem
+  - curl -fsSL https://api.adoptium.net/v3/binary/latest/25/ga/linux/x64/jdk/hotspot/normal/eclipse | tar -xz --strip-components=1 -C ~/.sdkman/candidates/java/25-tem
+install:
+  # Strict dependency verification, as for every published artefact (local builds only warn). Kotlin cross-compiles
+  # the Apple klibs on Linux (no cinterop here), so the publication covers every target.
+  - ./gradlew publishToMavenLocal -Dorg.gradle.dependency.verification=strict --console=plain
