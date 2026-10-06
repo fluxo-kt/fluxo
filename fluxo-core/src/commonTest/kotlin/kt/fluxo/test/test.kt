@@ -32,7 +32,7 @@ internal const val DEFAULT_TEST_TIMEOUT_MS = 5_000L
 /**
  * [runTest] with custom default [timeout][timeoutMs] and bit more safety.
  *
- * * [timeoutMs] is 2 seconds by default
+ * * [timeoutMs] defaults to [DEFAULT_TEST_TIMEOUT_MS]
  * * Catches suppressed exceptions (can be helpful when debugging some problems)
  *
  * See issue [#3270](https://github.com/Kotlin/kotlinx.coroutines/issues/3270) for more details.
