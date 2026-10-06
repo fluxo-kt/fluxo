@@ -58,6 +58,17 @@ fluxo-data = { module = "io.github.fluxo-kt:fluxo-data", version.ref = "fluxo" }
 ```
 </details>
 
+### Any commit via JitPack
+
+JitPack builds the libraries from a commit on its first request. That build takes minutes, longer than Gradle's
+HTTP timeout, so the first resolution of a new commit can fail; it succeeds once the build has finished
+(its log is at `https://jitpack.io/com/github/fluxo-kt/fluxo/<commit>/build.log`):
+
+```kotlin
+implementation("com.github.fluxo-kt.fluxo:fluxo-core:<commit>")
+// in `settings.gradle.kts`: repositories { maven("https://jitpack.io") }
+```
+
 
 
 ### Code examples
