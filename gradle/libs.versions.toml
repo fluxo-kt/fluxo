@@ -271,7 +271,7 @@ android-lib = { id = "com.android.library", version.ref = "android-gradle-plugin
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 
 # https://github.com/fluxo-kt/fluxo-bcv-js/releases
-fluxo-bcv-js = { id = "io.github.fluxo-kt.binary-compatibility-validator-js", version = "1.1.0" }
+fluxo-bcv-js = { id = "io.github.fluxo-kt.binary-compatibility-validator-js", version = "1.2.0" }
 
 # https://github.com/fluxo-kt/fluxo-kmp-conf/releases
 fluxo-kmp-conf = { id = "io.github.fluxo-kt.fluxo-kmp-conf", version = "0.16.1" }

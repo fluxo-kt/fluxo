@@ -8,9 +8,6 @@
   (`dev.detekt`, alpha), which rejects 1.x keys in `detekt.yml` (`output-reports`, `style>UnusedPrivateMember`), so the
   config must be migrated and the catalog `detekt` 1.x pin re-checked. Plan: migrate the config, one reformat commit,
   fix real findings, baseline the rest with reasons.
-* [ ] **Activate the TypeScript-declaration API lane.** `tsApiChecks` passes vacuously and `api/js/*.d.ts` is stale
-  (AGENTS.md gotcha #5). Needs a fluxo-bcv-js release containing commit be5369c; then bump it and review the first
-  regenerated `.d.ts` dumps hunk by hunk as real API changes.
 * [ ] **Bring every CI lane under 5 minutes** (not a current priority while local builds stay fast). The Build OS jobs,
   the Kotlin pre-release lane and above all the benchmark job are far over it, so they give no feedback during
   ordinary work. First read where the time goes (each Build run publishes a Gradle build scan), then shard or cut what
