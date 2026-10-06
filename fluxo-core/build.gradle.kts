@@ -34,9 +34,9 @@ fkcSetupMultiplatform(
     common {
         main.dependencies {
             api(projects.fluxoCommon)
-        }
-        test.dependencies {
-            implementation(libs.kotlinx.coroutines.core)
+            // Public types extend coroutines types (Store is a StateFlow and a CoroutineScope), so consumers need it on
+            // their compile classpath; the harness's setupCoroutines adds it only as an implementation dependency.
+            api(libs.kotlinx.coroutines.core)
         }
     }
     commonJs {
