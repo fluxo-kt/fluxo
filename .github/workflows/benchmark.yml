@@ -5,6 +5,11 @@ on:
     - cron: '0 7 * * 2'
   push:
     paths:
+      # The library code the gate guards: a slowdown must fail on the push that caused it, not at the weekly cron.
+      # JMH runs on the JVM: commonMain, commonJvmMain and jvmMain are what it executes.
+      - 'fluxo-core/src/common*Main/**'
+      - 'fluxo-core/src/jvmMain/**'
+      - 'fluxo-common/src/commonMain/**'
       - '**/**Benchmark.kt'
       - '**/benchmark-summary.main.kts'
       - '**/benchmark.yml'
