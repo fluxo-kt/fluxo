@@ -5,9 +5,9 @@ name: JMH Baseline Bootstrap
 # authoritative CI runners (macos-latest + ubuntu-latest).
 #
 # `benchmark-summary.main.kts` reads these JSONs when
-# `JMH_BASELINE_CHECK=1` and applies the dual gate `|Δ|/σ>2 AND |Δ|/base>5%`
-# per benchmark. Without the JSONs the gate is silently skipped — see the
-# `[baseline-check] no baseline at …` log line in the script.
+# `JMH_BASELINE_CHECK=1`: a benchmark fails when every measured mode is slower
+# than its baseline by more than both the baseline scoreError and 15%. Without
+# the JSONs the gate passes and only logs `[baseline-check] no baseline at …`.
 #
 # Why a one-shot bootstrap workflow rather than a developer-runnable script:
 # JMH numbers are host-binding. A developer laptop's `darwin.json` would
@@ -194,7 +194,7 @@ jobs:
               --base "$TARGET_BRANCH" \
               --head "$branch" \
               --title "test(jmh): anchor JMH gating baselines" \
-              --body "Host-matched JMH baselines on macos-latest + ubuntu-latest. Enables \`JMH_BASELINE_CHECK=1\` dual gate in benchmark-summary.main.kts." \
+              --body "Host-matched JMH baselines on macos-latest + ubuntu-latest. Anchors the \`JMH_BASELINE_CHECK=1\` gate in benchmark-summary.main.kts." \
               2> "$err"; then
             :
           elif grep -qF "GitHub Actions is not permitted to create or approve pull requests" "$err"; then
