@@ -22,6 +22,12 @@ updates:
     cooldown:
       default-days: 7
       semver-major-days: 30
+    # The published stdlib is the consumer floor (catalog `kotlinCoreLibraries`): JVM/Android artefacts stay usable
+    # from Kotlin 2.3. A minor bump would raise that floor, which is a maintainer decision, never an update; patches
+    # within the floor still arrive.
+    ignore:
+      - dependency-name: "org.jetbrains.kotlin:kotlin-stdlib"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
     # Coupled toolchains land as one reviewable PR instead of fanning out into
     # several that can't merge atomically (and re-saturate the cap).
     groups:

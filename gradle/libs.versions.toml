@@ -32,9 +32,10 @@ kotlinApiVersion = "2.3"
 # Kotlin 2.3 consumers (the kotlinx convention). It must not exceed `kotlin`: the harness rejects that skew.
 # JS/Wasm resolve the compiler's stdlib instead (rule in the root build.gradle.kts).
 kotlin = "2.4.20"
+# Raising this past 2.3.x raises the consumer floor, so .github/dependabot.yml ignores its minor and major bumps.
+kotlinCoreLibraries = "2.3.21"
 # https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk18on
 bouncycastle = "1.86"
-kotlinCoreLibraries = "2.3.21"
 
 # https://github.com/google/ksp/releases
 ksp = "2.3.12"
