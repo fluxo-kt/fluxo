@@ -15,9 +15,9 @@ import org.gradle.api.tasks.TaskAction
 // Security pins (catalog bundle `pinned-security`) for the classes the build actually runs. The harness pins the
 // same bundle with `eachDependency`, but it registers them inside its own apply(), after `plugins {}`
 // has resolved and loaded the plugin classpath, so they only change later re-resolutions such as
-// `buildEnvironment` and the dependency-guard snapshot (measured: the root script's classloader loaded
-// bcprov 1.80.2 and freemarker 2.3.32 while both reports showed the pins). `buildscript {}` runs
-// before `plugins {}`, so these constraints reach the real classpath. Constraints only raise versions.
+// `buildEnvironment` and the dependency-guard snapshot: those reports show the pins while the root script's
+// classloader still loads the unpinned jars. `buildscript {}` runs before `plugins {}`, so these constraints
+// reach the real classpath. Constraints only raise versions.
 buildscript {
     dependencies {
         constraints {
@@ -266,8 +266,6 @@ val checkForbiddenFlags = tasks.register<CheckForbiddenFlagsTask>("checkForbidde
                 "Replaced by stable `org.gradle.vfs.watch` since Gradle 7.x; the unsafe variant is removed in Gradle 9.",
             "org.gradle.configureondemand" to
                 "Deprecated in Gradle 9; incompatible with the current configuration-cache invariants.",
-            "org.gradle.dependency.verification.console" to
-                "Dead flag without an active gradle/verification-metadata.xml; misleads readers into thinking verification is wired.",
             "android.useAndroidX" to
                 "Default-on since AGP 7.x; setting it is a no-op and clutters the file.",
             "android.enableJetifier" to
@@ -325,7 +323,7 @@ val compilerStdlibPlatforms = setOf(
 )
 
 allprojects {
-    configurations.all {
+    configurations.configureEach {
         val platform = attributes
         resolutionStrategy.eachDependency {
             val name = requested.name
