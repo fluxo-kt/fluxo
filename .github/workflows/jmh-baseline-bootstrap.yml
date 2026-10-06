@@ -81,7 +81,8 @@ jobs:
 
       - name: Run JMH with gating config + emit JSON
         # Gating profile: forks=2, warmupIterations=2,
-        # iterations=5, threads=2 (the benchmarks/jmh/build.gradle.kts default
+        # iterations=5, threads=2; benchmark.yml must run the same profile, or
+        # its gate compares different measurements (the benchmarks/jmh/build.gradle.kts default
         # is a smoke profile: forks=1, iter=4). Property names match the
         # `envOrPropInt("jmh_*")` reads in build.gradle.kts:
         #   jmh_f  forks    jmh_wi warmupIterations

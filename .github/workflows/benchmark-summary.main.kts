@@ -349,10 +349,10 @@ private fun File.parseJmhJson(): List<JmhJsonEntry> {
 
 // JMH dual-gate baseline comparison.
 // Gated on JMH_BASELINE_CHECK=1 so non-gating runs (PR summary table, local
-// devs) stay unaffected. No workflow sets it yet: the committed baselines were
-// measured on JDK 17 with 2 warmup and 5 measurement iterations, while
-// benchmark.yml runs JDK 25 with 1 and 6, so the two must match before the gate
-// can be trusted. Reads host-matched `benchmarks/jmh/baselines/main-${os}.json`,
+// devs) stay unaffected; benchmark.yml sets it. The gate is only meaningful while
+// the baselines were measured with the same JDK and JMH profile as the current
+// run (jmh-baseline-bootstrap.yml re-anchors them on the CI hosts).
+// Reads host-matched `benchmarks/jmh/baselines/main-${os}.json`,
 // where `os` is `darwin` on macOS runners and `linux` on Linux runners.
 // Per-benchmark dual gate: `|delta|/baselineStderr > 2.0 AND |delta|/baseline > 5%`.
 // Both conditions necessary — effect must be both statistically significant

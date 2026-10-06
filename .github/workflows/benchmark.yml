@@ -18,7 +18,6 @@ concurrency:
 
 env:
   TRIGGER_COUNTER: 15
-  JMH_THREADS: 2
   GRADLE_OPTS: "-Dorg.gradle.daemon=false \
   -Dorg.gradle.configuration-cache=false \
   -Dorg.gradle.vfs.watch=false \
@@ -60,10 +59,6 @@ jobs:
             17
             ${{ matrix.java }}
 
-      # macos runner provides more CPU cores.
-      - if: matrix.os == 'macos'
-        run: echo "JMH_THREADS=3" >> "$GITHUB_ENV"
-
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
         with:
@@ -72,15 +67,21 @@ jobs:
       # setup-gradle@v4+ dropped the `arguments:` input — run Gradle in a dedicated step.
       # jmh is configuration-cache-incompatible, hence the explicit `--no-configuration-cache`.
       - name: 'Benchmark "${{ matrix.benchmark }}" on ${{ matrix.os }} JDK${{ matrix.java }}'
+        # Gating profile: must equal jmh-baseline-bootstrap.yml's, or the baseline gate compares different
+        # measurements (threads change throughput; warmup changes the JIT state measured).
         env:
           CI: true
           jmh: '${{ matrix.benchmark }}'
-          jmh_wi: 1
-          jmh_i: 6
+          jmh_wi: 2
+          jmh_i: 5
           jmh_f: 2
-          jmh_t: '${{ env.JMH_THREADS }}'
+          jmh_t: 2
         run: ./gradlew jmh --stacktrace --no-configuration-cache --scan
 
+      # The summary also gates fluxo's own rows against benchmarks/jmh/baselines/main-{darwin,linux}.json
+      # (re-anchor with jmh-baseline-bootstrap.yml after a JDK or profile change); Windows has no baseline.
       - name: Summary
+        env:
+          JMH_BASELINE_CHECK: 1
         run: ./.github/workflows/benchmark-summary.main.kts >> "$GITHUB_STEP_SUMMARY"
         shell: bash
