@@ -1,9 +1,10 @@
 name: Kotlin pre-release
 
-# Early warning: builds fluxo against the newest Kotlin 2.5 pre-release so a compiler or KGP change that
-# breaks fluxo shows up before the stable release. Not a required check; a red run is a signal to read, not
-# a blocker. The build overrides the catalog `kotlin` version with -Pfluxo.kotlin (settings.gradle.kts),
-# which also narrows the default targets to those Kotlin 2.5 still supports (root build.gradle.kts).
+# Early warning: builds fluxo against the newest Kotlin pre-release (Beta/RC) that is newer than the catalog
+# compiler, so a compiler or KGP change that breaks fluxo shows up before the stable release. Not a required
+# check; a red run is a signal to read, not a blocker. The build overrides the catalog `kotlin` version with
+# -Pfluxo.kotlin (settings.gradle.kts), which also narrows the default targets to those the next Kotlin
+# release still supports (root build.gradle.kts).
 #
 # Deliberately looser than build.yml, because the pre-release graph is not what is published:
 # - lenient dependency verification: its artefacts are not pinned in gradle/verification-metadata.xml
@@ -39,7 +40,7 @@ env:
 
 jobs:
   build:
-    name: Build against the newest Kotlin 2.5 pre-release
+    name: Build against the newest Kotlin pre-release
     runs-on: ubuntu-latest
     timeout-minutes: 55
     steps:
@@ -67,23 +68,39 @@ jobs:
           # The pre-release graph must not overwrite the main build's cache entries.
           cache-read-only: true
 
-      - name: Resolve the newest Kotlin 2.5 pre-release
+      - name: Resolve the newest Kotlin pre-release
         id: kotlin
-        # Maven metadata lists versions in publication order, so the last 2.5.* entry is the newest one;
-        # a version sort would rank 2.5.0-RC2 above the final 2.5.0.
+        # Newest Beta/RC by version order (stable > RC > Beta for the same x.y.z), and only when it is newer than the
+        # catalog compiler: after a stable release is adopted and before the next line's first preview, there is
+        # nothing ahead to warn about, so the lane skips instead of re-building a stable version leniently.
         run: |
-          version=$(curl -fsSL https://repo1.maven.org/maven2/org/jetbrains/kotlin/kotlin-gradle-plugin/maven-metadata.xml \
-            | grep -o '<version>2\.5\.[^<]*' | sed 's/<version>//' | tail -n 1)
-          if [ -z "$version" ]; then
-            echo "::error::No Kotlin 2.5 version found in Maven Central metadata."
-            exit 1
-          fi
+          curl -fsSL https://repo1.maven.org/maven2/org/jetbrains/kotlin/kotlin-gradle-plugin/maven-metadata.xml \
+            -o "$RUNNER_TEMP/kgp.xml"
+          version=$(python3 - "$RUNNER_TEMP/kgp.xml" gradle/libs.versions.toml <<'EOF'
+          import re, sys
+          def key(v):
+              m = re.fullmatch(r'(\d+)\.(\d+)\.(\d+)(?:-(Beta|RC)(\d*))?', v)
+              if not m: return None
+              stage = {'Beta': 0, 'RC': 1, None: 2}[m[4]]
+              return (int(m[1]), int(m[2]), int(m[3]), stage, int(m[5] or 0))
+          versions = re.findall(r'<version>([^<]+)</version>', open(sys.argv[1]).read())
+          pre = [v for v in versions if key(v) and key(v)[3] < 2]
+          catalog = re.search(r'^kotlin = "([^"]+)"', open(sys.argv[2]).read(), re.M)[1]
+          newest = max(pre, key=key, default=None)
+          if newest and key(newest) > key(catalog):
+              print(newest)
+          EOF
+          )
           echo "version=$version" >> "$GITHUB_OUTPUT"
-          echo "Building against Kotlin **$version**." >> "$GITHUB_STEP_SUMMARY"
+          if [ -z "$version" ]; then
+            echo "::notice::No Kotlin pre-release is newer than the catalog's Kotlin; skipping the build."
+          fi
+          echo "Kotlin pre-release: **${version:-none newer than the catalog, skipped}**." >> "$GITHUB_STEP_SUMMARY"
 
       # A separate invocation: in the same one as `build`, Gradle runs kotlinStoreYarnLock (a JS test dependency)
       # before kotlinUpgradeYarnLock, and it fails on the changed lock.
       - name: Upgrade yarn locks
+        if: steps.kotlin.outputs.version != ''
         env:
           KOTLIN_VERSION: ${{ steps.kotlin.outputs.version }}
         run: >
@@ -91,6 +108,7 @@ jobs:
           "-Pfluxo.kotlin=$KOTLIN_VERSION" --dependency-verification=lenient --stacktrace
 
       - name: Build
+        if: steps.kotlin.outputs.version != ''
         env:
           KOTLIN_VERSION: ${{ steps.kotlin.outputs.version }}
         run: >
