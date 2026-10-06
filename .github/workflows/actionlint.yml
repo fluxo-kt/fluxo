@@ -44,8 +44,9 @@ jobs:
         shell: bash
 
       - name: Run actionlint
-        # `-color` keeps the output readable in the Actions log; `-shellcheck=` empty
-        # disables the shellcheck integration (we don't ship one on the runner image
-        # by default and the curl + bash idiom in our workflows is already audited).
-        run: ${{ steps.get_actionlint.outputs.executable }} -color -shellcheck=
+        # `-color` keeps the output readable in the Actions log. shellcheck lints every `run:` script (quoting and
+        # word-splitting bugs); actionlint silently skips it, exit 0, when the binary is missing, so assert it first.
+        run: |
+          shellcheck --version
+          ${{ steps.get_actionlint.outputs.executable }} -color -shellcheck=shellcheck
         shell: bash
