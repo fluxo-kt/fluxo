@@ -38,7 +38,9 @@ internal const val DEFAULT_TEST_TIMEOUT_MS = 5_000L
  * See issue [#3270](https://github.com/Kotlin/kotlinx.coroutines/issues/3270) for more details.
  */
 @ExperimentalCoroutinesApi
-@Suppress("NestedBlockDepth")
+// TestResult is Unit only on JVM (a Promise on JS), so the return type is needed in common code.
+// `scope` is read in the catch block below, after `runTest` fails; the compiler does not follow that path.
+@Suppress("NestedBlockDepth", "REDUNDANT_RETURN_UNIT_TYPE", "ASSIGNED_VALUE_IS_NEVER_READ")
 fun runUnitTest(
     context: CoroutineContext = EmptyCoroutineContext,
     timeoutMs: Long = DEFAULT_TEST_TIMEOUT_MS,

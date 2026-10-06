@@ -38,6 +38,8 @@ internal class DebugIntentLabelTest : CoroutineScopeAwareTest() {
     fun debug_coroutine_name_of_sent_intent_labels_captured_lambdas_by_class() = runUnitTest {
         if (!DEBUG) return@runUnitTest
         var name: String? = null
+        // Must stay a `var`: a captured `var` is boxed in a `Ref.ObjectRef`, the case under test.
+        @Suppress("CAN_BE_VAL")
         var callback: suspend () -> Unit = {}
         fun capturing(): FluxoIntent<String, Nothing> = {
             callback()

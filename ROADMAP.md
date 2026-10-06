@@ -4,9 +4,10 @@
 * [ ] **Restore static analysis (high priority).** Detekt, Spotless and the harness lint setup are off:
   fluxo-kmp-conf enables them only with `setupVerification = true`, which the root build never sets
   (`enableSpotless = true` is inert without it). With the flag on, Spotless reformats a large share of the sources,
-  detekt reports several hundred findings (mostly fluxo-core common code), and the Android detekt tasks fail variant
-  resolution with fluxo-kmp-conf 0.15.1 on AGP 9 (a harness defect). Plan: one reformat commit, fix real findings,
-  baseline the rest with reasons, enable Android detekt with the first fluxo-kmp-conf release that fixes it.
+  detekt reports several hundred findings (mostly fluxo-core common code). fluxo-kmp-conf 0.16+ applies detekt 2.x
+  (`dev.detekt`, alpha), which rejects 1.x keys in `detekt.yml` (`output-reports`, `style>UnusedPrivateMember`), so the
+  config must be migrated and the catalog `detekt` 1.x pin re-checked. Plan: migrate the config, one reformat commit,
+  fix real findings, baseline the rest with reasons.
 * [ ] **Activate the TypeScript-declaration API lane.** `tsApiChecks` passes vacuously and `api/js/*.d.ts` is stale
   (AGENTS.md gotcha #5). Needs a fluxo-bcv-js release containing commit be5369c; then bump it and review the first
   regenerated `.d.ts` dumps hunk by hunk as real API changes.

@@ -61,7 +61,7 @@ internal object MobiusKtBenchmark {
     }
 
     private suspend fun consumeMobiusKtBenchmark(loop: MobiusLoop<Int, *, *>, launchDef: Job): Int {
-        suspendCoroutine { cont ->
+        val _ = suspendCoroutine { cont ->
             loop.observe {
                 if (it >= BENCHMARK_REPETITIONS) {
                     cont.resume(it)

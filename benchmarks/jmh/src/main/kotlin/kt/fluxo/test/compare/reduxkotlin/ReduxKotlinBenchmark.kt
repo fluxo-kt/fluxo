@@ -22,7 +22,7 @@ internal object ReduxKotlinBenchmark {
             }
         }, preloadedState = 0)
         runBlocking {
-            val launchDef = launchCommonBenchmarkWithStaticIntent(IntentIncrement.Increment) { store.dispatch(it) }
+            val launchDef = launchCommonBenchmarkWithStaticIntent(IntentIncrement.Increment) { val _ = store.dispatch(it) }
             store.consumeReduxKotlinBenchmark(launchDef)
         }
         return store.state
@@ -35,7 +35,7 @@ internal object ReduxKotlinBenchmark {
             }
         }, preloadedState = 0)
         runBlocking {
-            val launchDef = launchCommonBenchmark { store.dispatch(IntentAdd.Add(value = value)) }
+            val launchDef = launchCommonBenchmark { val _ = store.dispatch(IntentAdd.Add(value = value)) }
             store.consumeReduxKotlinBenchmark(launchDef)
         }
         return store.state
@@ -44,7 +44,7 @@ internal object ReduxKotlinBenchmark {
 
     private suspend fun TypedStore<Int, *>.consumeReduxKotlinBenchmark(launchDef: Job): Int {
         val state = suspendCoroutine { cont ->
-            subscribe {
+            val _ = subscribe {
                 val state = state
                 if (state >= BENCHMARK_REPETITIONS) {
                     cont.resume(state)

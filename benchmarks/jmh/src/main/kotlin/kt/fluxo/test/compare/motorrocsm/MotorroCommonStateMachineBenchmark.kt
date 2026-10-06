@@ -13,6 +13,8 @@ import kt.fluxo.test.compare.launchCommonBenchmarkWithStaticIntent
 internal object MotorroCommonStateMachineBenchmark {
 
     fun smReducerStaticIncrement(): Int {
+        // The machine state reads `sm` before it exists, so it cannot be a `val`.
+        @Suppress("CAN_BE_VAL_LATEINIT")
         lateinit var sm: FlowStateMachine<IntentIncrement, Int>
         val machineState = object : CommonMachineState<IntentIncrement, Int>() {
             override fun doProcess(gesture: IntentIncrement) {
@@ -32,6 +34,8 @@ internal object MotorroCommonStateMachineBenchmark {
     }
 
     fun smReducerAdd(value: Int = BENCHMARK_ARG): Int {
+        // The machine state reads `sm` before it exists, so it cannot be a `val`.
+        @Suppress("CAN_BE_VAL_LATEINIT")
         lateinit var sm: FlowStateMachine<IntentAdd, Int>
         val machineState = object : CommonMachineState<IntentAdd, Int>() {
             override fun doProcess(gesture: IntentAdd) {

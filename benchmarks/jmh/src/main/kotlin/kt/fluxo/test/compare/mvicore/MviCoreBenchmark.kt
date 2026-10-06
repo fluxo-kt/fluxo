@@ -51,7 +51,7 @@ internal object MviCoreBenchmark {
     }
 
     private suspend fun consumeMviCoreBenchmark(feature: ReducerFeature<*, Int, Nothing>) {
-        suspendCoroutine { cont ->
+        val _ = suspendCoroutine { cont ->
             feature.subscribe(
                 observer = object : Observer<Int> {
                     override fun onNext(state: Int) {

@@ -64,7 +64,7 @@ internal object PipelineInterceptionChain : InterceptionBase() {
 
     override suspend fun test(interceptions: Int, interceptors: Int, state: MutableStateFlow<Int>) {
         val interceptor = IntentInterceptor<Int> { it.proceed(it.value + state.addAndGet(1)) }
-        val finalInterceptor = IntentInterceptor<Int> { it.value + state.addAndGet(1) }
+        val finalInterceptor = IntentInterceptor<Int> { val _ = it.value + state.addAndGet(1) }
 
         // Build a full stack of interceptors
         val interceptorsArray = Array(interceptors + 1) {

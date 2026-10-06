@@ -28,7 +28,7 @@ kotlinApiVersion = "2.3"
 # `kotlinCoreLibraries` is the stdlib version published JVM/Android artefacts declare. It stays at the
 # consumer floor (`kotlinLangVersion`), below the compiler, so fluxo never forces a newer stdlib onto
 # Kotlin 2.3 consumers (the kotlinx convention). It must not exceed `kotlin`: the harness rejects that skew.
-# JS/Wasm resolve the compiler's stdlib instead (rule in the root build.gradle.kts).
+# JS/Wasm resolve the compiler's stdlib instead: fluxo-kmp-conf (0.16+) raises their stdlib and kotlin-test to it.
 kotlin = "2.4.20"
 # Raising this past 2.3.x raises the consumer floor, so .github/dependabot.yml ignores its minor and major bumps.
 kotlinCoreLibraries = "2.3.21"
@@ -274,7 +274,7 @@ detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 fluxo-bcv-js = { id = "io.github.fluxo-kt.binary-compatibility-validator-js", version = "1.1.0" }
 
 # https://github.com/fluxo-kt/fluxo-kmp-conf/releases
-fluxo-kmp-conf = { id = "io.github.fluxo-kt.fluxo-kmp-conf", version = "0.15.1" }
+fluxo-kmp-conf = { id = "io.github.fluxo-kt.fluxo-kmp-conf", version = "0.16.1" }
 
 # Gradle Versions Plugin: provides a task to determine which dependencies have updates
 # https://github.com/ben-manes/gradle-versions-plugin

@@ -39,8 +39,9 @@
 ### Internal (no consumer impact)
 
 - Build toolchain: Kotlin 2.4.20 / Gradle 9.8.0 / AGP 9.4.1 KMP plugin, compile and
-  target SDK 37 / fluxo-kmp-conf 0.15.1 / Develocity 4.6.0. The Gradle daemon runs on
-  JDK 25; libraries compile and test on a JDK 17 toolchain.
+  target SDK 37 / fluxo-kmp-conf 0.16.1 / Develocity 4.6.0. The Gradle daemon runs on
+  JDK 25; libraries compile and test on a JDK 17 toolchain. JS and Wasm-JS tests also
+  run in headless Chrome, not only in Node.
 - Supply chain: every resolved artefact's SHA-256 is pinned in
   `gradle/verification-metadata.xml` and verified on CI (strict; local builds only warn), which rejects
   repository or CDN substitution; PGP signatures stay advisory (`verify-signatures=false`). Dependabot

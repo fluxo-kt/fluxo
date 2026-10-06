@@ -54,19 +54,16 @@ fkcSetupRaw {
 
     // Default KMP setup.
     defaults {
-        if (providers.gradleProperty("fluxo.kotlin").isPresent) {
-            // Kotlin pre-release build only: Kotlin 2.5 removes watchosArm32, macosX64, tvosX64 and watchosX64, and the
-            // published harness's default target list still calls watchosArm32 (NoSuchMethodError). Dropping these
-            // targets for real when adopting 2.5 is a consumer-visible ABI change and needs its own decision.
-            allDefaultTargets(macos = false, tvos = false, watchos = false)
-            macosArm64()
-            tvosArm64()
-            tvosSimulatorArm64()
-            watchosArm64()
-            watchosDeviceArm64()
-            watchosSimulatorArm64()
-        } else {
-            allDefaultTargets()
+        // The target groups add only what the running Kotlin fully supports, so they skip the Intel targets
+        // Kotlin 2.4.20 deprecates and never add iosX64. Fluxo keeps publishing those four until Kotlin removes them:
+        // dropping a target takes its artefacts away from consumers, so it waits for the Kotlin version that forces it.
+        allDefaultTargets()
+        // Kotlin 2.5 (the pre-release build) removes them, and an explicit call to a removed target fails the build.
+        if (!providers.gradleProperty("fluxo.kotlin").isPresent) {
+            iosX64()
+            macosX64()
+            tvosX64()
+            watchosX64()
         }
     }
 
@@ -304,34 +301,15 @@ if (!isReleasePublish) {
     }
 }
 
-// Split consumer floor: JVM/Android artefacts stay usable from Kotlin 2.3 (language/API 2.3, published stdlib
-// `kotlinCoreLibraries`), while JS/Wasm compile against the compiler's own stdlib. Kotlin/JS and Wasm reject a
-// stdlib klib whose ABI is older than the compiler's ("ABI version (2.3.0) is not compatible"), even with
-// `-language-version 2.3`; lowering the klib ABI needs a flag that marks binaries pre-release, so JS/Wasm
-// consumers need the compiler's Kotlin version anyway. The rule changes resolution only: published metadata
-// keeps the declared versions. It covers kotlin-test too (a per-source-set stdlib dependency missed it).
 // Read here, not inside allprojects {}: the catalog accessor is a root-script member.
-val kotlinCompilerVersion = libs.versions.kotlin.get()
 val kotlinStdlibJs = libs.kotlin.stdlib.js.get().let { "${it.module}:${it.version}" }
-val compilerStdlibPlatforms = setOf(
-    org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType.js,
-    org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType.wasm,
-)
 
 allprojects {
     configurations.configureEach {
-        val platform = attributes
         resolutionStrategy.eachDependency {
-            val name = requested.name
-            if (name == "kotlin-dom-api-compat") {
+            if (requested.name == "kotlin-dom-api-compat") {
                 // Exclude unused DOM API.
                 useTarget(kotlinStdlibJs)
-            } else if (requested.group == "org.jetbrains.kotlin" &&
-                (name.startsWith("kotlin-stdlib") || name.startsWith("kotlin-test")) &&
-                platform.getAttribute(org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType.attribute) in compilerStdlibPlatforms
-            ) {
-                useVersion(kotlinCompilerVersion)
-                because("Kotlin/JS and Wasm need a stdlib klib with the compiler's ABI version")
             }
         }
     }
@@ -369,8 +347,8 @@ allprojects {
 // the newest release in the major line the lock already uses, at or above every advisory's first patched
 // version; delete an entry once KGP's bundled tooling pulls a patched version by itself. Advisories
 // (GitHub, read 2026-10-05): brace-expansion 2.x < 2.1.7, js-yaml 4.x < 4.3.2, diff 6–8 < 8.0.3,
-// serialize-javascript < 7.1.2. diff and serialize-javascript cross a major from what mocha requests; JS tests
-// pass with them. mocha itself stays at KGP's bundled version: mocha 12 breaks KGP's test reporter (zero tests
+// serialize-javascript < 7.1.2. diff and serialize-javascript cross a major from what mocha requests, and
+// brace-expansion from what Karma's minimatch requests (1.x); Node and browser JS tests pass with them. mocha itself stays at KGP's bundled version: mocha 12 breaks KGP's test reporter (zero tests
 // run). On a resolution-only change KGP considers build/js/package.json up to date and leaves it stale, so
 // `./updateBaselines` deletes build/js before upgrading the lock.
 plugins.withType<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin> {
