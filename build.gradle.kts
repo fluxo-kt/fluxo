@@ -445,6 +445,9 @@ tasks.register("resolveCrossHostToolchains") {
             val node = nodeVersions.sumOf { v -> resolve(nodePlatforms.map { "org.nodejs:node:$v:$it" }) }
             val binaryen = binaryenVersions.sumOf { v -> resolve(binaryenPlatforms.map { "com.github.webassembly:binaryen:$v:$it@tar.gz" }) }
             logger.lifecycle("Resolved cross-host toolchain archives: Kotlin/Native $konan, Node.js $node $nodeVersions, Binaryen $binaryen $binaryenVersions")
+            // A missing archive already fails resolution; zero can only mean version discovery found nothing (a KGP
+            // API change), which would leave the other CI hosts' archives unpinned and fail them under strict mode.
+            check(konan > 0 && node > 0 && binaryen > 0) { "No cross-host archives resolved for a toolchain kind: fix the version discovery above" }
         } finally {
             repositories.removeAll(temporary.toSet())
         }
