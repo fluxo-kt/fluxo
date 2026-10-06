@@ -26,9 +26,9 @@ on:
         required: false
         default: 'dev'
 
+# The benchmark jobs run build code for a long time and need only read access; write goes to the PR job alone.
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 concurrency:
   group: jmh-baseline-bootstrap
@@ -136,6 +136,9 @@ jobs:
     needs: produce
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
       - name: Harden runner
         uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
