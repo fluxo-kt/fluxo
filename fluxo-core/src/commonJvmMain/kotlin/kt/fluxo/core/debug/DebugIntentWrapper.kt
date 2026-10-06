@@ -15,7 +15,9 @@ import java.lang.reflect.Field
 import java.lang.reflect.Modifier
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.coroutines.Continuation
+import kotlin.jvm.internal.CallableReference
 import kotlin.jvm.internal.FunctionBase
+import kotlin.jvm.internal.Ref
 
 // TODO: Only for test/debug variants?
 @Suppress("UNCHECKED_CAST", "ReturnCount")
@@ -127,8 +129,12 @@ private val emptyArgumentsCache = emptyArray<Pair<String, Field>>()
 @InlineOnly
 internal actual inline fun Any.debugClassName(): String? = javaClass.name
 
-// FunctionBase marks compiler-generated lambdas, suspend lambdas and function references, whose toString() goes
-// through reflection. Indy lambdas don't implement it and keep their cheap toString(); so does FluxoIntentDebug,
-// whose toString() labels its captured values with this function.
-internal actual fun debugIntentLabel(intent: Any?): String =
-    if (intent is FunctionBase<*>) intent.javaClass.name else intent.toString()
+// FunctionBase marks compiler-generated lambdas, suspend lambdas and function references, and CallableReference
+// also covers property references; their toString() goes through reflection. A lambda captured in a `var` sits in
+// a Ref.ObjectRef, whose toString() is its element's. Indy lambdas implement neither and keep their cheap toString();
+// so does FluxoIntentDebug, whose toString() labels its captured values with this function.
+internal actual fun debugIntentLabel(intent: Any?): String = when (intent) {
+    is FunctionBase<*>, is CallableReference -> intent.javaClass.name
+    is Ref.ObjectRef<*> -> debugIntentLabel(intent.element)
+    else -> intent.toString()
+}

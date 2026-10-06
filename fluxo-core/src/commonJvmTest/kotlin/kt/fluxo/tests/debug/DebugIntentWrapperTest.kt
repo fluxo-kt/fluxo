@@ -18,48 +18,34 @@ import kotlin.test.assertEquals
 
 class DebugIntentWrapperTest {
 
-    private companion object {
-        private const val DEFAULT_INTENT_STRING =
-            "kt.fluxo.core.dsl.StoreScope<kotlin.Nothing, kotlin.Int, kotlin.Nothing>.() -> kotlin.Unit"
-    }
-
+    /** Without DEBUG (Android) the intent stays a raw lambda whose toString() is Kotlin's, not Fluxo's. */
     @Test
     fun check_correct_name_for_lambda_intent() = runUnitTest {
+        if (!DEBUG) return@runUnitTest
         val factory = CatchIntentStoreFactory()
         val container = backgroundScope.container(0, factory = factory) { debugChecks = true }
         container.send { value = 1 }.join()
-        val expected = when {
-            DEBUG -> "check_correct_name_for_lambda_intent"
-            else -> DEFAULT_INTENT_STRING
-        }
-        assertEquals(expected, factory.lastIntent.value?.toString())
+        assertEquals("check_correct_name_for_lambda_intent", factory.lastIntent.value?.toString())
     }
 
     @Test
     fun check_correct_name_for_lambda_intent_with_arguments() = runUnitTest {
+        if (!DEBUG) return@runUnitTest
         val factory = CatchIntentStoreFactory()
         val container = backgroundScope.container(0, factory = factory) { debugChecks = true }
         val time = System.currentTimeMillis().toInt()
         val q = 2
         container.send { value = time + q }.join()
-
-        val expected = when {
-            DEBUG -> "check_correct_name_for_lambda_intent_with_arguments(time=$time, q=2)"
-            else -> DEFAULT_INTENT_STRING
-        }
-        assertEquals(expected, factory.lastIntent.value?.toString())
+        assertEquals("check_correct_name_for_lambda_intent_with_arguments(time=$time, q=2)", factory.lastIntent.value?.toString())
     }
 
     @Test
     fun check_correct_name_for_vm_intent() = runUnitTest {
+        if (!DEBUG) return@runUnitTest
         val factory = CatchIntentStoreFactory()
         val vm = AddModel(factory)
         vm.add(1).join()
-        val expected = when {
-            DEBUG -> "add(number=1)"
-            else -> DEFAULT_INTENT_STRING
-        }
-        assertEquals(expected, factory.lastIntent.value?.toString())
+        assertEquals("add(number=1)", factory.lastIntent.value?.toString())
     }
 
     private class AddModel(factory: StoreFactory? = null) {
