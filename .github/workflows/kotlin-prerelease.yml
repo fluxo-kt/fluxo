@@ -10,7 +10,7 @@ name: Kotlin pre-release
 # - lenient dependency verification: its artefacts are not pinned in gradle/verification-metadata.xml
 #   (settings.gradle.kts exempts builds with fluxo.kotlin from the strict-CI guard);
 # - yarn locks upgraded in the runner: the pre-release KGP bundles other npm tool versions;
-# - no klibApiCheck (the narrowed target set differs from the committed klib dump) and no dependencyGuard
+# - no checkKotlinAbi (one task for the jvm, android and klib dumps; klibApiCheck is only an alias of it): the narrowed target set differs from the committed klib dump, and the main Build checks all three; no dependencyGuard
 #   (the resolved graph differs from the committed snapshots).
 
 on:
@@ -112,6 +112,6 @@ jobs:
         env:
           KOTLIN_VERSION: ${{ steps.kotlin.outputs.version }}
         run: >
-          ./gradlew build -x klibApiCheck -x dependencyGuard
+          ./gradlew build -x checkKotlinAbi -x dependencyGuard
           "-Pfluxo.kotlin=$KOTLIN_VERSION" --dependency-verification=lenient
           --continue --stacktrace
