@@ -34,7 +34,7 @@ kotlinApiVersion = "2.3"
 kotlin = "2.4.20"
 # https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk18on
 bouncycastle = "1.86"
-kotlinCoreLibraries = "2.3.21"
+kotlinCoreLibraries = "2.4.20"
 
 # https://github.com/google/ksp/releases
 ksp = "2.3.12"
