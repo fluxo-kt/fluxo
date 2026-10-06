@@ -45,6 +45,14 @@ jobs:
     runs-on: '${{ matrix.os }}-latest'
     # A healthy run takes well under this; the bound stops a hung JMH fork from holding a runner for the 6 h default.
     timeout-minutes: 120
+    # Gating profile, read by the JMH run and by the summary's baseline gate, which fails when the baseline was
+    # measured with another profile or JDK major. Must equal jmh-baseline-bootstrap.yml's: threads change
+    # throughput; warmup changes the JIT state measured.
+    env:
+      jmh_wi: 2
+      jmh_i: 5
+      jmh_f: 2
+      jmh_t: 2
 
     steps:
       - name: Harden Runner
@@ -74,15 +82,9 @@ jobs:
       # setup-gradle@v4+ dropped the `arguments:` input — run Gradle in a dedicated step.
       # jmh is configuration-cache-incompatible, hence the explicit `--no-configuration-cache`.
       - name: 'Benchmark "${{ matrix.benchmark }}" on ${{ matrix.os }} JDK${{ matrix.java }}'
-        # Gating profile: must equal jmh-baseline-bootstrap.yml's, or the baseline gate compares different
-        # measurements (threads change throughput; warmup changes the JIT state measured).
         env:
           CI: true
           jmh: '${{ matrix.benchmark }}'
-          jmh_wi: 2
-          jmh_i: 5
-          jmh_f: 2
-          jmh_t: 2
         run: ./gradlew jmh --stacktrace --no-configuration-cache --scan
 
       # The summary also gates fluxo's own rows against benchmarks/jmh/baselines/main-{darwin,linux}.json

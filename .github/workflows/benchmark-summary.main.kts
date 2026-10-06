@@ -358,7 +358,7 @@ private fun File.parseJmhJson(): List<JmhJsonEntry> {
 // half-width) AND 15% of the baseline (runner noise floor, see `noiseFloor`). So the threshold is the larger of the
 // two: ~15% where the baseline is tight, the baseline's own measured noise where it is not (macOS runners).
 // Exits with code 1 if any matched benchmark fails, which fails the Benchmark run (benchmark.yml runs on
-// benchmark changes and weekly; it is not a pull-request check).
+// JVM library and benchmark changes and weekly; it is not a pull-request check).
 // Missing baseline file is treated as "no gate" (warn + exit 0), so first-run
 // after fresh-baseline regeneration in CI doesn't self-block.
 if (System.getenv("JMH_BASELINE_CHECK")?.lowercase(Locale.US) in arrayOf("1", "true")) run check@ {
@@ -396,6 +396,23 @@ if (System.getenv("JMH_BASELINE_CHECK")?.lowercase(Locale.US) in arrayOf("1", "t
         if (baseline.isEmpty()) {
             System.err.println("[baseline-check] baseline ${baselineFile.path} parsed to 0 entries — refusing to gate (parser regression vs JMH schema change?)")
             return@check
+        }
+
+        // The comparison is only valid against a baseline measured with the same JDK major and JMH profile. The
+        // profile lives in two workflows (benchmark.yml env, jmh-baseline-bootstrap.yml flags), and the JDK in the
+        // matrix, so a one-sided edit would otherwise compare unlike measurements without a word.
+        val recorded = (JsonParser(baselineFile.readText()).parse() as List<*>).first() as Map<*, *>
+        // (setting, baseline value, this run's value)
+        val drift = listOf(
+            Triple("jdk major", (recorded["jdkVersion"] as String).substringBefore('.'), Runtime.version().feature().toString()),
+            Triple("forks", recorded["forks"].toString(), System.getenv("jmh_f")),
+            Triple("threads", recorded["threads"].toString(), System.getenv("jmh_t")),
+            Triple("warmupIterations", recorded["warmupIterations"].toString(), System.getenv("jmh_wi")),
+            Triple("measurementIterations", recorded["measurementIterations"].toString(), System.getenv("jmh_i")),
+        ).filter { it.second != it.third }.map { (name, base, run) -> "$name: baseline $base, run $run" }
+        if (drift.isNotEmpty()) {
+            System.err.println("[baseline-check] ${baselineFile.path} was measured differently from this run (${drift.joinToString("; ")}). Align benchmark.yml with jmh-baseline-bootstrap.yml, or re-anchor the baselines by running jmh-baseline-bootstrap.yml.")
+            System.exit(1)
         }
 
         // results.txt: header row + space-separated columns. Verdict reads only
