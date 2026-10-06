@@ -18,6 +18,12 @@
   builds twice on three OSes. The Dependabot baseline regeneration (`baselines.yml`) runs the full `build` graph so
   test-only artefacts get pinned; a resolve-only task over the test configurations would cut it, once proven to pin
   the same set on a cold cache.
+* [ ] **Run every fluxo-core test on every platform.** Many tests carry `@IgnoreJs`/`@IgnoreJvm`/`@IgnoreNative`
+  for 2023 CI timeouts (the whole `IntentStrategyTest` is skipped on JS/Wasm, so intent strategies never run there);
+  the notes above them cite a 2000 ms timeout that no longer exists and run logs that have expired. Re-enable each,
+  reproduce any failure under load with a current stack trace, fix the cause (see `debugIntentLabel` for one such
+  cause that was found), then delete the stale notes. Profile the suite too: some unit cases exceed 1 s only when run
+  with their class (order or contention, not a fixed wait).
 * [ ] **Store event stream** (`FluxoEvent` flow plus an interceptor hook in the store setup). Planned events, each to
   get a test once it exists: bootstrapper cancelled, side-job error (with its key and whether it was a restart),
   side effect undelivered (CONSUME and RECEIVE strategies with a conflated buffer).
