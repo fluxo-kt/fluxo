@@ -1,18 +1,20 @@
-# TEMPORARY diagnostic build: isolates why the Gradle 9.8 daemon's instrumentation agent fails on JitPack's JDK 25.
+# JitPack builds fluxo from any commit on request, for consumers who need unreleased code: add the
+# https://jitpack.io repository and depend on com.github.fluxo-kt.fluxo:<module>:<commit>. Releases and snapshots
+# are published to Maven Central; root build.gradle.kts switches to JitPack's coordinates when JITPACK=true.
 jdk:
+  # Runs the Gradle launcher (Gradle 9 needs 17+) and is the JVM toolchain the libraries compile against.
   - openjdk17
 before_install:
-  - uname -a; id; echo "JTO=$JAVA_TOOL_OPTIONS JO=$_JAVA_OPTIONS JDKO=$JDK_JAVA_OPTIONS LANG=$LANG LC_ALL=$LC_ALL"
-  - mkdir -p ~/.sdkman/candidates/java/25-tem
-  - curl -fsSL https://api.adoptium.net/v3/binary/latest/25/ga/linux/x64/jdk/hotspot/normal/eclipse | tar -xz --strip-components=1 -C ~/.sdkman/candidates/java/25-tem; echo "tar-rc=$?"
-  - J25=~/.sdkman/candidates/java/25-tem/bin/java; file $J25; $J25 -version; java -version
-  - ./gradlew --version --no-daemon
-  - A=$(ls ~/.gradle/wrapper/dists/gradle-9.8.0-bin/*/gradle-9.8.0/lib/agents/gradle-instrumentation-agent-9.8.0.jar); M=${A%/agents/*}/gradle-daemon-main-9.8.0.jar; ls -la $A $M; sha256sum $A $M; jar tf $A | head -5; unzip -p $A META-INF/MANIFEST.MF
-  - echo P1-25-agent-cp; $J25 -javaagent:$A -cp $M -version; echo "rc=$?"
-  - echo P2-25-agent-cp-noJTO; env -u JAVA_TOOL_OPTIONS $J25 -javaagent:$A -cp $M -version; echo "rc=$?"
-  - echo P3-25-agent-only; $J25 -javaagent:$A -version; echo "rc=$?"
-  - echo P4-17-agent-cp; java -javaagent:$A -cp $M -version; echo "rc=$?"
-  - echo P5-25-Xshare-off; $J25 -Xshare:off -javaagent:$A -cp $M -version; echo "rc=$?"
-  - echo P6-25-copied-jar; cp $A /tmp/agent.jar; $J25 -javaagent:/tmp/agent.jar -version; echo "rc=$?"
+  # The Gradle daemon runs on JDK 21 here, not on the JDK 25 that gradle/gradle-daemon-jvm.properties asks for.
+  # JitPack's container sandbox answers the statx syscall with EPERM (instead of ENOSYS, which the JDK would treat
+  # as "fall back"), and JDK 25 then cannot load classes from jars, starting with the Gradle daemon's own
+  # instrumentation agent (ClassNotFoundException: org.gradle.instrumentation.agent.Agent). JDK 17 and 21 do not use
+  # statx. 21 is the floor: KSP processors load in the daemon and need Java 21 bytecode.
+  # Adoptium's "latest" endpoint has no patch version to go stale; Gradle auto-detects JDKs in the SDKMAN folder.
+  # The download is trusted on TLS, and gzip's CRC rejects a truncated archive.
+  - mkdir -p ~/.sdkman/candidates/java/21-tem && curl -fsSL https://api.adoptium.net/v3/binary/latest/21/ga/linux/x64/jdk/hotspot/normal/eclipse | tar -xz --strip-components=1 -C ~/.sdkman/candidates/java/21-tem
+  - sed -i 's/^toolchainVersion=.*/toolchainVersion=21/' gradle/gradle-daemon-jvm.properties
 install:
-  - echo diagnostics-only
+  # Strict dependency verification, as for every published artefact (local builds only warn). Kotlin cross-compiles
+  # the Apple klibs on Linux (no cinterop here), so the publication covers every target.
+  - ./gradlew publishToMavenLocal -Dorg.gradle.dependency.verification=strict --console=plain
