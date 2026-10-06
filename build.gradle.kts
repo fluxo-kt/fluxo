@@ -75,13 +75,9 @@ fkcSetupRaw {
     githubProject = "fluxo-kt/fluxo"
     fun env(name: String) = providers.environmentVariable(name).get()
     group = if (jitpack) "${env("GROUP")}.${env("ARTIFACT")}" else "io.github.fluxo-kt"
-    if (jitpack) {
-        version = env("VERSION")
-        // A `<branch>-SNAPSHOT` request must publish under that exact version, but the harness rewrites SNAPSHOT
-        // versions to `<major.minor>-<commit>-SNAPSHOT` unless this is off. Archives stay reproducible:
-        // Gradle 9 normalises archive timestamps, order and permissions by default.
-        reproducibleArtifacts = false
-    }
+    // JitPack passes a commit-derived VERSION even for a `<branch>-SNAPSHOT` request (built as `dev-<commit>-1`, then
+    // served rewritten to `dev-SNAPSHOT`), so the harness's SNAPSHOT-version rewrite never applies here.
+    if (jitpack) version = env("VERSION")
 
     // Publish all library modules to Maven Central (Central Portal) via vanniktech.
     // POM name/URL/SCM derive from projectName/githubProject/group above; license
