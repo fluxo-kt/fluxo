@@ -34,63 +34,57 @@ dependencies {
     // region Libraries to compare/benchmark with
 
     // Ballast
-    implementation("io.github.copper-leaf:ballast-core:" + libs.versions.ballast.get())
+    implementation(libs.bench.ballast)
 
     // MVICore
-    val mviCoreVersion = libs.versions.mvicore.get()
-    implementation("com.github.badoo.mvicore:mvicore:$mviCoreVersion")
-    implementation("com.github.badoo.mvicore:binder:$mviCoreVersion")
+    implementation(libs.bench.mvicore.core)
+    implementation(libs.bench.mvicore.binder)
     implementation(libs.kotlinx.coroutines.reactive)
     implementation(libs.rxjava2)
 
     // MVIKotlin
-    val mviKotlinVersion = libs.versions.mvikotlin.get()
-    implementation("com.arkivanov.mvikotlin:mvikotlin:$mviKotlinVersion")
-    implementation("com.arkivanov.mvikotlin:mvikotlin-main:$mviKotlinVersion")
-    implementation("com.arkivanov.mvikotlin:mvikotlin-extensions-coroutines:$mviKotlinVersion")
+    implementation(libs.bench.mvikotlin.core)
+    implementation(libs.bench.mvikotlin.main)
+    implementation(libs.bench.mvikotlin.coroutines)
 
     // Orbit MVI
-    implementation("org.orbit-mvi:orbit-core:" + libs.versions.orbit.get())
+    implementation(libs.bench.orbit)
 
     // Respawn FlowMVI
-    implementation("pro.respawn.flowmvi:core:" + libs.versions.respawnFlowMVI.get())
+    implementation(libs.bench.flowmvi)
 
     // VisualFSM
-    implementation("ru.kontur.mobile.visualfsm:visualfsm-core:" + libs.versions.visualfsm.get())
-    ksp("ru.kontur.mobile.visualfsm:visualfsm-compiler:" + libs.versions.visualfsm.get())
+    implementation(libs.bench.visualfsm.core)
+    ksp(libs.bench.visualfsm.compiler)
 
     // Freeletics FlowRedux
-    implementation("com.freeletics.flowredux:flowredux:" + libs.versions.flowredux.get())
+    implementation(libs.bench.flowredux)
 
     // genaku Reduce
-    implementation("com.github.genaku.reduce:reduce-core:" + libs.versions.genakuReduce.get())
+    implementation(libs.bench.genaku.reduce)
     implementation(enforcedPlatform(libs.kotlinx.coroutines.bom))
 
     // motorro CommonStateMachine
-    val motorroCsmVersion = libs.versions.motorroCommonStateMachine.get()
-    implementation("com.motorro.commonstatemachine:commonstatemachine:$motorroCsmVersion")
-    implementation("com.motorro.commonstatemachine:coroutines:$motorroCsmVersion")
+    implementation(libs.bench.motorro.core)
+    implementation(libs.bench.motorro.coroutines)
 
     // Redux Kotlin
-    implementation("org.reduxkotlin:redux-kotlin-threadsafe:" + libs.versions.reduxkotlin.get())
+    implementation(libs.bench.reduxkotlin)
 
     // Reduktor
-    val reduktorVersion = libs.versions.reduktor.get()
-    implementation("com.github.g000sha256.reduktor:coroutines:$reduktorVersion")
-    implementation("com.github.g000sha256.reduktor:core:$reduktorVersion")
+    implementation(libs.bench.reduktor.coroutines)
+    implementation(libs.bench.reduktor.core)
 
     // Tinder StateMachine
-    implementation("com.github.Tinder:StateMachine:" + libs.versions.tinderStateMachine.get())
+    implementation(libs.bench.tinder.statemachine)
 
     // Mobius.kt
-    val mobiusKtVersion = libs.versions.mobiusKt.get()
-    implementation("org.drewcarlson:mobiuskt-core:$mobiusKtVersion")
-    implementation("org.drewcarlson:mobiuskt-coroutines:$mobiusKtVersion")
-    implementation("org.drewcarlson:mobiuskt-extras:$mobiusKtVersion")
+    implementation(libs.bench.mobiuskt.core)
+    implementation(libs.bench.mobiuskt.coroutines)
+    implementation(libs.bench.mobiuskt.extras)
 
     // Elmslie
-    val elmslieVersion = libs.versions.elmslie.get()
-    implementation("money.vivid.elmslie:elmslie-core:$elmslieVersion")
+    implementation(libs.bench.elmslie)
 
     // endregion
 }
