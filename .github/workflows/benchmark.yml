@@ -12,7 +12,7 @@ on:
 concurrency:
   # JMH runs are long; a second push to the same ref preempts the previous one
   # so we don't pay for two stale runs racing. Scheduled cron uses the default branch, so
-  # cancel-in-progress also stops a manually-triggered run if cron starts.
+  # cancel-in-progress also stops an in-flight push run on that branch when cron starts.
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
@@ -38,6 +38,8 @@ jobs:
 
     name: '${{ matrix.os }} JDK${{ matrix.java }} "${{ matrix.benchmark }}" benchmark'
     runs-on: '${{ matrix.os }}-latest'
+    # A healthy run takes well under this; the bound stops a hung JMH fork from holding a runner for the 6 h default.
+    timeout-minutes: 120
 
     steps:
       - name: Harden Runner
