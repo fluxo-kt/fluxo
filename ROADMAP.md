@@ -10,7 +10,7 @@
 * [ ] **Activate the TypeScript-declaration API lane.** `tsApiChecks` passes vacuously and `api/js/*.d.ts` is stale
   (AGENTS.md gotcha #5). Needs a fluxo-bcv-js release containing commit be5369c; then bump it and review the first
   regenerated `.d.ts` dumps hunk by hunk as real API changes.
-* [ ] **Bring every CI lane under 5 minutes (high priority).** Each Build OS job takes several to tens of minutes
+* [ ] **Bring every CI lane under 5 minutes** (not a current priority while local builds stay fast). Each Build OS job takes several to tens of minutes
   (macOS slowest), the Kotlin pre-release lane about ten, and the benchmark job over an hour per OS. A lane that slow
   gives no feedback during ordinary work. First read where the time goes (each Build run publishes a Gradle build
   scan), then shard or cut what dominates. Never drop targets, tests or strict dependency verification to win time.
