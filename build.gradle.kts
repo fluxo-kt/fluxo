@@ -58,15 +58,17 @@ fkcSetupRaw {
         // Kotlin 2.4.20 deprecates and never add iosX64. Fluxo keeps publishing those four until Kotlin removes them:
         // dropping a target takes its artefacts away from consumers, so it waits for the Kotlin version that forces it.
         allDefaultTargets()
-        // Not in the default groups: publishes fluxo for WASI runtimes, which need no JS environment.
-        wasmWasi()
-        // Kotlin 2.5 (the pre-release build) removes those four; an explicit call to a removed target fails the build.
+        iosX64()
+        // Kotlin 2.5 (the pre-release build) removes these three, and an explicit call to a removed target fails the
+        // build; iosX64 is still accepted there (2.5.0-Beta1).
         if (!providers.gradleProperty("fluxo.kotlin").isPresent) {
-            iosX64()
             macosX64()
             tvosX64()
             watchosX64()
         }
+        // Not in the default groups: publishes fluxo for WASI runtimes, which need no JS environment.
+        @OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
+        wasmWasi()
     }
 
     projectName = "Fluxo"
