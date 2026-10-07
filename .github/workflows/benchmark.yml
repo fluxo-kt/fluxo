@@ -49,10 +49,10 @@ jobs:
     runs-on: '${{ matrix.os }}-latest'
     # A healthy run takes well under this; the bound stops a hung JMH fork from holding a runner for the 6 h default.
     timeout-minutes: 120
-    # Gating profile, read by the JMH run and by the summary's baseline gate, which fails when the baseline was
-    # measured with another profile or JDK major. Must equal jmh-baseline-bootstrap.yml's: threads change
-    # throughput; warmup changes the JIT state measured.
     env:
+      # The gate's reference: Fluxo's library sources from this commit are benchmarked on the same runner after the
+      # main run. Move it to a newer commit when a slowdown is accepted, or when the benchmarks stop compiling against it.
+      JMH_REFERENCE: d12c6a584c6c0194120d1564e91bf8cd622183fa
       jmh_wi: 2
       jmh_i: 5
       jmh_f: 2
@@ -91,10 +91,28 @@ jobs:
           jmh: '${{ matrix.benchmark }}'
         run: ./gradlew jmh --stacktrace --no-configuration-cache --scan
 
-      # The summary also gates fluxo's own rows against benchmarks/jmh/baselines/main-{darwin,linux}.json
-      # (re-anchor with jmh-baseline-bootstrap.yml after a JDK or profile change); Windows has no baseline.
-      - name: Summary
+      # Same JMH profile and runner as the main run, Fluxo rows only, with the reference commit's library sources in
+      # place: the summary compares the two, so runner hardware cancels out.
+      - name: 'Benchmark Fluxo at the reference commit'
         env:
-          JMH_BASELINE_CHECK: 1
+          CI: true
+          jmh: 'IncrementIntentBenchmark.fluxo__.*'
+        shell: bash
+        run: |
+          results=benchmarks/jmh/build/results/jmh
+          mv "$results/results.txt" "$RUNNER_TEMP/results-head.txt"
+          # Put the main run's results back even when this step fails, so the summary still prints its table.
+          trap 'mv "$RUNNER_TEMP/results-head.txt" "$results/results.txt"' EXIT
+          git fetch --no-tags --depth=1 origin "$JMH_REFERENCE"
+          rm -rf fluxo-core/src fluxo-common/src
+          git checkout "$JMH_REFERENCE" -- fluxo-core/src fluxo-common/src
+          ./gradlew jmh --stacktrace --no-configuration-cache
+          mv "$results/results.txt" "$results/results-reference.txt"
+
+      # Also after a failed reference run: the table still prints, and the gate fails on the missing reference.
+      - name: Summary
+        if: ${{ !cancelled() }}
+        env:
+          JMH_REFERENCE_CHECK: 1
         run: ./.github/workflows/benchmark-summary.main.kts >> "$GITHUB_STEP_SUMMARY"
         shell: bash

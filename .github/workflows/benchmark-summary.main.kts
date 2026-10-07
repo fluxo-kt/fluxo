@@ -269,226 +269,80 @@ fun Int.enPlural(one: String, other: String): String {
 }
 
 
-// Minimal recursive-descent JSON parser. Replaces a regex extractor that
-// silently dropped entries with secondaryMetrics nesting (e.g., -prof gc).
-// Numbers come back as BigDecimal so the gate's σ-math stays exact.
-private class JsonParser(private val s: String) {
-    private var p = 0
-    fun parse(): Any? { ws(); return value() }
-    private fun ws() { while (p < s.length && s[p].isWhitespace()) p++ }
-    private fun value(): Any? {
-        ws()
-        return when (s[p]) {
-            '{' -> obj()
-            '[' -> arr()
-            '"' -> str()
-            't' -> { p += 4; true }
-            'f' -> { p += 5; false }
-            'n' -> { p += 4; null }
-            else -> num()
-        }
-    }
-    private fun obj(): LinkedHashMap<String, Any?> {
-        p++; val r = LinkedHashMap<String, Any?>(); ws()
-        if (s[p] == '}') { p++; return r }
-        while (true) {
-            ws(); val k = str(); ws(); check(s[p] == ':') { "expected ':' at $p" }; p++
-            r[k] = value(); ws()
-            if (s[p] == ',') { p++; continue }
-            check(s[p] == '}') { "expected ',' or '}' at $p" }; p++; return r
-        }
-    }
-    private fun arr(): MutableList<Any?> {
-        p++; val r = mutableListOf<Any?>(); ws()
-        if (s[p] == ']') { p++; return r }
-        while (true) {
-            r.add(value()); ws()
-            if (s[p] == ',') { p++; continue }
-            check(s[p] == ']') { "expected ',' or ']' at $p" }; p++; return r
-        }
-    }
-    private fun str(): String {
-        check(s[p] == '"') { "expected '\"' at $p" }; p++
-        val sb = StringBuilder()
-        while (s[p] != '"') {
-            if (s[p] == '\\') {
-                p++
-                sb.append(when (val e = s[p++]) {
-                    'n' -> '\n'; 't' -> '\t'; 'r' -> '\r'; 'b' -> '\b'; 'f' -> ''
-                    'u' -> { val h = s.substring(p, p + 4).toInt(16); p += 4; h.toChar() }
-                    else -> e // '"', '\\', '/' fall through
-                })
-            } else sb.append(s[p++])
-        }
-        p++; return sb.toString()
-    }
-    private fun num(): java.math.BigDecimal {
-        val start = p
-        if (s[p] == '-') p++
-        while (p < s.length && (s[p].isDigit() || s[p] in ".eE+-")) p++
-        return s.substring(start, p).toBigDecimal()
-    }
-}
-
-// JMH `-rf json` shape: top-level array of {benchmark, mode, primaryMetric{score, scoreError}, …}.
-private data class JmhJsonEntry(val benchmark: String, val mode: String, val score: BigDecimal, val scoreError: BigDecimal)
-private fun File.parseJmhJson(): List<JmhJsonEntry> {
-    val top = JsonParser(readText()).parse() as? List<*>
-        ?: error("$path: top-level value is not a JSON array")
-    return top.mapNotNull { e ->
-        val o = e as? Map<*, *> ?: return@mapNotNull null
-        val b = o["benchmark"] as? String ?: return@mapNotNull null
-        val m = o["mode"] as? String ?: return@mapNotNull null
-        val pm = o["primaryMetric"] as? Map<*, *> ?: return@mapNotNull null
-        val sc = pm["score"] as? BigDecimal ?: return@mapNotNull null
-        val er = pm["scoreError"] as? BigDecimal ?: BigDecimal.ZERO
-        JmhJsonEntry(b, m, sc, er)
-    }
-}
-
-
-// JMH dual-gate baseline comparison.
-// Gated on JMH_BASELINE_CHECK=1 so non-gating runs (PR summary table, local
-// devs) stay unaffected; benchmark.yml sets it. The gate is only meaningful while
-// the baselines were measured with the same JDK and JMH profile as the current
-// run (jmh-baseline-bootstrap.yml re-anchors them on the CI hosts).
-// Reads host-matched `benchmarks/jmh/baselines/main-${os}.json`,
-// where `os` is `darwin` on macOS runners and `linux` on Linux runners.
-// Per-benchmark gate: a benchmark fails when it is slower in every measured mode (thrpt and avgt); per mode, a
-// slowdown counts when `|delta|` exceeds BOTH the baseline scoreError (its 99.9% CI
-// half-width) AND 15% of the baseline (runner noise floor, see `noiseFloor`). So the threshold is the larger of the
-// two: ~15% where the baseline is tight, the baseline's own measured noise where it is not (macOS runners).
-// Exits with code 1 if any matched benchmark fails, which fails the Benchmark run (benchmark.yml runs on
-// JVM library and benchmark changes and weekly; it is not a pull-request check).
-// Missing baseline file is treated as "no gate" (warn + exit 0), so first-run
-// after fresh-baseline regeneration in CI doesn't self-block.
-if (System.getenv("JMH_BASELINE_CHECK")?.lowercase(Locale.US) in arrayOf("1", "true")) run check@ {
+// Fluxo regression gate: this run's Fluxo rows against the same rows measured on the same runner, in the same job,
+// from the library sources of benchmark.yml's JMH_REFERENCE commit (`results-reference.txt`). Only a same-runner
+// comparison is valid: hosted runners of one label differ in hardware between runs, which moved coroutine-heavy rows
+// by up to 2× with no code change, so stored baselines fail on noise or need a gate too loose to catch anything.
+// Enabled by JMH_REFERENCE_CHECK=1 (benchmark.yml), so local runs only print the table above.
+// A benchmark fails when it is slower in every measured mode; per mode a slowdown counts when it exceeds both the
+// reference run's score error (its 99.9% CI half-width) and 15% (`noiseFloor`).
+if (System.getenv("JMH_REFERENCE_CHECK")?.lowercase(Locale.US) in arrayOf("1", "true")) run check@ {
     try {
-        // Current-run output is results.txt (JMH default; the build.gradle.kts
-        // `jmh_rf` override is set to JSON only by the baseline-bootstrap workflow,
-        // which never enters this gate code path).
-        val resultsFile = File("benchmarks/jmh/build/results/jmh/results.txt")
-        if (!resultsFile.exists()) {
-            System.err.println("[baseline-check] no ${resultsFile.path}; skipping gate")
-            return@check
-        }
-        val osName = System.getProperty("os.name").lowercase(Locale.US)
-        val osKey = when {
-            "mac" in osName || "darwin" in osName -> "darwin"
-            "linux" in osName -> "linux"
-            else -> {
-                System.err.println("[baseline-check] unsupported os.name='$osName'; gate only runs on darwin|linux")
-                return@check
-            }
-        }
-        val baselineFile = File("benchmarks/jmh/baselines/main-$osKey.json")
-        if (!baselineFile.exists()) {
-            System.err.println("[baseline-check] no baseline at ${baselineFile.path}; gate skipped (regenerate baseline in CI to enable)")
-            return@check
-        }
+        data class Row(val benchmark: String, val mode: String, val score: BigDecimal, val error: BigDecimal)
 
-        // results.txt emits "SimpleClass.method"; JMH JSON emits FQN
-        // "pkg.SimpleClass.method". Key on last two dot-segments so the join
-        // works regardless of which format either side was read from.
-        fun joinKey(fqn: String, mode: String): String =
-            fqn.split('.').takeLast(2).joinToString(".") + "|" + mode.lowercase(Locale.US)
-
-        val baseline = baselineFile.parseJmhJson().associateBy { joinKey(it.benchmark, it.mode) }
-        if (baseline.isEmpty()) {
-            System.err.println("[baseline-check] baseline ${baselineFile.path} parsed to 0 entries — refusing to gate (parser regression vs JMH schema change?)")
-            return@check
-        }
-
-        // The comparison is only valid against a baseline measured with the same JDK major and JMH profile. The
-        // profile lives in two workflows (benchmark.yml env, jmh-baseline-bootstrap.yml flags), and the JDK in the
-        // matrix, so a one-sided edit would otherwise compare unlike measurements without a word.
-        val recorded = (JsonParser(baselineFile.readText()).parse() as List<*>).first() as Map<*, *>
-        // (setting, baseline value, this run's value)
-        val drift = listOf(
-            Triple("jdk major", (recorded["jdkVersion"] as String).substringBefore('.'), Runtime.version().feature().toString()),
-            Triple("forks", recorded["forks"].toString(), System.getenv("jmh_f")),
-            Triple("threads", recorded["threads"].toString(), System.getenv("jmh_t")),
-            Triple("warmupIterations", recorded["warmupIterations"].toString(), System.getenv("jmh_wi")),
-            Triple("measurementIterations", recorded["measurementIterations"].toString(), System.getenv("jmh_i")),
-        ).filter { it.second != it.third }.map { (name, base, run) -> "$name: baseline $base, run $run" }
-        if (drift.isNotEmpty()) {
-            System.err.println("[baseline-check] ${baselineFile.path} was measured differently from this run (${drift.joinToString("; ")}). Align benchmark.yml with jmh-baseline-bootstrap.yml, or re-anchor the baselines by running jmh-baseline-bootstrap.yml.")
-            System.exit(1)
-        }
-
-        // results.txt: header row + space-separated columns. Verdict reads only
-        // score (baseline's scoreError gates significance) → no current-side error.
-        data class CurrentEntry(val fqn: String, val mode: String, val score: BigDecimal)
-        val current: List<CurrentEntry> = resultsFile.readText().lineSequence().drop(1).mapNotNull { line ->
-            val l = line.trim()
-            if (l.isEmpty()) return@mapNotNull null
-            val parts = l.split(splitRegex, 6)
+        // Columns: Benchmark Mode [Cnt] Score [± Error] Units. Cnt and Error are absent for a single measurement.
+        fun File.rows(): List<Row> = readText().lineSequence().drop(1).mapNotNull { line ->
+            val parts = line.trim().split(splitRegex)
             if (parts.size < 4) return@mapNotNull null
-            var i = 0
-            val fqn = parts[i++]
-            val mode = parts[i++].lowercase(Locale.US)
-            if (parts.size >= 5) i++ // skip cnt
-            val sc = parts.getOrNull(i)?.toBigDecimalOrNull() ?: return@mapNotNull null
-            CurrentEntry(fqn, mode, sc)
+            val errorAt = parts.indexOfFirst { it.startsWith('±') || it.startsWith('�') }
+            val scoreAt = if (errorAt > 0) errorAt - 1 else parts.size - 2
+            val score = parts[scoreAt].toBigDecimalOrNull() ?: return@mapNotNull null
+            // JMH right-aligns the error, so after a padded '±' it arrives as the next token.
+            val errorText = if (errorAt > 0) parts[errorAt].drop(1).trim().ifEmpty { parts.getOrElse(errorAt + 1) { "" } } else ""
+            val error = errorText.toBigDecimalOrNull() ?: BigDecimal.ZERO
+            Row(parts[0], parts[1].lowercase(Locale.US), score, error)
         }.toList()
 
-        val bd100 = BigDecimal(100)
-        // Runner-to-runner noise floor. JMH's scoreError is the 99.9% CI of ONE run on ONE machine; it says nothing
-        // about another hosted runner. Weekly runs of one unchanged commit on ubuntu-latest spread up to 13% (avgt) and
-        // 9% (thrpt), so any smaller floor fails on noise alone. Re-measure before lowering it.
-        val noiseFloor = BigDecimal("0.15")
-        data class Verdict(val fqn: String, val mode: String, val curr: BigDecimal, val base: BigDecimal, val baseErr: BigDecimal, val passes: Boolean, val note: String)
-        val verdicts = current.mapNotNull { c ->
-            val b = baseline[joinKey(c.fqn, c.mode)] ?: return@mapNotNull null
-            // One-sided: only a slowdown fails (lower throughput, higher average time); a speed-up is reported only.
-            val regression = if (c.mode == "avgt") c.score - b.score else b.score - c.score
-            val delta = (c.score - b.score).abs()
-            val deltaPctOfBase = if (b.score.signum() != 0) delta.divide(b.score, 6, RoundingMode.HALF_UP) else BigDecimal.ZERO
-            val significant = b.scoreError.signum() != 0 && delta > b.scoreError
-            val nonTrivial = deltaPctOfBase > noiseFloor
-            val passes = !(regression.signum() > 0 && significant && nonTrivial)
-            val pctStr = deltaPctOfBase.multiply(bd100).setScale(1, RoundingMode.HALF_DOWN)
-            val sigmaStr = if (b.scoreError.signum() == 0) "∞" else delta.divide(b.scoreError, 2, RoundingMode.HALF_UP).toPlainString()
-            val note = "Δ=$pctStr%, ${sigmaStr}×err"
-            Verdict(c.fqn, c.mode, c.score, b.score, b.scoreError, passes, note)
+        val dir = "benchmarks/jmh/build/results/jmh"
+        val referenceFile = File("$dir/results-reference.txt")
+        if (!referenceFile.exists()) {
+            System.err.println("[reference-check] no ${referenceFile.path}: the reference run did not complete (see its step log)")
+            System.exit(1)
         }
+        val reference = referenceFile.rows().associateBy { it.benchmark to it.mode }
+        val current = File("$dir/results.txt").rows()
 
+        val bd100 = BigDecimal(100)
+        // Same-runner noise floor: weekly runs of one unchanged commit spread up to 13% (avgt) and 9% (thrpt) across
+        // runners; within one job the spread is smaller, but no measurement supports a lower floor yet.
+        val noiseFloor = BigDecimal("0.15")
+        data class Verdict(val row: Row, val ref: Row, val passes: Boolean, val note: String)
+        val verdicts = current.mapNotNull { c ->
+            val r = reference[c.benchmark to c.mode] ?: return@mapNotNull null
+            // One-sided: only a slowdown fails (lower throughput, higher average time); a speed-up is reported only.
+            val regression = if (c.mode == "avgt") c.score - r.score else r.score - c.score
+            val delta = (c.score - r.score).abs()
+            val deltaPct = if (r.score.signum() != 0) delta.divide(r.score, 6, RoundingMode.HALF_UP) else BigDecimal.ZERO
+            val passes = !(regression.signum() > 0 && delta > r.error && deltaPct > noiseFloor)
+            val pctStr = deltaPct.multiply(bd100).setScale(1, RoundingMode.HALF_DOWN)
+            val sign = if (regression.signum() > 0) "slower" else "faster"
+            Verdict(c, r, passes, "$pctStr% $sign")
+        }
         if (verdicts.isEmpty()) {
-            System.err.println("[baseline-check] no current ↔ baseline matches found (current entries=${current.size}, baseline entries=${baseline.size}); refusing to gate silently")
+            System.err.println("[reference-check] no rows match between results.txt (${current.size}) and ${referenceFile.name} (${reference.size}); refusing to pass silently")
             System.exit(1)
         }
 
-        // thrpt and avgt are separate JMH phases timing the same operation, so slower code is slower in both. A
-        // disturbance during one phase (a busy shared runner) moves only that phase's score, and then contradicts the
-        // other mode: with jmh_t threads, thrpt × avgt stays near jmh_t unless one phase was disturbed. So a benchmark
-        // fails only when every mode measured for it is past the gate; a one-mode excursion is reported, not failed.
-        val failed = verdicts.groupBy { it.fqn }.values.filter { rows -> rows.none { it.passes } }.flatten()
-        val contradicted = verdicts.filter { !it.passes && it !in failed }
-        val isCI = System.getenv("CI")?.lowercase(Locale.US) in arrayOf("1", "true")
+        // thrpt and avgt are separate JMH phases timing the same operation, so slower code is slower in both; a busy
+        // shared runner disturbing one phase moves only that phase. A one-mode excursion is reported, not failed.
+        val failed = verdicts.groupBy { it.row.benchmark }.values.filter { rows -> rows.none { it.passes } }.flatten()
         println()
-        println("### JMH baseline gate — host `$osKey` (${verdicts.size} compared, ${failed.size} failed)")
-        if (isCI) {
-            println()
-            println("| Benchmark | Mode | Current | Baseline | Δ | Verdict |")
-            println("|-----------|:----:|--------:|---------:|---|:-------:|")
-            for (v in verdicts) {
-                val mark = when { v.passes -> "✅"; v in failed -> "❌"; else -> "⚠️ other mode disagrees" }
-                println("| `${v.fqn}` | ${v.mode} | ${v.curr} | ${v.base} ±${v.baseErr} | ${v.note} | $mark |")
-            }
-        }
-        for (v in contradicted) {
-            System.err.println("[baseline-check] WARN ${v.fqn} (${v.mode}) is past the gate (${v.note}) but its other mode is not: treated as a disturbed measurement phase, not a regression")
-        }
-        for (v in failed) {
-            System.err.println("[baseline-check] FAIL ${v.fqn} (${v.mode}): current=${v.curr}, baseline=${v.base}±${v.baseErr}, ${v.note}")
+        println("### Fluxo vs reference ${System.getenv("JMH_REFERENCE")?.take(10)} — same runner (${verdicts.size} compared, ${failed.size} failed)")
+        println()
+        println("| Benchmark | Mode | Current | Reference | Δ | Verdict |")
+        println("|-----------|:----:|--------:|----------:|---|:-------:|")
+        for (v in verdicts) {
+            val mark = when { v.passes -> "✅"; v in failed -> "❌"; else -> "⚠️ other mode disagrees" }
+            println("| `${v.row.benchmark}` | ${v.row.mode} | ${v.row.score} ±${v.row.error} | ${v.ref.score} ±${v.ref.error} | ${v.note} | $mark |")
         }
         if (failed.isNotEmpty()) {
-            System.err.println("[baseline-check] ${failed.map { it.fqn }.distinct().size} benchmark(s) regressed past the gate in every measured mode (slower by more than the baseline scoreError and 15%)")
+            for (v in failed) System.err.println("[reference-check] FAIL ${v.row.benchmark} (${v.row.mode}): ${v.row.score} vs reference ${v.ref.score}±${v.ref.error}, ${v.note}")
+            System.err.println("[reference-check] slower than the reference in every mode, by more than its error and 15%. If the slowdown is accepted, move JMH_REFERENCE in benchmark.yml to this commit.")
             System.exit(1)
         }
-        System.err.println("[baseline-check] all ${verdicts.size} matched benchmarks within the gate")
+        System.err.println("[reference-check] all ${verdicts.size} rows within the gate")
     } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
-        System.err.println("[baseline-check] unexpected error: $e")
+        System.err.println("[reference-check] unexpected error: $e")
         @Suppress("PrintStackTrace")
         e.printStackTrace(System.err)
         System.exit(1)
