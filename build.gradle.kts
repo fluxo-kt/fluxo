@@ -352,7 +352,12 @@ allprojects {
 // serialize-javascript < 7.1.2. diff and serialize-javascript cross a major from what mocha requests, and
 // brace-expansion from what Karma's minimatch requests (1.x); Node and browser JS tests pass with them. mocha itself stays at KGP's bundled version: mocha 12 breaks KGP's test reporter (zero tests
 // run). On a resolution-only change KGP considers build/js/package.json up to date and leaves it stale, so
-// `./updateBaselines` deletes build/js before upgrading the lock.
+// `./updateBaselines` deletes build/js and reruns every npm task before upgrading the lock (deleting alone was
+// not enough once: the producers still reported UP-TO-DATE).
+// No resolution can fix braces <= 3.0.3 (GHSA-vfj7-8cjw-p6xm, DoS on deeply nested patterns), reached only via
+// KGP's Karma fork and its file watcher: no patched version exists (read 2026-10-07), so Dependabot alert #248
+// is dismissed as tolerable risk (test-only; the patterns are this build's own). Once the advisory lists a
+// patched version, add a resolution here and reopen the alert.
 plugins.withType<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin> {
     the<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension>().apply {
         resolution("brace-expansion", "2.1.7")

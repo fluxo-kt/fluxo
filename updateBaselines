@@ -40,11 +40,13 @@ export GRADLE_OPTS="-Dorg.gradle.caching=false -Dorg.gradle.configuration-cache=
 
 if [ -z "$dry_run" ]; then
   # KGP keeps build/js/package.json UP-TO-DATE when only yarn resolutions change, so the lock upgrade would
-  # silently keep the old versions; deleting the generated npm projects forces them to be rewritten.
+  # silently keep the old versions. Deleting the generated npm projects drops their stale files; --rerun-tasks
+  # below makes the producers write them again.
   rm -rf build/js build/wasm
   # Gradle's metadata writer only appends: entries for versions no longer used would stay forever, so the file is
   # deleted and rebuilt. An interrupted or failed run (a task failure, Ctrl-C, another session stopping the shared
-  # daemon) would leave it truncated and easy to commit, so any non-zero exit restores the committed file.
+  # daemon) would leave it truncated and easy to commit, so any non-zero exit puts back the file as it was before
+  # the run (uncommitted edits included).
   metadata_backup=$(mktemp)
   cp gradle/verification-metadata.xml "$metadata_backup"
   restore_metadata_on_failure() {
