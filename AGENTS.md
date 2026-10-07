@@ -1,6 +1,6 @@
 # Fluxo — Agent Guide
 
-**Fluxo** /ˈfluksu/ — Kotlin Multiplatform state-management on coroutines + `StateFlow`. Combines strict Redux/MVI correctness with MVVM+ ergonomics (suspend lambda intents, side-jobs, time-travel-ready logging). **Pre-1.0 alpha**; public API is unstable but locked per-commit by `binary-compatibility-validator` (BCV): JVM bytecode, Android-main bytecode, JS/Wasm declarations, and KLib ABI. Targets every KMP platform.
+**Fluxo** /ˈfluksu/ — Kotlin Multiplatform state-management on coroutines + `StateFlow`. Combines strict Redux/MVI correctness with MVVM+ ergonomics (suspend lambda intents, side-jobs, time-travel-ready logging). **Pre-1.0 alpha**; public API is unstable but locked per-commit by the API checks (gotcha #5): JVM bytecode, Android-main bytecode, KLib ABI (KGP's built-in ABI validation) and JS/Wasm TypeScript declarations (fluxo-bcv-js). Targets every KMP platform.
 
 ## Meta-rule: if you're surprised, alert + amend
 
@@ -106,7 +106,7 @@ For `apiDump`, see Gotcha #4.
 - `explicitApi()` is on for all libs; every `public` is intentional.
 - `allWarningsAsErrors = true`; new warnings break the build.
 - **Conventional Commits required.** Allowed types: `feat|fix|test|build|ci|docs|perf|refactor|style|chore|i18n|deps|revert` (canonical list lives in `.commitlintrc.yml`). PR titles same format. Imperative present tense.
-- **Don't introduce dependencies.** Fluxo is "small and light" by stated policy. Public API changes need explicit reasoning in the PR; BCV diff must be committed.
+- **Don't introduce dependencies.** Fluxo is "small and light" by stated policy. Public API changes need explicit reasoning in the PR; the API dump diff (`api/`) must be committed.
 - **Scripts: inline-declare deps; no lockfile.** `.main.kts` uses `@file:DependsOn("group:artifact:ver")`. A new Bun TS script must use Bun's `import x from "npm:foo@1.2.3"` syntax — DO NOT add `bun.lock`/`package.json` unless ≥3 scripts share deps. Single-consumer lockfiles are pure maintenance burden.
 - Keep git history flat; no merge commits except hotfix branches.
 - Work lands on `dev`, the GitHub default branch (Dependabot, dependency submission and default-branch CI gates follow it); `main` is the trailing release line, and snapshots publish only from `main`.
@@ -129,5 +129,5 @@ For `apiDump`, see Gotcha #4.
 - One-liner creation, automatic type inference, no boilerplate. Ceremony = wrong design.
 - Performance is a feature — defending the JMH score matters; benchmark before/after micro-changes.
 - **Multiplatform-first, Android-second.** Don't add JVM-only or Android-only API to common code.
-- Don't break public API lightly. BCV enforces JVM, Android-main, JS/Wasm declarations, and KLib ABI.
+- Don't break public API lightly. `apiCheck` enforces JVM, Android-main, JS/Wasm declarations, and KLib ABI (gotcha #5).
 - Side effects are an antipattern; supported but discouraged. Prefer state.

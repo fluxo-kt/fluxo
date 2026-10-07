@@ -91,3 +91,5 @@
   CI has been GitHub Actions since the harness migration.
 - OSSRH snapshot infrastructure — shutdown 2025-06-30; replaced by Sonatype
   Central Portal (`publishToMavenCentral` / `publishAndReleaseToMavenCentral`).
+- External `binary-compatibility-validator` plugin: on Kotlin 2.4+ fluxo-kmp-conf checks the
+  ABI with KGP's built-in validation and never applies it, so it was only build classpath.
