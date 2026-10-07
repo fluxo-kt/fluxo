@@ -42,17 +42,35 @@ if [ -z "$dry_run" ]; then
   # KGP keeps build/js/package.json UP-TO-DATE when only yarn resolutions change, so the lock upgrade would
   # silently keep the old versions; deleting the generated npm projects forces them to be rewritten.
   rm -rf build/js build/wasm
-  # Gradle's metadata writer only appends: entries for versions no longer used would stay forever.
+  # Gradle's metadata writer only appends: entries for versions no longer used would stay forever, so the file is
+  # deleted and rebuilt. An interrupted or failed run (a task failure, Ctrl-C, another session stopping the shared
+  # daemon) would leave it truncated and easy to commit, so any non-zero exit restores the committed file.
+  metadata_backup=$(mktemp)
+  cp gradle/verification-metadata.xml "$metadata_backup"
+  restore_metadata_on_failure() {
+    status=$?
+    if [ "$status" -ne 0 ]; then
+      cp "$metadata_backup" gradle/verification-metadata.xml
+      echo "updateBaselines failed (exit $status): gradle/verification-metadata.xml restored;" \
+        "other baselines may be partly updated." >&2
+    fi
+    rm -f "$metadata_backup"
+  }
+  trap restore_metadata_on_failure EXIT
+  # A signal does not run the EXIT trap in every sh; turning it into an exit does.
+  trap 'exit 130' INT
+  trap 'exit 143' TERM
   rm -f gradle/verification-metadata.xml
 fi
 
 baseline_tasks="dependencyGuardBaseline kotlinUpgradeYarnLock kotlinStoreYarnLock kotlinWasmUpgradeYarnLock kotlinWasmStoreYarnLock"
-rerun=""
 if [ "$deps_only" = false ]; then
   baseline_tasks="$baseline_tasks apiDump"
-  # A stale up-to-date output yields an API dump that differs from CI's.
-  rerun="--rerun-tasks"
 fi
+# Every baseline producer runs, whatever Gradle's history says: a stale up-to-date output yields an API dump that
+# differs from CI's, and the npm-project producers have been seen UP-TO-DATE right after the delete above, which
+# skipped the Wasm yarn install and failed the lock tasks.
+rerun="--rerun-tasks"
 
 # Both invocations write verification metadata: settings.gradle.kts fails a CI=true build that neither verifies
 # strictly nor writes metadata, and the second invocation covers the full CI graph. The second runs `build` WITH tests
