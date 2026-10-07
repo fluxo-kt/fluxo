@@ -43,16 +43,18 @@ jobs:
         # JMH runtime JDK: the benchmarks' javaLangTarget (comparison libraries need Java 21+).
         java: [ '25' ]
         os: [ 'macos', 'windows', 'ubuntu' ]
-        benchmark: [ 'IncrementIntent.*' ]
 
-    name: '${{ matrix.os }} JDK${{ matrix.java }} "${{ matrix.benchmark }}" benchmark'
+    name: '${{ matrix.os }} JDK${{ matrix.java }} benchmark'
     runs-on: '${{ matrix.os }}-latest'
     # A healthy run takes well under this; the bound stops a hung JMH fork from holding a runner for the 6 h default.
-    timeout-minutes: 120
+    timeout-minutes: 150
     env:
       # The gate's reference: Fluxo's library sources from this commit are benchmarked on the same runner after the
       # main run. Move it to a newer commit when a slowdown is accepted, or when the benchmarks stop compiling against it.
       JMH_REFERENCE: d12c6a584c6c0194120d1564e91bf8cd622183fa
+      # The rows the gate compares. A push benchmarks only these (a few of the suite's benchmarks); the weekly run adds
+      # every comparison library for the summary table.
+      jmh_fluxo: 'IncrementIntentBenchmark.fluxo__.*'
       jmh_wi: 2
       jmh_i: 5
       jmh_f: 2
@@ -85,10 +87,10 @@ jobs:
 
       # setup-gradle@v4+ dropped the `arguments:` input — run Gradle in a dedicated step.
       # jmh is configuration-cache-incompatible, hence the explicit `--no-configuration-cache`.
-      - name: 'Benchmark "${{ matrix.benchmark }}" on ${{ matrix.os }} JDK${{ matrix.java }}'
+      - name: 'Benchmark'
         env:
           CI: true
-          jmh: '${{ matrix.benchmark }}'
+          jmh: ${{ github.event_name == 'schedule' && 'IncrementIntent.*' || env.jmh_fluxo }}
         run: ./gradlew jmh --stacktrace --no-configuration-cache --scan
 
       # Same JMH profile and runner as the main run, Fluxo rows only, with the reference commit's library sources in
@@ -96,7 +98,7 @@ jobs:
       - name: 'Benchmark Fluxo at the reference commit'
         env:
           CI: true
-          jmh: 'IncrementIntentBenchmark.fluxo__.*'
+          jmh: ${{ env.jmh_fluxo }}
         shell: bash
         run: |
           results=benchmarks/jmh/build/results/jmh
