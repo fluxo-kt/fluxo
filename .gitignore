@@ -8,6 +8,8 @@
 .fleet/
 .gradle/
 .kotlin/
+# Per-directory state of the oh-my-claudecode agent plugin
+.omc/
 .vale*
 .vscode/
 bin/
