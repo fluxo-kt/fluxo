@@ -83,7 +83,7 @@ Each cites a symbol or file so you can verify in one read.
 ./updateBaselines                                # regenerate ALL baselines (yarn locks, dep guard, verification metadata, API dumps) with correct env
 ./updateBaselines --deps-only                    # only dependency-derived baselines (what the Dependabot workflow runs)
 ./gradlew dependencyGuardBaseline                # regenerate only dep snapshots
-./gradlew dependencyUpdates --no-parallel --refresh-dependencies # list newer releases; without the refresh Gradle's cached version lists (up to 24 h) hide new releases
+./gradlew dependencyUpdates --no-parallel        # list newer releases (a repository's metadata can lag a fresh release by hours)
 ./gradlew :benchmarks:jmh:jmh --no-configuration-cache # run JMH suite (filter via `IncrementIntent.*` regex; dogfoods local `:fluxo-core`)
 ./gradlew -Dsplit_targets ...                    # split KMP targets across CI shards (Windows uses this)
 RELEASE=true ./gradlew ...                       # release mode (IndyLambdas, stricter baselines)
