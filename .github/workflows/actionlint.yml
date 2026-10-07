@@ -35,12 +35,12 @@ jobs:
 
       - name: Download actionlint
         id: get_actionlint
-        # rhysd/actionlint v1.7.12 — official downloader script pinned at the tag's
-        # commit SHA. The script prints the binary path on stdout (read into
-        # ::set-output), so the next step can invoke it directly without PATH munging.
+        # Built from source with the runner's Go: `go install` checks every module against Go's public checksum
+        # database, so a tampered release cannot run here. The upstream download script fetches the release
+        # binary with no checksum check.
         run: |
-          bash <(curl -fsSL https://raw.githubusercontent.com/rhysd/actionlint/914e7df21a07ef503a81201c76d2b11c789d3fca/scripts/download-actionlint.bash) 1.7.12
-          echo "executable=$(pwd)/actionlint" >> "$GITHUB_OUTPUT"
+          go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.12
+          echo "executable=$(go env GOPATH)/bin/actionlint" >> "$GITHUB_OUTPUT"
         shell: bash
 
       - name: Run actionlint
