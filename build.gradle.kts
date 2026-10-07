@@ -59,11 +59,7 @@ fkcSetupRaw {
         // dropping a target takes its artefacts away from consumers, so it waits for the Kotlin version that forces it.
         allDefaultTargets()
         // Not in the default groups: publishes fluxo for WASI runtimes, which need no JS environment.
-        // Its tests run on Node. Own setup instead of the harness default: fluxo-kmp-conf 0.16.1 also requests
-        // TypeScript declarations for WASI, which crashes the production link
-        // ("Cannot access to js related std in wasi mode"). Return to plain wasmWasi() once the harness skips them.
-        @OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
-        wasmWasi { target { nodejs() } }
+        wasmWasi()
         // Kotlin 2.5 (the pre-release build) removes those four; an explicit call to a removed target fails the build.
         if (!providers.gradleProperty("fluxo.kotlin").isPresent) {
             iosX64()

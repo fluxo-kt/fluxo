@@ -94,9 +94,9 @@ io.github.ben-manes:gradle-versions-plugin:0.64.0
 io.github.detekt.sarif4k:sarif4k-jvm:0.6.0
 io.github.detekt.sarif4k:sarif4k:0.6.0
 io.github.fluxo-kt.binary-compatibility-validator-js:io.github.fluxo-kt.binary-compatibility-validator-js.gradle.plugin:1.2.0
-io.github.fluxo-kt.fluxo-kmp-conf:io.github.fluxo-kt.fluxo-kmp-conf.gradle.plugin:0.16.1
+io.github.fluxo-kt.fluxo-kmp-conf:io.github.fluxo-kt.fluxo-kmp-conf.gradle.plugin:0.16.2
 io.github.fluxo-kt:fluxo-bcv-ts:1.2.0
-io.github.fluxo-kt:fluxo-kmp-conf:0.16.1
+io.github.fluxo-kt:fluxo-kmp-conf:0.16.2
 io.github.java-diff-utils:java-diff-utils:4.17
 io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.8
 jakarta.activation:jakarta.activation-api:1.2.1
