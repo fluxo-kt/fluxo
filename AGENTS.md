@@ -83,12 +83,13 @@ Each cites a symbol or file so you can verify in one read.
 ./updateBaselines                                # regenerate ALL baselines (yarn locks, dep guard, verification metadata, API dumps) with correct env
 ./updateBaselines --deps-only                    # only dependency-derived baselines (what the Dependabot workflow runs)
 ./gradlew dependencyGuardBaseline                # regenerate only dep snapshots
+./gradlew dependencyUpdates --no-parallel --refresh-dependencies # list newer releases; without the refresh Gradle's cached version lists (up to 24 h) hide new releases
 ./gradlew :benchmarks:jmh:jmh --no-configuration-cache # run JMH suite (filter via `IncrementIntent.*` regex; dogfoods local `:fluxo-core`)
 ./gradlew -Dsplit_targets ...                    # split KMP targets across CI shards (Windows uses this)
 RELEASE=true ./gradlew ...                       # release mode (IndyLambdas, stricter baselines)
 ```
 
-For `apiDump`, see Gotcha #4.
+For `apiDump`, see Gotcha #4. `dependencyUpdates` prints "Failed to determine the latest version" for atomicfu and kotlinx-coroutines (it cannot resolve their KMP cinterop variants); check those two in their Maven Central `maven-metadata.xml`.
 
 ## Architecture notes (high-leverage, not greppable)
 
