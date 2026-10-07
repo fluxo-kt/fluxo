@@ -68,7 +68,7 @@
 - Verification: new `checkForbiddenFlags` drift gate rejects deprecated /
   removed-upstream / no-op `gradle.properties` keys at `check` time; each
   forbidden key carries an inline rationale string.
-- JMH: the benchmark workflow fails a run when a Fluxo benchmark is slower, in every measured mode, than the same
+- JMH: the benchmark workflow's Ubuntu job fails a run when a Fluxo benchmark is slower, in every measured mode, than the same
   benchmark run on the same runner with the library sources of a pinned reference commit, each by more than both the
   reference's score error (99.9% CI) and 15%.
 - Supply-chain (release-only): `dev.sigstore.sign` auto-signs every
