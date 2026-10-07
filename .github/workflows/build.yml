@@ -119,9 +119,10 @@ jobs:
           path: |
             ~/.konan
             /Users/runner/.konan
-          key: ${{ runner.os }}-konan-${{ hashFiles('**/*.versions.toml') }}
+          # runner.arch: the arm64 and Intel macOS jobs need different Kotlin/Native compilers.
+          key: ${{ runner.os }}-${{ runner.arch }}-konan-${{ hashFiles('**/*.versions.toml') }}
           restore-keys: |
-            ${{ runner.os }}-konan-
+            ${{ runner.os }}-${{ runner.arch }}-konan-
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
@@ -233,11 +234,72 @@ jobs:
           RELEASE: true
         run: ./gradlew apiCheck androidApiCheck --stacktrace --scan
 
+  apple-x64-tests:
+    # fluxo publishes iosX64, macosX64, tvosX64 and watchosX64 artefacts, but KGP runs a native test only on a host
+    # of the same architecture, so the arm64 macos-latest job compiles these targets and skips their tests. This job
+    # runs just those tests on an Intel runner. Drop a target here when the root build drops it (Kotlin 2.5 removes
+    # all but iosX64); drop the job when no x64 Apple target is left.
+    name: Test x64 Apple targets
+    timeout-minutes: 55
+    runs-on: macos-26-intel
+    if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
+    permissions:
+      contents: read
+    env:
+      X64_TESTS: iosX64Test macosX64Test tvosX64Test watchosX64Test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: 'Set up JDKs'
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: 'temurin'
+          # 17: compile/test toolchain (javaLangTarget); 25 last = JAVA_HOME, the Gradle daemon JDK.
+          java-version: |
+            17
+            25
+
+      - name: 'Cache Konan (Kotlin/Native compiler)'
+        timeout-minutes: 6
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        continue-on-error: true
+        with:
+          path: /Users/runner/.konan
+          key: ${{ runner.os }}-${{ runner.arch }}-konan-${{ hashFiles('**/*.versions.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ runner.arch }}-konan-
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+        with:
+          cache-read-only: ${{ github.ref != format('refs/heads/{0}', github.event.repository.default_branch) }}
+
+      - name: Run the x64 Apple tests
+        run: |
+          # shellcheck disable=SC2086 # X64_TESTS is a list of task names, split on purpose
+          ./gradlew $X64_TESTS --stacktrace --continue
+
+      - name: Fail if an x64 test task ran no tests
+        # fluxo-kmp-conf skips a simulator test task when the image has no runtime for it, and a skipped task is
+        # green; every module with tests must leave JUnit results for every task.
+        run: |
+          missing=0
+          for module in fluxo-core fluxo-data; do
+            for task in $X64_TESTS; do
+              if ! ls "$module/build/test-results/$task"/TEST-*.xml > /dev/null 2>&1; then
+                echo "::error::$module:$task left no test results (skipped, or no tests ran)"
+                missing=1
+              fi
+            done
+          done
+          exit "$missing"
+
   dispatched-status:
     # A dispatched run (baselines.yml after its push) is not linked to the PR, so the PR checks would never show
     # it; report the result as a commit status, which the PR does show.
     if: always() && github.event_name == 'workflow_dispatch'
-    needs: os-checks
+    needs: [ os-checks, apple-x64-tests ]
     name: Report dispatched build status
     runs-on: ubuntu-latest
     permissions:
@@ -245,7 +307,7 @@ jobs:
     steps:
       - env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          STATE: ${{ needs.os-checks.result == 'success' && 'success' || 'failure' }}
+          STATE: ${{ needs.os-checks.result == 'success' && needs.apple-x64-tests.result == 'success' && 'success' || 'failure' }}
           URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: >-
           gh api "repos/${{ github.repository }}/statuses/${{ github.sha }}"
