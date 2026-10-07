@@ -7,16 +7,21 @@ name: Baselines
 # - Any same-repo PR, when a maintainer adds the `baseline-regen` label (create the label once): full
 #   `./updateBaselines`, API dumps included; adding the label is the review consent.
 #
-# Security (`pull_request_target` runs with base-repo permissions; the regen executes the PR's build logic and
-# freshly bumped dependencies, with checksum verification off because it is writing the checksums):
-# - `regen` runs that code with a read-only token, no persisted git credentials and a read-only Gradle cache,
+# Security (the regen executes the PR's build logic and freshly bumped dependencies, with checksum verification off
+# because it is writing the checksums):
+# - `pull_request`, not `pull_request_target`: code run under `pull_request_target` gets the default branch's Actions
+#   cache scope, so a malicious bumped dependency could plant cache entries that `dev` builds then restore, before
+#   any human saw the PR. Under `pull_request` the cache scope is the PR's own. Dependabot-triggered runs start with
+#   a read-only token, but the `permissions` key may raise it (GitHub docs, "Troubleshooting Dependabot on GitHub
+#   Actions", read 2026-10-07), which `push` does.
+# - `regen` runs the PR code with a read-only token, no persisted git credentials and a read-only Gradle cache,
 #   and hands its result over only as a patch artefact.
 # - `push` runs no PR code. It accepts the patch only if every path is a baseline file, then commits, pushes with
 #   `--force-with-lease` (refused if the PR head moved after the trigger) and dispatches CI.
 # - Fork PRs never run (same-repo gate).
 
 on:
-  pull_request_target:
+  pull_request:
     types: [opened, synchronize, reopened, labeled]
 
 permissions: {}
