@@ -41,7 +41,7 @@
 
 ### Internal (no consumer impact)
 
-- Build toolchain: Kotlin 2.4.20 / Gradle 9.8.0 / AGP 9.4.1 KMP plugin, compile and
+- Build toolchain: Kotlin 2.4.20 / Gradle 9.8.1 / AGP 9.4.1 KMP plugin, compile and
   target SDK 37 / fluxo-kmp-conf 0.16.2 / Develocity 4.6.0. The Gradle daemon runs on
   JDK 25; libraries compile and test on a JDK 17 toolchain. JS and Wasm-JS tests also
   run in headless Chrome, not only in Node.
