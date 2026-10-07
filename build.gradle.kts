@@ -363,7 +363,7 @@ allprojects {
 // No resolution can fix braces <= 3.0.3 (GHSA-vfj7-8cjw-p6xm, DoS on deeply nested patterns), reached only via
 // KGP's Karma fork and its file watcher: no patched version exists (read 2026-10-07), so Dependabot alert #248
 // is dismissed as tolerable risk (test-only; the patterns are this build's own). Once the advisory lists a
-// patched version, add a resolution here and reopen the alert.
+// patched version, add a resolution here, reopen the alert and delete the ignore in .kotlin-js-store/osv-scanner.toml.
 plugins.withType<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin> {
     the<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension>().apply {
         resolution("brace-expansion", "2.1.7")

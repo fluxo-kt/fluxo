@@ -1,0 +1,28 @@
+# Read by osv-scanner and OpenSSF Scorecard for verification-metadata.xml next to it.
+#
+# The metadata records every metadata file Gradle reads while resolving, including versions that conflict
+# resolution then replaces, and the scanners report each recorded version as used. The versions below have only a
+# `.module` entry there: plugins request them, the root `pinned-security` constraint (build.gradle.kts) raises them,
+# and the jars that load are the patched ones. A version with a recorded jar must never be listed here.
+# Delete an entry once `verification-metadata.xml` no longer has that component.
+
+[[PackageOverrides]]
+ecosystem = "Maven"
+name = "com.fasterxml.jackson.core:jackson-core"
+version = "2.15.3"
+ignore = true
+reason = "Metadata-only (Dokka requests it); the loaded jackson-core jar is the jackson-bom-aligned patched version."
+
+[[PackageOverrides]]
+ecosystem = "Maven"
+name = "com.fasterxml.jackson.core:jackson-databind"
+version = "2.15.3"
+ignore = true
+reason = "Metadata-only (Dokka requests it); pinned-security raises it to the patched jackson-databind."
+
+[[PackageOverrides]]
+ecosystem = "Maven"
+name = "com.fasterxml.jackson.core:jackson-core"
+version = "2.22.2"
+ignore = true
+reason = "Metadata-only (the CycloneDX plugin requests it); the loaded jackson-core jar is the jackson-bom-aligned patched version."

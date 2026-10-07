@@ -1,0 +1,5 @@
+# Read by osv-scanner and OpenSSF Scorecard for yarn.lock next to it.
+
+[[IgnoredVulns]]
+id = "GHSA-vfj7-8cjw-p6xm"
+reason = "braces <= 3.0.3 has no patched version; reached only through KGP's test runner. Why it is accepted and when to drop this: the yarn resolutions comment in build.gradle.kts."
