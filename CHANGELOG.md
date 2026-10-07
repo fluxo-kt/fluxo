@@ -45,7 +45,7 @@
   target SDK 37 / fluxo-kmp-conf 0.16.2 / Develocity 4.6.0. The Gradle daemon runs on
   JDK 25; libraries compile and test on a JDK 17 toolchain. JS and Wasm-JS tests also
   run in headless Chrome, not only in Node.
-- API validation: the TypeScript declarations of the JS and Wasm-JS artefacts are checked (fluxo-bcv-js 1.2.0,
+- API validation: the TypeScript declarations of the JS and Wasm-JS artefacts are checked (fluxo-bcv-js 1.3.0,
   `api/ts`, `api/wasmTs`); earlier versions silently checked nothing.
 - Supply chain: every resolved artefact's SHA-256 is pinned in
   `gradle/verification-metadata.xml` and verified on CI (strict; local builds only warn), which rejects
