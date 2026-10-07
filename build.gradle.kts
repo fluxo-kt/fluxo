@@ -106,6 +106,11 @@ fkcSetupRaw {
     // the daemon runs a newer JDK (gradle/gradle-daemon-jvm.properties), and without a toolchain kotlinc
     // would compile against its class library and JVM tests would run on it instead of the consumer floor.
     setupJvmToolchain = true
+    // No worker-thread copy of the native tests (`<target>BackgroundTest`, -trw): they catch code bound to the main
+    // thread or to thread-local state, and fluxo's sources use neither (no @ThreadLocal, main dispatcher or
+    // main-thread API), so they would only add native link and test time (+42% on a full local native test run).
+    // Turn this on when fluxo gains such code, e.g. a Dispatchers.Main or Apple main-queue integration.
+    backgroundNativeTests = false
     useIndyLambdas = isRelease
     optInInternal = true
     optIns = listOf(
