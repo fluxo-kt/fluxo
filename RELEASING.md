@@ -15,8 +15,8 @@ The single source of truth for the published version is the `version` key in
   hermeticity note in `AGENTS.md`). If a release needs a harness change, that harness version must
   be released and the catalog pin bumped to it **first**, otherwise CI/release cannot reproduce the
   build. Verify with `curl` against `maven-metadata.xml` (see Verification).
-- **Maintainer-provisioned repository secrets** (GitHub → Settings → Secrets and variables →
-  Actions). These are outside contributor/agent access:
+- **Maintainer-provisioned Actions secrets**, set on the `fluxo-kt` organisation; a repository
+  secret with the same name would override it. Outside contributor/agent access:
 
   | Secret | Purpose |
   |---|---|
@@ -26,8 +26,7 @@ The single source of truth for the published version is the `version` key in
   | `SIGNING_KEY_ID` | *(optional)* short key id, only if the key has subkeys. |
   | `CODECOV_TOKEN` | Coverage upload (build.yml), unrelated to publishing. |
 
-  Replace any legacy `OSSRH_*` secrets — they are dead infra and unused by the new workflows. To
-  produce a CI-safe `SIGNING_KEY` value from a local keyring, use the harness's
+  To produce a CI-safe `SIGNING_KEY` value from a local keyring, use the harness's
   `export-release-signing-key.sh` (normalizes the armored block).
 
 ## Automatic
@@ -47,8 +46,9 @@ Consumers opt in with that repository plus the `-SNAPSHOT` coordinate (see `READ
 
 ### Releases — on a `vX.Y.Z` tag push
 
-1. Set a non-snapshot `version` in `gradle/libs.versions.toml` (`version = "X.Y.Z"`).
-2. Commit (`build(release): X.Y.Z`).
+1. Set a non-snapshot `version` in `gradle/libs.versions.toml` (`version = "X.Y.Z"`), and rename
+   `## Unreleased` in `CHANGELOG.md` to `## X.Y.Z (YYYY-MM-DD)`.
+2. Commit both (`build(release): X.Y.Z`).
 3. Push a matching tag: `git tag vX.Y.Z && git push origin vX.Y.Z`.
 
 `.github/workflows/release.yml` (trigger `tags: v*`) then:
