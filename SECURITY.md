@@ -18,5 +18,4 @@ reproduction or the code path involved.
 
 1. The report is confirmed or declined in the private advisory thread.
 2. A confirmed vulnerability is fixed on `dev` and released.
-3. The advisory is then published with the fixed version, and a CVE is requested through GitHub when it applies.
-   Reporters are credited unless they ask not to be.
+3. The advisory is then published with the fixed version.
