@@ -151,6 +151,13 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: ./updateBaselines --deps-only --dry-run
 
+      - name: 'Prove every API check fails on new public API'
+        # A green apiCheck cannot tell "no API change" from "this lane compares nothing"; the script plants public
+        # API and requires each lane to report it. One OS is enough: every lane runs on Linux.
+        if: matrix.os == 'ubuntu-latest'
+        timeout-minutes: 15
+        run: ./.github/workflows/api-gate-canary.sh
+
       - name: Summary
         if: success() || failure()
         continue-on-error: true
