@@ -21,6 +21,10 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+# Jobs that need more ask for it in their own permissions block.
+permissions:
+  contents: read
+
 env:
   TRIGGER_COUNTER: 15
   GRADLE_OPTS: "-Dorg.gradle.daemon=false \

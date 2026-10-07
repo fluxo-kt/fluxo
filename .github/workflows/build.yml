@@ -32,6 +32,10 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+# Jobs that need more ask for it in their own permissions block.
+permissions:
+  contents: read
+
 env:
   CI: true
   BUILD_NUMBER: ${{ github.run_number }}
@@ -53,6 +57,9 @@ jobs:
     if: github.event_name == 'pull_request' && github.event.pull_request.user.login != 'dependabot[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read # the action lists the PR's commits through the API
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
