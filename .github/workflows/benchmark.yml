@@ -50,7 +50,8 @@ jobs:
     timeout-minutes: 150
     env:
       # The gate's reference: Fluxo's library sources from this commit are benchmarked on the same runner after the
-      # main run. Move it to a newer commit when a slowdown is accepted, or when the benchmarks stop compiling against it.
+      # main run. Move it to a newer commit when added allocation is accepted, or when the benchmarks stop compiling
+      # against it.
       JMH_REFERENCE: d12c6a584c6c0194120d1564e91bf8cd622183fa
       # The rows the gate compares. A push benchmarks only these (a few of the suite's benchmarks); the weekly run adds
       # every comparison library for the summary table.
@@ -94,8 +95,8 @@ jobs:
         run: ./gradlew jmh --stacktrace --no-configuration-cache --scan
 
       # Same JMH profile and runner as the main run, Fluxo rows only, with the reference commit's library sources in
-      # place: the summary compares the two, so runner hardware cancels out. Ubuntu only: on a macOS runner two passes
-      # over identical library code differed by up to 81 % in both modes (run 37687829186), past any usable gate.
+      # place; the summary gates on their bytes allocated per op (why not time: benchmark-summary.main.kts). Ubuntu only:
+      # allocation comes from the same JVM bytecode on every OS, so other runners would double their run for no new signal.
       - name: 'Benchmark Fluxo at the reference commit'
         if: matrix.os == 'ubuntu'
         env:

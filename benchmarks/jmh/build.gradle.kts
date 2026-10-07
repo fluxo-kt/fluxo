@@ -133,6 +133,10 @@ jmh {
         if (jmhStart) logger.lifecycle("JMH timeUnit='$it'")
     })
 
+    // Always measure allocation (`:gc.alloc.rate.norm`, bytes per op): unlike time it repeats exactly on any machine,
+    // so CI's regression gate compares it (`.github/workflows/benchmark-summary.main.kts`).
+    profilers.add("gc")
+
     // `.github/workflows/benchmark-summary.main.kts` parses the TEXT table.
     resultFormat.set("TEXT")
 

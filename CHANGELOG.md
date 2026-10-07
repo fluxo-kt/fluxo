@@ -68,9 +68,10 @@
 - Verification: new `checkForbiddenFlags` drift gate rejects deprecated /
   removed-upstream / no-op `gradle.properties` keys at `check` time; each
   forbidden key carries an inline rationale string.
-- JMH: the benchmark workflow's Ubuntu job fails a run when a Fluxo benchmark is slower, in every measured mode, than the same
-  benchmark run on the same runner with the library sources of a pinned reference commit, each by more than both the
-  reference's score error (99.9% CI) and 15%.
+- JMH: every run also measures bytes allocated per op (`-prof gc`). The benchmark workflow fails when a Fluxo benchmark
+  allocates more than 1% above the same benchmark built from a pinned reference commit in the same job. It gates on
+  allocation, not time, because time on shared CI runners varied by up to 81% on identical code while allocation
+  repeated exactly.
 - Supply-chain (release-only): `dev.sigstore.sign` auto-signs every
   `MavenPublication` with a Sigstore bundle; `org.cyclonedx.bom` emits a
   per-module CycloneDX SBOM (full + direct scopes, JSON + XML). The release
