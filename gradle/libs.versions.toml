@@ -167,7 +167,7 @@ bcpkix = { module = "org.bouncycastle:bcpkix-jdk18on", version.ref = "bouncycast
 # KGP's swift-export tooling brings opentelemetry-api.
 commons-lang3 = { module = "org.apache.commons:commons-lang3", version = "3.21.0" }
 httpclient = { module = "org.apache.httpcomponents:httpclient", version = "4.5.14" }
-httpclient5 = { module = "org.apache.httpcomponents.client5:httpclient5", version = "5.6.4" }
+httpclient5 = { module = "org.apache.httpcomponents.client5:httpclient5", version = "5.6.5" }
 httpcore5 = { module = "org.apache.httpcomponents.core5:httpcore5", version = "5.4.4" }
 httpcore5-h2 = { module = "org.apache.httpcomponents.core5:httpcore5-h2", version = "5.4.4" }
 jdom2 = { module = "org.jdom:jdom2", version = "2.0.6.1" }
