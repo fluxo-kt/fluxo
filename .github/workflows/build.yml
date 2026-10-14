@@ -62,7 +62,7 @@ jobs:
       pull-requests: read # the action lists the PR's commits through the API
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
+        uses: step-security/harden-runner@ccd8616d44fd3846e67624a50d5aad6d37bf2d25 # v2.22.1
         with:
           egress-policy: audit
           disable-sudo: true
@@ -101,7 +101,7 @@ jobs:
     steps:
       - name: Harden Runner
         if: matrix.os == 'ubuntu-latest'
-        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
+        uses: step-security/harden-runner@ccd8616d44fd3846e67624a50d5aad6d37bf2d25 # v2.22.1
         with:
           disable-sudo: true
           egress-policy: audit
@@ -187,7 +187,7 @@ jobs:
 
       - name: Upload reports
         if: success() || failure()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         continue-on-error: true
         with:
           name: 'reports-${{ matrix.os }}'
@@ -219,7 +219,7 @@ jobs:
       - name: Publish JUnit test results as a pull request check
         if: (success() || failure()) && matrix.os == 'macos-latest'
           && github.repository == 'fluxo-kt/fluxo' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
-        uses: mikepenz/action-junit-report@a9170d5795813c01ab4901ffb045b52bab4ab09d # v6.5.0
+        uses: mikepenz/action-junit-report@b7b80d7ac5b1da46d6aaff9fb57ad50d8453bcb3 # v6.6.0
         with:
           report_paths: '**/build/test-results/*/TEST-*.xml'
 
