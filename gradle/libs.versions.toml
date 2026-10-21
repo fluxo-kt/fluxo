@@ -274,7 +274,7 @@ fluxo-kmp-conf = { id = "io.github.fluxo-kt.fluxo-kmp-conf", version = "0.16.2" 
 # The Portal marks this id deprecated in favour of io.github.ben-manes.versions (same releases), but the
 # published harness applies the plugin by the old id; switch when the harness does.
 # https://plugins.gradle.org/plugin/io.github.ben-manes.versions
-deps-versions = { id = "com.github.ben-manes.versions", version = "0.64.0" }
+deps-versions = { id = "com.github.ben-manes.versions", version = "0.66.0" }
 
 # Detect unused and misused dependencies. Note: 3.x removed auto-apply; the
 # harness composite applies this explicitly via its own DSL.
