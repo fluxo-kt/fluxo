@@ -172,7 +172,7 @@ httpcore5 = { module = "org.apache.httpcomponents.core5:httpcore5", version = "5
 httpcore5-h2 = { module = "org.apache.httpcomponents.core5:httpcore5-h2", version = "5.4.4" }
 jdom2 = { module = "org.jdom:jdom2", version = "2.0.6.1" }
 jose4j = { module = "org.bitbucket.b_c:jose4j", version = "0.9.7" }
-opentelemetry-api = { module = "io.opentelemetry:opentelemetry-api", version = "1.66.0" }
+opentelemetry-api = { module = "io.opentelemetry:opentelemetry-api", version = "1.67.0" }
 # Plugins bring 2.3.32 (GHSA-27j2-h3m2-8237: <= 2.3.34).
 # https://mvnrepository.com/artifact/org.freemarker/freemarker
 freemarker = { module = "org.freemarker:freemarker", version = "2.3.35" }
