@@ -29,7 +29,7 @@ kotlinApiVersion = "2.3"
 # consumer floor (`kotlinLangVersion`), below the compiler, so fluxo never forces a newer stdlib onto
 # Kotlin 2.3 consumers (the kotlinx convention). It must not exceed `kotlin`: the harness rejects that skew.
 # JS/Wasm resolve the compiler's stdlib instead: fluxo-kmp-conf (0.16+) raises their stdlib and kotlin-test to it.
-kotlin = "2.4.20"
+kotlin = "2.4.21"
 # Raising this past 2.3.x raises the consumer floor, so .github/dependabot.yml ignores its minor and major bumps.
 kotlinCoreLibraries = "2.3.21"
 # https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk18on
