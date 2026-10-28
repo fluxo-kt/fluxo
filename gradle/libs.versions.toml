@@ -157,7 +157,7 @@ rxjava2 = { module = "io.reactivex.rxjava2:rxjava", version.strictly = "2.2.21" 
 
 # Plugins bring 2.15.3 (GHSA-cxp5-3px4-pw24: <= 2.18.10).
 # https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
-jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version = "2.22.3" }
+jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version = "2.22.4" }
 # Plugins bring 1.80.2 (GHSA-9pwp-9qqc-pr26: < 1.85; bcpkix GHSA-wg6q-6289-32hp: < 1.84).
 # https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk18on
 bcprov = { module = "org.bouncycastle:bcprov-jdk18on", version.ref = "bouncycastle" }
