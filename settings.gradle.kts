@@ -60,7 +60,7 @@ pluginManagement {
 
 plugins {
     // https://plugins.gradle.org/plugin/com.gradle.develocity
-    id("com.gradle.develocity") version "4.6.0"
+    id("com.gradle.develocity") version "4.6.1"
 }
 
 dependencyResolutionManagement {
