@@ -52,7 +52,7 @@ kotlinx-browser = "0.5.0"
 # https://maven.google.com/web/index.html#com.android.tools.build:gradle
 # https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google
 # https://developer.android.com/build/releases/gradle-plugin#updating-plugin
-android-gradle-plugin = "9.4.1"
+android-gradle-plugin = "9.5.0"
 
 # https://github.com/detekt/detekt/releases (2.x is alpha: stable only)
 detekt = "1.23.8"
